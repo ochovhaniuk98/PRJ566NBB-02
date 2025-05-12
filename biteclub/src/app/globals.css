@@ -1,0 +1,94 @@
+/* https://www.youtube.com/watch?v=bupetqS1SMU
+https://www.youtube.com/watch?v=Jol0vCitur4
+https://www.youtube.com/watch?v=DqGr8YwO52Q
+
+https://www.youtube.com/watch?v=O8ivm7403rk&t=475s
+
+https://www.youtube.com/watch?v=obAB6nSVj1E
+
+https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
+*/
+@import "tailwindcss";
+
+@theme {
+  /* fonts */
+  --font-primary: var(--font-koho);
+  --font-secondary: var(--font-jaro);
+
+  /* brand colours */
+  --color-brand-green: #80c001;
+  --color-brand-green-lite: #a6d34d;
+  --color-brand-green-extralite: #c7e58b;
+  --color-brand-yellow: #ffb300;
+  --color-brand-yellow-lite: #fff5d8;
+  --color-brand-yellow-extralite: #fffdf3;
+  --color-brand-navy: #08349e;
+  --color-brand-peach: #ffdcbe;
+  --color-brand-aqua: #56e4be;
+  --color-brand-aqua-lite: #dffbf8;
+  --color-brand-blue: #abdef5;
+  --color-brand-blue-lite: #dff2fb;
+  --color-brand-grey: #757575;
+  --color-brand-grey-lite: #d9d9d9;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+  }
+
+  body {
+    @apply font-primary;
+    font-size: 1rem;
+  }
+
+  /* text input field */
+  input {
+    @apply appearance-none border bg-white border-brand-blue rounded-full px-4 py-2 my-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-aqua;
+  }
+
+  input::placeholder {
+    @apply text-brand-grey;
+  }
+
+  h3 {
+    @apply font-bold my-1 text-lg;
+  }
+
+  h4 {
+    @apply text-sm;
+  }
+
+  a {
+    @apply text-brand-navy;
+  }
+}
+
+@layer utilities {
+  .icon-xl {
+    font-size: 1.75rem;
+    /*@apply text-brand-navy;*/
+  }
+
+  .icon-lg {
+    font-size: 1.25rem;
+    /*@apply text-brand-navy;*/
+  }
+
+  .icon-md {
+    font-size: 1rem;
+  }
+
+  /*** left/right margins for main content on most pages ***/
+  .main-side-margins {
+    @apply px-12;
+  }
+}
