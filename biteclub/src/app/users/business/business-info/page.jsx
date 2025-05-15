@@ -2,5 +2,6 @@
 export default async function BusinessInfo() {
 
 
-  return <>Fill In Your Business</>;
+  return <><br /><br /><br /><br />LANDING PAGE AFTER FILLING IN THE FORM</>;
+  
 }
