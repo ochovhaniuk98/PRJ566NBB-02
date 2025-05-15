@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { LogoutButton } from "@/components/Llogout-button";
+import { LogoutButton } from "@/components/Logout-button";
 import { createClient } from "@/lib/auth/server";
 
 export default async function ProtectedPage() {
