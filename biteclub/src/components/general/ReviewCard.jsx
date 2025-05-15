@@ -1,4 +1,4 @@
-import StarRating from "@/app/components/general/StarRating";
+import StarRating from "@/components/general/StarRating";
 import Image from "next/image";
 export default function ReviewCard({ imageSrc }) {
   return (
