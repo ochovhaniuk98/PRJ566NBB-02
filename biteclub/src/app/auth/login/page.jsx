@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/login-form";
+import { LoginForm } from "@/components/Login-form";
 import { GalleryVerticalEnd } from "lucide-react";
 import { createClient } from "@/lib/auth/server";
 import { redirect } from "next/navigation";

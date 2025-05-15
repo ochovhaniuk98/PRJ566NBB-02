@@ -1,4 +1,3 @@
-// import { createClient } from '@/utils/supabase/server'
 import { createClient } from '@/lib/auth/server'
 import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
