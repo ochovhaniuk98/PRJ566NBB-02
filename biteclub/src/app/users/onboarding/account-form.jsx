@@ -1,21 +1,26 @@
-// LATER WE WILL USE MONGO DB TO STORE USER INFO
+// WE WILL USE MONGO DB TO STORE USERS INFO
+// Users should be created on MongoDB after user selected their user type (Business / General) on this page:
+// - General: username and profile picture
+// - Business: Restaurant name, business license (img/pdf)
 
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-// import { createClient } from "@/utils/supabase/client";
 import { createClient } from '@/lib/auth/client';
 import Avatar from './avatar';
 import { Switch } from '@/components/ui/Switch';
 import { useRouter } from 'next/navigation';
+import { Dropzone } from '@/components/ui/Dropzone';
+// import Dropzone from 'react-dropzone';
 
 export default function AccountForm({ user }) {
   const router = useRouter();
 
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
-  const [user_role, setUserRole] = useState(false); // Switch: Business Account -> True
+  const [userType, setUserType] = useState(false); // Switch: Business Account -> True
 
   // STORE TO mongoDB
+  const [restaurantName, setRestaurantName] = useState(null);
   const [username, setUsername] = useState(null);
   const [avatar_url, setAvatarUrl] = useState(null);
 
@@ -87,22 +92,12 @@ export default function AccountForm({ user }) {
           <label htmlFor="user-role" className="text-sm text-gray-700">
             Register as Business Account
           </label>
-          <Switch id="user-role" checked={user_role} onCheckedChange={setUserRole} />
+          <Switch id="user-role" checked={userType} onCheckedChange={setUserType} />
         </div>
 
-        {user_role ? (
+        {userType ? (
           <div>
             {/* Business */}
-            {/* <Avatar
-              uid={user?.id}
-              url={avatar_url}
-              size={150}
-              onUpload={url => {
-                setAvatarUrl(url);
-                // updateProfile({ fullname, username, website, avatar_url: url });
-                updateProfile({ username, avatar_url: url });
-              }}
-            /> */}
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -118,16 +113,25 @@ export default function AccountForm({ user }) {
             </div>
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="restaurantName" className="block text-sm font-medium text-gray-700">
                 Enter Restaurant Name
               </label>
               <input
-                id="username"
+                id="restaurantName"
                 type="text"
-                value={username || ''}
-                onChange={e => setUsername(e.target.value)}
+                value={restaurantName || ''}
+                onChange={e => setRestaurantName(e.target.value)}
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
               />
+            </div>
+            <div>
+              <label htmlFor="businessLicense" className="block text-sm font-medium text-gray-700">
+                Upload your business license
+              </label>
+
+              {/* Drop Business License Here */}
+              {/* TODO: replace the onDrop function with your upload file function */}
+              <Dropzone onDrop={files => console.log(files)}></Dropzone>
             </div>
           </div>
         ) : (
@@ -139,7 +143,7 @@ export default function AccountForm({ user }) {
               size={150}
               onUpload={url => {
                 setAvatarUrl(url);
-                // Update Image with MongoDB logic
+                // Update Image with Cloudinary logic
                 // updateProfile({ username, avatar_url: url });
               }}
             />
@@ -176,11 +180,11 @@ export default function AccountForm({ user }) {
           <button
             className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-900 transition disabled:opacity-50"
             onClick={() => {
-              // TODO: update your mongoDB function/logic here
+              // TODO: Replace "updateProfile" with your mongoDB function/logic here to Create / Update user portfolio
               updateProfile({ username, avatar_url });
 
               // redirect user to further onboarding page (i.e. questionnaire) base on User role.
-              router.push(user_role ? '/users/business/business-info' : '/users/general/questionnaire');
+              router.push(userType ? '/users/business/business-info' : '/users/general/questionnaire');
             }}
             disabled={loading}
           >
