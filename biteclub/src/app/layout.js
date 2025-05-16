@@ -27,8 +27,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${jaro.variable} ${koho.variable} antialiased`}>
-      <body className="flex">
+    <html lang="en" className={`${jaro.variable} ${koho.variable} antialiased`} suppressHydrationWarning={true}>
+      <body className="flex" suppressHydrationWarning={true}>
         <MainMenu />
         <div className="flex-1 relative">
           <SearchBar />
