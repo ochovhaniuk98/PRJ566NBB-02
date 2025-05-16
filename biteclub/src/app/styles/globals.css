@@ -8,7 +8,7 @@ https://www.youtube.com/watch?v=obAB6nSVj1E
 
 https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
 */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* fonts */
@@ -93,11 +93,9 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   }
 }
 
-
-
-
 /*AUTH CSS (NICOLE ADDED) all tailwind css*/
 /* MAYBE I CAN CHANGE IT TO @THEME AUTH INSTEAD */
+/*
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -142,3 +140,4 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   --color-input: var(--input);
   --color-ring: var(--ring);
 }
+*/
