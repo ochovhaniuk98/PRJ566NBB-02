@@ -1,7 +1,7 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import RestaurantIconDetail from "@/components/restaurantProfile/RestaurantIconDetail";
-import StarRating from "../general/StarRating";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import RestaurantIconDetail from '@/components/restaurantProfile/RestaurantIconDetail';
+import StarRating from '../shared/StarRating';
 
 export default function InfoBanner({ name, avgRating, numReviews, cuisine }) {
   return (
@@ -11,11 +11,7 @@ export default function InfoBanner({ name, avgRating, numReviews, cuisine }) {
         <h1 className="text-3xl font-bold">{name}</h1>
         <div className="flex items-center gap-x-2">
           <p className="text-2xl font-semibold">{avgRating}</p>
-          <StarRating
-            colour={"text-brand-green"}
-            iconSize={"icon-xl"}
-            ratingNum={1.3}
-          />
+          <StarRating colour={'text-brand-green'} iconSize={'icon-xl'} ratingNum={1.3} />
           <p className="text-xl font-light">{numReviews}</p>
         </div>
         <RestaurantIconDetail icon={faLocationDot} detailText={cuisine} />
