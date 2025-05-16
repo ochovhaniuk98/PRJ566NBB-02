@@ -27,7 +27,7 @@ export const metadata = {
 export default function AuthLayout({ children }) {
   return (
     <html lang="en" className={`${jaro.variable} ${koho.variable} antialiased`}>
-      <body>{children}</body>
+      <body suppressHydrationWarning={true}>{children}</body>
     </html>
   );
 }

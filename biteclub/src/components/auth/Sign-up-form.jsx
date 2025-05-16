@@ -2,15 +2,6 @@
 
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/auth/client';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
-import { createClient } from '@/lib/auth/client';
 import { Button } from '@/components/auth/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/auth/ui/Card';
 import { Input } from '@/components/auth/ui/Input';
@@ -20,9 +11,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export function SignUpForm({ className, ...props }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repeatPassword, setRepeatPassword] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
@@ -48,11 +36,11 @@ export function SignUpForm({ className, ...props }) {
         password,
         options: {
           // emailRedirectTo: `${window.location.origin}/users/onboarding`,
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/callback`,
         },
       });
       if (error) throw error;
-      router.push('/auth/sign-up-success');
+      router.push('/sign-up-success');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
@@ -72,7 +60,7 @@ export function SignUpForm({ className, ...props }) {
           // New users will be redirected to onboarding page.
           // Registered users will be redirected back to user dashboard.
           // let the /callback decide where user should go
-          redirectTo: `${window.location.origin}/callback`, // auth/
+          redirectTo: `${window.location.origin}/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -179,7 +167,7 @@ export function SignUpForm({ className, ...props }) {
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{' '}
-              <Link href="/auth/login" className="underline underline-offset-4">
+              <Link href="/login" className="underline underline-offset-4">
                 Login
               </Link>
             </div>
