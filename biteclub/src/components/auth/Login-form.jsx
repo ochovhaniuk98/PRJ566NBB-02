@@ -52,7 +52,7 @@ export function LoginForm({ className, ...props }) {
           // redirectTo: `${window.location.origin}/auth/callback?next=/users`,
 
           // let the /callback decide where user should go
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/callback`, 
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -148,7 +148,7 @@ export function LoginForm({ className, ...props }) {
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <Link
-                    href="/auth/forgot-password"
+                    href="forgot-password"
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                   >
                     Forgot your password?

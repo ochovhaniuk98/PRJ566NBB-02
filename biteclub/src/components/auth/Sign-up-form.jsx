@@ -64,7 +64,7 @@ export function SignUpForm({ className, ...props }) {
           // redirectTo: `${window.location.origin}/auth/callback?next=/users/onboarding`,
 
           // let the /callback decide where user should go
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/callback`, // auth/
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
