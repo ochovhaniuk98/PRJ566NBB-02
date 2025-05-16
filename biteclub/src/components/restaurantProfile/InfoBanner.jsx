@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import RestaurantIconDetail from "@/app/components/restaurantProfile/RestaurantIconDetail";
+import RestaurantIconDetail from "@/components/restaurantProfile/RestaurantIconDetail";
 import StarRating from "../general/StarRating";
 
 export default function InfoBanner({ name, avgRating, numReviews, cuisine }) {

@@ -1,9 +1,9 @@
 "use client";
-import ImageBanner from "@/app/components/restaurantProfile/ImageBanner";
-import InfoBanner from "@/app/components/restaurantProfile/InfoBanner";
-import ProfileTabBar from "@/app/components/ProfileTabBar";
+import ImageBanner from "@/components/restaurantProfile/ImageBanner";
+import InfoBanner from "@/components/restaurantProfile/InfoBanner";
+import ProfileTabBar from "@/components/ProfileTabBar";
 import bannerImages from "@/app/data/fakeData";
-import ReviewCard from "@/app/components/general/ReviewCard";
+import ReviewCard from "@/components/general/ReviewCard";
 
 export default function RestaurantProfile() {
   const restaurantTabs = [

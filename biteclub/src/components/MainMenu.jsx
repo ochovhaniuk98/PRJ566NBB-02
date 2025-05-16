@@ -15,7 +15,7 @@ export default function MainMenu() {
     faUtensils,
     faMicroblog,
   ];
-  const menuLinks = ["/", "#", "#", "/restaurants/12345", "#"];
+  const menuLinks = ["/", "/users", "#", "/restaurants/12345", "#"];
 
   return (
     <aside className="fixed top-0 left-0 z-50 bg-transparent p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey">

@@ -1,9 +1,9 @@
 import { KoHo, Jaro } from "next/font/google";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
-import "./globals.css";
-import MainMenu from "./components/MainMenu";
-import SearchBar from "./components/SearchBar";
+import "./styles/globals.css";
+import MainMenu from "../components/MainMenu";
+import SearchBar from "../components/SearchBar";
 config.autoAddCss = false;
 
 const koho = KoHo({
