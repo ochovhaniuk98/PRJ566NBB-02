@@ -1,93 +1,83 @@
-"use client";
+'use client';
 
-// ref bug-1: link to supabase auth database, if email registered -> error message
-
-import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/auth/client";
-import { Button } from "@/components/ui/Button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/Card";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { cn } from '@/lib/utils';
+import { createClient } from '@/lib/auth/client';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/Label';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function SignUpForm({ className, ...props }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleSignUp = async (e) => {
+  // Email Sign Up
+  const handleSignUp = async e => {
     e.preventDefault();
     const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
     if (password !== repeatPassword) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
-
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/users/onboarding`,
+          // emailRedirectTo: `${window.location.origin}/users/onboarding`,
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) throw error;
-      router.push("/auth/sign-up-success");
+      router.push('/auth/sign-up-success');
     } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Google Sign Up
   const handleGoogleLogin = async () => {
     const supabase = createClient();
     setIsLoading(true);
     try {
-      // const { error } = await supabase.auth.signInWithOAuth({
-      //   provider: "google",
-      // });
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
+        provider: 'google',
         options: {
-          // [!] REDIRECT TO THE ROUTE THAT YOU DESIRE. e.g. users (the origin "protected").
-          // New users will be redirected to "onboarding".
-          // redirectTo: `${window.location.origin}/auth/callback?next=/users/onboarding`,
-
+          // RedirectTo:
+          // New users will be redirected to onboarding page.
+          // Registered users will be redirected back to user dashboard.
           // let the /callback decide where user should go
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
-            access_type: "offline",
-            prompt: "consent",
+            access_type: 'offline',
+            prompt: 'consent',
           },
         },
       });
       if (error) throw error;
       // Supabase will redirect automatically to the callback URL
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Google login failed");
+      setError(error instanceof Error ? error.message : 'Google login failed');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Sign up</CardTitle>
@@ -98,19 +88,15 @@ export function SignUpForm({ className, ...props }) {
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
                 <Button
+                  // It's the first button inside the form, browsers might treat it as the default submit button when pressing Enter in a form input.
+                  // Pressing "Enter" to create account should be for Email registration, not Google.
+                  type="button" // To prevent that, explicitly set the type (vs default: "submit")
                   variant="outline"
                   className="w-full"
                   onClick={handleGoogleLogin}
                   disabled={isLoading}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    x="0px"
-                    y="0px"
-                    width="100"
-                    height="100"
-                    viewBox="0 0 48 48"
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48">
                     <path
                       fill="#FFC107"
                       d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
@@ -132,9 +118,7 @@ export function SignUpForm({ className, ...props }) {
                 </Button>
               </div>
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
+                <span className="relative z-10 bg-background px-2 text-muted-foreground">Or continue with</span>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -144,7 +128,7 @@ export function SignUpForm({ className, ...props }) {
                   placeholder="m@example.com"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                 />
               </div>
               <div className="grid gap-2">
@@ -156,7 +140,7 @@ export function SignUpForm({ className, ...props }) {
                   type="password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                 />
               </div>
               <div className="grid gap-2">
@@ -168,7 +152,7 @@ export function SignUpForm({ className, ...props }) {
                   type="password"
                   required
                   value={repeatPassword}
-                  onChange={(e) => setRepeatPassword(e.target.value)}
+                  onChange={e => setRepeatPassword(e.target.value)}
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
@@ -178,11 +162,11 @@ export function SignUpForm({ className, ...props }) {
 
               {/* Change variant for another button theme */}
               <Button type="submit" variant="default" disabled={isLoading}>
-                {isLoading ? "Creating an account..." : "Sign up"}
+                {isLoading ? 'Creating an account...' : 'Sign up'}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
+              Already have an account?{' '}
               <Link href="/auth/login" className="underline underline-offset-4">
                 Login
               </Link>
