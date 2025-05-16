@@ -7,6 +7,7 @@ export function Dropzone() {
   const [files, setFiles] = useState([]);
 
   const { getRootProps, getInputProps } = useDropzone({
+    // Allow user to upload business license in image or pdf format
     accept: {
       "image/*": [".png", ".jpg", ".jpeg"],
       "application/pdf": [".pdf"],

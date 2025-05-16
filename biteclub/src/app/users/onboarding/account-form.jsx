@@ -143,7 +143,7 @@ export default function AccountForm({ user }) {
               size={150}
               onUpload={url => {
                 setAvatarUrl(url);
-                // Update Image with Cloudinary logic
+                // TODO: Update Image with Cloudinary logic
                 // updateProfile({ username, avatar_url: url });
               }}
             />
