@@ -1,7 +1,14 @@
 'use client';
 
-// ref bug-1: link to supabase auth database, if email registered -> error message
-
+import { cn } from '@/lib/utils';
+import { createClient } from '@/lib/auth/client';
+import { Button } from '@/components/ui/Button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/Label';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/auth/client';
 import { Button } from '@/components/auth/ui/Button';
@@ -16,10 +23,14 @@ export function SignUpForm({ className, ...props }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  // Email Sign Up
   const handleSignUp = async e => {
     e.preventDefault();
     const supabase = createClient();
@@ -31,17 +42,17 @@ export function SignUpForm({ className, ...props }) {
       setIsLoading(false);
       return;
     }
-
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/users/onboarding`,
+          // emailRedirectTo: `${window.location.origin}/users/onboarding`,
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) throw error;
-      router.push('/sign-up-success');
+      router.push('/auth/sign-up-success');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
@@ -49,20 +60,17 @@ export function SignUpForm({ className, ...props }) {
     }
   };
 
+  // Google Sign Up
   const handleGoogleLogin = async () => {
     const supabase = createClient();
     setIsLoading(true);
     try {
-      // const { error } = await supabase.auth.signInWithOAuth({
-      //   provider: "google",
-      // });
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // [!] REDIRECT TO THE ROUTE THAT YOU DESIRE. e.g. users (the origin "protected").
-          // New users will be redirected to "onboarding".
-          // redirectTo: `${window.location.origin}/auth/callback?next=/users/onboarding`,
-
+          // RedirectTo:
+          // New users will be redirected to onboarding page.
+          // Registered users will be redirected back to user dashboard.
           // let the /callback decide where user should go
           redirectTo: `${window.location.origin}/callback`, // auth/
           queryParams: {
@@ -91,7 +99,15 @@ export function SignUpForm({ className, ...props }) {
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
-                <Button variant="outline" className="w-full" onClick={handleGoogleLogin} disabled={isLoading}>
+                <Button
+                  // It's the first button inside the form, browsers might treat it as the default submit button when pressing Enter in a form input.
+                  // Pressing "Enter" to create account should be for Email registration, not Google.
+                  type="button" // To prevent that, explicitly set the type (vs default: "submit")
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoogleLogin}
+                  disabled={isLoading}
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48">
                     <path
                       fill="#FFC107"
@@ -163,7 +179,7 @@ export function SignUpForm({ className, ...props }) {
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{' '}
-              <Link href="/login" className="underline underline-offset-4">
+              <Link href="/auth/login" className="underline underline-offset-4">
                 Login
               </Link>
             </div>

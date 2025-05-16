@@ -4,12 +4,12 @@ import { createClient } from '@/lib/auth/server';
 import { redirect } from 'next/navigation';
 
 export default async function Page() {
-  // if user already logged in, they should be redirected back to the Dashboard.
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getUser();
   // console.log(data.user)
   if (data?.user) {
+    // TODO: Might change. We will redirect Business Users vs General Users to different route.
     redirect('/users');
   }
   return (

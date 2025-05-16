@@ -52,7 +52,7 @@ export function LoginForm({ className, ...props }) {
           // redirectTo: `${window.location.origin}/auth/callback?next=/users`,
 
           // let the /callback decide where user should go
-          redirectTo: `${window.location.origin}/callback`, 
+          redirectTo: `${window.location.origin}/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
