@@ -64,6 +64,7 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   h2,
   h3,
   h4,
+  h5,
   p,
   a {
     @apply font-primary;
@@ -74,15 +75,23 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   }
 
   h3 {
-    @apply font-bold my-1 text-lg;
+    @apply font-semibold my-1 text-lg;
   }
 
   h4 {
-    @apply text-sm;
+    @apply text-sm font-medium;
+  }
+
+  h5 {
+    @apply text-sm font-normal;
   }
 
   a {
     @apply text-brand-navy;
+  }
+
+  p {
+    @apply text-base;
   }
 }
 
@@ -103,7 +112,7 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
 
   /*** left/right margins for main content on most pages ***/
   .main-side-margins {
-    @apply px-12;
+    @apply px-40;
   }
 
   .class-font-roboto {

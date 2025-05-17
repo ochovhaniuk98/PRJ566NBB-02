@@ -3,7 +3,7 @@ import Image from 'next/image';
 export default function ReviewCard({ imageSrc }) {
   return (
     <div
-      className={`border rounded-md border-brand-yellow flex flex-col ${
+      className={`border rounded-md border-brand-yellow-lite flex flex-col ${
         imageSrc?.length > 0 ? 'row-span-2' : 'row-span-1'
       }`}
     >

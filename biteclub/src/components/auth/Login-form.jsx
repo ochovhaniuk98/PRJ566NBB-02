@@ -69,7 +69,7 @@ export function LoginForm({ className, ...props }) {
   };
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn('flex flex-col', className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-center">
@@ -81,8 +81,8 @@ export function LoginForm({ className, ...props }) {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 items-center">
                 {/* <Button variant="outline" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
@@ -94,7 +94,7 @@ export function LoginForm({ className, ...props }) {
                 </Button> */}
                 <Button
                   variant="googlebtn"
-                  className="w-full font-roboto font-normal"
+                  className="w-60 font-roboto font-normal"
                   onClick={handleGoogleLogin}
                   disabled={isLoading}
                 >
@@ -133,23 +133,27 @@ export function LoginForm({ className, ...props }) {
                   Or
                 </span>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+              <div className="grid">
+                <Label htmlFor="email">
+                  <h4>Email</h4>
+                </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="janedoe@myemail.com"
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">
+                    <h4>Password</h4>
+                  </Label>
                   <Link
                     href="forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    className="ml-auto inline-block text-sm underline-offset-4 text-brand-navy font-primary hover:underline"
                   >
                     Forgot your password?
                   </Link>
@@ -162,16 +166,20 @@ export function LoginForm({ className, ...props }) {
                   onChange={e => setPassword(e.target.value)}
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Logging in...' : 'Login'}
-              </Button>
+              <div className="flex flex-col items-center">
+                {error && <p className="text-sm text-red-500">{error}</p>}
+                <Button type="submit" className="w-60" disabled={isLoading}>
+                  {isLoading ? 'Logging in...' : 'Login'}
+                </Button>
+              </div>
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{' '}
-              <Link href="/sign-up" className="underline underline-offset-4">
-                Sign up
-              </Link>
+            <div className="mt-4 text-center">
+              <h5>
+                Don&apos;t have an account?&nbsp;
+                <Link href="/sign-up" className="underline underline-offset-4 font-primary text-sm font-semibold">
+                  Sign up
+                </Link>
+              </h5>
             </div>
           </form>
         </CardContent>

@@ -6,7 +6,7 @@ import StarRating from '../shared/StarRating';
 export default function InfoBanner({ name, avgRating, numReviews, cuisine }) {
   return (
     // bg-brand-yellow-extralite
-    <div className="bg-white main-side-margins py-8">
+    <div className="bg-brand-white main-side-margins pt-8 pb-2">
       <div className="flex flex-col gap-y-1">
         <h1 className="text-3xl font-bold">{name}</h1>
         <div className="flex items-center gap-x-2">
