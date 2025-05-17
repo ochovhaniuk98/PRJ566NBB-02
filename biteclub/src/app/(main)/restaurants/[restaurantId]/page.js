@@ -12,11 +12,18 @@ export default function RestaurantProfile() {
       <div className="absolute top-0 left-12 right-0">
         <div className="flex flex-col ">
           <ImageBanner images={bannerImages} />
-          <InfoBanner name="The Pomegranate Restaurant" avgRating={4.6} numReviews={1781} cuisine="Persian" />
+          <InfoBanner
+            name="The Pomegranate Restaurant"
+            avgRating={4.6}
+            numReviews={1781}
+            cuisine="Persian"
+            address="420 College St, Toronto, ON M5T 1T3"
+            numFavourites={123}
+          />
         </div>
         <div className="main-side-margins mb-16">
           <ProfileTabBar onTabChange={tab => console.log(tab)} tabs={restaurantTabs} />
-          <div className="grid grid-cols-3 gap-2 auto-rows-[minmax(12rem, auto)]">
+          <div className="grid grid-cols-3 gap-3 auto-rows-[minmax(12rem, auto)]">
             <ReviewCard imageSrc={bannerImages} />
             <ReviewCard imageSrc={bannerImages} />
             <ReviewCard />
