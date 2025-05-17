@@ -35,7 +35,7 @@ export function SignUpForm({ className, ...props }) {
         email,
         password,
         options: {
-          // emailRedirectTo: `${window.location.origin}/users/onboarding`,
+          // emailRedirectTo: `${window.location.origin}/onboarding`,
           emailRedirectTo: `${window.location.origin}/callback`,
         },
       });
