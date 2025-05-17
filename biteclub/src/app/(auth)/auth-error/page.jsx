@@ -3,17 +3,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/auth/ui/Card';
 import { Button } from '@/components/auth/ui/Button';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
 
-export default function Page() {
+export default function ErrorPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isLoading, setIsLoading] = useState(false);
-
   const error = searchParams.get('error');
 
-  const handleLoginClick = () => {
-    setIsLoading(true);
+  const handleClick = () => {
     router.push('/login');
   };
 
@@ -23,9 +19,7 @@ export default function Page() {
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">
-                Sorry, something went wrong with authentication.
-              </CardTitle>
+              <CardTitle className="text-2xl">Sorry, something went wrong with authentication.</CardTitle>
             </CardHeader>
             <CardContent>
               {error ? (
@@ -33,12 +27,7 @@ export default function Page() {
               ) : (
                 <p className="text-sm text-muted-foreground">An unspecified error occurred.</p>
               )}
-              <Button
-                variant="googlebtn"
-                className="w-full font-roboto font-normal mt-4"
-                onClick={handleLoginClick}
-                disabled={isLoading}
-              >
+              <Button className="w-full font-roboto font-normal mt-4" onClick={handleClick}>
                 Back To Login
               </Button>
             </CardContent>
