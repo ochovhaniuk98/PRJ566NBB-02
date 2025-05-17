@@ -6,14 +6,14 @@ export async function GET(request) {
   const code = searchParams.get('code');
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/error`); // /auth/
+    return NextResponse.redirect(`${origin}/auth-error`);
   }
 
   const supabase = await createClient();
   const { error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
 
   if (sessionError) {
-    return NextResponse.redirect(`${origin}/error`);
+    return NextResponse.redirect(`${origin}/auth-error`);
   }
 
   const {
@@ -22,7 +22,7 @@ export async function GET(request) {
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    return NextResponse.redirect(`${origin}/error`);
+    return NextResponse.redirect(`${origin}/auth-error`);
   }
 
   // Check if user has already onboarded
