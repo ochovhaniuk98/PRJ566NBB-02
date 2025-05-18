@@ -6,6 +6,7 @@ import { Button } from '@/components/auth/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/auth/ui/Card';
 import { Input } from '@/components/auth/ui/Input';
 import { Label } from '@/components/auth/ui/Label';
+import { Switch } from '@/components/auth/ui/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -16,6 +17,7 @@ export function SignUpForm({ className, ...props }) {
   const [repeatPassword, setRepeatPassword] = useState('');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState(false); // Switch: Business Account -> True
   const router = useRouter();
 
   // Email Sign Up
@@ -84,10 +86,17 @@ export function SignUpForm({ className, ...props }) {
             <h2>Sign up</h2>
           </CardTitle>
           <CardDescription>
-            <p className="text-center">Create a new account</p>
+            <h3 className="text-center">Create a new account</h3>
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* User Type Switch -- Ignore label text for now, Not sure what it should say yet. */}
+          <div className="flex items-center justify-center gap-6 mb-8">
+            <label htmlFor="user-role">
+              <h5>I am a restaurant business.</h5>
+            </label>
+            <Switch id="user-role" checked={userType} onCheckedChange={setUserType} />
+          </div>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-4 items-center">
@@ -100,7 +109,6 @@ export function SignUpForm({ className, ...props }) {
                   onClick={handleGoogleLogin}
                   disabled={isLoading}
                 >
-                  {' '}
                   <div className="bg-white p-[2px] rounded-full">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

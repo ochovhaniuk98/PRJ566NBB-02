@@ -90,7 +90,7 @@ export default function AccountForm({ user }) {
       <div className="form-widget max-w-md w-full p-6 bg-white shadow-md rounded-md space-y-4">
         <div className="flex items-center gap-2">
           <label htmlFor="user-role" className="text-sm text-gray-700">
-            Register as Business Account
+            I am a restaurant business.
           </label>
           <Switch id="user-role" checked={userType} onCheckedChange={setUserType} />
         </div>
