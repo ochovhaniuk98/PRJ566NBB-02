@@ -1,8 +1,15 @@
-const bannerImages = [
-  "/img/placeholderImg.jpg",
-  "/img/placeholderImg.jpg",
-  "/img/placeholderImg.jpg",
-  "/img/placeholderImg.jpg",
+export const bannerImages = [
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
 ];
 
-export default bannerImages;
+export const reviewList = [
+  { id: 1, imageSrc: bannerImages },
+  { id: 2, imageSrc: bannerImages },
+  { id: 3 },
+  { id: 4, imageSrc: bannerImages },
+  { id: 5 },
+  { id: 6, imageSrc: bannerImages },
+];

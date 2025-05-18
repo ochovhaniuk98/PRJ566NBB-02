@@ -1,40 +1,44 @@
 import StarRating from '@/components/shared/StarRating';
 import Image from 'next/image';
-export default function ReviewCard({ imageSrc }) {
+import AuthorDateBlurb from './AuthorDateBlurb';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import reviewCardIconArr from '@/app/data/iconData';
+import EngagementIconStat from './EngagementIconStat';
+
+export default function ReviewCard({ imageSrc, onClick, isSelected }) {
+  console.log('ISSELECTED: ', isSelected);
   return (
     <div
-      className={`border rounded-md border-brand-yellow flex flex-col ${
+      className={`${
+        isSelected ? 'bg-brand-peach-lite' : 'bg-white'
+      } border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2 ${
         imageSrc?.length > 0 ? 'row-span-2' : 'row-span-1'
       }`}
+      onClick={onClick}
     >
-      {/* text div*/}
       <div className="p-4">
-        <StarRating colour={'text-brand-green'} iconSize={'icon-lg'} ratingNum={3} />
+        <div className="flex justify-between">
+          <StarRating colour={'text-brand-green'} iconSize={'icon-lg'} ratingNum={3} />
+          {/* Engagement icons */}
+          <div>
+            <EngagementIconStat iconArr={reviewCardIconArr} statNumArr={[237, 14]} />
+          </div>
+        </div>
         <h3>Review Title</h3>
+        {/*TO DO: Put word limit in review body preview*/}
         <p>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit libero, vehicula sed cursus non, blandit
           et neque. Ut interdum tincidunt nibh, et pellentesque ligula tincidunt eget. Maecenas eget pulvinar massa,
-          eget interdum nisi. Nulla gravida tincidunt tortor ac aliquet. Aliquam aliquam sem quam, eget volutpat magna
-          imperdiet id ...
+          eget interdum nisi...
         </p>
-        <div className="flex mt-4 gap-x-2">
-          <div className="relative w-10 h-10">
-            <Image src="/img/profilepic.jpg" alt="profile pic" className="object-cover rounded-full" fill={true} />
-          </div>
-          <div>
-            <a href="#">
-              <h4 className="font-semibold">Authour Name</h4>
-            </a>
-            <h4 className="text-brand-grey">— May 20, 2025</h4>
-          </div>
-        </div>
+        <AuthorDateBlurb authorPic="/img/profilepic.jpg" authorName="Sally Johnson" date="June 13, 2025" />
       </div>
       {imageSrc?.length > 0 && (
-        <div className="flex mt-auto gap-x-1 h-1/3">
-          <div className="relative w-1/2 aspect-[3/2] overflow-hidden">
-            <Image src={imageSrc[0]} alt="profile pic" className="object-cover rounded-bl-md" fill={true} />
+        <div className="flex gap-x-1 h-1/3">
+          <div className="relative w-1/2 h-50 overflow-hidden">
+            <Image src={imageSrc[0]} alt="profile pic" className="object-cover rounded-bl-md " fill={true} />
           </div>
-          <div className="relative w-1/2 aspect-[3/2] overflow-hidden">
+          <div className="relative w-1/2 h-50 overflow-hidden">
             <Image src={imageSrc[1]} alt="profile pic" className="object-cover rounded-br-md" fill={true} />
           </div>
         </div>

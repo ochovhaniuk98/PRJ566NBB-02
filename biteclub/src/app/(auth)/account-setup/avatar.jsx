@@ -1,6 +1,8 @@
+// TODO: change supabase logic to cloudinary logic for user avatar
+
 'use client'
+
 import React, { useEffect, useState } from 'react'
-// import { createClient } from '@/utils/supabase/client'
 import { createClient } from "@/lib/auth/client";
 import Image from 'next/image'
 
