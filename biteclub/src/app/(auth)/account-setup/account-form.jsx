@@ -1,4 +1,4 @@
-// WE WILL USE MONGO DB TO STORE USERS INFO
+// WE WILL USE mongoDB and Cloudinary TO STORE USERS INFO
 // Users should be created on MongoDB after user selected their user type (Business / General) on this page:
 // - General: username and profile picture
 // - Business: Restaurant name, business license (img/pdf)
