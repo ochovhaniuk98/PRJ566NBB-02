@@ -195,16 +195,13 @@ const BusinessHoursSchema = new mongoose.Schema({
   closing: String,
 });
 
-// Restaurant - TODO: Review priceRange format. Might change to a string. e.g. "$$" or "$$$"
+// Restaurant
 const RestaurantSchema = new mongoose.Schema({
   name: String,
   cuisines: [String],
-  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }], // TODO: Review. IS THIS NEEDED?
   rating: Number,
-  priceRange: {
-    min: Number,
-    max: Number,
-  },
+  numReviews: Number,
+  priceRange: String,
   dietaryOptions: [String],
   BusinessHours: [BusinessHoursSchema],
   bannerImages: [PhotoSchema],
