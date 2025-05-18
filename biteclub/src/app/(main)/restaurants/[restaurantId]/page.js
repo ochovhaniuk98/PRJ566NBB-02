@@ -25,7 +25,7 @@ export default function RestaurantProfile() {
         </div>
         <div className="main-side-margins mb-16">
           <ProfileTabBar onTabChange={tab => console.log(tab)} tabs={restaurantTabs} />
-          <div className={`grid grid-cols-3 gap-3 auto-rows-[minmax(12rem, auto)]`}>
+          <div className={`grid lg:grid-cols-3 md:grid-cols-2 gap-3 auto-rows-[minmax(12rem, auto)]`}>
             {selectedReview ? (
               <>
                 {/* Left two columns: nested grid of reviews */}
@@ -41,7 +41,7 @@ export default function RestaurantProfile() {
                 </div>
 
                 {/* Third column: expanded review */}
-                <div className="border border-brand-peach rounded-md p-4 bg-white">
+                <div className="border border-brand-peach rounded-md p-4 bg-white shadow-lg/50 shadow-brand-grey">
                   <div className="flex justify-between items-center mb-2">
                     <h2 className="text-xl font-bold">Expanded Review</h2>
                     <button onClick={() => setSelectedReview(null)} className="text-sm text-blue-600 hover:underline">
