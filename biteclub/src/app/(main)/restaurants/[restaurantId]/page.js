@@ -4,6 +4,9 @@ import InfoBanner from '@/components/restaurantProfile/InfoBanner';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
 import { bannerImages, reviewList } from '@/app/data/fakeData';
 import ReviewCard from '@/components/shared/ReviewCard';
+import GridCustomCols from '@/components/shared/GridCustomCols';
+import ReviewsOnGrid3Col from '@/components/shared/ReviewsOnGrid3Col';
+
 import { useState } from 'react';
 
 export default function RestaurantProfile() {
@@ -25,42 +28,13 @@ export default function RestaurantProfile() {
         </div>
         <div className="main-side-margins mb-16">
           <ProfileTabBar onTabChange={tab => console.log(tab)} tabs={restaurantTabs} />
-          <div className={`grid lg:grid-cols-3 md:grid-cols-2 gap-3 auto-rows-[minmax(12rem, auto)]`}>
-            {selectedReview ? (
-              <>
-                {/* Left two columns: nested grid of reviews */}
-                <div className="col-span-2 grid grid-cols-2 gap-3">
-                  {reviewList.map(review => (
-                    <ReviewCard
-                      key={review.id}
-                      imageSrc={review.imageSrc}
-                      onClick={() => setSelectedReview(review)}
-                      isSelected={selectedReview?.id === review.id}
-                    />
-                  ))}
-                </div>
-
-                {/* Third column: expanded review */}
-                <div className="border border-brand-peach rounded-md p-4 bg-white shadow-lg/50 shadow-brand-grey">
-                  <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-xl font-bold">Expanded Review</h2>
-                    <button onClick={() => setSelectedReview(null)} className="text-sm text-blue-600 hover:underline">
-                      Close
-                    </button>
-                  </div>
-                  <p>This is full review for ID: {selectedReview.id}</p>
-                  {selectedReview.imageSrc && (
-                    <img src={selectedReview.imageSrc[0]} alt="full" className="mt-4 rounded-md" />
-                  )}
-                </div>
-              </>
-            ) : (
-              // Default 3-column review grid
-              reviewList.map(review => (
-                <ReviewCard key={review.id} imageSrc={review.imageSrc} onClick={() => setSelectedReview(review)} />
-              ))
-            )}
-          </div>
+          <GridCustomCols numOfCols={3}>
+            <ReviewsOnGrid3Col
+              selectedReview={selectedReview}
+              setSelectedReview={setSelectedReview}
+              reviewList={reviewList}
+            />
+          </GridCustomCols>
         </div>
       </div>
     </div>
