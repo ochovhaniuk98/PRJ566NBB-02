@@ -5,10 +5,13 @@ import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import reviewCardIconArr from '@/app/data/iconData';
 import EngagementIconStat from './EngagementIconStat';
 
-export default function ReviewCard({ imageSrc, onClick }) {
+export default function ReviewCard({ imageSrc, onClick, isSelected }) {
+  console.log('ISSELECTED: ', isSelected);
   return (
     <div
-      className={`border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2 ${
+      className={`${
+        isSelected ? 'bg-brand-peach-lite' : 'bg-white'
+      } border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2 ${
         imageSrc?.length > 0 ? 'row-span-2' : 'row-span-1'
       }`}
       onClick={onClick}

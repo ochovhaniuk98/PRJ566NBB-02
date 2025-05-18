@@ -31,12 +31,17 @@ export default function RestaurantProfile() {
                 {/* Left two columns: nested grid of reviews */}
                 <div className="col-span-2 grid grid-cols-2 gap-3">
                   {reviewList.map(review => (
-                    <ReviewCard key={review.id} imageSrc={review.imageSrc} onClick={() => setSelectedReview(review)} />
+                    <ReviewCard
+                      key={review.id}
+                      imageSrc={review.imageSrc}
+                      onClick={() => setSelectedReview(review)}
+                      isSelected={selectedReview?.id === review.id}
+                    />
                   ))}
                 </div>
 
                 {/* Third column: expanded review */}
-                <div className="border border-gray-300 rounded-md p-4 bg-white shadow-md">
+                <div className="border border-brand-peach rounded-md p-4 bg-white">
                   <div className="flex justify-between items-center mb-2">
                     <h2 className="text-xl font-bold">Expanded Review</h2>
                     <button onClick={() => setSelectedReview(null)} className="text-sm text-blue-600 hover:underline">
