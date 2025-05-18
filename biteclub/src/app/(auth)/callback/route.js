@@ -28,7 +28,7 @@ export async function GET(request) {
   // Check if user has already onboarded
   const hasOnboarded = user.user_metadata?.hasOnboarded === true;
 
-  const target = hasOnboarded ? '/users' : '/account-setup'; //onboarding
+  const target = hasOnboarded ? '/users' : '/account-setup';
 
   const forwardedHost = request.headers.get('x-forwarded-host');
   const isLocalEnv = process.env.NODE_ENV === 'development';

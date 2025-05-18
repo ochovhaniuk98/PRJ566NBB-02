@@ -6,6 +6,7 @@ import { Button } from '@/components/auth/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/auth/ui/Card';
 import { Input } from '@/components/auth/ui/Input';
 import { Label } from '@/components/auth/ui/Label';
+import { Switch } from '@/components/auth/ui/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -16,8 +17,19 @@ export function SignUpForm({ className, ...props }) {
   const [repeatPassword, setRepeatPassword] = useState('');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState(false); // Switch: Business Account -> True
   const router = useRouter();
 
+  // TODO:
+  // Connect to MongoDB and Create user schema: Business vs General
+  // This function will be used in the handleSignUp() and handleGoogleLogin() functions, once user click on sign up, the schema will be created and stored to the mongoDB
+  // - If userType is True -> create business user
+  // - If userType is False -> create general user
+
+  // TODO: Remove "Switch" Logic in (auth)/account-form afterwards.
+  // After signup, we retrieve userType from MongoDB, and redirect them to account-setup
+
+  // Supabase Auth
   // Email Sign Up
   const handleSignUp = async e => {
     e.preventDefault();
@@ -35,7 +47,6 @@ export function SignUpForm({ className, ...props }) {
         email,
         password,
         options: {
-          // emailRedirectTo: `${window.location.origin}/onboarding`,
           emailRedirectTo: `${window.location.origin}/callback`,
         },
       });
@@ -46,6 +57,8 @@ export function SignUpForm({ className, ...props }) {
     } finally {
       setIsLoading(false);
     }
+
+    // Use the defined function to CREATE USER IN MONGODB
   };
 
   // Google Sign Up
@@ -74,6 +87,8 @@ export function SignUpForm({ className, ...props }) {
     } finally {
       setIsLoading(false);
     }
+    
+    // Use the defined function to CREATE USER IN MONGODB
   };
 
   return (
@@ -90,6 +105,14 @@ export function SignUpForm({ className, ...props }) {
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-4">
+
+              <div className="flex items-center gap-2">
+                <label htmlFor="user-role" className="text-sm text-gray-700">
+                  Register as Business Account
+                </label>
+                <Switch id="user-role" checked={userType} onCheckedChange={setUserType} />
+              </div>
+
               <div className="flex flex-col gap-4 items-center">
                 <Button
                   // It's the first button inside the form, browsers might treat it as the default submit button when pressing Enter in a form input.
@@ -180,9 +203,6 @@ export function SignUpForm({ className, ...props }) {
               </div>
               <div className="flex flex-col items-center">
                 {error && <p className="text-sm text-red-500">{error}</p>}
-                {/* <Button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" disabled={isLoading}>
-                {isLoading ? 'Creating an account...' : 'Sign up'}
-              </Button> */}
 
                 {/* Change variant for another button theme */}
                 <Button type="submit" className="w-60" variant="default" disabled={isLoading}>
