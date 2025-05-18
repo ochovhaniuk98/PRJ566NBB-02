@@ -207,8 +207,18 @@ const RestaurantSchema = new mongoose.Schema({
   },
   dietaryOptions: [String],
   BusinessHours: [BusinessHoursSchema],
+  bannerImages: [PhotoSchema],
   images: [PhotoSchema],
   location: String,
+});
+
+// Business User Schema
+const BusinessUserSchema = new mongoose.Schema({
+  supabaseId: String,
+  restaurantId: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
+  userType: String,
+  licenseFileUrl: String,
+  verificationStatus: String,
 });
 
 // Export models
@@ -238,3 +248,4 @@ export const Announcement = mongoose.models?.Announcement || mongoose.model('Ann
 export const MenuItem = mongoose.models?.MenuItem || mongoose.model('MenuItem', MenuItemSchema);
 export const BusinessHours = mongoose.models?.BusinessHours || mongoose.model('BusinessHours', BusinessHoursSchema);
 export const Restaurant = mongoose.models?.Restaurant || mongoose.model('Restaurant', RestaurantSchema);
+export const BusinessUser = mongoose.models?.BusinessUser || mongoose.model('BusinessUser', BusinessUserSchema);
