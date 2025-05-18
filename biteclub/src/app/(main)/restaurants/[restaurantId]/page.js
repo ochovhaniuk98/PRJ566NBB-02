@@ -25,7 +25,7 @@ export default function RestaurantProfile() {
         numFavourites={123}
       />
 
-      <div className="main-side-margins mb-16 w-full">
+      <div className="main-side-padding mb-16 w-full">
         <ProfileTabBar onTabChange={setSelectedTab} tabs={restaurantTabs} />
 
         {/* Reviews */}

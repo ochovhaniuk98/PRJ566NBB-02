@@ -7,7 +7,7 @@ import StarRating from '../shared/StarRating';
 export default function InfoBanner({ name, avgRating, numReviews, cuisine, address, numFavourites }) {
   return (
     // bg-brand-yellow-extralite
-    <div className="bg-brand-white flex justify-between main-side-margins pt-8 w-full">
+    <div className="bg-brand-white flex justify-between main-side-padding pt-8 w-full">
       <div className="flex flex-col gap-y-1">
         <h1 className="text-3xl font-bold">{name}</h1>
         <div className="flex items-center gap-x-2">

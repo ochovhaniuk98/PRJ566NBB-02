@@ -45,7 +45,7 @@ export default function RootLayout({ children }) {
         <MainMenu />
         <div className="flex-1 relative">
           <SearchBar />
-          <main className="main-side-margins">{children}</main>
+          <main className="main-side-padding">{children}</main>
         </div>
       </body>
     </html>

@@ -112,7 +112,7 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   }
 
   /*** left/right margins for main content on most pages ***/
-  .main-side-margins {
+  .main-side-padding {
     @apply 2xl:px-40 xl:px-20 lg:px-10 md:px-5;
   }
 
