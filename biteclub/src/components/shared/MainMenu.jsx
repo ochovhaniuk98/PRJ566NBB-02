@@ -7,7 +7,7 @@ import { faMicroblog } from '@fortawesome/free-brands-svg-icons';
 export default function MainMenu() {
   const pathname = usePathname();
   const menuIcons = [faHouseChimney, faUser, faGamepad, faUtensils, faMicroblog];
-  const menuLinks = ['/', '/users', '#', '/restaurants/12345', '#'];
+  const menuLinks = ['/', '/users', '#', '/restaurants', '#'];
 
   return (
     <aside className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey">

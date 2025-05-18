@@ -34,7 +34,7 @@ export default function ReviewCard({ imageSrc, onClick, isSelected }) {
         <AuthorDateBlurb authorPic="/img/profilepic.jpg" authorName="Sally Johnson" date="June 13, 2025" />
       </div>
       {imageSrc?.length > 0 && (
-        <div className="flex gap-x-1 h-1/3">
+        <div className="flex gap-x-1">
           <div className="relative w-1/2 h-50 overflow-hidden">
             <Image src={imageSrc[0]} alt="profile pic" className="object-cover rounded-bl-md " fill={true} />
           </div>
