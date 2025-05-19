@@ -195,20 +195,35 @@ const BusinessHoursSchema = new mongoose.Schema({
   closing: String,
 });
 
-// Restaurant - TODO: Review priceRange format. Might change to a string. e.g. "$$" or "$$$"
+// Restaurant
 const RestaurantSchema = new mongoose.Schema({
   name: String,
   cuisines: [String],
-  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }], // TODO: Review. IS THIS NEEDED?
   rating: Number,
-  priceRange: {
-    min: Number,
-    max: Number,
-  },
+  numReviews: Number,
+  priceRange: String,
   dietaryOptions: [String],
   BusinessHours: [BusinessHoursSchema],
+  bannerImages: [PhotoSchema],
   images: [PhotoSchema],
   location: String,
+});
+
+// Business User Schema
+const BusinessUserSchema = new mongoose.Schema({
+  supabaseId: String,
+  restaurantId: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
+  userType: String,
+  licenseFileUrl: String,
+  verificationStatus: String,
+});
+
+// Temporary Collection for Testing Purposes
+// TestCloudinaryImageSchema
+const TestCloudinaryImageSchema = new mongoose.Schema({
+  url: String,
+  caption: String,
+  updated_at: Date,
 });
 
 // Export models
@@ -238,3 +253,6 @@ export const Announcement = mongoose.models?.Announcement || mongoose.model('Ann
 export const MenuItem = mongoose.models?.MenuItem || mongoose.model('MenuItem', MenuItemSchema);
 export const BusinessHours = mongoose.models?.BusinessHours || mongoose.model('BusinessHours', BusinessHoursSchema);
 export const Restaurant = mongoose.models?.Restaurant || mongoose.model('Restaurant', RestaurantSchema);
+export const BusinessUser = mongoose.models?.BusinessUser || mongoose.model('BusinessUser', BusinessUserSchema);
+export const TestCloudinaryImage =
+  mongoose.models?.TestCloudinaryImage || mongoose.model('TestCloudinaryImage', TestCloudinaryImageSchema);
