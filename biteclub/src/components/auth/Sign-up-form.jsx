@@ -26,6 +26,8 @@ export function SignUpForm({ className, ...props }) {
   // - If userType is True -> create business user
   // - If userType is False -> create general user
 
+  // Also update supabase Id to user
+
   // TODO: Remove "Switch" Logic in (auth)/account-form afterwards.
   // After signup, we retrieve userType from MongoDB, and redirect them to account-setup
 
