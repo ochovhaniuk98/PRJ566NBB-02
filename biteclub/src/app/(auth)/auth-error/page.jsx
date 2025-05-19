@@ -2,12 +2,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/auth/ui/Card';
 import { Button } from '@/components/auth/ui/Button';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // useSearchParams
 
 export default function ErrorPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  // const searchParams = useSearchParams();
+  // const error = searchParams.get('error');
 
   const handleClick = () => {
     router.push('/login');
@@ -22,11 +22,11 @@ export default function ErrorPage() {
               <CardTitle className="text-2xl">Sorry, something went wrong with authentication.</CardTitle>
             </CardHeader>
             <CardContent>
-              {error ? (
+              {/* {error ? (
                 <p className="text-sm text-muted-foreground">Code error: {error}</p>
               ) : (
                 <p className="text-sm text-muted-foreground">An unspecified error occurred.</p>
-              )}
+              )} */}
               <Button className="w-full font-roboto font-normal mt-4" onClick={handleClick}>
                 Back To Login
               </Button>

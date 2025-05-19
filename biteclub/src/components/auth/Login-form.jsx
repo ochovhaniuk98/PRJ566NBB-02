@@ -16,6 +16,7 @@ export function LoginForm({ className, ...props }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  // Supabase Auth
   const handleLogin = async e => {
     e.preventDefault();
     const supabase = createClient();
@@ -28,6 +29,10 @@ export function LoginForm({ className, ...props }) {
         password,
       });
       if (error) throw error;
+
+      // TODO:
+      // Depends on the userType, redirect user to general-dashboard or business-dashboard
+      
       // Update this route to redirect to an authenticated route. The user already has an active session.
       router.push('/users');
     } catch (error) {
@@ -41,9 +46,6 @@ export function LoginForm({ className, ...props }) {
     const supabase = createClient();
     setIsLoading(true);
     try {
-      // const { error } = await supabase.auth.signInWithOAuth({
-      //   provider: "google",
-      // });
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -69,7 +71,7 @@ export function LoginForm({ className, ...props }) {
   };
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn('flex flex-col', className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="text-center">
@@ -81,20 +83,11 @@ export function LoginForm({ className, ...props }) {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4">
-                {/* <Button variant="outline" className="w-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  Login with Apple
-                </Button> */}
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 items-center">
                 <Button
                   variant="googlebtn"
-                  className="w-full font-roboto font-normal"
+                  className="w-60 font-roboto font-normal"
                   onClick={handleGoogleLogin}
                   disabled={isLoading}
                 >
@@ -133,23 +126,27 @@ export function LoginForm({ className, ...props }) {
                   Or
                 </span>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+              <div className="grid">
+                <Label htmlFor="email">
+                  <h4>Email</h4>
+                </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="janedoe@myemail.com"
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                 />
               </div>
-              <div className="grid gap-2">
+              <div className="grid">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">
+                    <h4>Password</h4>
+                  </Label>
                   <Link
                     href="forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    className="ml-auto inline-block text-sm underline-offset-4 text-brand-navy font-primary hover:underline"
                   >
                     Forgot your password?
                   </Link>
@@ -162,16 +159,20 @@ export function LoginForm({ className, ...props }) {
                   onChange={e => setPassword(e.target.value)}
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Logging in...' : 'Login'}
-              </Button>
+              <div className="flex flex-col items-center">
+                {error && <p className="text-sm text-red-500">{error}</p>}
+                <Button type="submit" className="w-60" disabled={isLoading}>
+                  {isLoading ? 'Logging in...' : 'Login'}
+                </Button>
+              </div>
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{' '}
-              <Link href="/sign-up" className="underline underline-offset-4">
-                Sign up
-              </Link>
+            <div className="mt-4 text-center">
+              <h5>
+                Don&apos;t have an account?&nbsp;
+                <Link href="/sign-up" className="underline underline-offset-4 font-primary text-sm font-semibold">
+                  Sign up
+                </Link>
+              </h5>
             </div>
           </form>
         </CardContent>
