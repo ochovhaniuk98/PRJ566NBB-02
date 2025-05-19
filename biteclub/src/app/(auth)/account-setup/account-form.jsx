@@ -1,4 +1,4 @@
-// WE WILL USE MONGO DB TO STORE USERS INFO
+// WE WILL USE mongoDB and Cloudinary TO STORE USERS INFO
 // Users should be created on MongoDB after user selected their user type (Business / General) on this page:
 // - General: username and profile picture
 // - Business: Restaurant name, business license (img/pdf)
@@ -10,7 +10,6 @@ import Avatar from './avatar';
 import { Switch } from '@/components/auth/ui/Switch';
 import { useRouter } from 'next/navigation';
 import { Dropzone } from '@/components/auth/ui/Dropzone';
-// import Dropzone from 'react-dropzone';
 
 export default function AccountForm({ user }) {
   const router = useRouter();
@@ -24,7 +23,12 @@ export default function AccountForm({ user }) {
   const [username, setUsername] = useState(null);
   const [avatar_url, setAvatarUrl] = useState(null);
 
-  // ==========================================================================================
+  // =======================================================================+===================
+  // TODO:
+  // get userType from mongoDB:
+  // If userType is Business, show business form
+  // If userTypes is General, show general form
+
   // [TODO]: CHANGE IT TO mongoDB logic for updating username and avatar
   const getProfile = useCallback(async () => {
     try {
@@ -98,7 +102,6 @@ export default function AccountForm({ user }) {
         {userType ? (
           <div>
             {/* Business */}
-
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
