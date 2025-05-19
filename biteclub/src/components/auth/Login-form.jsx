@@ -1,10 +1,10 @@
 'use client';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/auth/client';
-import { Button } from '@/components/auth/ui/Button';
+import { Button } from '@/components/shared/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/auth/ui/Card';
-import { Input } from '@/components/auth/ui/Input';
-import { Label } from '@/components/auth/ui/Label';
+import { Input } from '@/components/shared/Input';
+import { Label } from '@/components/shared/Label';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -32,7 +32,7 @@ export function LoginForm({ className, ...props }) {
 
       // TODO:
       // Depends on the userType, redirect user to general-dashboard or business-dashboard
-      
+
       // Update this route to redirect to an authenticated route. The user already has an active session.
       router.push('/users');
     } catch (error) {

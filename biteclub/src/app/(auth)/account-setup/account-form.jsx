@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createClient } from '@/lib/auth/client';
 import Avatar from './avatar';
-import { Switch } from '@/components/auth/ui/Switch';
+import { Switch } from '@/components/shared/Switch';
 import { useRouter } from 'next/navigation';
 import { Dropzone } from '@/components/auth/ui/Dropzone';
 

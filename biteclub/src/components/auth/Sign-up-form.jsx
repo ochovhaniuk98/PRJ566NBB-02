@@ -2,11 +2,11 @@
 
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/auth/client';
-import { Button } from '@/components/auth/ui/Button';
+import { Button } from '@/components/shared/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/auth/ui/Card';
-import { Input } from '@/components/auth/ui/Input';
-import { Label } from '@/components/auth/ui/Label';
-import { Switch } from '@/components/auth/ui/Switch';
+import { Input } from '@/components/shared/Input';
+import { Label } from '@/components/shared/Label';
+import { Switch } from '@/components/shared/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -145,7 +145,7 @@ export function SignUpForm({ className, ...props }) {
             </Button>
           </div>
           <form onSubmit={handleSignUp}>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
               <div className="relative text-center text-sm text-brand-grey-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-brand-yellow-extralite px-2 text-brand-grey text-xs uppercase font-primary font-semibold">
                   Or
@@ -153,7 +153,6 @@ export function SignUpForm({ className, ...props }) {
               </div>
               <div className="grid">
                 <Label htmlFor="email">
-                  {' '}
                   <h4>Email</h4>
                 </Label>
                 <Input

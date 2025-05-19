@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/auth/ui/Card';
-import { Button } from '@/components/auth/ui/Button';
+import { Button } from '@/components/shared/Button';
 import { useRouter } from 'next/navigation'; // useSearchParams
 
 export default function ErrorPage() {
