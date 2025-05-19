@@ -1,4 +1,4 @@
-export default function GridCustomCols({ children, numOfCols = 3 }) {
+export default function GridCustomCols({ children, numOfCols = 3, className }) {
   /*
   const colsClass = {
     1: 'lg:grid-cols-1',
@@ -11,7 +11,7 @@ export default function GridCustomCols({ children, numOfCols = 3 }) {
 
   return (
     <div
-      className={`grid lg:grid-cols-${numOfCols} md:grid-cols-2 gap-2 grid-flow-dense auto-rows-[minmax(200px,_auto)]`}
+      className={`grid lg:grid-cols-${numOfCols} md:grid-cols-2 gap-2 grid-flow-dense auto-rows-[minmax(200px,_auto)] ${className}`}
     >
       {children}
     </div>

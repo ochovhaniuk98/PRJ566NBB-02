@@ -33,6 +33,7 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   --color-brand-grey: #757575;
   --color-brand-grey-lite: #d9d9d9;
   --color-brand-google: #4889f5;
+  --color-brand-red: #d80303;
 }
 
 @layer base {
