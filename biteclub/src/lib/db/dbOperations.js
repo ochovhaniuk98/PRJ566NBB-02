@@ -23,6 +23,7 @@ import {
   MenuItem,
   BusinessHours,
   Restaurant,
+  TestCloudinaryImage,
 } from '../../lib/model/dbSchema';
 
 export async function getAllRestaurants() {
@@ -38,4 +39,29 @@ export async function getRestaurantById(id) {
     throw new Error('Restaurant not found');
   }
   return restaurant;
+}
+
+// Post to TestCloudinaryImage Collection
+export async function postTestCloudinaryImage(data) {
+  await dbConnect();
+
+  const newImage = new TestCloudinaryImage({
+    url: data.url,
+    caption: data.caption,
+    updated_at: data.updated_at || new Date(),
+  });
+
+  const savedImage = await newImage.save();
+  return savedImage;
+}
+
+// Get by id from TestCloudinaryImage Collection
+export async function getImageById(id) {
+  await dbConnect();
+  const image = await TestCloudinaryImage.findOne({ _id: id });
+
+  if (!image) {
+    throw new Error('Image by id not found');
+  }
+  return image;
 }
