@@ -10,8 +10,6 @@ import { Switch } from '@/components/auth/ui/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-// import  dbConnect  from '@/lib/db/dbConnect';
-// import { User, BusinessUser } from '@/lib/model/dbSchema';
 
 export function SignUpForm({ className, ...props }) {
   const [email, setEmail] = useState('');
@@ -22,8 +20,6 @@ export function SignUpForm({ className, ...props }) {
   const [userType, setUserType] = useState(false); // Switch: Business Account -> True
   const router = useRouter();
 
-  // TODO: Remove "Switch" Logic in (auth)/account-form afterwards.
-  // After signup, we retrieve userType from MongoDB, and redirect them to account-setup
 
   // Supabase Auth
   // Email Sign Up

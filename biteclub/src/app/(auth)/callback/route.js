@@ -6,7 +6,7 @@ import { User, BusinessUser } from '@/lib/model/dbSchema';
 export async function GET(request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const userType = searchParams.get('userType') || 'general';
+  const rawUserType = searchParams.get('userType'); // Will be defined on Sign Up, but undefined on Login
 
   if (!code) {
     return NextResponse.redirect(`${origin}/auth-error`);
@@ -28,30 +28,62 @@ export async function GET(request) {
     return NextResponse.redirect(`${origin}/auth-error`);
   }
 
+  let finalUserType = null;
+  const isNewSignup = rawUserType === 'business' || rawUserType === 'general';
+
   // Connect and save to MongoDB
   try {
     await dbConnect();
 
-    const Model = userType === 'business' ? BusinessUser : User;
+    let existingUser =
+      (await User.findOne({ supabaseId: user.id })) || (await BusinessUser.findOne({ supabaseId: user.id }));
 
-    const existingUser = await Model.findOne({ supabaseId: user.id });
+    // If new user, create based on signup-provided userType
+    // if (!existingUser) {
+    //   if (rawUserType !== 'business' && rawUserType !== 'general') {
+    //     console.error('Missing or invalid userType on signup.');
+    //     return NextResponse.redirect(`${origin}/auth-error`);
+    //   }
+
     if (!existingUser) {
-      await new Model({
-        supabaseId: user.id,
-        userType,
-      }).save();
-    }
+      if (!isNewSignup) {
+        console.error('No userType found in DB and no userType provided by searchParams');
+        return NextResponse.redirect(`${origin}/auth-error`);
+      }
 
+      const Model = rawUserType === 'business' ? BusinessUser : User;
+
+      const newUser = new Model({
+        supabaseId: user.id,
+        userType: rawUserType,
+      });
+
+      await newUser.save();
+
+      finalUserType = rawUserType;
+    } else {
+      // If user already registered, we use the current userType stored in MongoDB
+      finalUserType = existingUser.userType;
+    }
   } catch (err) {
     console.error('MongoDB error:', err.message);
     return NextResponse.redirect(`${origin}/auth-error`);
   }
 
-  // Determine redirect path
-  const hasOnboarded = user.user_metadata?.hasOnboarded === true;
+  // Determine proper redirect destination
 
-  const target = hasOnboarded ? '/users' : '/account-setup';
+  // const hasOnboarded = user.user_metadata?.hasOnboarded === true;
+  // const target = hasOnboarded ? '/users' : '/account-setup';
+  let target;
+  if (isNewSignup) {
+    // New signup → onboarding
+    target = finalUserType === 'business'? '/account-setup/business': '/account-setup/general';
+  } else {
+    // Returning user → dashboard
+    target = finalUserType === 'business' ? '/users/business' : '/users/general';
+  }
 
+  // Vercel-aware redirect handling
   const forwardedHost = request.headers.get('x-forwarded-host');
   const isLocalEnv = process.env.NODE_ENV === 'development';
 
