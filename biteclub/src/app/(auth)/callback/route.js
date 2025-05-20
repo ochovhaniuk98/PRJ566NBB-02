@@ -38,13 +38,6 @@ export async function GET(request) {
     let existingUser =
       (await User.findOne({ supabaseId: user.id })) || (await BusinessUser.findOne({ supabaseId: user.id }));
 
-    // If new user, create based on signup-provided userType
-    // if (!existingUser) {
-    //   if (rawUserType !== 'business' && rawUserType !== 'general') {
-    //     console.error('Missing or invalid userType on signup.');
-    //     return NextResponse.redirect(`${origin}/auth-error`);
-    //   }
-
     if (!existingUser) {
       if (!isNewSignup) {
         console.error('No userType found in DB and no userType provided by searchParams');
