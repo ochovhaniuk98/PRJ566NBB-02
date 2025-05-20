@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/auth/server';
+import dbConnect from '@/lib/db/dbConnect';
+import { User, BusinessUser } from '@/lib/model/dbSchema';
 
 export async function GET(request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
+  const userType = searchParams.get('userType') || 'general';
 
   if (!code) {
     return NextResponse.redirect(`${origin}/auth-error`);
@@ -25,7 +28,26 @@ export async function GET(request) {
     return NextResponse.redirect(`${origin}/auth-error`);
   }
 
-  // Check if user has already onboarded
+  // Connect and save to MongoDB
+  try {
+    await dbConnect();
+
+    const Model = userType === 'business' ? BusinessUser : User;
+
+    const existingUser = await Model.findOne({ supabaseId: user.id });
+    if (!existingUser) {
+      await new Model({
+        supabaseId: user.id,
+        userType,
+      }).save();
+    }
+
+  } catch (err) {
+    console.error('MongoDB error:', err.message);
+    return NextResponse.redirect(`${origin}/auth-error`);
+  }
+
+  // Determine redirect path
   const hasOnboarded = user.user_metadata?.hasOnboarded === true;
 
   const target = hasOnboarded ? '/users' : '/account-setup';
