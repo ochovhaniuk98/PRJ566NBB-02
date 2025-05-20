@@ -41,7 +41,13 @@ export async function GET(request) {
     if (!existingUser) {
       if (!isNewSignup) {
         console.error('No userType found in DB and no userType provided by searchParams');
-        return NextResponse.redirect(`${origin}/auth-error`);
+
+        // If New user login (not Sign Up) with Google account, they do not have userType.
+        // Force logout from Supabase
+        await supabase.auth.signOut();
+
+        // return NextResponse.redirect(`${origin}/auth-error`);
+        return NextResponse.redirect(`${origin}/auth-error?reason=unauthorised_google_signup`);
       }
 
       const Model = rawUserType === 'business' ? BusinessUser : User;
@@ -70,7 +76,7 @@ export async function GET(request) {
   let target;
   if (isNewSignup) {
     // New signup → onboarding
-    target = finalUserType === 'business'? '/account-setup/business': '/account-setup/general';
+    target = finalUserType === 'business' ? '/account-setup/business' : '/account-setup/general';
   } else {
     // Returning user → dashboard
     target = finalUserType === 'business' ? '/users/business' : '/users/general';
