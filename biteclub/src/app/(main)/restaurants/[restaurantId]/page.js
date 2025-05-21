@@ -3,10 +3,12 @@ import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
 import InfoBanner from '@/components/restaurantProfile/InfoBanner';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-import { bannerImages, reviewList, photosList } from '@/app/data/fakeData';
+import { bannerImages, reviewList, photosList, restoHours, fakeRestaurantData, fakeReviews } from '@/app/data/fakeData';
 import ReviewsOnGrid3Col from '@/components/shared/ReviewsOnGrid3Col';
+import GridCustomCols from '@/components/shared/GridCustomCols';
 import { useState } from 'react';
 import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
+import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
 
 export default function RestaurantProfile() {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
@@ -15,13 +17,13 @@ export default function RestaurantProfile() {
 
   return (
     <MainBaseContainer>
-      <ImageBanner images={bannerImages} />
+      <ImageBanner images={fakeRestaurantData.bannerImages} />
       <InfoBanner
-        name="The Pomegranate Restaurant"
-        avgRating={4.6}
-        numReviews={1781}
-        cuisine="Persian"
-        address="420 College St, Toronto, ON M5T 1T3"
+        name={fakeRestaurantData.name}
+        avgRating={fakeRestaurantData.rating}
+        numReviews={fakeRestaurantData.numReviews}
+        cuisine="Persian" // ***
+        address={fakeRestaurantData.location}
         numFavourites={123}
       />
 
@@ -37,9 +39,16 @@ export default function RestaurantProfile() {
           />
         )}
         {/* Photos */}
-        {selectedTab === restaurantTabs[2] && <PhotoGallery />}
+        {selectedTab === restaurantTabs[2] && <PhotoGallery photos={fakeRestaurantData.images} />}
+
+        {/* Business Info */}
+        {selectedTab === restaurantTabs[5] && (
+          <BusinessInfo
+            restaurant={fakeRestaurantData}
+            mapSrc="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.5846656953045!2d-79.409522823823!3d43.656808871101966!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b34ebdcdf5c1b%3A0x7aaa6b866b22f51a!2sPomegranate%20Restaurant!5e0!3m2!1sen!2sca!4v1747776810081!5m2!1sen!2sca"
+          />
+        )}
       </div>
     </MainBaseContainer>
   );
 }
-// ${selectedReview ? 'grid-cols-2' : 'grid-cols-3'}

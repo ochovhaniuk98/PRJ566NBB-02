@@ -26,7 +26,7 @@
     "cloudinary": "^2.6.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.509.0",
-    "mongoose": "^8.14.3",
+    "mongoose": "^8.15.0",
     "next": "15.3.2",
     "next-cloudinary": "^6.16.0",
     "react": "^19.0.0",
