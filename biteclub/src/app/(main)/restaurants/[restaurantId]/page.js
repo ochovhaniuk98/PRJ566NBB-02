@@ -22,9 +22,9 @@ export default function RestaurantProfile() {
         name={fakeRestaurantData.name}
         avgRating={fakeRestaurantData.rating}
         numReviews={fakeRestaurantData.numReviews}
-        cuisine="Persian" // ***
+        cuisine={fakeRestaurantData.cuisines.join(', ')}
         address={fakeRestaurantData.location}
-        numFavourites={123}
+        numFavourites={0}
       />
 
       <div className="main-side-padding mb-16 w-full">
