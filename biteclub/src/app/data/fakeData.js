@@ -1,44 +1,3 @@
-export const bannerImages = [
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-];
-
-export const photosList = [
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-];
-
-export const reviewList = [
-  { id: 1, imageSrc: bannerImages },
-  { id: 2, imageSrc: bannerImages },
-  { id: 3 },
-  { id: 4, imageSrc: bannerImages },
-  { id: 5 },
-  { id: 6, imageSrc: bannerImages },
-  { id: 7, imageSrc: bannerImages },
-  { id: 8, imageSrc: bannerImages },
-  { id: 9 },
-  { id: 10 },
-  { id: 11, imageSrc: bannerImages },
-];
-
 export const fakeRestaurantData = {
   name: 'The Pomegranate Restaurant',
   cuisines: ['Persian', 'Middle Eastern'],
@@ -143,6 +102,11 @@ export const fakeReviews = [
         caption: 'Starter platter',
         updated_at: new Date('2024-11-05'),
       },
+      {
+        url: '/img/placeholderImg.jpg',
+        caption: 'Fresh bread',
+        updated_at: new Date('2024-11-05'),
+      },
     ],
     likes: {
       count: 4,
@@ -180,3 +144,46 @@ export const fakeReviews = [
     restaurant_id: 'restaurant456',
   },
 ];
+
+/*
+export const bannerImages = [
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+];
+
+export const photosList = [
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+  '/img/placeholderImg.jpg',
+];
+
+export const reviewList = [
+  { id: 1, imageSrc: bannerImages },
+  { id: 2, imageSrc: bannerImages },
+  { id: 3 },
+  { id: 4, imageSrc: bannerImages },
+  { id: 5 },
+  { id: 6, imageSrc: bannerImages },
+  { id: 7, imageSrc: bannerImages },
+  { id: 8, imageSrc: bannerImages },
+  { id: 9 },
+  { id: 10 },
+  { id: 11, imageSrc: bannerImages },
+];
+*/

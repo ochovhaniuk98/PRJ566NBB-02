@@ -3,12 +3,11 @@ import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
 import InfoBanner from '@/components/restaurantProfile/InfoBanner';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-import { bannerImages, reviewList, photosList, restoHours, fakeRestaurantData, fakeReviews } from '@/app/data/fakeData';
+import { fakeRestaurantData, fakeReviews } from '@/app/data/fakeData';
 import ReviewsOnGrid3Col from '@/components/shared/ReviewsOnGrid3Col';
-import GridCustomCols from '@/components/shared/GridCustomCols';
-import { useState } from 'react';
 import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
 import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
+import { useState } from 'react';
 
 export default function RestaurantProfile() {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
@@ -22,7 +21,7 @@ export default function RestaurantProfile() {
         name={fakeRestaurantData.name}
         avgRating={fakeRestaurantData.rating}
         numReviews={fakeRestaurantData.numReviews}
-        cuisine={fakeRestaurantData.cuisines.join(', ')}
+        cuisine={fakeRestaurantData.cuisines}
         address={fakeRestaurantData.location}
         numFavourites={0}
       />
@@ -35,7 +34,7 @@ export default function RestaurantProfile() {
           <ReviewsOnGrid3Col
             selectedReview={selectedReview}
             setSelectedReview={setSelectedReview}
-            reviewList={reviewList}
+            reviewList={fakeReviews}
           />
         )}
         {/* Photos */}

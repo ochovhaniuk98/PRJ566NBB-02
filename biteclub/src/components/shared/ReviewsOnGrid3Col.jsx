@@ -14,7 +14,7 @@ export default function ReviewsOnGrid3Col({ selectedReview, setSelectedReview, r
             {reviewList.map(review => (
               <ReviewCard
                 key={review.id}
-                imageSrc={review.imageSrc}
+                imageSrc={review.photos}
                 onClick={() => setSelectedReview(review)}
                 isSelected={selectedReview?.id === review.id}
               />
@@ -25,8 +25,8 @@ export default function ReviewsOnGrid3Col({ selectedReview, setSelectedReview, r
         </>
       ) : (
         // Default 3-column review grid
-        reviewList.map(review => (
-          <ReviewCard key={review.id} imageSrc={review.imageSrc} onClick={() => setSelectedReview(review)} />
+        reviewList.map((review, i) => (
+          <ReviewCard key={i} review={review} photos={review.photos} onClick={() => setSelectedReview(review)} />
         ))
       )}
     </GridCustomCols>
