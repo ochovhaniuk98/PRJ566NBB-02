@@ -32,17 +32,21 @@ export default function GeneralSetupForm() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="form-widget max-w-md w-full p-6 bg-white shadow-md rounded-md space-y-4">
         <div>
-          {/* General */}
-          <Avatar
-            uid={user?.id}
-            url={avatar_url}
-            size={150}
-            onUpload={url => {
-              setAvatarUrl(url);
-              // TODO: Update Image with Cloudinary logic
-              // updateProfile({ username, avatar_url: url });
-            }}
-          />
+          {user ? (
+            <Avatar
+              uid={user.id}
+              url={avatar_url}
+              size={150}
+              onUpload={url => {
+                setAvatarUrl(url);
+                // TODO: Update Image with Cloudinary logic
+                // updateProfile({ username, avatar_url: url });
+                // DONE
+              }}
+            />
+          ) : (
+            <p>Loading user...</p>
+          )}
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -56,7 +60,6 @@ export default function GeneralSetupForm() {
               className="mt-1 block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-500 cursor-not-allowed"
             />
           </div>
-
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700">
               Set your username
