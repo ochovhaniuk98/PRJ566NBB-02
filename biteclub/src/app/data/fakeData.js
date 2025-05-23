@@ -143,6 +143,316 @@ export const fakeReviews = [
     user_id: 'user345',
     restaurant_id: 'restaurant456',
   },
+  {
+    title: 'A Memorable Dining Experience',
+    body: 'The food was exceptional, especially the saffron rice and lamb stew. The ambiance felt like a journey through Persian culture.',
+    rating: 5,
+    date_posted: new Date('2024-11-01'),
+    comments: [
+      {
+        body: 'Totally agree! Their kebabs are amazing.',
+        date_posted: new Date('2024-11-02'),
+        user_id: 'user123',
+      },
+    ],
+    photos: [
+      {
+        url: '/img/placeholderImg.jpg',
+        caption: 'Beautifully plated lamb stew',
+        updated_at: new Date('2024-11-01'),
+      },
+    ],
+    likes: {
+      count: 12,
+      users: ['user123', 'user456', 'user789'],
+    },
+    dislikes: {
+      count: 1,
+      users: ['user000'],
+    },
+    user_id: 'user123',
+    restaurant_id: 'restaurant456',
+  },
+  {
+    title: 'A Memorable Dining Experience',
+    body: 'The food was exceptional, especially the saffron rice and lamb stew. The ambiance felt like a journey through Persian culture.',
+    rating: 5,
+    date_posted: new Date('2024-11-01'),
+    comments: [
+      {
+        body: 'Totally agree! Their kebabs are amazing.',
+        date_posted: new Date('2024-11-02'),
+        user_id: 'user123',
+      },
+    ],
+    photos: [
+      {
+        url: '/img/placeholderImg.jpg',
+        caption: 'Beautifully plated lamb stew',
+        updated_at: new Date('2024-11-01'),
+      },
+    ],
+    likes: {
+      count: 12,
+      users: ['user123', 'user456', 'user789'],
+    },
+    dislikes: {
+      count: 1,
+      users: ['user000'],
+    },
+    user_id: 'user123',
+    restaurant_id: 'restaurant456',
+  },
+  {
+    title: 'Hidden Gem!',
+    body: 'I had never tried Persian food before and this place was the perfect intro. Warm service and flavor-packed dishes.',
+    rating: 4,
+    date_posted: new Date('2024-11-10'),
+    comments: [
+      {
+        body: 'Welcome to the Persian food fan club! 😄',
+        date_posted: new Date('2024-11-11'),
+        user_id: 'user456',
+      },
+    ],
+    photos: [],
+    likes: {
+      count: 8,
+      users: ['user111', 'user222'],
+    },
+    dislikes: {
+      count: 0,
+      users: [],
+    },
+    user_id: 'user345',
+    restaurant_id: 'restaurant456',
+  },
+  {
+    title: 'Hidden Gem!',
+    body: 'I had never tried Persian food before and this place was the perfect intro. Warm service and flavor-packed dishes.',
+    rating: 4,
+    date_posted: new Date('2024-11-10'),
+    comments: [
+      {
+        body: 'Welcome to the Persian food fan club! 😄',
+        date_posted: new Date('2024-11-11'),
+        user_id: 'user456',
+      },
+    ],
+    photos: [],
+    likes: {
+      count: 8,
+      users: ['user111', 'user222'],
+    },
+    dislikes: {
+      count: 0,
+      users: [],
+    },
+    user_id: 'user345',
+    restaurant_id: 'restaurant456',
+  },
+  {
+    title: 'Hidden Gem!',
+    body: 'I had never tried Persian food before and this place was the perfect intro. Warm service and flavor-packed dishes.',
+    rating: 4,
+    date_posted: new Date('2024-11-10'),
+    comments: [
+      {
+        body: 'Welcome to the Persian food fan club! 😄',
+        date_posted: new Date('2024-11-11'),
+        user_id: 'user456',
+      },
+    ],
+    photos: [],
+    likes: {
+      count: 8,
+      users: ['user111', 'user222'],
+    },
+    dislikes: {
+      count: 0,
+      users: [],
+    },
+    user_id: 'user345',
+    restaurant_id: 'restaurant456',
+  },
+  {
+    title: 'Hidden Gem!',
+    body: 'I had never tried Persian food before and this place was the perfect intro. Warm service and flavor-packed dishes.',
+    rating: 4,
+    date_posted: new Date('2024-11-10'),
+    comments: [
+      {
+        body: 'Welcome to the Persian food fan club! 😄',
+        date_posted: new Date('2024-11-11'),
+        user_id: 'user456',
+      },
+    ],
+    photos: [],
+    likes: {
+      count: 8,
+      users: ['user111', 'user222'],
+    },
+    dislikes: {
+      count: 0,
+      users: [],
+    },
+    user_id: 'user345',
+    restaurant_id: 'restaurant456',
+  },
+  {
+    title: 'Hidden Gem!',
+    body: 'I had never tried Persian food before and this place was the perfect intro. Warm service and flavor-packed dishes.',
+    rating: 4,
+    date_posted: new Date('2024-11-10'),
+    comments: [
+      {
+        body: 'Welcome to the Persian food fan club! 😄',
+        date_posted: new Date('2024-11-11'),
+        user_id: 'user456',
+      },
+    ],
+    photos: [],
+    likes: {
+      count: 8,
+      users: ['user111', 'user222'],
+    },
+    dislikes: {
+      count: 0,
+      users: [],
+    },
+    user_id: 'user345',
+    restaurant_id: 'restaurant456',
+  },
+  {
+    title: 'A Memorable Dining Experience',
+    body: 'The food was exceptional, especially the saffron rice and lamb stew. The ambiance felt like a journey through Persian culture.',
+    rating: 5,
+    date_posted: new Date('2024-11-01'),
+    comments: [
+      {
+        body: 'Totally agree! Their kebabs are amazing.',
+        date_posted: new Date('2024-11-02'),
+        user_id: 'user123',
+      },
+    ],
+    photos: [
+      {
+        url: '/img/placeholderImg.jpg',
+        caption: 'Beautifully plated lamb stew',
+        updated_at: new Date('2024-11-01'),
+      },
+    ],
+    likes: {
+      count: 12,
+      users: ['user123', 'user456', 'user789'],
+    },
+    dislikes: {
+      count: 1,
+      users: ['user000'],
+    },
+    user_id: 'user123',
+    restaurant_id: 'restaurant456',
+  },
+  {
+    title: 'A Memorable Dining Experience',
+    body: 'The food was exceptional, especially the saffron rice and lamb stew. The ambiance felt like a journey through Persian culture.',
+    rating: 5,
+    date_posted: new Date('2024-11-01'),
+    comments: [
+      {
+        body: 'Totally agree! Their kebabs are amazing.',
+        date_posted: new Date('2024-11-02'),
+        user_id: 'user123',
+      },
+    ],
+    photos: [
+      {
+        url: '/img/placeholderImg.jpg',
+        caption: 'Beautifully plated lamb stew',
+        updated_at: new Date('2024-11-01'),
+      },
+    ],
+    likes: {
+      count: 12,
+      users: ['user123', 'user456', 'user789'],
+    },
+    dislikes: {
+      count: 1,
+      users: ['user000'],
+    },
+    user_id: 'user123',
+    restaurant_id: 'restaurant456',
+  },
+  {
+    title: 'A Memorable Dining Experience',
+    body: 'The food was exceptional, especially the saffron rice and lamb stew. The ambiance felt like a journey through Persian culture.',
+    rating: 5,
+    date_posted: new Date('2024-11-01'),
+    comments: [
+      {
+        body: 'Totally agree! Their kebabs are amazing.',
+        date_posted: new Date('2024-11-02'),
+        user_id: 'user123',
+      },
+    ],
+    photos: [
+      {
+        url: '/img/placeholderImg.jpg',
+        caption: 'Beautifully plated lamb stew',
+        updated_at: new Date('2024-11-01'),
+      },
+    ],
+    likes: {
+      count: 12,
+      users: ['user123', 'user456', 'user789'],
+    },
+    dislikes: {
+      count: 1,
+      users: ['user000'],
+    },
+    user_id: 'user123',
+    restaurant_id: 'restaurant456',
+  },
+  {
+    title: 'A Memorable Dining Experience',
+    body: 'The food was exceptional, especially the saffron rice and lamb stew. The ambiance felt like a journey through Persian culture.',
+    rating: 5,
+    date_posted: new Date('2024-11-01'),
+    comments: [
+      {
+        body: 'Totally agree! Their kebabs are amazing.',
+        date_posted: new Date('2024-11-02'),
+        user_id: 'user123',
+      },
+    ],
+    photos: [
+      {
+        url: '/img/placeholderImg.jpg',
+        caption: 'Beautifully plated lamb stew',
+        updated_at: new Date('2024-11-01'),
+      },
+    ],
+    likes: {
+      count: 12,
+      users: ['user123', 'user456', 'user789'],
+    },
+    dislikes: {
+      count: 1,
+      users: ['user000'],
+    },
+    user_id: 'user123',
+    restaurant_id: 'restaurant456',
+  },
+];
+
+export const embedList = [
+  { embedLink: 'https://www.instagram.com/p/DCZlEDqy2to/' },
+  { embedLink: 'https://www.instagram.com/p/DCZlEDqy2to/' },
+  { embedLink: 'https://www.instagram.com/p/DCZlEDqy2to/' },
+  { embedLink: 'https://www.instagram.com/p/DCZlEDqy2to/' },
+  { embedLink: 'https://www.instagram.com/p/DCZlEDqy2to/' },
+  { embedLink: 'https://www.instagram.com/p/DCZlEDqy2to/' },
+  { embedLink: 'https://www.instagram.com/p/DCZlEDqy2to/' },
 ];
 
 /*

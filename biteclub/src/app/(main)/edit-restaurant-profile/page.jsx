@@ -3,22 +3,19 @@ import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
 import InfoBanner from '@/components/restaurantProfile/InfoBanner';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-import { fakeRestaurantData, fakeReviews, embedList } from '@/app/data/fakeData';
+import { fakeRestaurantData, fakeReviews } from '@/app/data/fakeData';
 import ReviewsOnGrid3Col from '@/components/shared/ReviewsOnGrid3Col';
 import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
 import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
 import { useState } from 'react';
 
-export default function RestaurantProfile() {
+/*
+RESTAURANT PROFILE FROM BUSINESS USER'S POV
+*/
+export default function EditRestaurantProfile() {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
-
-  /* combine external and internal reviews together in 1 arr */
-  const taggedReviews = fakeReviews.map(r => ({ type: 'review', data: r }));
-  const taggedEmbeds = embedList.map(e => ({ type: 'embed', embedLink: e.embedLink }));
-  const combinedList = [...taggedReviews, ...taggedEmbeds];
-  const randomCombinedList = combinedList.sort(() => Math.random() - 0.5);
 
   return (
     <MainBaseContainer>
@@ -40,7 +37,7 @@ export default function RestaurantProfile() {
           <ReviewsOnGrid3Col
             selectedReview={selectedReview}
             setSelectedReview={setSelectedReview}
-            reviewList={randomCombinedList} // internal + external reviews
+            reviewList={fakeReviews}
           />
         )}
         {/* Photos */}
