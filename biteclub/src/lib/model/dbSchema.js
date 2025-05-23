@@ -1,11 +1,14 @@
 import mongoose from 'mongoose';
 
 // Photo subdocument
-const PhotoSchema = new mongoose.Schema({
-  url: String,
-  caption: String,
-  updated_at: Date,
-});
+const PhotoSchema = new mongoose.Schema(
+  {
+    url: String,
+    caption: String,
+    updated_at: Date,
+  },
+  { _id: true } // ensure _id is created - needed for Cloudinary image retrieval
+);
 
 // User
 const UserSchema = new mongoose.Schema({

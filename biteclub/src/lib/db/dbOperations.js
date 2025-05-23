@@ -65,3 +65,42 @@ export async function getImageById(id) {
   }
   return image;
 }
+
+// Post Profile Pic to Users Collection
+// Get User by superbase id and update the Profile Pic
+export async function updateUserProfilePic(data) {
+  await dbConnect();
+
+  const user = await User.findOneAndUpdate(
+    { supabaseId: data.superbaseId },
+    {
+      userProfilePicture: {
+        url: data.url,
+        caption: data.caption,
+        updated_at: data.updated_at || new Date(),
+      },
+    },
+    { new: true } // return the updated user
+  );
+
+  return user;
+}
+
+// Get User Profile Pic by User SuperbaseId
+export async function getProfilePicByUserSuperbaseId(supabaseId) {
+  await dbConnect();
+
+  const user = await User.findOne({ supabaseId: supabaseId });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const image = user.userProfilePicture;
+
+  if (!image) {
+    throw new Error('Image does not exist');
+  }
+
+  return image;
+}
