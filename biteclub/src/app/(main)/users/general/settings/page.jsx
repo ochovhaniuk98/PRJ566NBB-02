@@ -1,15 +1,32 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/auth/client';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Input } from '@/components/shared/Input';
 import { Label } from '@/components/shared/Label';
 import { Switch } from '@/components/shared/Switch';
 import { Button } from '@/components/shared/Button';
+import Avatar from '@/app/(auth)/account-setup/general/avatar';
 
 export default function Settings() {
+  const [user, setUser] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState('');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+      if (!error) setUser(data.user);
+    };
+    fetchUser();
+  }, []);
+
   return (
     <MainBaseContainer>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center m-16 bg-white">
-        {/* Add contents/components here */}
+        <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} />
         <form className="w-4xl">
           <GridCustomCols numOfCols={2}>
             <div className="py-1 px-12 flex flex-col gap-2">
