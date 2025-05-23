@@ -2,11 +2,11 @@
 
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/auth/client';
-import { Button } from '@/components/auth/ui/Button';
+import { Button } from '@/components/shared/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/auth/ui/Card';
-import { Input } from '@/components/auth/ui/Input';
-import { Label } from '@/components/auth/ui/Label';
-import { Switch } from '@/components/auth/ui/Switch';
+import { Input } from '@/components/shared/Input';
+import { Label } from '@/components/shared/Label';
+import { Switch } from '@/components/shared/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -20,14 +20,6 @@ export function SignUpForm({ className, ...props }) {
   const [userType, setUserType] = useState(false); // Switch: Business Account -> True
   const router = useRouter();
 
-  // TODO:
-  // Connect to MongoDB and Create user schema: Business vs General
-  // This function will be used in the handleSignUp() and handleGoogleLogin() functions, once user click on sign up, the schema will be created and stored to the mongoDB
-  // - If userType is True -> create business user
-  // - If userType is False -> create general user
-
-  // TODO: Remove "Switch" Logic in (auth)/account-form afterwards.
-  // After signup, we retrieve userType from MongoDB, and redirect them to account-setup
 
   // Supabase Auth
   // Email Sign Up
@@ -47,33 +39,36 @@ export function SignUpForm({ className, ...props }) {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/callback`,
+          // emailRedirectTo: `${window.location.origin}/callback`,
+          emailRedirectTo: `${window.location.origin}/callback?userType=${userType ? 'business' : 'general'}`,
         },
       });
       if (error) throw error;
+
       router.push('/sign-up-success');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
-
-    // Use the defined function to CREATE USER IN MONGODB
   };
 
   // Google Sign Up
+  // Unlike email/password sign-up, we can't immediately retrieve the supabaseId after calling signInWithOAuth because the user is redirected away.
+  // So, all logic that depends on Supabase's authenticated user must happen after the redirect (/callback)
   const handleGoogleLogin = async () => {
     const supabase = createClient();
     setIsLoading(true);
     try {
+      // Since the user is redirected to Supabase and then back to /callback, we'll lose userType unless store it temporarily.
+      // Save userType to localStorage so it survives the redirect
+      // localStorage.setItem('userType', userType ? 'business' : 'general');
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // RedirectTo:
-          // New users will be redirected to onboarding page.
-          // Registered users will be redirected back to user dashboard.
-          // let the /callback decide where user should go
-          redirectTo: `${window.location.origin}/callback`,
+          // redirectTo: `${window.location.origin}/callback`,
+           redirectTo: `${window.location.origin}/callback?userType=${userType ? 'business' : 'general'}`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -81,7 +76,7 @@ export function SignUpForm({ className, ...props }) {
         },
       });
       if (error) throw error;
-      // Supabase will redirect automatically to the callback URL
+      // After redirect, the /callback route will handle the rest
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Google login failed');
     } finally {
@@ -104,6 +99,7 @@ export function SignUpForm({ className, ...props }) {
         </CardHeader>
         <CardContent>
           {/* User Type Switch -- Ignore label text for now, Not sure what it should say yet. */}
+
           <div className="flex items-center justify-center gap-6 mb-8">
             <label htmlFor="user-role">
               <h5>I am a restaurant business.</h5>
@@ -145,7 +141,7 @@ export function SignUpForm({ className, ...props }) {
             </Button>
           </div>
           <form onSubmit={handleSignUp}>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
               <div className="relative text-center text-sm text-brand-grey-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-brand-yellow-extralite px-2 text-brand-grey text-xs uppercase font-primary font-semibold">
                   Or
@@ -153,7 +149,6 @@ export function SignUpForm({ className, ...props }) {
               </div>
               <div className="grid">
                 <Label htmlFor="email">
-                  {' '}
                   <h4>Email</h4>
                 </Label>
                 <Input

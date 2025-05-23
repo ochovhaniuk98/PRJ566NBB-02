@@ -10,6 +10,10 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
 */
 @import 'tailwindcss';
 
+/* needed for the rich text editor */
+@import './rich-text-editor-styles/_variables.scss';
+@import './rich-text-editor-styles/_keyframe-animations.scss';
+
 @theme {
   /* fonts */
   --font-primary: var(--font-koho);
@@ -33,6 +37,7 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   --color-brand-grey: #757575;
   --color-brand-grey-lite: #d9d9d9;
   --color-brand-google: #4889f5;
+  --color-brand-red: #d80303;
 }
 
 @layer base {
@@ -53,7 +58,8 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   }
 
   /* text input field */
-  input {
+  input,
+  textarea {
     @apply appearance-none border bg-white border-brand-blue rounded-full px-4 py-2 my-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-aqua;
   }
 
@@ -72,7 +78,7 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   }
 
   h2 {
-    @apply uppercase text-xl;
+    @apply uppercase text-xl font-semibold;
   }
 
   h3 {
@@ -112,12 +118,30 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   }
 
   /*** left/right margins for main content on most pages ***/
-  .main-side-margins {
-    @apply px-40;
+  .main-side-padding {
+    @apply 2xl:px-20 xl:px-20 lg:px-10 md:px-5;
   }
 
   .class-font-roboto {
     @apply font-roboto;
+  }
+
+  .open-hours-style {
+    @apply flex flex-row justify-between py-1 px-6;
+  }
+
+  .open-hours-selected {
+    @apply bg-brand-aqua-lite rounded-full font-semibold;
+  }
+
+  .instagram-media {
+    border: 2px solid !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+
+  .instagram-media:hover {
+    border: 2px solid #ffdcbe !important;
   }
 }
 

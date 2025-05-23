@@ -1,11 +1,14 @@
 import mongoose from 'mongoose';
 
 // Photo subdocument
-const PhotoSchema = new mongoose.Schema({
-  url: String,
-  caption: String,
-  updated_at: Date,
-});
+const PhotoSchema = new mongoose.Schema(
+  {
+    url: String,
+    caption: String,
+    updated_at: Date,
+  },
+  { _id: true } // ensure _id is created - needed for Cloudinary image retrieval
+);
 
 // User
 const UserSchema = new mongoose.Schema({
@@ -218,6 +221,14 @@ const BusinessUserSchema = new mongoose.Schema({
   verificationStatus: String,
 });
 
+// Temporary Collection for Testing Purposes
+// TestCloudinaryImageSchema
+const TestCloudinaryImageSchema = new mongoose.Schema({
+  url: String,
+  caption: String,
+  updated_at: Date,
+});
+
 // Export models
 export const User = mongoose.models?.User || mongoose.model('User', UserSchema);
 export const Photo = mongoose.models?.Photo || mongoose.model('Photo', PhotoSchema);
@@ -246,3 +257,5 @@ export const MenuItem = mongoose.models?.MenuItem || mongoose.model('MenuItem', 
 export const BusinessHours = mongoose.models?.BusinessHours || mongoose.model('BusinessHours', BusinessHoursSchema);
 export const Restaurant = mongoose.models?.Restaurant || mongoose.model('Restaurant', RestaurantSchema);
 export const BusinessUser = mongoose.models?.BusinessUser || mongoose.model('BusinessUser', BusinessUserSchema);
+export const TestCloudinaryImage =
+  mongoose.models?.TestCloudinaryImage || mongoose.model('TestCloudinaryImage', TestCloudinaryImageSchema);

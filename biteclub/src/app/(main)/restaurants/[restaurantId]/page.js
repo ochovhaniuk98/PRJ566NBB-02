@@ -1,69 +1,59 @@
 'use client';
+import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
 import InfoBanner from '@/components/restaurantProfile/InfoBanner';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-import { bannerImages, reviewList } from '@/app/data/fakeData';
-import ReviewCard from '@/components/shared/ReviewCard';
+import { fakeRestaurantData, fakeReviews, embedList } from '@/app/data/fakeData';
+import ReviewsOnGrid3Col from '@/components/shared/ReviewsOnGrid3Col';
+import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
+import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
 import { useState } from 'react';
 
 export default function RestaurantProfile() {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
-  return (
-    <div>
-      <div className="absolute top-0 left-12 right-0">
-        <div className="flex flex-col ">
-          <ImageBanner images={bannerImages} />
-          <InfoBanner
-            name="The Pomegranate Restaurant"
-            avgRating={4.6}
-            numReviews={1781}
-            cuisine="Persian"
-            address="420 College St, Toronto, ON M5T 1T3"
-            numFavourites={123}
-          />
-        </div>
-        <div className="main-side-margins mb-16">
-          <ProfileTabBar onTabChange={tab => console.log(tab)} tabs={restaurantTabs} />
-          <div className={`grid grid-cols-3 gap-3 auto-rows-[minmax(12rem, auto)]`}>
-            {selectedReview ? (
-              <>
-                {/* Left two columns: nested grid of reviews */}
-                <div className="col-span-2 grid grid-cols-2 gap-3">
-                  {reviewList.map(review => (
-                    <ReviewCard
-                      key={review.id}
-                      imageSrc={review.imageSrc}
-                      onClick={() => setSelectedReview(review)}
-                      isSelected={selectedReview?.id === review.id}
-                    />
-                  ))}
-                </div>
+  const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
 
-                {/* Third column: expanded review */}
-                <div className="border border-brand-peach rounded-md p-4 bg-white">
-                  <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-xl font-bold">Expanded Review</h2>
-                    <button onClick={() => setSelectedReview(null)} className="text-sm text-blue-600 hover:underline">
-                      Close
-                    </button>
-                  </div>
-                  <p>This is full review for ID: {selectedReview.id}</p>
-                  {selectedReview.imageSrc && (
-                    <img src={selectedReview.imageSrc[0]} alt="full" className="mt-4 rounded-md" />
-                  )}
-                </div>
-              </>
-            ) : (
-              // Default 3-column review grid
-              reviewList.map(review => (
-                <ReviewCard key={review.id} imageSrc={review.imageSrc} onClick={() => setSelectedReview(review)} />
-              ))
-            )}
-          </div>
-        </div>
+  /* combine external and internal reviews together in 1 arr */
+  const taggedReviews = fakeReviews.map(r => ({ type: 'review', data: r }));
+  const taggedEmbeds = embedList.map(e => ({ type: 'embed', embedLink: e.embedLink }));
+  const combinedList = [...taggedReviews, ...taggedEmbeds];
+  const randomCombinedList = combinedList.sort(() => Math.random() - 0.5);
+
+  return (
+    <MainBaseContainer>
+      <ImageBanner images={fakeRestaurantData.bannerImages} />
+      <InfoBanner
+        name={fakeRestaurantData.name}
+        avgRating={fakeRestaurantData.rating}
+        numReviews={fakeRestaurantData.numReviews}
+        cuisine={fakeRestaurantData.cuisines}
+        address={fakeRestaurantData.location}
+        numFavourites={0}
+      />
+
+      <div className="main-side-padding mb-16 w-full">
+        <ProfileTabBar onTabChange={setSelectedTab} tabs={restaurantTabs} />
+
+        {/* Reviews */}
+        {selectedTab === restaurantTabs[0] && (
+          <ReviewsOnGrid3Col
+            selectedReview={selectedReview}
+            setSelectedReview={setSelectedReview}
+            reviewList={randomCombinedList} // internal + external reviews
+          />
+        )}
+        {/* Photos */}
+        {selectedTab === restaurantTabs[2] && <PhotoGallery photos={fakeRestaurantData.images} />}
+
+        {/* Business Info */}
+        {selectedTab === restaurantTabs[5] && (
+          <BusinessInfo
+            restaurant={fakeRestaurantData}
+            mapSrc="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.5846656953045!2d-79.409522823823!3d43.656808871101966!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b34ebdcdf5c1b%3A0x7aaa6b866b22f51a!2sPomegranate%20Restaurant!5e0!3m2!1sen!2sca!4v1747776810081!5m2!1sen!2sca"
+          />
+        )}
       </div>
-    </div>
+    </MainBaseContainer>
   );
 }
-// ${selectedReview ? 'grid-cols-2' : 'grid-cols-3'}

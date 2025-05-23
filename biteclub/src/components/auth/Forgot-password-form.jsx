@@ -2,10 +2,10 @@
 
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/auth/client';
-import { Button } from '@/components/auth/ui/Button';
+import { Button } from '@/components/shared/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/auth/ui/Card';
-import { Input } from '@/components/auth/ui/Input';
-import { Label } from '@/components/auth/ui/Label';
+import { Input } from '@/components/shared/Input';
+import { Label } from '@/components/shared/Label';
 import Link from 'next/link';
 import { useState } from 'react';
 

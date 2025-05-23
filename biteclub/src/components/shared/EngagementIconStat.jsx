@@ -9,7 +9,7 @@ export default function EngagementIconStat({ iconArr, statNumArr }) {
       {iconArr.map((_, i) => (
         <span key={i} className="flex items-center">
           <FontAwesomeIcon icon={iconArr[i]} className="icon-md text-brand-navy" />
-          <h4 className={` ${statNumArr[i] && 'ml-1 mr-2'}`}>{statNumArr[i] || ''}</h4>
+          <h4 className={` ${statNumArr[i] && 'ml-1 mr-2'}`}>{statNumArr[i] >= 0 ? statNumArr[i] : ''}</h4>
         </span>
       ))}
     </div>
