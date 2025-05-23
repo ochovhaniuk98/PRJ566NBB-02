@@ -27,7 +27,7 @@ export default function Settings() {
     <MainBaseContainer>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center m-16 bg-white">
         <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} />
-        <form className="w-4xl">
+        <form className="w-4xl mt-8">
           <GridCustomCols numOfCols={2}>
             <div className="py-1 px-12 flex flex-col gap-2">
               <h2 className="mb-4">Account Details</h2>
@@ -41,7 +41,7 @@ export default function Settings() {
                 <Label htmlFor="email">
                   <h4>Password</h4>
                 </Label>
-                <Input id="email" type="email" placeholder="janedoe@myemail.com" required className="w-full" />
+                <Input id="email" type="email" placeholder="password" required className="w-full" />
               </div>
               <div>
                 <Label htmlFor="email">
