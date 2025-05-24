@@ -11,9 +11,11 @@ import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
+import ImageUpload from '@/components/imageUpload/imageUpload';
+import UploadImageForm from '@/components/restaurantProfile/UploadImageForm';
 import { useState } from 'react';
-// EDIT RESTAURANT PROFILE!!!!!!!!
 
+// EDIT RESTAURANT PROFILE!!!!!!!!
 export default function EditRestaurantProfile() {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
@@ -22,6 +24,7 @@ export default function EditRestaurantProfile() {
   // states for editing profile
   const [showInstagramPopup, setShowInstagramPopup] = useState(false);
   const [showEditDetailsPopup, setShowEditDetailsPopup] = useState(false);
+  const [showAddPhotoPopup, setShowAddPhotoPopup] = useState(false);
 
   /* TEMPORARY: combine external and internal reviews together in 1 arr */
   const taggedReviews = fakeReviews.map(r => ({ type: 'review', data: r }));
@@ -48,6 +51,8 @@ export default function EditRestaurantProfile() {
               detailText={'Add Instagram Post'}
               onClick={() => setShowInstagramPopup(true)}
             />
+            <SingleTabWithIcon icon={faHeart} detailText={'Add Photo'} onClick={() => setShowAddPhotoPopup(true)} />
+
             <SingleTabWithIcon
               icon={faHeart}
               detailText={'Edit Profile Details'}
@@ -86,6 +91,7 @@ export default function EditRestaurantProfile() {
         )}
       </div>
       {showInstagramPopup && <AddInstagramEmbed onClose={() => setShowInstagramPopup(false)} />}
+      {showAddPhotoPopup && <UploadImageForm onClose={() => setShowAddPhotoPopup(false)} />}
       {showEditDetailsPopup && (
         <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={fakeRestaurantData} />
       )}

@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { CldUploadWidget, getCldImageUrl } from 'next-cloudinary';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import SingleTabWithIcon from '../shared/SingleTabWithIcon';
 
-export default function ImageUpload() {
+export default function ImageUpload({ buttonType }) {
   const [uploadedImageInfo, setUploadedImageInfo] = useState(null);
   const [savedImageId, setSavedImageId] = useState(null);
   const [fetchedImage, setFetchedImage] = useState(null);
@@ -71,11 +73,15 @@ export default function ImageUpload() {
           }
         }}
       >
-        {({ open }) => (
-          <button onClick={() => open()} className="bg-blue-500 text-white px-4 py-2 rounded">
-            Upload an Image
-          </button>
-        )}
+        {({ open }) =>
+          !buttonType ? (
+            <button onClick={() => open()} className="bg-blue-500 text-white px-4 py-2 rounded">
+              Upload an Image
+            </button>
+          ) : (
+            <SingleTabWithIcon icon={faHeart} detailText={'Add Photo'} onClick={() => open()} />
+          )
+        }
       </CldUploadWidget>
 
       {/* Display fetched image metadata */}
