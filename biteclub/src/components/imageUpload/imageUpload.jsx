@@ -4,16 +4,20 @@ import { useEffect, useState } from 'react';
 import { CldUploadWidget, getCldImageUrl } from 'next-cloudinary';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '../shared/SingleTabWithIcon';
+import { Button } from '../shared/Button';
 
-export default function ImageUpload({ buttonType }) {
+export default function ImageUpload({ buttonType, onClose }) {
   const [uploadedImageInfo, setUploadedImageInfo] = useState(null);
   const [savedImageId, setSavedImageId] = useState(null);
   const [fetchedImage, setFetchedImage] = useState(null);
 
+  const [uploadedImages, setUploadedImages] = useState([]); // needed to show array of images
+  const [showModal, setShowModal] = useState(false); // needed to close modal
+
   useEffect(() => {
     if (uploadedImageInfo?.public_id) {
       const url = getCldImageUrl({
-        width: 960,
+        width: 960, // 960
         height: 600,
         src: uploadedImageInfo.public_id,
       });
@@ -40,13 +44,17 @@ export default function ImageUpload({ buttonType }) {
     fetchImageById();
   }, [savedImageId]);
 
+  {
+    /*  <section className="flex flex-col items-center justify-between bg-brand-yellow-lite size-full"> */
+  }
   return (
-    <section className="flex flex-col items-center justify-between">
+    <>
       <CldUploadWidget
         uploadPreset="my-uploads"
         onSuccess={async result => {
           const info = result?.info;
-          setUploadedImageInfo(info);
+          //setUploadedImageInfo(info);
+          setUploadedImages(prev => [...prev, info]); // show array of images
           console.log('Upload Success:', info);
 
           try {
@@ -79,28 +87,85 @@ export default function ImageUpload({ buttonType }) {
               Upload an Image
             </button>
           ) : (
-            <SingleTabWithIcon icon={faHeart} detailText={'Add Photo'} onClick={() => open()} />
+            <SingleTabWithIcon
+              icon={faHeart}
+              detailText={'Add Photo'}
+              onClick={() => {
+                open();
+                setShowModal(true);
+              }}
+            />
           )
         }
       </CldUploadWidget>
 
-      {/* Display fetched image metadata */}
-      {fetchedImage && (
-        <div className="mt-6">
-          <h3>Fetched Image Metadata from MongoDB:</h3>
-          <p>
-            <strong>ID:</strong> {fetchedImage._id}
-          </p>
-          <p>
-            <strong>Caption:</strong> {fetchedImage.caption}
-          </p>
-          <p>
-            <strong>URL:</strong> {fetchedImage.url}
-          </p>
-          <br></br>
-          <img src={fetchedImage.url} alt={fetchedImage.caption} width="600" />
+      {/* Display fetched images and metadata */}
+      {/* Only show the modal after the button is clicked */}
+      {showModal && (
+        <div className="fixed w-screen h-screen bg-black/50 left-0 top-0 z-200 py-12 px-80  ">
+          <div className="box-border bg-white h-full w-full  rounded-lg  z-210 p-8 flex flex-col shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Uploaded Photos</h2>
+              <Button type="button" onClick={() => setShowModal(false)} variant="secondary">
+                Close
+              </Button>
+            </div>
+            <div className="w-full h-full bg-brand-blue-lite  p-4 mt-4 rounded-lg overflow-y-scroll grid grid-cols-4 gap-2 shadow-inner">
+              {uploadedImages.length > 0 &&
+                uploadedImages.map((img, i) => {
+                  return (
+                    <div className="bg-white w-fit h-fit p-2 rounded-md flex flex-col items-center mb-4 shadow-sm">
+                      <img
+                        src={img.url}
+                        alt={img.original_filename}
+                        width="200"
+                        className="aspect-square object-cover mb-1"
+                      />
+                      <h5>
+                        {img.original_filename.length > 25
+                          ? img.original_filename.slice(0, 25) + '...'
+                          : img.original_filename}
+                      </h5>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
         </div>
       )}
-    </section>
+    </>
   );
 }
+
+/*
+{fetchedImage && (
+<div className="mt-6 bg-brand-yellow">
+<h3>Fetched Image Metadata from MongoDB:</h3>
+<p>
+<strong>ID:</strong> {fetchedImage._id}
+</p>
+<p>
+<strong>Caption:</strong> {fetchedImage.caption}
+</p>
+<p>
+<strong>URL:</strong> {fetchedImage.url}
+</p>
+<br></br>
+<img src={fetchedImage.url} alt={fetchedImage.caption} width="100" />
+</div>
+)}
+*/
+
+//"mt-1 bg-white h-180 w-3xl border border-brand-blue rounded-lg
+
+/*
+<p>
+<strong>ID:</strong> {fetchedImage._id}
+</p>
+<p>
+<strong>Caption:</strong> {fetchedImage.caption}
+</p>
+<p>
+<strong>URL:</strong> {fetchedImage.url}
+</p>
+*/

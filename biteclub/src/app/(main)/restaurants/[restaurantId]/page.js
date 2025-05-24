@@ -17,7 +17,7 @@ import { useState } from 'react';
 
 // ***** EDIT RESTAURANT PROFILE ****
 export default function EditRestaurantProfile() {
-  const isBusinessUser = true; // flag for business user
+  const isOwner = true; // flag for business user
 
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
@@ -44,14 +44,14 @@ export default function EditRestaurantProfile() {
         cuisine={fakeRestaurantData.cuisines}
         address={fakeRestaurantData.location}
       >
-        {isBusinessUser ? (
+        {isOwner ? (
           <>
             <SingleTabWithIcon
               icon={faHeart}
               detailText={'Add Instagram Post'}
               onClick={() => setShowInstagramPopup(true)}
             />
-            <SingleTabWithIcon icon={faHeart} detailText={'Add Photo'} onClick={() => setShowAddPhotoPopup(true)} />
+            <ImageUpload buttonType={'iconTab'} />
 
             <SingleTabWithIcon
               icon={faHeart}
@@ -91,7 +91,6 @@ export default function EditRestaurantProfile() {
         )}
       </div>
       {showInstagramPopup && <AddInstagramEmbed onClose={() => setShowInstagramPopup(false)} />}
-      {showAddPhotoPopup && <UploadImageForm onClose={() => setShowAddPhotoPopup(false)} />}
       {showEditDetailsPopup && (
         <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={fakeRestaurantData} />
       )}
