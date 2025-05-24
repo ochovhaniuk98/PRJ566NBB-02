@@ -17,12 +17,17 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
   });
 
   const handleSubmit = e => {
-    e.preventDefault(); // prevent page reload
-    const formData = new FormData(e.target);
-    const profileText = formData.get('profileText');
+    e.preventDefault();
 
-    console.log('Submitted:', profileText); // or save it to DB
-    onClose(); // close the popup
+    // grab input values -- hours missing
+    const formData = new FormData(e.target);
+    const name = formData.get('name');
+    const address = formData.get('address');
+    const phone = formData.get('phone');
+    const cuisines = formData.get('cuisines');
+
+    console.log(`Form submitted. Values retrieved: ${name}, ${address}, ${phone}, and ${cuisines}.`);
+    onClose();
   };
 
   const handleClosedToggle = index => {
