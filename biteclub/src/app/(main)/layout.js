@@ -43,7 +43,8 @@ export default function RootLayout({ children }) {
     >
       <body className="flex" suppressHydrationWarning={true}>
         <MainMenu />
-        <div className="flex-1 relative overflow-y-auto">
+        <div className="flex-1 relative"> 
+           {/* overflow-y-auto */}
           <SearchBar />
           <main className="main-side-padding">{children}</main>
         </div>
