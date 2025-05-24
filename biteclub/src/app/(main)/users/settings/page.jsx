@@ -8,6 +8,7 @@ import { Input } from '@/components/shared/Input';
 import { Label } from '@/components/shared/Label';
 import { Switch } from '@/components/shared/Switch';
 import { Button } from '@/components/shared/Button';
+import { LogoutButton } from '@/components/auth/Logout-button';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
 
 export default function Settings() {
@@ -85,6 +86,11 @@ export default function Settings() {
           <Button type="submit" className="w-40" variant="danger" disabled={false}>
             Delete Account
           </Button>
+        </div>
+
+        <div className="w-4xl mt-8 py-8 px-12 border-t border-brand-peach">
+          {/* TODO: (TEMP LOGOUT) Change the style in /components/auth/Logout-button  */}
+          <LogoutButton />
         </div>
       </div>
     </MainBaseContainer>

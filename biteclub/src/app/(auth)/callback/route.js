@@ -6,7 +6,7 @@ import { User, BusinessUser } from '@/lib/model/dbSchema';
 export async function GET(request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const rawUserType = searchParams.get('userType'); // Will be defined on Sign Up, but undefined on Login
+  const userSelectedUserType = searchParams.get('userType'); // Will be defined on Sign Up, but undefined on Login
 
   if (!code) {
     return NextResponse.redirect(`${origin}/auth-error`);
@@ -29,7 +29,7 @@ export async function GET(request) {
   }
 
   let finalUserType = null;
-  const isNewSignup = rawUserType === 'business' || rawUserType === 'general';
+  const isNewSignup = userSelectedUserType === 'business' || userSelectedUserType === 'general';
 
   // Connect and save to MongoDB
   try {
@@ -50,16 +50,16 @@ export async function GET(request) {
         return NextResponse.redirect(`${origin}/auth-error?reason=unauthorised_google_signup`);
       }
 
-      const Model = rawUserType === 'business' ? BusinessUser : User;
+      const Model = userSelectedUserType === 'business' ? BusinessUser : User;
 
       const newUser = new Model({
         supabaseId: user.id,
-        userType: rawUserType,
+        userType: userSelectedUserType,
       });
 
       await newUser.save();
 
-      finalUserType = rawUserType;
+      finalUserType = userSelectedUserType;
     } else {
       // If user already registered, we use the current userType stored in MongoDB
       finalUserType = existingUser.userType;

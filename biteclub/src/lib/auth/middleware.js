@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
+import { getUserTypeBySupabaseId } from '@/lib/db/dbOperations';
 
 export async function updateSession(request) {
   let supabaseResponse = NextResponse.next({
@@ -21,26 +22,45 @@ export async function updateSession(request) {
     },
   });
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
-  // IMPORTANT: DO NOT REMOVE auth.getUser()
-
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && !request.nextUrl.pathname.startsWith('/login')) {
-    // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone();
-    // console.log('NOT GOING TO SIGN -UP!!!!');
+  // If request is for: https://example.com/users/business
+  // request.nextUrl.pathname => "/users/business"
+  const pathname = request.nextUrl.pathname;
 
-    url.pathname = '/login';
-    return NextResponse.redirect(url);
+  // Not logged in — redirect to /login
+  if (!user && !pathname.startsWith('/login')) {
+    // request.nextUrl is immutable — you can't change it directly
+    // The 2 lines below will Creates a new copy of the current URL, but changes the path to /login.
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = '/login';
+    // Then we redirect the user to this new URL:
+    return NextResponse.redirect(loginUrl);
   }
 
+  // Logged in but restricted based on userType
+  // if (user) {
+  //   try {
+  //     const userType = await getUserTypeBySupabaseId(user.id);
+  //     console.log(`userType: ${userType}`);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+
+  //   if (pathname.startsWith('/users/business') && userType !== 'business') {
+  //     const forbiddenUrl = request.nextUrl.clone();
+  //     forbiddenUrl.pathname = '/403';
+  //     return NextResponse.redirect(forbiddenUrl);
+  //   }
+
+  //   if (pathname.startsWith('/users/general') && userType !== 'general') {
+  //     const forbiddenUrl = request.nextUrl.clone();
+  //     forbiddenUrl.pathname = '/403';
+  //     return NextResponse.redirect(forbiddenUrl);
+  //   }
+  // }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:

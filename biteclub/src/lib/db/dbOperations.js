@@ -21,6 +21,7 @@ import {
   Event,
   Announcement,
   MenuItem,
+  BusinessUser,
   BusinessHours,
   Restaurant,
   TestCloudinaryImage,
@@ -103,4 +104,24 @@ export async function getProfilePicByUserSuperbaseId(supabaseId) {
   }
 
   return image;
+}
+
+// This function is NOT working...
+// Get UserType by Supabase ID
+// for client side, we use api/get-user-type
+export async function getUserTypeBySupabaseId(supabaseId) {
+    await dbConnect();
+    console.log('✅✅✅✅✅✅✅✅✅✅ Connected to MongoDB');
+    const generalUser = await User.findOne({ supabaseId: supabaseId });
+    const businessUser = await BusinessUser.findOne({ supabaseId: supabaseId });
+
+    if (generalUser && businessUser) {
+      throw new Error('Invalid user: exists in both collections');
+    }
+
+    if (generalUser) return 'general';
+    if (businessUser) return 'business';
+
+    return null;
+
 }
