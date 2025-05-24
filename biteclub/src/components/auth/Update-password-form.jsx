@@ -29,18 +29,18 @@ export function UpdatePasswordForm({ className, ...props }) {
       //  const userType = await getUserTypeBySupabaseId(data.user.id); // This can only work on server side, not client side.
       const { data } = await supabase.auth.getUser();
 
-      const response = await fetch('/api/get-user-type', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ supabaseId: data.user.id }),
-      });
+      if (data?.user?.id) {
+        const response = await fetch('/api/get-user-type', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ supabaseId: data.user.id }),
+        });
 
-      const { userType } = await response.json();
+        const { userType } = await response.json();
 
-      // console.log(data.user)
-      if (userType) {
-        // Redirect Users to different dashboard base on UserType.
-        router.push(`/users/${userType}`);
+        if (userType) {
+          router.push(`/users/${userType}`);
+        }
       }
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');

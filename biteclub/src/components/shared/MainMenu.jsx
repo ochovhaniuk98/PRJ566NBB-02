@@ -11,12 +11,13 @@ export default function MainMenu() {
   const pathname = usePathname();
   const [userType, setUserType] = useState(null);
 
-  useEffect(() => {
-    const fetchUserType = async () => {
-      try {
-        const supabase = await createClient();
-        const { data } = await supabase.auth.getUser();
+useEffect(() => {
+  const fetchUserType = async () => {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase.auth.getUser();
 
+      if (data?.user?.id) {
         const response = await fetch('/api/get-user-type', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -25,13 +26,17 @@ export default function MainMenu() {
 
         const { userType } = await response.json();
         setUserType(userType);
-      } catch (error) {
-        throw error;
+      } else {
+        // Optional: explicitly set userType to null
+        setUserType(null);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching user type:', error);
+    }
+  };
 
-    fetchUserType();
-  }, []);
+  fetchUserType();
+}, []);
 
   const menuIcons = [faHouseChimney, faUser, faGamepad, faUtensils, faMicroblog, faGear];
   // !!! settings link temporary - will put it inside general user's profile later !!!
