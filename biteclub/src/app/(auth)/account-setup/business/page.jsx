@@ -24,7 +24,7 @@ export default function BusinessSetupForm() {
     // updateProfile({ username, avatar_url });
     setLoading(true);
     // TODO: Store restaurantName and uploaded file to MongoDB / Cloudinary
-    router.push('/users/business/business-info');
+    router.push('/users/business');
   };
 
   // if (!user) return <p>Loading...</p>;

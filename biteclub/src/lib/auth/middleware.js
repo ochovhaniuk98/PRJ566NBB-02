@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
-import { getUserTypeBySupabaseId } from '@/lib/db/dbOperations';
+
+// [TO IRISH] Uncomment below 
+// import { getUserTypeBySupabaseId } from '@/lib/db/dbOperations';
 
 export async function updateSession(request) {
   let supabaseResponse = NextResponse.next({
@@ -40,6 +42,8 @@ export async function updateSession(request) {
     return NextResponse.redirect(loginUrl);
   }
 
+// [TO IRISH] Uncomment below 
+  // ===============================================
   // Logged in but restricted based on userType
   // if (user) {
   //   try {
@@ -61,6 +65,8 @@ export async function updateSession(request) {
   //     return NextResponse.redirect(forbiddenUrl);
   //   }
   // }
+
+  // ===============================================
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:
