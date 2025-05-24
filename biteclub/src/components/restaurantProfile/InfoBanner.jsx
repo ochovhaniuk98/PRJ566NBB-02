@@ -1,10 +1,9 @@
 //import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
 import RestaurantIconDetail from '@/components/restaurantProfile/RestaurantIconDetail';
-import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import StarRating from '../shared/StarRating';
 
-export default function InfoBanner({ name, avgRating, numReviews, cuisine, address, numFavourites }) {
+export default function InfoBanner({ name, avgRating, numReviews, cuisine, address, children }) {
   return (
     // bg-brand-yellow-extralite
     <div className="bg-brand-white flex justify-between main-side-padding pt-8 w-full">
@@ -21,11 +20,7 @@ export default function InfoBanner({ name, avgRating, numReviews, cuisine, addre
         <RestaurantIconDetail icon={faLocationDot} detailText={address} />
         <RestaurantIconDetail icon={faLocationDot} detailText={cuisine.join(', ')} />
       </div>
-      <div>
-        <SingleTabWithIcon icon={faHeart} detailText={numFavourites} />
-        <SingleTabWithIcon icon={faPen} detailText="Write a Review" />
-        <SingleTabWithIcon icon={faUtensils} detailText="Reserve Table" />
-      </div>
+      <div>{children}</div>
     </div>
   );
 }
