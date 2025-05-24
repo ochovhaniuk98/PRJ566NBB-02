@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 
-export default function PhotoGallery({ photos }) {
+export default function PhotoGallery({ photos, isBusinessUser = false }) {
   const getRandomSpan = () => {
     const spans = [1, 1, 2];
     return spans[Math.floor(Math.random() * spans.length)];
