@@ -5,6 +5,10 @@ import { useState } from 'react';
 import { Switch } from '../shared/Switch';
 
 export default function EditProfileDetails({ onClose, restaurantData }) {
+  const [name, setName] = useState(restaurantData.name);
+  const [address, setAddress] = useState(restaurantData.location);
+  const [cuisines, setCuisines] = useState(restaurantData.cuisines);
+
   const [businessHours, setBusinessHours] = useState(() => {
     return restaurantData.businessHours.map(day => ({
       open: day.opening || '',
@@ -23,10 +27,10 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
     const formData = new FormData(e.target);
     const name = formData.get('name');
     const address = formData.get('address');
-    const phone = formData.get('phone');
     const cuisines = formData.get('cuisines');
+    // const phone = formData.get('phone');
 
-    console.log(`Form submitted. Values retrieved: ${name}, ${address}, ${phone}, and ${cuisines}.`);
+    console.log(`Form submitted. Values retrieved: ${name}, ${address}, and ${cuisines}.`);
     onClose();
   };
 
@@ -46,11 +50,8 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/20 flex justify-center items-center z-50">
-      <form
-        onSubmit={handleSubmit} // You can define this function
-        className="bg-white p-8 rounded-md shadow-lg w-fit bg-brand-yellow-extralite"
-      >
+    <div className="fixed inset-0 bg-black/5 flex justify-center items-center z-50">
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-md shadow-md w-fit">
         <h2 className="mb-8 w-fit mx-auto">Edit Profile Details</h2>
         <div className="flex space-x-12">
           <div className="w-xs border-r pr-12 border-brand-peach flex flex-col gap-2">
@@ -60,10 +61,11 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
                 <h4>Restaurant Name</h4>
               </Label>
               <Input
-                id="name"
+                name="name"
                 type="text"
                 placeholder="Enter your restaurant's name."
-                value={restaurantData.name}
+                value={name}
+                onChange={e => setName(e.target.value)}
                 required
                 className="w-full"
               />
@@ -74,10 +76,11 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
                 <h4>Address</h4>
               </Label>
               <Input
-                id="address"
+                name="address"
                 type="text"
                 placeholder="Where can diners find you?"
-                value={restaurantData.location}
+                value={address}
+                onChange={e => setAddress(e.target.value)}
                 required
                 className="w-full"
               />
@@ -87,7 +90,7 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
               <Label htmlFor="phone">
                 <h4>Phone Number</h4>
               </Label>
-              <Input id="phone" type="tel" placeholder="What's your number? 😏" required className="w-full" />
+              <Input name="phone" type="tel" placeholder="What's your number? 😏" required className="w-full" />
             </div>
             <div>
               {/* cuisines */}
@@ -98,7 +101,8 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
                 name="cuisines"
                 className="w-full border rounded-md p-2 h-24 resize-none"
                 placeholder="What’s cooking? Canadian, Vegan, Breakfast? 🍁🍃🥞"
-                value={restaurantData.cuisines.join(', ')}
+                value={cuisines.join(', ')}
+                onChange={e => setCuisines(e.target.value)}
                 required
               />
               <h6 className="m-0 p-0 text-xs font-primary">Seperate cusines with a comma.</h6>
@@ -120,7 +124,7 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
                   <label className="flex items-center gap-2 text-sm">
                     <h5>Closed</h5>
                   </label>
-                  <Switch id={day} checked={closedDays[idx]} onCheckedChange={() => handleClosedToggle(idx)} />
+                  <Switch name={day} checked={closedDays[idx]} onCheckedChange={() => handleClosedToggle(idx)} />
                 </div>
                 <Input
                   type="time"
@@ -155,10 +159,10 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
         </div>
         {/* Buttons */}
         <div className="flex justify-end gap-2 mt-8">
-          <Button type="submit" className="w-40" variant="default" disabled={false}>
+          <Button type="submit" className="w-30" variant="default" disabled={false}>
             Submit
           </Button>
-          <Button type="button" className="w-40" onClick={onClose} variant="secondary" disabled={false}>
+          <Button type="button" className="w-30" onClick={onClose} variant="secondary" disabled={false}>
             Cancel
           </Button>
         </div>

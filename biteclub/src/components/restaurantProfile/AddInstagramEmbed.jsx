@@ -1,16 +1,49 @@
+import { Label } from '../shared/Label';
+import { Input } from '../shared/Input';
+import { Button } from '../shared/Button';
+import { useState } from 'react';
+
 export default function AddInstagramEmbed({ onClose }) {
+  const [instaLink, setInstaLink] = useState('');
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const instaLink = formData.get('instaLink');
+    console.log(`Form submitted. Value retrieved: ${instaLink}.`);
+    onClose();
+  };
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-xl font-bold mb-4">Write a Review</h2>
-        <textarea className="w-full border rounded-md p-2 h-24 resize-none" placeholder="Your review..." />
-        <div className="flex justify-end gap-2 mt-4">
-          <button onClick={onClose} className="text-gray-500 hover:underline">
-            Cancel
-          </button>
-          <button className="bg-brand-yellow text-white px-4 py-1 rounded">Submit</button>
-        </div>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-8 rounded-md shadow-md w-md absolute right-0 top-100 border border-brand-yellow-lite"
+    >
+      <h2 className="mb-4">EMBED INSTAGRAM POST</h2>
+
+      <div>
+        {/* address */}
+        <Label htmlFor="instaLink">
+          <h4>Link</h4>
+        </Label>
+        <Input
+          name="instaLink"
+          type="text"
+          placeholder="https://www.instagram.com/p/DCZlEDqy2to/"
+          value={instaLink}
+          onChange={e => setInstaLink(e.target.value)}
+          required
+          className="w-full"
+        />
       </div>
-    </div>
+      {/* Buttons */}
+      <div className="flex justify-end gap-2 mt-8">
+        <Button type="submit" className="w-30" variant="default" disabled={false}>
+          Post
+        </Button>
+        <Button type="button" className="w-30" onClick={onClose} variant="secondary" disabled={false}>
+          Cancel
+        </Button>
+      </div>
+    </form>
   );
 }

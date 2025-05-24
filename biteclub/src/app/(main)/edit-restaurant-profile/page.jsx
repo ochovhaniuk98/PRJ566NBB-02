@@ -11,9 +11,9 @@ import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
-
 import { useState } from 'react';
 // EDIT RESTAURANT PROFILE!!!!!!!!
+
 export default function EditRestaurantProfile() {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
@@ -23,7 +23,7 @@ export default function EditRestaurantProfile() {
   const [showInstagramPopup, setShowInstagramPopup] = useState(false);
   const [showEditDetailsPopup, setShowEditDetailsPopup] = useState(false);
 
-  /* combine external and internal reviews together in 1 arr */
+  /* TEMPORARY: combine external and internal reviews together in 1 arr */
   const taggedReviews = fakeReviews.map(r => ({ type: 'review', data: r }));
   const taggedEmbeds = embedList.map(e => ({ type: 'embed', embedLink: e.embedLink }));
   const combinedList = [...taggedReviews, ...taggedEmbeds];
