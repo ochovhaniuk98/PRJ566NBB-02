@@ -41,8 +41,9 @@ export function SignUpForm({ className, ...props }) {
           // emailRedirectTo: `${window.location.origin}/callback`,
           emailRedirectTo: `${window.location.origin}/callback?userType=${userType ? 'business' : 'general'}`,
 
-          // Storing user metadata: https://supabase.com/docs/guides/auth/managing-user-data
-          data:{ user_type: userType? 'business' : 'general'}
+          // Storing user metadata, See:
+          // https://supabase.com/docs/guides/auth/managing-user-data#adding-and-retrieving-user-metadata
+          data: { user_type: userType ? 'business' : 'general' },
         },
       });
       if (error) throw error;
@@ -75,6 +76,7 @@ export function SignUpForm({ className, ...props }) {
             access_type: 'offline',
             prompt: 'consent',
           },
+          // data: { user_type: userType ? 'business' : 'general' }, // Doesn't work, need to go to /Callback route
         },
       });
       if (error) throw error;

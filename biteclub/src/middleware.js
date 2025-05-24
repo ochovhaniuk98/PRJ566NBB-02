@@ -21,6 +21,6 @@ export const config = {
 
     // TODO: always remember to check if the route is public or protected. 
     // If public, we need to update the below, or Auth Session will be null somehow...
-    '/((?!_next/|favicon.ico|img/|login|sign-up|sign-up-success|callback|auth-error|forgot-password|update-password|confirm|signout|$).*)',
+    '/((?!_next/|favicon.ico|img/|login|sign-up|sign-up-success|callback|auth-error|forgot-password|update-password|confirm|signout|restaurants|$).*)',
   ],
 };
