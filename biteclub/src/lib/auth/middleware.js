@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
-// [TO IRISH] Uncomment below 
+// [TO IRISH] Uncomment below
 // import { getUserTypeBySupabaseId } from '@/lib/db/dbOperations';
 
 export async function updateSession(request) {
@@ -27,6 +27,7 @@ export async function updateSession(request) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const userType = user?.user_metadata.user_type;
 
   // If request is for: https://example.com/users/business
   // request.nextUrl.pathname => "/users/business"
@@ -42,7 +43,21 @@ export async function updateSession(request) {
     return NextResponse.redirect(loginUrl);
   }
 
-// [TO IRISH] Uncomment below 
+  if (user) {
+    if (pathname.startsWith('/users/business') && userType !== 'business') {
+      const forbiddenUrl = request.nextUrl.clone();
+      forbiddenUrl.pathname = '/403';
+      return NextResponse.redirect(forbiddenUrl);
+    }
+
+    if (pathname.startsWith('/users/general') && userType !== 'general') {
+      const forbiddenUrl = request.nextUrl.clone();
+      forbiddenUrl.pathname = '/403';
+      return NextResponse.redirect(forbiddenUrl);
+    }
+  }  
+
+  // [TO IRISH] Uncomment below
   // ===============================================
   // Logged in but restricted based on userType
   // if (user) {

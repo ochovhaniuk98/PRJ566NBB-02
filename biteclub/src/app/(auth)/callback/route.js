@@ -45,6 +45,7 @@ export async function GET(request) {
         // If New user login (not Sign Up) with Google account, they do not have userType.
         // Force logout from Supabase
         await supabase.auth.signOut();
+        // await supabase.auth.admin.deleteUser(user.id); // If we wish to remove user for reseting the created_at. We will need an extra secret SUPABASE_SERVICE_ROLE_KEY 
 
         // return NextResponse.redirect(`${origin}/auth-error`);
         return NextResponse.redirect(`${origin}/auth-error?reason=unauthorised_google_signup`);
@@ -60,6 +61,12 @@ export async function GET(request) {
       await newUser.save();
 
       finalUserType = userSelectedUserType;
+
+      // We also update user metadata (userType) on Supabase, See:
+      // https://supabase.com/docs/reference/javascript/auth-updateuser
+      await supabase.auth.updateUser({
+        data: { user_type: finalUserType },
+      });
     } else {
       // If user already registered, we use the current userType stored in MongoDB
       finalUserType = existingUser.userType;
