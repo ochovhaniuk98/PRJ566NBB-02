@@ -7,14 +7,28 @@ import { fakeRestaurantData, fakeReviews, embedList } from '@/app/data/fakeData'
 import ReviewsOnGrid3Col from '@/components/shared/ReviewsOnGrid3Col';
 import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
 import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
+import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
+import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
+import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
+import ImageUpload from '@/components/imageUpload/imageUpload';
+import UploadImageForm from '@/components/restaurantProfile/UploadImageForm';
 import { useState } from 'react';
 
-export default function RestaurantProfile() {
+// ***** EDIT RESTAURANT PROFILE ****
+export default function EditRestaurantProfile() {
+  const isBusinessUser = true; // flag for business user
+
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
 
-  /* combine external and internal reviews together in 1 arr */
+  // states for editing profile
+  const [showInstagramPopup, setShowInstagramPopup] = useState(false);
+  const [showEditDetailsPopup, setShowEditDetailsPopup] = useState(false);
+  const [showAddPhotoPopup, setShowAddPhotoPopup] = useState(false);
+
+  /* TEMPORARY: combine external and internal reviews together in 1 arr */
   const taggedReviews = fakeReviews.map(r => ({ type: 'review', data: r }));
   const taggedEmbeds = embedList.map(e => ({ type: 'embed', embedLink: e.embedLink }));
   const combinedList = [...taggedReviews, ...taggedEmbeds];
@@ -29,8 +43,30 @@ export default function RestaurantProfile() {
         numReviews={fakeRestaurantData.numReviews}
         cuisine={fakeRestaurantData.cuisines}
         address={fakeRestaurantData.location}
-        numFavourites={0}
-      />
+      >
+        {isBusinessUser ? (
+          <>
+            <SingleTabWithIcon
+              icon={faHeart}
+              detailText={'Add Instagram Post'}
+              onClick={() => setShowInstagramPopup(true)}
+            />
+            <SingleTabWithIcon icon={faHeart} detailText={'Add Photo'} onClick={() => setShowAddPhotoPopup(true)} />
+
+            <SingleTabWithIcon
+              icon={faHeart}
+              detailText={'Edit Profile Details'}
+              onClick={() => setShowEditDetailsPopup(true)}
+            />
+          </>
+        ) : (
+          <>
+            <SingleTabWithIcon icon={faHeart} detailText={0} />
+            <SingleTabWithIcon icon={faPen} detailText="Write a Review" />
+            <SingleTabWithIcon icon={faUtensils} detailText="Reserve Table" />
+          </>
+        )}
+      </InfoBanner>
 
       <div className="main-side-padding mb-16 w-full">
         <ProfileTabBar onTabChange={setSelectedTab} tabs={restaurantTabs} />
@@ -54,6 +90,11 @@ export default function RestaurantProfile() {
           />
         )}
       </div>
+      {showInstagramPopup && <AddInstagramEmbed onClose={() => setShowInstagramPopup(false)} />}
+      {showAddPhotoPopup && <UploadImageForm onClose={() => setShowAddPhotoPopup(false)} />}
+      {showEditDetailsPopup && (
+        <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={fakeRestaurantData} />
+      )}
     </MainBaseContainer>
   );
 }
