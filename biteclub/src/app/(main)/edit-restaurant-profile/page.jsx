@@ -15,8 +15,10 @@ import ImageUpload from '@/components/imageUpload/imageUpload';
 import UploadImageForm from '@/components/restaurantProfile/UploadImageForm';
 import { useState } from 'react';
 
-// EDIT RESTAURANT PROFILE!!!!!!!!
+// ***** EDIT RESTAURANT PROFILE ****
 export default function EditRestaurantProfile() {
+  const isBusinessUser = true; // flag for business user
+
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
@@ -31,8 +33,6 @@ export default function EditRestaurantProfile() {
   const taggedEmbeds = embedList.map(e => ({ type: 'embed', embedLink: e.embedLink }));
   const combinedList = [...taggedReviews, ...taggedEmbeds];
   const randomCombinedList = combinedList.sort(() => Math.random() - 0.5);
-
-  const isBusinessUser = true; // flag for business user
 
   return (
     <MainBaseContainer>
