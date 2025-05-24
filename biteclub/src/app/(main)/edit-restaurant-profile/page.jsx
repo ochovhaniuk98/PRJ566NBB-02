@@ -86,7 +86,9 @@ export default function EditRestaurantProfile() {
         )}
       </div>
       {showInstagramPopup && <AddInstagramEmbed onClose={() => setShowInstagramPopup(false)} />}
-      {showEditDetailsPopup && <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} />}
+      {showEditDetailsPopup && (
+        <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={fakeRestaurantData} />
+      )}
     </MainBaseContainer>
   );
 }
