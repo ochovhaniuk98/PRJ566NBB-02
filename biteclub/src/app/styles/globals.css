@@ -60,7 +60,11 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   /* text input field */
   input,
   textarea {
-    @apply appearance-none border bg-white border-brand-blue rounded-full px-4 py-2 my-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-aqua;
+    @apply appearance-none border bg-white border-brand-blue rounded-full px-4 pt-2 mt-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-aqua;
+  }
+
+  input {
+    @apply pb-2 mb-2;
   }
 
   input::placeholder {

@@ -6,7 +6,7 @@ import { User, BusinessUser } from '@/lib/model/dbSchema';
 export async function GET(request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const rawUserType = searchParams.get('userType'); // Will be defined on Sign Up, but undefined on Login
+  const userSelectedUserType = searchParams.get('userType'); // Will be defined on Sign Up, but undefined on Login
 
   if (!code) {
     return NextResponse.redirect(`${origin}/auth-error`);
@@ -29,7 +29,7 @@ export async function GET(request) {
   }
 
   let finalUserType = null;
-  const isNewSignup = rawUserType === 'business' || rawUserType === 'general';
+  const isNewSignup = userSelectedUserType === 'business' || userSelectedUserType === 'general';
 
   // Connect and save to MongoDB
   try {
@@ -45,21 +45,28 @@ export async function GET(request) {
         // If New user login (not Sign Up) with Google account, they do not have userType.
         // Force logout from Supabase
         await supabase.auth.signOut();
+        // await supabase.auth.admin.deleteUser(user.id); // If we wish to remove user for reseting the created_at. We will need an extra secret SUPABASE_SERVICE_ROLE_KEY 
 
         // return NextResponse.redirect(`${origin}/auth-error`);
         return NextResponse.redirect(`${origin}/auth-error?reason=unauthorised_google_signup`);
       }
 
-      const Model = rawUserType === 'business' ? BusinessUser : User;
+      const Model = userSelectedUserType === 'business' ? BusinessUser : User;
 
       const newUser = new Model({
         supabaseId: user.id,
-        userType: rawUserType,
+        userType: userSelectedUserType,
       });
 
       await newUser.save();
 
-      finalUserType = rawUserType;
+      finalUserType = userSelectedUserType;
+
+      // We also update user metadata (userType) on Supabase, See:
+      // https://supabase.com/docs/reference/javascript/auth-updateuser
+      await supabase.auth.updateUser({
+        data: { user_type: finalUserType },
+      });
     } else {
       // If user already registered, we use the current userType stored in MongoDB
       finalUserType = existingUser.userType;

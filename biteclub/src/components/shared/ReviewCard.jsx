@@ -5,7 +5,7 @@ import reviewCardIconArr from '@/app/data/iconData';
 import EngagementIconStat from './EngagementIconStat';
 
 export default function ReviewCard({ review, photos, onClick, isSelected }) {
-  console.log('IMAGESRC: ', review.data);
+  //console.log('IMAGESRC: ', review.data);
   return (
     <div
       className={`${

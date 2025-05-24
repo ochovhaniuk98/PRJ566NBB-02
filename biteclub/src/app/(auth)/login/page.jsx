@@ -1,17 +1,8 @@
 import { LoginForm } from '@/components/auth/Login-form';
-//import { GalleryVerticalEnd } from "lucide-react";
-import { createClient } from '@/lib/auth/server';
-import { redirect } from 'next/navigation';
 
 export default async function Page() {
-  const supabase = await createClient();
 
-  const { data, error } = await supabase.auth.getUser();
-  // console.log(data.user)
-  if (data?.user) {
-    // TODO: Might change. We will redirect Business Users vs General Users to different route.
-    redirect('/users');
-  }
+  // If not logged in, show the login form
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="relative hidden bg-brand-green lg:block"></div>

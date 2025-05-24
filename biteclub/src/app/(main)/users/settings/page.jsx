@@ -1,16 +1,34 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/auth/client';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Input } from '@/components/shared/Input';
 import { Label } from '@/components/shared/Label';
 import { Switch } from '@/components/shared/Switch';
 import { Button } from '@/components/shared/Button';
+import { LogoutButton } from '@/components/auth/Logout-button';
+import Avatar from '@/app/(auth)/account-setup/general/avatar';
 
 export default function Settings() {
+  const [user, setUser] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState('');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+      if (!error) setUser(data.user);
+    };
+    fetchUser();
+  }, []);
+
   return (
     <MainBaseContainer>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center m-16 bg-white">
-        {/* Add contents/components here */}
-        <form className="w-4xl">
+        <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} />
+        <form className="w-4xl mt-8">
           <GridCustomCols numOfCols={2}>
             <div className="py-1 px-12 flex flex-col gap-2">
               <h2 className="mb-4">Account Details</h2>
@@ -24,7 +42,7 @@ export default function Settings() {
                 <Label htmlFor="email">
                   <h4>Password</h4>
                 </Label>
-                <Input id="email" type="email" placeholder="janedoe@myemail.com" required className="w-full" />
+                <Input id="email" type="email" placeholder="password" required className="w-full" />
               </div>
               <div>
                 <Label htmlFor="email">
@@ -68,6 +86,11 @@ export default function Settings() {
           <Button type="submit" className="w-40" variant="danger" disabled={false}>
             Delete Account
           </Button>
+        </div>
+
+        <div className="w-4xl mt-8 py-8 px-12 border-t border-brand-peach">
+          {/* TODO: (TEMP LOGOUT) Change the style in /components/auth/Logout-button  */}
+          <LogoutButton />
         </div>
       </div>
     </MainBaseContainer>

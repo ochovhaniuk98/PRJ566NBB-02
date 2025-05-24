@@ -1,16 +1,53 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { createClient } from '@/lib/auth/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faHouseChimney, faGamepad, faUtensils, faGear } from '@fortawesome/free-solid-svg-icons';
 import { faMicroblog } from '@fortawesome/free-brands-svg-icons';
+import { useEffect, useState } from 'react';
 
 export default function MainMenu() {
   const pathname = usePathname();
-  const menuIcons = [faHouseChimney, faUser, faGamepad, faUtensils, faMicroblog, faGear];
+  const [userType, setUserType] = useState(null);
 
+useEffect(() => {
+  const fetchUserType = async () => {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase.auth.getUser();
+
+      if (data?.user?.id) {
+        const response = await fetch('/api/get-user-type', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ supabaseId: data.user.id }),
+        });
+
+        const { userType } = await response.json();
+        setUserType(userType);
+      } else {
+        // Optional: explicitly set userType to null
+        setUserType(null);
+      }
+    } catch (error) {
+      console.error('Error fetching user type:', error);
+    }
+  };
+
+  fetchUserType();
+}, []);
+
+  const menuIcons = [faHouseChimney, faUser, faGamepad, faUtensils, faMicroblog, faGear];
   // !!! settings link temporary - will put it inside general user's profile later !!!
-  const menuLinks = ['/', '/users', '#', '/restaurants', '#', '/users/general/settings'];
+  const menuLinks = [
+    '/',
+    userType ? `/users/${userType}` : '/login', // if no userType = user have not we redirect user to login page.
+    '#',
+    '/restaurants',
+    '#',
+    '/users/settings',
+  ];
 
   return (
     <aside className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey">

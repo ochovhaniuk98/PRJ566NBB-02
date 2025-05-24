@@ -5,6 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { CldUploadWidget, getCldImageUrl } from 'next-cloudinary';
+import { Button } from '@/components/shared/Button';
 
 export default function Avatar({ uid, url, size, onUpload }) {
   const [uploading, setUploading] = useState(false);
@@ -121,15 +122,22 @@ export default function Avatar({ uid, url, size, onUpload }) {
           }
         }}
       >
-        {({ open }) => (
-          <label
+        {({ open }) =>
+          uploading ? (
+            <p>Uploading...</p>
+          ) : (
+            <Button type="submit" onClick={() => open()} className="w-30" variant="secondary" disabled={false}>
+              Upload Photo
+            </Button>
+          )
+        }
+        {/*<label
             onClick={() => open()}
             className="text-sm text-blue-600 cursor-pointer hover:underline"
             htmlFor="single"
           >
             {uploading ? 'Uploading ...' : 'Upload'}
-          </label>
-        )}
+          </label>*/}
       </CldUploadWidget>
     </div>
   );

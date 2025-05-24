@@ -25,7 +25,23 @@ export function UpdatePasswordForm({ className, ...props }) {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push('/users');
+
+      //  const userType = await getUserTypeBySupabaseId(data.user.id); // This can only work on server side, not client side.
+      const { data } = await supabase.auth.getUser();
+
+      if (data?.user?.id) {
+        const response = await fetch('/api/get-user-type', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ supabaseId: data.user.id }),
+        });
+
+        const { userType } = await response.json();
+
+        if (userType) {
+          router.push(`/users/${userType}`);
+        }
+      }
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {

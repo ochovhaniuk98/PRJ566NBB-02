@@ -20,7 +20,6 @@ export function SignUpForm({ className, ...props }) {
   const [userType, setUserType] = useState(false); // Switch: Business Account -> True
   const router = useRouter();
 
-
   // Supabase Auth
   // Email Sign Up
   const handleSignUp = async e => {
@@ -41,6 +40,10 @@ export function SignUpForm({ className, ...props }) {
         options: {
           // emailRedirectTo: `${window.location.origin}/callback`,
           emailRedirectTo: `${window.location.origin}/callback?userType=${userType ? 'business' : 'general'}`,
+
+          // Storing user metadata, See:
+          // https://supabase.com/docs/guides/auth/managing-user-data#adding-and-retrieving-user-metadata
+          data: { user_type: userType ? 'business' : 'general' },
         },
       });
       if (error) throw error;
@@ -68,11 +71,12 @@ export function SignUpForm({ className, ...props }) {
         provider: 'google',
         options: {
           // redirectTo: `${window.location.origin}/callback`,
-           redirectTo: `${window.location.origin}/callback?userType=${userType ? 'business' : 'general'}`,
+          redirectTo: `${window.location.origin}/callback?userType=${userType ? 'business' : 'general'}`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
           },
+          // data: { user_type: userType ? 'business' : 'general' }, // Doesn't work, need to go to /Callback route
         },
       });
       if (error) throw error;
