@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/auth/server';
+import { createClient as createAdminClient } from '@supabase/supabase-js';
 import dbConnect from '@/lib/db/dbConnect';
 import { User, BusinessUser } from '@/lib/model/dbSchema';
 
@@ -14,6 +15,8 @@ export async function GET(request) {
 
   const supabase = await createClient();
   const { error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
+
+  const supabaseAdmin = createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
   if (sessionError) {
     return NextResponse.redirect(`${origin}/auth-error`);
@@ -41,11 +44,11 @@ export async function GET(request) {
     if (!existingUser) {
       if (!isNewSignup) {
         console.error('No userType found in DB and no userType provided by searchParams');
-
-        // If New user login (not Sign Up) with Google account, they do not have userType.
-        // Force logout from Supabase
-        await supabase.auth.signOut();
-        // await supabase.auth.admin.deleteUser(user.id); // If we wish to remove user for reseting the created_at. We will need an extra secret SUPABASE_SERVICE_ROLE_KEY 
+        
+        // If a new user logs in (not signs up) using Google, they won't have a userType.
+        // However, Google OAuth still creates a user record in the Supabase Auth database.
+        // We want to remove this user from the Auth database.
+        supabaseAdmin.auth.admin.deleteUser(user.id);
 
         // return NextResponse.redirect(`${origin}/auth-error`);
         return NextResponse.redirect(`${origin}/auth-error?reason=unauthorised_google_signup`);
