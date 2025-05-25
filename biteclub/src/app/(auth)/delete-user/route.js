@@ -1,5 +1,5 @@
 // import { createClient } from '@/lib/auth/server'; // do not use. not useful
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
 // Delete a User. See:
@@ -16,7 +16,7 @@ export async function POST(req) {
     return NextResponse.json({ error: '(delete-user) Missing userId' }, { status: 400 });
   }
 
-  const { error } = (await supabaseAdmin).auth.admin.deleteUser(userId);
+  const { error } = supabaseAdmin.auth.admin.deleteUser(userId);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

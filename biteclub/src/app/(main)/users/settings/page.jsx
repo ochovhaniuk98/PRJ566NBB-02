@@ -9,6 +9,7 @@ import { Label } from '@/components/shared/Label';
 import { Switch } from '@/components/shared/Switch';
 import { Button } from '@/components/shared/Button';
 import { LogoutButton } from '@/components/auth/Logout-button';
+import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
 import { useRouter } from 'next/navigation';
 
@@ -25,20 +26,6 @@ export default function Settings() {
     };
     fetchUser();
   }, []);
-
-  const handleDeleteUser = async () => {
-    if (!user) return;
-
-    await fetch('/delete-user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.id }),
-    });
-
-    await supabase.auth.signOut();
-    router.push('/');
-  };
-
 
   return (
     <MainBaseContainer>
@@ -99,9 +86,8 @@ export default function Settings() {
         <div className="w-4xl mt-8 py-8 px-12 border-t border-brand-peach">
           <h2 className="mb-4">Delete Account</h2>
           <p className="mb-4">Once you delete your account, there is no going back. Please be certain.</p>
-          <Button type="submit" className="w-40" variant="danger" disabled={false} onClick={handleDeleteUser}>
-            Delete Account
-          </Button>
+
+          <DeleteAccountButton user={user} />
         </div>
 
         <div className="w-4xl mt-8 py-8 px-12 border-t border-brand-peach">
