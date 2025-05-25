@@ -15,7 +15,7 @@ import Avatar from '@/app/(auth)/account-setup/general/avatar';
 export default function Settings() {
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatar_url, setAvatarUrl] = useState('');
   const [password, setPassword] = useState('');
   const [userBio, setUserBio] = useState('');
   const supabase = createClient();
@@ -73,7 +73,19 @@ export default function Settings() {
   return (
     <MainBaseContainer>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center m-16 bg-white">
-        <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} />
+        {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
+          {user ? (
+            <Avatar
+              uid={user.id}
+              url={avatar_url}
+              size={150}
+              onUpload={url => {
+                setAvatarUrl(url);
+              }}
+            />
+          ) : (
+            <p>Loading user...</p>
+          )}
 
         <form className="w-4xl mt-8" onSubmit={handleSubmit}>
           <GridCustomCols numOfCols={2}>
