@@ -1,9 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
-// [TO IRISH] Uncomment below
-// import { getUserTypeBySupabaseId } from '@/lib/db/dbOperations';
-
 export async function updateSession(request) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -57,31 +54,6 @@ export async function updateSession(request) {
     }
   }  
 
-  // [TO IRISH] Uncomment below
-  // ===============================================
-  // Logged in but restricted based on userType
-  // if (user) {
-  //   try {
-  //     const userType = await getUserTypeBySupabaseId(user.id);
-  //     console.log(`userType: ${userType}`);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-
-  //   if (pathname.startsWith('/users/business') && userType !== 'business') {
-  //     const forbiddenUrl = request.nextUrl.clone();
-  //     forbiddenUrl.pathname = '/403';
-  //     return NextResponse.redirect(forbiddenUrl);
-  //   }
-
-  //   if (pathname.startsWith('/users/general') && userType !== 'general') {
-  //     const forbiddenUrl = request.nextUrl.clone();
-  //     forbiddenUrl.pathname = '/403';
-  //     return NextResponse.redirect(forbiddenUrl);
-  //   }
-  // }
-
-  // ===============================================
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:
