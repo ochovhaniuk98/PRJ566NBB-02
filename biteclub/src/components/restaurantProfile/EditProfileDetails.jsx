@@ -1,10 +1,15 @@
 import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
-import { useState } from 'react';
 import { Switch } from '../shared/Switch';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faImages } from '@fortawesome/free-solid-svg-icons';
+import EditPhotosModal from './EditPhotosModal';
+import { useState } from 'react';
 
 export default function EditProfileDetails({ onClose, restaurantData }) {
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+
   const [name, setName] = useState(restaurantData.name);
   const [address, setAddress] = useState(restaurantData.location);
   const [cuisines, setCuisines] = useState(restaurantData.cuisines);
@@ -54,7 +59,7 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-md shadow-md w-fit">
         <h2 className="mb-8 w-fit mx-auto">Edit Profile Details</h2>
         <div className="flex space-x-12">
-          <div className="w-xs border-r pr-12 border-brand-peach flex flex-col gap-2">
+          <div className="w-xs border-r pr-12 border-brand-peach flex flex-col gap-4">
             <div>
               {/* name */}
               <Label htmlFor="name">
@@ -106,6 +111,24 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
                 required
               />
               <h6 className="m-0 p-0 text-xs font-primary">Seperate cusines with a comma.</h6>
+            </div>
+            <div>
+              <div>
+                {/* photos */}
+                <Label htmlFor="cusisines">
+                  <h4>Edit Photos</h4>
+                </Label>
+                <Button
+                  type="button"
+                  className="w-full mt-2"
+                  onClick={() => setShowPhotoModal(true)}
+                  variant="third"
+                  disabled={false}
+                >
+                  <FontAwesomeIcon icon={faImages} className="icon-2xl text-brand-navy cursor-pointer" />
+                  Photos
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -167,6 +190,11 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
           </Button>
         </div>
       </form>
+      {/* Edit Photos Modal */}
+      {showPhotoModal && (
+        <EditPhotosModal photos={restaurantData.images} showModal={showPhotoModal} setShowModal={setShowPhotoModal} />
+      )}
+      {console.log('photos', restaurantData)}
     </div>
   );
 }
