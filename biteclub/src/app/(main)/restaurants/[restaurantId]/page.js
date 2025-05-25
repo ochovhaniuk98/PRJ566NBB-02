@@ -1,4 +1,5 @@
 'use client';
+
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
 import InfoBanner from '@/components/restaurantProfile/InfoBanner';
@@ -8,12 +9,13 @@ import ReviewsOnGrid3Col from '@/components/shared/ReviewsOnGrid3Col';
 import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
 import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
+
 import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
-import ImageUpload from '@/components/imageUpload/imageUpload';
-import UploadImageForm from '@/components/restaurantProfile/UploadImageForm';
 import { useState } from 'react';
+import RestaurantImageUpload from '@/components/restaurantProfile/restaurantImageUpload';
+import ImageUpload from '@/components/imageUpload/imageUpload';
 
 // ***** EDIT RESTAURANT PROFILE ****
 export default function EditRestaurantProfile() {
@@ -51,7 +53,7 @@ export default function EditRestaurantProfile() {
               detailText={'Add Instagram Post'}
               onClick={() => setShowInstagramPopup(true)}
             />
-            <ImageUpload buttonType={'iconTab'} />
+            <RestaurantImageUpload buttonType={'iconTab'} />
 
             <SingleTabWithIcon
               icon={faHeart}
