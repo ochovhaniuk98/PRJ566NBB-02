@@ -12,7 +12,6 @@ import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-sol
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
 import ImageUpload from '@/components/imageUpload/imageUpload';
-import UploadImageForm from '@/components/restaurantProfile/UploadImageForm';
 import { useState } from 'react';
 
 // ***** EDIT RESTAURANT PROFILE ****
@@ -91,7 +90,6 @@ export default function EditRestaurantProfile() {
         )}
       </div>
       {showInstagramPopup && <AddInstagramEmbed onClose={() => setShowInstagramPopup(false)} />}
-      {showAddPhotoPopup && <UploadImageForm onClose={() => setShowAddPhotoPopup(false)} />}
       {showEditDetailsPopup && (
         <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={fakeRestaurantData} />
       )}
