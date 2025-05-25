@@ -107,6 +107,10 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
 }
 
 @layer utilities {
+  .icon-2xl {
+    font-size: 2rem;
+    /*@apply text-brand-navy;*/
+  }
   .icon-xl {
     font-size: 1.5rem;
     /*@apply text-brand-navy;*/
