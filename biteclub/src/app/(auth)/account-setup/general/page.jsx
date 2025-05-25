@@ -17,40 +17,40 @@ export default function GeneralSetupForm() {
       const supabase = createClient();
       const { data, error } = await supabase.auth.getUser();
       if (!error) setUser(data.user);
+      setUsername(data.user.user_metadata?.name || '');
     };
     fetchUser();
   }, []);
 
-const handleSubmit = async () => {
-  setLoading(true);
+  const handleSubmit = async () => {
+    setLoading(true);
 
-  const data = {
-    supabaseId: user.id,
-    username: username,
-    userBio: '', // Not required to input on signup
-  };
+    const data = {
+      supabaseId: user.id,
+      username: username || '',
+      userBio: '', // Not required to input on signup
+    };
 
-  try {
-    const res = await fetch('/api/update-general-user-profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch('/api/update-general-user-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
 
-    if (!res.ok) {
-      const { message } = await res.json();
-      throw new Error(message || 'Failed to update profile');
+      if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || 'Failed to update profile');
+      }
+
+      router.push('/users/general/questionnaire');
+    } catch (err) {
+      console.error(err);
+      alert('Error updating profile. Please try again.');
+    } finally {
+      setLoading(false);
     }
-
-    router.push('/users/general/questionnaire');
-  } catch (err) {
-    console.error(err);
-    alert('Error updating profile. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -63,9 +63,6 @@ const handleSubmit = async () => {
               size={150}
               onUpload={url => {
                 setAvatarUrl(url);
-                // TODO: Update Image with Cloudinary logic
-                // updateProfile({ username, avatar_url: url });
-                // DONE
               }}
             />
           ) : (
@@ -94,7 +91,6 @@ const handleSubmit = async () => {
               value={username}
               onChange={e => setUsername(e.target.value)}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-              required
             />
           </div>
         </div>

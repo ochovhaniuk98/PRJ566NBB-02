@@ -6,9 +6,9 @@ export async function POST(req) {
     const body = await req.json();
     const { supabaseId, username, userBio } = body;
 
-    if (!supabaseId || !username) {
-      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
-    }
+    // if (!supabaseId || !username) {
+    //   return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+    // }
 
     const updatedUser = await updateGeneralUsername({ supabaseId, username, userBio });
 
