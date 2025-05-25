@@ -14,7 +14,7 @@ import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-sol
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
 import { useState } from 'react';
-import RestaurantImageUpload from '@/components/restaurantProfile/restaurantImageUpload';
+import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import ImageUpload from '@/components/imageUpload/imageUpload';
 
 // ***** EDIT RESTAURANT PROFILE ****
