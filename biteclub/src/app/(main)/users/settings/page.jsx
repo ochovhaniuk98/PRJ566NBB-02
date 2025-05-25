@@ -10,19 +10,35 @@ import { Switch } from '@/components/shared/Switch';
 import { Button } from '@/components/shared/Button';
 import { LogoutButton } from '@/components/auth/Logout-button';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
+import { useRouter } from 'next/navigation';
 
 export default function Settings() {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState('');
+  const supabase = createClient();
 
   useEffect(() => {
     const fetchUser = async () => {
-      const supabase = createClient();
       const { data, error } = await supabase.auth.getUser();
       if (!error) setUser(data.user);
     };
     fetchUser();
   }, []);
+
+  const handleDeleteUser = async () => {
+    if (!user) return;
+
+    await fetch('/delete-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id }),
+    });
+
+    await supabase.auth.signOut();
+    router.push('/');
+  };
+
 
   return (
     <MainBaseContainer>
@@ -83,7 +99,7 @@ export default function Settings() {
         <div className="w-4xl mt-8 py-8 px-12 border-t border-brand-peach">
           <h2 className="mb-4">Delete Account</h2>
           <p className="mb-4">Once you delete your account, there is no going back. Please be certain.</p>
-          <Button type="submit" className="w-40" variant="danger" disabled={false}>
+          <Button type="submit" className="w-40" variant="danger" disabled={false} onClick={handleDeleteUser}>
             Delete Account
           </Button>
         </div>
