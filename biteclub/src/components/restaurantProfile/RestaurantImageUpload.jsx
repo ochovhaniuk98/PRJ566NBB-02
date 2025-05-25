@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { CldUploadWidget, getCldImageUrl } from 'next-cloudinary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleXmark, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark, faHeart, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '../shared/SingleTabWithIcon';
 
 export default function RestaurantImageUpload({ buttonType }) {
@@ -55,6 +55,7 @@ export default function RestaurantImageUpload({ buttonType }) {
           const info = result?.info;
           //setUploadedImageInfo(info);
           setUploadedImages(prev => [...prev, info]); // allows to show array of images after upload
+          setShowModal(true);
           console.log('Upload Success:', info);
 
           try {
@@ -93,7 +94,6 @@ export default function RestaurantImageUpload({ buttonType }) {
               onClick={() => {
                 setUploadedImages([]); // clear data before opening modal
                 open();
-                setShowModal(true);
               }}
             />
           )
@@ -119,7 +119,10 @@ export default function RestaurantImageUpload({ buttonType }) {
               {uploadedImages.length > 0 &&
                 uploadedImages.map((img, i) => {
                   return (
-                    <div className="bg-white w-fit h-fit p-2 rounded-md flex flex-col items-center mb-4 shadow-sm">
+                    <div
+                      key={i}
+                      className=" relative bg-white w-fit h-fit p-2 rounded-md flex flex-col items-center mb-4 shadow-sm"
+                    >
                       <img
                         src={img.url}
                         alt={img.original_filename}
@@ -131,6 +134,11 @@ export default function RestaurantImageUpload({ buttonType }) {
                           ? img.original_filename.slice(0, 25) + '...'
                           : img.original_filename}
                       </h5>
+                      <div className="absolute -top-2 -right-2 aspect-square w-8 bg-white rounded-full"></div>
+                      <FontAwesomeIcon
+                        icon={faCircleCheck}
+                        className="absolute -top-2 -right-2 icon-2xl text-brand-green"
+                      />
                     </div>
                   );
                 })}

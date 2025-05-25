@@ -55,7 +55,7 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/5 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-md shadow-md w-fit">
         <h2 className="mb-8 w-fit mx-auto">Edit Profile Details</h2>
         <div className="flex space-x-12">
@@ -116,7 +116,7 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
               <div>
                 {/* photos */}
                 <Label htmlFor="cusisines">
-                  <h4>Edit Photos</h4>
+                  <h4>Delete Photos</h4>
                 </Label>
                 <Button
                   type="button"
@@ -183,7 +183,7 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
         {/* Buttons */}
         <div className="flex justify-end gap-2 mt-8">
           <Button type="submit" className="w-30" variant="default" disabled={false}>
-            Submit
+            Save
           </Button>
           <Button type="button" className="w-30" onClick={onClose} variant="secondary" disabled={false}>
             Cancel

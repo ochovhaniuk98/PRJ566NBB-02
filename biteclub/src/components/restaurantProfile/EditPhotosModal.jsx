@@ -38,10 +38,10 @@ export default function EditPhotosModal({ photos = [], showModal, setShowModal }
                   >
                     <img src={img.url} alt={img.caption} width="200" className="aspect-square object-cover mb-1" />
                     <h5>{img.caption.length > 25 ? img.caption.slice(0, 25) + '...' : img.caption}</h5>
-                    <div className="absolute -top-2 -right-2 aspect-square w-8 bg-white rounded-full"></div>
+                    <div className="absolute -top-2 -right-2 aspect-square w-8 bg-white rounded-full shadow-sm"></div>
                     <FontAwesomeIcon
                       icon={faCircleXmark}
-                      className="absolute -top-2 -right-2 icon-2xl text-brand-red cursor-pointer"
+                      className="absolute -top-2 -right-2 icon-2xl text-brand-red cursor-pointer hover:text-4xl transition-all duration-300"
                       onClick={() => handleRemove(i)}
                     />
                   </div>
