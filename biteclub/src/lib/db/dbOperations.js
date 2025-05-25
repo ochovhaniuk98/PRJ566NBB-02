@@ -105,3 +105,27 @@ export async function getProfilePicByUserSuperbaseId(supabaseId) {
 
   return image;
 }
+
+// Update general user's username and bio
+export async function updateGeneralUsername(data) {
+  await dbConnect();
+
+  const user = await User.findOneAndUpdate(
+    { supabaseId: data.supabaseId },
+    {
+      username: data.username,
+      userBio: data.userBio,
+    },
+    { new: true } // returns the updated user
+  );
+
+  return user;
+}
+
+// Get general user's username and bio
+export async function getGeneralUserProfile({ supabaseId }) {
+  await dbConnect();
+  const user = await User.findOne({ supabaseId });
+  if (!user) return null;
+  return { username: user.username, userBio: user.userBio };
+}

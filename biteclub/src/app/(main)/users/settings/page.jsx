@@ -11,10 +11,8 @@ import { Button } from '@/components/shared/Button';
 import { LogoutButton } from '@/components/auth/Logout-button';
 import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
-import { useRouter } from 'next/navigation';
 
 export default function Settings() {
-  const router = useRouter();
   const [user, setUser] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState('');
   const supabase = createClient();
