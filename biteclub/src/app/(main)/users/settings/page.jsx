@@ -18,55 +18,71 @@ export default function Settings() {
   const [avatar_url, setAvatarUrl] = useState('');
   const [password, setPassword] = useState('');
   const [userBio, setUserBio] = useState('');
+  const [error, setError] = useState(null);
   const supabase = createClient();
 
-  
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await supabase.auth.getUser();
       if (!data?.user) return;
-      
+
       setUser(data.user);
-      
+
       const res = await fetch('/api/get-general-user-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ supabaseId: data.user.id }),
       });
-      
+
       const { profile } = await res.json();
-      
-      setUsername(profile.username || '')
+
+      setUsername(profile.username || '');
       setUserBio(profile.userBio || '');
       // setAvatarUrl(profile.avatarUrl || '');
     };
-    
+
     fetchData();
   }, []);
-  
+
   const handleSubmit = async e => {
     e.preventDefault();
-    
-    if (password !== '') {
-      await supabase.auth.updateUser({ password });
+    setError(null); // reset error state
+
+    try {
+      if (password !== '') {
+        const { error } = await supabase.auth.updateUser({ password });
+
+        // Throw an error here if password update fails
+        if (error) throw error;
+      }
+
+      if (user?.id) {
+        const res = await fetch('/api/update-general-user-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            supabaseId: user.id,
+            userBio,
+            username,
+          }),
+        });
+
+        if (!res.ok) {
+          const { message } = await res.json();
+          throw new Error(message || 'Profile update failed');
+        }
+      }
+
+      alert('Settings updated!');
+      setPassword('');
+    } catch (err) {
+      console.error(err);
+
+      // Password-related errors will be caught and set here
+      setError(err instanceof Error ? err.message : JSON.stringify(err));
     }
-    
-    if (user?.id) {
-      await fetch('/api/update-general-user-profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          supabaseId: user.id,
-          userBio,
-          username,
-        }),
-      });
-    }
-    
-    alert('Settings updated!');
-    setPassword('');
   };
-  
+
   // If the user signed up using Google OAuth, they do not need to update their password.
   const isGoogleUser = user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google');
 
@@ -74,18 +90,18 @@ export default function Settings() {
     <MainBaseContainer>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center m-16 bg-white">
         {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
-          {user ? (
-            <Avatar
-              uid={user.id}
-              url={avatar_url}
-              size={150}
-              onUpload={url => {
-                setAvatarUrl(url);
-              }}
-            />
-          ) : (
-            <p>Loading user...</p>
-          )}
+        {user ? (
+          <Avatar
+            uid={user.id}
+            url={avatar_url}
+            size={150}
+            onUpload={url => {
+              setAvatarUrl(url);
+            }}
+          />
+        ) : (
+          <p>Loading user...</p>
+        )}
 
         <form className="w-4xl mt-8" onSubmit={handleSubmit}>
           <GridCustomCols numOfCols={2}>
@@ -108,17 +124,17 @@ export default function Settings() {
 
               {!isGoogleUser && (
                 <div>
-                  <Label htmlFor="password">
-                    <h4>Password</h4>
-                  </Label>
+                  <Label htmlFor="password">Password</Label>
                   <input
                     id="password"
                     type="password"
-                    // placeholder="(optional) set your new password"
+                    placeholder="Set a new password"
+                    required
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     className="w-full"
                   />
+                  {error && <p className="text-sm text-red-500">{error}</p>}
                 </div>
               )}
 

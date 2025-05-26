@@ -1,53 +1,46 @@
-'use client';
+'use client'
 
-import { cn } from '@/lib/utils';
-import { createClient } from '@/lib/auth/client';
-import { Button } from '@/components/shared/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/auth/ui/Card';
-import { Input } from '@/components/shared/Input';
-import { Label } from '@/components/shared/Label';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/auth/client'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
-export function UpdatePasswordForm({ className, ...props }) {
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+export function UpdatePasswordForm({
+  className,
+  ...props
+}) {
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
-  const handleForgotPassword = async e => {
-    e.preventDefault();
-    const supabase = createClient();
-    setIsLoading(true);
-    setError(null);
+  const handleForgotPassword = async (e) => {
+    e.preventDefault()
+    const supabase = createClient()
+    setIsLoading(true)
+    setError(null)
 
     try {
-      const { error } = await supabase.auth.updateUser({ password });
-      if (error) throw error;
+      const { error } = await supabase.auth.updateUser({ password })
+      if (error) throw error
       // Update this route to redirect to an authenticated route. The user already has an active session.
-
-      //  const userType = await getUserTypeBySupabaseId(data.user.id); // This can only work on server side, not client side.
-      const { data } = await supabase.auth.getUser();
-
-      if (data?.user?.id) {
-        const response = await fetch('/api/get-user-type', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ supabaseId: data.user.id }),
-        });
-
-        const { userType } = await response.json();
-
-        if (userType) {
-          router.push(`/users/${userType}`);
-        }
-      }
+      router.push('/users')
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An error occurred');
+      setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
@@ -67,8 +60,7 @@ export function UpdatePasswordForm({ className, ...props }) {
                   placeholder="New password"
                   required
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
-                />
+                  onChange={(e) => setPassword(e.target.value)} />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
