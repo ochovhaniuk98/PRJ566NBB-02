@@ -138,7 +138,7 @@ export default function EditRestaurantProfile() {
         <AddInstagramEmbed restaurantId={restaurantData._id} onClose={() => setShowInstagramPopup(false)} />
       )}
       {showEditDetailsPopup && (
-        <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={fakeRestaurantData} />
+        <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={restaurantData} />
       )}
     </MainBaseContainer>
   );

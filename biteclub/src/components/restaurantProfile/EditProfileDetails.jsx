@@ -12,20 +12,20 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
 
   const [name, setName] = useState(restaurantData.name);
   const [address, setAddress] = useState(restaurantData.location);
-  const [cuisines, setCuisines] = useState(restaurantData.cuisines);
+  const [cuisines, setCuisines] = useState(restaurantData.cuisines.join(', '));
 
   const [businessHours, setBusinessHours] = useState(() => {
-    return restaurantData.businessHours.map(day => ({
+    return restaurantData.BusinessHours.map(day => ({
       open: day.opening || '',
       close: day.closing || '',
     }));
   });
 
   const [closedDays, setClosedDays] = useState(() => {
-    return restaurantData.businessHours.map(day => !day.opening && !day.closing);
+    return restaurantData.BusinessHours.map(day => !day.opening && !day.closing);
   });
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     // grab input values -- hours missing
@@ -35,6 +35,33 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
     const cuisines = formData.get('cuisines');
     // const phone = formData.get('phone');
 
+    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    const formattedBusinessHours = businessHours.map((hours, idx) => ({
+      day: daysOfWeek[idx],
+      opening: closedDays[idx] ? null : hours.open || '',
+      closing: closedDays[idx] ? null : hours.close || '',
+    }));
+
+    const body = {
+      ...(name && { name }),
+      ...(address && { location: address }),
+      ...(cuisines && { cuisines: cuisines.split(',').map(c => c.trim()) }),
+      BusinessHours: formattedBusinessHours,
+    };
+
+    const res = await fetch(`/api/restaurants/${restaurantData._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error('Error updating restaurant details:', errorData);
+      return;
+    }
     console.log(`Form submitted. Values retrieved: ${name}, ${address}, and ${cuisines}.`);
     onClose();
   };
@@ -90,13 +117,13 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
                 className="w-full"
               />
             </div>
-            <div>
-              {/* phone */}
+            {/* phone */}
+            {/* <div>
               <Label htmlFor="phone">
                 <h4>Phone Number</h4>
               </Label>
               <Input name="phone" type="tel" placeholder="What's your number? 😏" required className="w-full" />
-            </div>
+            </div> */}
             <div>
               {/* cuisines */}
               <Label htmlFor="cusisines">
@@ -106,7 +133,7 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
                 name="cuisines"
                 className="w-full border rounded-md p-2 h-24 resize-none"
                 placeholder="What’s cooking? Canadian, Vegan, Breakfast? 🍁🍃🥞"
-                value={cuisines.join(', ')}
+                value={cuisines}
                 onChange={e => setCuisines(e.target.value)}
                 required
               />
