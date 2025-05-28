@@ -83,24 +83,27 @@ export default function Questionnaire() {
   }
 
   async function submit() {
-      console.log(selectedCuisines, selectedDietaryPreferences)
-      console.log(likelinessToTryFood);
-      console.log(restaurantFrequency);
-      console.log(decisionDifficulty);
-      console.log(openToDiversity);
-      fetch("/api/update-general-user-profile/questionnaire", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          supabaseId: (await supabase.auth.getUser()).data.user.id,
-          selectedCuisines,
-          selectedDietaryPreferences,
-          likelinessToTryFood,
-          restaurantFrequency,
-          decisionDifficulty,
-          openToDiversity
-        })
-      })
+    console.log(selectedCuisines, selectedDietaryPreferences);
+    console.log(likelinessToTryFood);
+    console.log(restaurantFrequency);
+    console.log(decisionDifficulty);
+    console.log(openToDiversity);
+    const res = await fetch('/api/update-general-user-profile/questionnaire', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supabaseId: (await supabase.auth.getUser()).data.user.id,
+        selectedCuisines,
+        selectedDietaryPreferences,
+        likelinessToTryFood,
+        restaurantFrequency,
+        decisionDifficulty,
+        openToDiversity,
+      }),
+    });
+    if (res.status == 200){
+      router.push("/")
+    }
   }
 
   return (
