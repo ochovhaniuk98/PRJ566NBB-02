@@ -67,6 +67,21 @@ export async function getRestaurantReviews(id) {
   };
 }
 
+export async function updateRestaurant(id, data) {
+  await dbConnect();
+
+  const restaurant = await Restaurant.findOneAndUpdate(
+    { _id: id },
+    { $set: data }, // Using $set to allow partial updates
+    { new: true }
+  );
+
+  if (!restaurant) {
+    throw new Error('Restaurant not found');
+  }
+  return restaurant;
+}
+
 export async function addExternalReview(embedLink, userId, restaurantId) {
   await dbConnect();
 
