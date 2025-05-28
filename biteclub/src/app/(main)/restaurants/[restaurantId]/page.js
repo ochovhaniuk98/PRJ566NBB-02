@@ -129,7 +129,7 @@ export default function EditRestaurantProfile() {
           />
         )}
         {/* Photos */}
-        {selectedTab === restaurantTabs[2] && <PhotoGallery photos={fakeRestaurantData.images} />}
+        {selectedTab === restaurantTabs[2] && <PhotoGallery photos={images} />}
 
         {/* Business Info */}
         {selectedTab === restaurantTabs[5] && (
