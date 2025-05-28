@@ -43,7 +43,7 @@ export default function GeneralSetupForm() {
         throw new Error(message || 'Failed to update profile');
       }
 
-      router.push('/users/general/questionnaire');
+      router.push('/questionnaire');
     } catch (err) {
       console.error(err);
       alert('Error updating profile. Please try again.');
