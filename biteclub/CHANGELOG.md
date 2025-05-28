@@ -45,7 +45,6 @@ Components created for the following:
    * Instagram embeds
    * photos section
    * business info section
-   * forms for business user's profile modification (i.e. photo upload, Instagram embeds, edit profile details)
 
  * **User Authentication**
    * sign-up and login pages
@@ -55,4 +54,5 @@ Components created for the following:
    * settings page (i.e. username/password/bio change form, display preferences, delete account button)
 
  * **Business User Profile Management**
-   * forms for profile modification (i.e. photo upload modal, Instagram embed form, edit profile details form)
+   * forms for profile modification (i.e. delete photo modal, Instagram embed form, edit profile details form)
+ 

@@ -19,10 +19,13 @@ const UserSchema = new mongoose.Schema({
   strike: Number,
   numOfPoints: Number,
   pointsResetDate: Date,
+  personalization_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Personalization'},
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   visitedPlaces: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   favouriteRestaurants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   favouriteBlogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost' }],
+  displayVisitedPlaces: {type: mongoose.Schema.Types.Boolean},
+  displayFavouriteRestaurants: {type: mongoose.Schema.Types.Boolean},
   creditCards: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard' }],
   orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
   userType: String,
@@ -229,6 +232,17 @@ const TestCloudinaryImageSchema = new mongoose.Schema({
   updated_at: Date,
 });
 
+// Stores user's answers to the Questionnaire
+const PersonalizationSchema = new mongoose.Schema({
+  favouriteCuisines: [mongoose.Schema.Types.String],
+  dietaryPreferences: [mongoose.Schema.Types.String],
+  likelinessToTryFood: mongoose.Schema.Types.Int32,
+  restaurantFrequency: mongoose.Schema.Types.Int32,
+  decisionDifficulty: mongoose.Schema.Types.Int32,
+  openToDiversity: mongoose.Schema.Types.Int32,
+})
+
+
 // Export models
 export const User = mongoose.models?.User || mongoose.model('User', UserSchema);
 export const Photo = mongoose.models?.Photo || mongoose.model('Photo', PhotoSchema);
@@ -259,3 +273,4 @@ export const Restaurant = mongoose.models?.Restaurant || mongoose.model('Restaur
 export const BusinessUser = mongoose.models?.BusinessUser || mongoose.model('BusinessUser', BusinessUserSchema);
 export const TestCloudinaryImage =
   mongoose.models?.TestCloudinaryImage || mongoose.model('TestCloudinaryImage', TestCloudinaryImageSchema);
+export const Personalization = mongoose.models?.Personalization || mongoose.model('Personalization', PersonalizationSchema);
