@@ -19,6 +19,7 @@ const UserSchema = new mongoose.Schema({
   strike: Number,
   numOfPoints: Number,
   pointsResetDate: Date,
+  personalization_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Personalization'},
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   visitedPlaces: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   favouriteRestaurants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
