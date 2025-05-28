@@ -13,9 +13,10 @@ import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import ImageUpload from '@/components/imageUpload/imageUpload';
+import { useParams } from 'next/navigation';
 
 // ***** EDIT RESTAURANT PROFILE ****
 export default function EditRestaurantProfile() {
@@ -29,6 +30,64 @@ export default function EditRestaurantProfile() {
   const [showInstagramPopup, setShowInstagramPopup] = useState(false);
   const [showEditDetailsPopup, setShowEditDetailsPopup] = useState(false);
   const [showAddPhotoPopup, setShowAddPhotoPopup] = useState(false);
+
+  const [restaurantData, setRestaurantData] = useState(null);
+  const [reviewsData, setReviewsData] = useState(null);
+  const { restaurantId } = useParams();
+
+  useEffect(() => {
+    if (!restaurantId) return;
+
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/restaurants/${restaurantId}`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch restaurant data');
+        }
+        const restaurantData = await res.json();
+        setRestaurantData(restaurantData);
+      } catch (error) {
+        console.error('Error fetching restaurant data:', error);
+      }
+    };
+
+    fetchData();
+  }, [restaurantId]);
+
+  useEffect(() => {
+    if (!restaurantId) return;
+
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(`/api/restaurant-reviews/${restaurantId}`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch restaurant reviews');
+        }
+        const reviewsData = await res.json();
+        setReviewsData(reviewsData);
+      } catch (error) {
+        console.error('Error fetching restaurant reviews:', error);
+      }
+    };
+    fetchReviews();
+  }, [restaurantId]);
+
+  if (!restaurantData || !reviewsData) {
+    return <p>isLoading...</p>;
+  }
+
+  const {
+    name,
+    cuisines,
+    rating,
+    numReviews,
+    priceRange,
+    dietaryOptions,
+    BusinessHours,
+    bannerImages,
+    images,
+    location,
+  } = restaurantData;
 
   /* TEMPORARY: combine external and internal reviews together in 1 arr */
   const taggedReviews = fakeReviews.map(r => ({ type: 'review', data: r }));
