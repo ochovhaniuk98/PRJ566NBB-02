@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef } from 'react';
 import { createClient } from '@/lib/auth/client';
+import { useRouter } from 'next/navigation';
 
 const DIETARY_CONFIG = {
   title: 'DIETARY PREFERENCES',
@@ -25,6 +26,8 @@ const CUISINE_CONFIG = {
 };
 
 export default function Questionnaire() {
+  const router = useRouter();
+
   const [dietaryOptions, setDietaryOptions] = useState([
     'Vegetarian',
     'Vegan',
@@ -75,10 +78,10 @@ export default function Questionnaire() {
   const [openToDiversity, setOpenToDiversity] = useState(DEFAULT_VALUE);
   const supabase = createClient();
   function nextStep() {
-    if (step == FIRST_STEP){
+    if (step == FIRST_STEP) {
       setStep(SECOND_STEP);
     } else if (step == SECOND_STEP) {
-      setStep(FINAL_STEP)
+      setStep(FINAL_STEP);
     }
   }
 
@@ -109,7 +112,7 @@ export default function Questionnaire() {
   return (
     <div className="grid grid-cols-[55%_45%] h-screen relative">
       <div className="bg-black"></div>
-      <div className="relative bg-[#fffbe6] p-[10%]">
+      <div className="relative bg-[#fffbe6] p-[10%] h-full">
         <div className="flex flex-col items-center">
           <h1 className="self-center text-xl font-extrabold">{step}</h1>
           <span className="self-center text-[8px]">STEP {step}/3</span>
@@ -147,7 +150,7 @@ export default function Questionnaire() {
             I'll do this later
           </a>
         ) : null}
-        <button onClick={step != FINAL_STEP ? nextStep: submit} className="absolute bottom-8.5 right-10.5">
+        <button onClick={step != FINAL_STEP ? nextStep : submit} className="absolute bottom-8.5 right-10.5">
           {step != FINAL_STEP ? 'Next Step' : 'Complete'}
         </button>
       </div>
@@ -158,7 +161,7 @@ export default function Questionnaire() {
 function PreferencesSelector({ config, picked, setPicked, options, setOptions }) {
   const customInput = useRef();
 
-  const toggle = t => setPicked(p => p.includes(t) ? p.filter(x => x !== t) : [...p, t]);
+  const toggle = t => setPicked(p => (p.includes(t) ? p.filter(x => x !== t) : [...p, t]));
 
   const addCustomSelection = () => {
     let value = customInput.current.value.trim();
@@ -172,30 +175,39 @@ function PreferencesSelector({ config, picked, setPicked, options, setOptions })
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       <h2 className="font-bold self-center">{config.title}</h2>
-      <p className="text-sm">{config.instructions}</p>
-      <div className="flex flex-wrap gap-2 p-4 rounded-2xl">
-        {options.map(t => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => toggle(t)}
-            className={`inline-flex items-center gap-1 px-4 py-1 rounded-full text-sm font-semibold shadow-sm border-none transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8bc53f] ${
-              picked.includes(t) ? 'bg-[#8bc53f] text-white' : 'bg-[#fff5df] text-[#06317b]'
-            }`}
-          >
-            {t}
-            <span className="text-blue-800 text-base ml-1">🐘</span>
-          </button>
-        ))}
+      <div className="mb-[50px]">
+        <p className="text-sm">{config.instructions}</p>
+        <div className="flex flex-wrap gap-2 p-4 rounded-2xl">
+          {options.map(t => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => toggle(t)}
+              className={`inline-flex items-center gap-1 px-4 py-1 rounded-full text-sm font-semibold shadow-sm border-none transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8bc53f] ${
+                picked.includes(t) ? 'bg-[#8bc53f] text-white' : 'bg-[#fff5df] text-[#06317b]'
+              }`}
+            >
+              {t}
+              <span className="text-blue-800 text-base ml-1">🐘</span>
+            </button>
+          ))}
+        </div>
       </div>
-      <h2 className="font-semibold text-base">{config.customSection.missingPrompt}</h2>
-      <p className="text-sm">{config.customSection.inputInstructions}</p>
-      <input ref={customInput} className="rounded-3xl w-[40%]" placeholder={config.customSection.inputPlaceholder} />
-      <button className="rounded-3xl bg-[#ffdcbe] w-[130px] text-sm py-[5px]" onClick={addCustomSelection}>
-        {config.customSection.buttonLabel}
-      </button>
+      <div>
+        <h2 className="font-semibold text-base">{config.customSection.missingPrompt}</h2>
+        <p className="text-sm">{config.customSection.inputInstructions}</p>
+        <div className="flex flex-col w-[55%]">
+          <input ref={customInput} className="rounded-3xl" placeholder={config.customSection.inputPlaceholder} />
+          <button
+            className="self-center rounded-3xl bg-[#ffdcbe] w-[130px] text-sm py-[5px]"
+            onClick={addCustomSelection}
+          >
+            {config.customSection.buttonLabel}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -219,34 +231,44 @@ function Scale({ value, setValue }) {
   }
   return (
     <>
-      <div className="relative flex flex-row justify-between w-[80%] h-[17px]">
+      <div className="relative flex flex-row justify-between w-[95%] h-[17px]">
         <div className="self-center absolute bg-[#ffdcbe] h-[7px] w-full" />
         {buttons}
       </div>
     </>
   );
 }
-function LikertScale(
-  {
-    likelinessToTryFood, setLikelinessToTryFood,
-    restaurantFrequency, setRestaurantFrequency,
-    decisionDifficulty, setDecisionDifficulty,
-    openToDiversity, setOpenToDiversity
-  }) {
-
+function LikertScale({
+  likelinessToTryFood,
+  setLikelinessToTryFood,
+  restaurantFrequency,
+  setRestaurantFrequency,
+  decisionDifficulty,
+  setDecisionDifficulty,
+  openToDiversity,
+  setOpenToDiversity,
+}) {
   return (
-    <div className="flex flex-col items-left">
+    <div className="flex flex-col items-left h-full">
       <h1 className="text-xl self-center font-bold">Know your zone</h1>
       <p>Complete the following to help us understand how comfortable you are trying new foods and cuisines.</p>
-      <div className="flex flex-col items-center w-full">
-        <p>I find it easy to try new foods.</p>
-        <Scale value={likelinessToTryFood} setValue={setLikelinessToTryFood} />
-        <p>How often do you try new restaurants?</p>
-        <Scale value={restaurantFrequency} setValue={setRestaurantFrequency} />
-        <p>When ordering food, I find it difficult to decide where and what to eat.</p>
-        <Scale value={decisionDifficulty} setValue={setDecisionDifficulty} />
-        <p>I want to broaden and diversify my palate, and step out of my comfort zone.</p>
-        <Scale value={openToDiversity} setValue={setOpenToDiversity} />
+      <div className="flex flex-col items-center w-full justify-between h-[60%]">
+        <div className="flex flex-col items-center w-full">
+          <p>I find it easy to try new foods.</p>
+          <Scale value={likelinessToTryFood} setValue={setLikelinessToTryFood} />
+        </div>
+        <div className="flex flex-col items-center w-full">
+          <p>How often do you try new restaurants?</p>
+          <Scale value={restaurantFrequency} setValue={setRestaurantFrequency} />
+        </div>
+        <div className="flex flex-col items-center w-full">
+          <p>When ordering food, I find it difficult to decide where and what to eat.</p>
+          <Scale value={decisionDifficulty} setValue={setDecisionDifficulty} />
+        </div>
+        <div className="flex flex-col items-center w-full">
+          <p>I want to broaden and diversify my palate, and step out of my comfort zone.</p>
+          <Scale value={openToDiversity} setValue={setOpenToDiversity} />
+        </div>
       </div>
     </div>
   );
