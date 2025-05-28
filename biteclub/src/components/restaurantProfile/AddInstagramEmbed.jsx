@@ -8,10 +8,38 @@ export default function AddInstagramEmbed({ restaurantId, userId, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const formatEmbedLink = link => {
+    try {
+      // Parse the URL
+      const url = new URL(link);
+      // Remove query and hash
+      url.search = '';
+      url.hash = '';
+      const cleanedUrl = url.toString();
+
+      // validate the cleaned URL
+      const instagramRegex = /^https?:\/\/(www\.)?(instagram\.com|instagr\.am)\/p\/[a-zA-Z0-9_-]+\/?$/;
+      if (instagramRegex.test(cleanedUrl)) {
+        return cleanedUrl;
+      }
+      return null;
+    } catch (e) {
+      return null; // Invalid URL
+    }
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    const formattedLink = formatEmbedLink(embedLink);
+
+    if (!formattedLink) {
+      setError('Invalid Instagram post link format');
+      setLoading(false);
+      return; // stop submission
+    }
 
     try {
       const res = await fetch('/api/submit-external-review', {
@@ -20,7 +48,7 @@ export default function AddInstagramEmbed({ restaurantId, userId, onClose }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          embedLink,
+          embedLink: formattedLink,
           userId,
           restaurantId,
         }),
