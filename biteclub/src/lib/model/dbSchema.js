@@ -231,6 +231,17 @@ const TestCloudinaryImageSchema = new mongoose.Schema({
   updated_at: Date,
 });
 
+// Stores user's answers to the Questionnaire
+const PersonalizationSchema = new mongoose.Schema({
+  favouriteCuisines: [mongoose.Schema.Types.String],
+  dietaryPreferences: [mongoose.Schema.Types.String],
+  likelinessToTryFood: mongoose.Schema.Types.Int32,
+  restaurantFrequency: mongoose.Schema.Types.Int32,
+  decisionDifficulty: mongoose.Schema.Types.Int32,
+  openToDiversity: mongoose.Schema.Types.Int32,
+})
+
+
 // Export models
 export const User = mongoose.models?.User || mongoose.model('User', UserSchema);
 export const Photo = mongoose.models?.Photo || mongoose.model('Photo', PhotoSchema);
