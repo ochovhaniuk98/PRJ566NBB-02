@@ -67,6 +67,19 @@ export async function getRestaurantReviews(id) {
   };
 }
 
+export async function addExternalReview(embedLink, userId, restaurantId) {
+  await dbConnect();
+
+  const newReview = new ExternalReview({
+    content: { embedLink },
+    user_id: userId,
+    restaurant_id: restaurantId,
+  });
+
+  const savedReview = await newReview.save();
+  return savedReview;
+}
+
 // Post to TestCloudinaryImage Collection
 export async function postTestCloudinaryImage(data) {
   await dbConnect();
