@@ -115,6 +115,8 @@ export async function updateGeneralUsername(data) {
     {
       username: data.username,
       userBio: data.userBio,
+      displayFavouriteRestaurants: data.displayFavouriteRestaurants,
+      displayVisitedPlaces: data.displayVisitedPlaces,
     },
     { new: true } // returns the updated user
   );
@@ -127,5 +129,8 @@ export async function getGeneralUserProfile({ supabaseId }) {
   await dbConnect();
   const user = await User.findOne({ supabaseId });
   if (!user) return null;
-  return { username: user.username, userBio: user.userBio };
+  return { username: user.username, 
+    userBio: user.userBio, 
+    displayFavouriteRestaurants: user.displayFavouriteRestaurants, 
+    displayVisitedPlaces: user.displayVisitedPlaces};
 }

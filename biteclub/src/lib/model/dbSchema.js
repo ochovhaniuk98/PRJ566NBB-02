@@ -23,6 +23,8 @@ const UserSchema = new mongoose.Schema({
   visitedPlaces: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   favouriteRestaurants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   favouriteBlogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost' }],
+  displayVisitedPlaces: {type: mongoose.Schema.Types.Boolean},
+  displayFavouriteRestaurants: {type: mongoose.Schema.Types.Boolean},
   creditCards: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard' }],
   orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
   userType: String,
