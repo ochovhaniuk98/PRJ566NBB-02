@@ -89,22 +89,10 @@ export default function EditRestaurantProfile() {
     location,
   } = restaurantData;
 
-  /* TEMPORARY: combine external and internal reviews together in 1 arr */
-  const taggedReviews = fakeReviews.map(r => ({ type: 'review', data: r }));
-  const taggedEmbeds = embedList.map(e => ({ type: 'embed', embedLink: e.embedLink }));
-  const combinedList = [...taggedReviews, ...taggedEmbeds];
-  const randomCombinedList = combinedList.sort(() => Math.random() - 0.5);
-
   return (
     <MainBaseContainer>
-      <ImageBanner images={fakeRestaurantData.bannerImages} />
-      <InfoBanner
-        name={fakeRestaurantData.name}
-        avgRating={fakeRestaurantData.rating}
-        numReviews={fakeRestaurantData.numReviews}
-        cuisine={fakeRestaurantData.cuisines}
-        address={fakeRestaurantData.location}
-      >
+      <ImageBanner images={bannerImages} />
+      <InfoBanner name={name} avgRating={rating} numReviews={numReviews} cuisine={cuisines} address={location}>
         {isOwner ? (
           <>
             <SingleTabWithIcon
@@ -137,7 +125,7 @@ export default function EditRestaurantProfile() {
           <ReviewsOnGrid3Col
             selectedReview={selectedReview}
             setSelectedReview={setSelectedReview}
-            reviewList={randomCombinedList} // internal + external reviews
+            reviewList={reviewsData} // internal + external reviews
           />
         )}
         {/* Photos */}
