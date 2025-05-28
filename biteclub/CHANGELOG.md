@@ -15,3 +15,4 @@
 
 ## User Profile Management
 * Users can update their username, password, and profile picture on Setting page
+ 
