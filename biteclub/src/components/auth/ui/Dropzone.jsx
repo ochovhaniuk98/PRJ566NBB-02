@@ -57,7 +57,7 @@ export function Dropzone() {
     <section className="w-full max-w-xl mx-auto mt-2">
       <div
         {...getRootProps()}
-        className="border-2 border-dashed border-brand-blue bg-brand-blue-lite p-6 text-center rounded-md cursor-pointer"
+        className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-16 text-center rounded-md cursor-pointer"
       >
         <input {...getInputProps()} />
         <p className="text-sm">Drag & drop files here, or click to select files</p>
