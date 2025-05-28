@@ -3,7 +3,7 @@
 ## Database Setup
 ### Cloudinary
 - Implemented the Image Upload feature with integration into Cloudinary (for image storage) and MongoDB
-- Implemented TipTap rich text editor
+- Implemented TipTap rich text editor 
 
 ## User Authentication
 * Enabled Google OAuth and email/password methods for sign-up and login
