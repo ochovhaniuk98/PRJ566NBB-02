@@ -4,7 +4,7 @@ import { SimpleEditor } from '@/components/tiptap-rich-text-editor/tiptap-templa
 
 export default function Page() {
   return (
-    <div className="mt-20">
+    <div className="h-screen overflow-y-auto w-full mt-20">
       <SimpleEditor />
     </div>
   );
