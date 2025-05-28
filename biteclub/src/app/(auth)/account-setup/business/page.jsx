@@ -24,13 +24,10 @@ export default function BusinessSetupForm() {
   }, []);
 
   const handleSubmit = async () => {
-    // updateProfile({ username, avatar_url });
     setLoading(true);
     // TODO: Store restaurantName and uploaded file to MongoDB / Cloudinary
     router.push('/users/business');
   };
-
-  // if (!user) return <p>Loading...</p>;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-brand-green-lite">
@@ -49,7 +46,7 @@ export default function BusinessSetupForm() {
           <input
             id="email"
             type="text"
-             value={user?.email || ''}
+            value={user?.email || ''}
             disabled
             className="mt-1 block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-500 cursor-not-allowed"
           />*/}
@@ -65,8 +62,8 @@ export default function BusinessSetupForm() {
           <input
             id="restaurantName"
             type="text"
-            // value={restaurantName}
-            // onChange={e => setRestaurantName(e.target.value)}
+            value={restaurantName}
+            onChange={e => setRestaurantName(e.target.value)}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           />*/}
           <Input id="restaurantName" type="text" className="w-full" />

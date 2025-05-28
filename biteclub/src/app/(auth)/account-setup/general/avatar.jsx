@@ -1,9 +1,6 @@
-// TODO: change supabase logic to cloudinary logic for user avatar - DONE
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { CldUploadWidget, getCldImageUrl } from 'next-cloudinary';
 import { Button } from '@/components/shared/Button';
 

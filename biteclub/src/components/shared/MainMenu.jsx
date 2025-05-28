@@ -14,7 +14,7 @@ export default function MainMenu() {
 useEffect(() => {
   const fetchUserType = async () => {
     try {
-      const supabase = await createClient();
+      const supabase = createClient();
       const { data } = await supabase.auth.getUser();
 
       if (data?.user?.id) {

@@ -1,3 +1,6 @@
+// biteclub/src/app/api/get-user-type/route.js
+// Get userType from MongoDB using supabaseID
+
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/dbConnect';
 import { User, BusinessUser } from '@/lib/model/dbSchema';

@@ -106,25 +106,26 @@ export async function getProfilePicByUserSuperbaseId(supabaseId) {
   return image;
 }
 
+// Update general user's username and bio
+export async function updateGeneralUsername(data) {
+  await dbConnect();
 
-// [TO IRISH] Uncomment below 
+  const user = await User.findOneAndUpdate(
+    { supabaseId: data.supabaseId },
+    {
+      username: data.username,
+      userBio: data.userBio,
+    },
+    { new: true } // returns the updated user
+  );
 
-// This function is NOT working...
-// Get UserType by Supabase ID
-// for client side, we use api/get-user-type
-// export async function getUserTypeBySupabaseId(supabaseId) {
-//     await dbConnect();
-//     console.log('✅✅✅✅✅✅✅✅✅✅ Connected to MongoDB');
-//     const generalUser = await User.findOne({ supabaseId: supabaseId });
-//     const businessUser = await BusinessUser.findOne({ supabaseId: supabaseId });
+  return user;
+}
 
-//     if (generalUser && businessUser) {
-//       throw new Error('Invalid user: exists in both collections');
-//     }
-
-//     if (generalUser) return 'general';
-//     if (businessUser) return 'business';
-
-//     return null;
-
-// }
+// Get general user's username and bio
+export async function getGeneralUserProfile({ supabaseId }) {
+  await dbConnect();
+  const user = await User.findOne({ supabaseId });
+  if (!user) return null;
+  return { username: user.username, userBio: user.userBio };
+}
