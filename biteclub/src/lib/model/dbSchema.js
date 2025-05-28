@@ -92,7 +92,7 @@ const InternalReviewSchema = new mongoose.Schema({
 const ExternalReviewSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
-  content: [InstagramPostSchema],
+  content: InstagramPostSchema,
 });
 
 // Credit Card

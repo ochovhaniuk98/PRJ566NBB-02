@@ -42,6 +42,31 @@ export async function getRestaurantById(id) {
   return restaurant;
 }
 
+export async function getRestaurantReviews(id) {
+  await dbConnect();
+
+  let reviews = await InternalReview.find({ restaurant_id: id });
+  let externalReviews = await ExternalReview.find({ restaurant_id: id });
+
+  // Wait for all user data to be fetched and attached
+  const updatedReviews = await Promise.all(
+    reviews.map(async review => {
+      const user = await User.findOne({ _id: review.user_id });
+      if (user) {
+        review = review.toObject();
+        review.user_id = user.username;
+        review.user_pic = user.userProfilePicture;
+      }
+      return review;
+    })
+  );
+
+  return {
+    internalReviews: updatedReviews,
+    externalReviews: externalReviews,
+  };
+}
+
 // Post to TestCloudinaryImage Collection
 export async function postTestCloudinaryImage(data) {
   await dbConnect();
