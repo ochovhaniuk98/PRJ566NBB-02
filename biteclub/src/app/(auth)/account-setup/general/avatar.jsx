@@ -81,7 +81,15 @@ export default function Avatar({ uid, url, size, onUpload }) {
             style={{ height: size, width: size }}
           />
         ) : (
-          <div className="rounded-full bg-gray-200" style={{ height: size, width: size }} />
+          //<div className="rounded-full bg-gray-200" style={{ height: size, width: size }} />
+          <img
+            width={size}
+            height={size}
+            src={'../../img/profilePicPlaceholder.png'}
+            alt="placeholder"
+            className="rounded-full object-contain border border-white"
+            style={{ height: size, width: size }}
+          />
         )}
       </div>
 
