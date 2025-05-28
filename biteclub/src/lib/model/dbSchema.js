@@ -273,3 +273,4 @@ export const Restaurant = mongoose.models?.Restaurant || mongoose.model('Restaur
 export const BusinessUser = mongoose.models?.BusinessUser || mongoose.model('BusinessUser', BusinessUserSchema);
 export const TestCloudinaryImage =
   mongoose.models?.TestCloudinaryImage || mongoose.model('TestCloudinaryImage', TestCloudinaryImageSchema);
+export const Personalization = mongoose.models?.Personalization || mongoose.model('Personalization', PersonalizationSchema);
