@@ -1,7 +1,10 @@
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import RestaurantHours from './RestaurantHours';
 
-export default function BusinessInfo({ restaurant, mapSrc }) {
+export default function BusinessInfo({ restaurant }) {
+  const encodedAddress = encodeURIComponent(restaurant.name + ' ' + restaurant.location);
+  const mapSrc = `https://maps.google.com/maps?q=${encodedAddress}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+
   return (
     <GridCustomCols numOfCols={6}>
       <div className="col-span-4 row-span-2 bg-brand-grey">
@@ -19,7 +22,7 @@ export default function BusinessInfo({ restaurant, mapSrc }) {
           <p>{restaurant.location}</p>
           <p>(416) 921-7557</p>
         </div>
-        <RestaurantHours openHours={restaurant.businessHours} />
+        <RestaurantHours openHours={restaurant.BusinessHours} />
       </div>
     </GridCustomCols>
   );
