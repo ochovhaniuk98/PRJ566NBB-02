@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import Avatar from './avatar';
+import { Input } from '@/components/shared/Input';
+import { Button } from '@/components/shared/Button';
+import { Label } from '@/components/shared/Label';
 
 export default function GeneralSetupForm() {
   const router = useRouter();
@@ -53,9 +56,11 @@ export default function GeneralSetupForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="form-widget max-w-md w-full p-6 bg-white shadow-md rounded-md space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-brand-green-lite">
+      <div className="form-widget max-w-md w-full px-12 py-16 border border-brand-yellow-lite shadow-md rounded-md space-y-4 bg-brand-yellow-extralite flex  flex-col justify-center items-stretch">
+        <h2 className="text-center">Welcome to Biteclub!</h2>
         <div>
+          {/* Show avatar image upload if USER */}
           {user ? (
             <Avatar
               uid={user.id}
@@ -70,44 +75,60 @@ export default function GeneralSetupForm() {
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            {/* <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
-            </label>
+            </label>*/}
+
+            <Label htmlFor="email" className={'hidden'}>
+              Email
+            </Label>
+            {/* 
             <input
               id="email"
               type="text"
               value={user?.email || ''}
               disabled
               className="mt-1 block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-500 cursor-not-allowed"
-            />
+            /> */}
+
+            <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
           </div>
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+          <div className="mt-8">
+            {/*<label htmlFor="username" className="block text-sm font-medium text-gray-700">
               Set your username
-            </label>
+            </label> */}
+
+            <Label htmlFor="username">Username</Label>
+            {/* 
             <input
               id="username"
               type="text"
               value={username}
               onChange={e => setUsername(e.target.value)}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-            />
+            />*/}
+            <Input id="username" type="text" className="w-full" />
           </div>
         </div>
 
         <div>
+          {/* 
           <button
             className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-900 transition disabled:opacity-50"
             onClick={handleSubmit}
             disabled={loading}
           >
             {loading ? 'Submitting...' : 'Update'}
-          </button>
+          </button> */}
+
+          <Button className="w-full" onClick={handleSubmit} variant="default" disabled={loading}>
+            {loading ? 'Submitting...' : 'Update'}
+          </Button>
         </div>
 
-        <form action="/signout" method="post">
+        <form action="/signout" method="post" className="relative">
           <button
-            className="w-full text-sm text-red-500 border border-red-300 py-2 rounded-md hover:bg-red-50 transition"
+            className="text-sm text-brand-navy font-primary font-medium p-2 rounded-md absolute -left-8 -bottom-15 underline cursor-pointer"
             type="submit"
           >
             Sign out
@@ -117,3 +138,4 @@ export default function GeneralSetupForm() {
     </div>
   );
 }
+// border border-brand-navy
