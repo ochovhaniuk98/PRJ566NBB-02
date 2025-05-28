@@ -18,6 +18,8 @@ export default function Settings() {
   const [avatar_url, setAvatarUrl] = useState('');
   const [password, setPassword] = useState('');
   const [userBio, setUserBio] = useState('');
+  const [displayFavouriteRestaurants, setDisplayFavouriteRestaurants] = useState(false);
+  const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
   const [error, setError] = useState(null);
   const supabase = createClient();
 
@@ -38,6 +40,10 @@ export default function Settings() {
 
       setUsername(profile.username || '');
       setUserBio(profile.userBio || '');
+      setDisplayFavouriteRestaurants(
+        profile.displayFavouriteRestaurants == undefined ? false : profile.displayFavouriteRestaurants
+      );
+      setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.setDisplayVisitedPlaces);
       // setAvatarUrl(profile.avatarUrl || '');
     };
 
@@ -64,6 +70,8 @@ export default function Settings() {
             supabaseId: user.id,
             userBio,
             username,
+            displayFavouriteRestaurants,
+            displayVisitedPlaces
           }),
         });
 
@@ -158,14 +166,24 @@ export default function Settings() {
                 <label htmlFor="user-role">
                   <h4>Favourite Restaurants</h4>
                 </label>
-                <Switch id="user-role" checked={true} />
+                <Switch
+                  id="user-role"
+                  checked={displayFavouriteRestaurants}
+                  onCheckedChange={checked => {
+                    setDisplayFavouriteRestaurants(checked);
+                  }}
+                />
               </div>
 
               <div className="flex items-center justify-between mb-8">
                 <label htmlFor="user-role">
                   <h4>Visited Places</h4>
                 </label>
-                <Switch id="user-role" checked={true} />
+                <Switch id="user-role" 
+                checked={displayVisitedPlaces} 
+                onCheckedChange={checked => {
+                  setDisplayVisitedPlaces(checked)
+                }}/>
               </div>
             </div>
           </GridCustomCols>

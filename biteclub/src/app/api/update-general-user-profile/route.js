@@ -4,13 +4,14 @@ import { updateGeneralUsername } from '@/lib/db/dbOperations';
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { supabaseId, username, userBio } = body;
+
+    const { supabaseId, username, userBio, displayFavouriteRestaurants, displayVisitedPlaces } = body;
 
     // if (!supabaseId || !username) {
     //   return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     // }
 
-    const updatedUser = await updateGeneralUsername({ supabaseId, username, userBio });
+    const updatedUser = await updateGeneralUsername({ supabaseId, username, userBio, displayFavouriteRestaurants, displayVisitedPlaces });
 
     if (!updatedUser) {
       return NextResponse.json({ message: 'User not found or not general type' }, { status: 404 });
