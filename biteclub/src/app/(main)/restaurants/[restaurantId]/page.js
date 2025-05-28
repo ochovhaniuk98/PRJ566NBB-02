@@ -134,7 +134,9 @@ export default function EditRestaurantProfile() {
         {/* Business Info */}
         {selectedTab === restaurantTabs[5] && <BusinessInfo restaurant={restaurantData} />}
       </div>
-      {showInstagramPopup && <AddInstagramEmbed onClose={() => setShowInstagramPopup(false)} />}
+      {showInstagramPopup && (
+        <AddInstagramEmbed restaurantId={restaurantData._id} onClose={() => setShowInstagramPopup(false)} />
+      )}
       {showEditDetailsPopup && (
         <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={fakeRestaurantData} />
       )}
