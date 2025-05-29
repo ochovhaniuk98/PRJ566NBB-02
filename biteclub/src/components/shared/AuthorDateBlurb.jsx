@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 // Description: Author's name, pic and date that appears on reviews and blog posts.
 export default function AuthorDateBlurb({ authorPic, authorName, date }) {
-  const formattedDate = date.toLocaleDateString('en-US', {
+  const formattedDate = new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

@@ -5,6 +5,12 @@
 - Implemented the Image Upload feature with integration into Cloudinary (for image storage) and MongoDB
 - Implemented TipTap rich text editor 
 
+### MongoDB
+- Setup Schema for collection as per the SRS. (Collections: User, Photo, Comment, InstagramPost, BlogPost, InternalReview, ExternalReview, ChallengeStep, AvailableChallengeDetail, ActiveChallengeDetail, Challenge, PointValueDetail, Point, Event, Announcement, MenuItem, BusinessHours, Restaurant, BusinessUser, etc.)
+- Added restaurant data for resturants in Toronto.
+- Added mock data for users and reviews.
+- Setup MongoDB connection configuration in the backend with basic CRUD operations.
+
 ## User Authentication
 * Enabled Google OAuth and email/password methods for sign-up and login
 * Users can select their user type upon sign-up (business or general)
@@ -15,6 +21,15 @@
 
 ## User Profile Management
 * Users can update their username, password, and profile picture on Settings page
+
+## Restaurant Profile Management
+- Restaurant profiles can be managed by business users.
+- Business users can see their restaurant's profile with the following features:
+  * View and edit restaurant details (name, location, cuisine, business hours)
+  * Add Instagram embeds
+  * View restaurant photos and reviews (with dynamic data from the database)
+- Added Google Maps integration for restaurant location display in business info section.
+[!NOTE]: The restaurant profile management features are currently not fully implemented. The business user has limited editing capabilities.
 
 ## Front-End Development
 Components created for the following:

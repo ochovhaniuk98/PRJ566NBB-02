@@ -1,3 +1,4 @@
+'use server';
 import dbConnect from './dbConnect';
 
 import {
@@ -40,6 +41,59 @@ export async function getRestaurantById(id) {
     throw new Error('Restaurant not found');
   }
   return restaurant;
+}
+
+export async function getRestaurantReviews(id) {
+  await dbConnect();
+
+  let reviews = await InternalReview.find({ restaurant_id: id });
+  let externalReviews = await ExternalReview.find({ restaurant_id: id });
+
+  // Wait for all user data to be fetched and attached
+  const updatedReviews = await Promise.all(
+    reviews.map(async review => {
+      const user = await User.findOne({ _id: review.user_id });
+      if (user) {
+        review = review.toObject();
+        review.user_id = user.username;
+        review.user_pic = user.userProfilePicture;
+      }
+      return review;
+    })
+  );
+
+  return {
+    internalReviews: updatedReviews,
+    externalReviews: externalReviews,
+  };
+}
+
+export async function updateRestaurant(id, data) {
+  await dbConnect();
+
+  const restaurant = await Restaurant.findOneAndUpdate(
+    { _id: id },
+    { $set: data }, // Using $set to allow partial updates
+    { new: true }
+  );
+
+  if (!restaurant) {
+    throw new Error('Restaurant not found');
+  }
+  return restaurant;
+}
+
+export async function addExternalReview(embedLink, userId, restaurantId) {
+  await dbConnect();
+
+  const newReview = new ExternalReview({
+    content: { embedLink },
+    user_id: userId,
+    restaurant_id: restaurantId,
+  });
+
+  const savedReview = await newReview.save();
+  return savedReview;
 }
 
 // Post to TestCloudinaryImage Collection
@@ -129,8 +183,17 @@ export async function getGeneralUserProfile({ supabaseId }) {
   await dbConnect();
   const user = await User.findOne({ supabaseId });
   if (!user) return null;
-  return { username: user.username, 
-    userBio: user.userBio, 
-    displayFavouriteRestaurants: user.displayFavouriteRestaurants, 
-    displayVisitedPlaces: user.displayVisitedPlaces};
+  return {
+    username: user.username,
+    userBio: user.userBio,
+    displayFavouriteRestaurants: user.displayFavouriteRestaurants,
+    displayVisitedPlaces: user.displayVisitedPlaces,
+  };
+}
+
+export async function getBusinessUserRestaurantId({ supabaseId }) {
+  await dbConnect();
+  const user = await BusinessUser.findOne({ supabaseId });
+  if (!user) return null;
+  return { restaurantId: user.restaurantId.toString() ?? null };
 }

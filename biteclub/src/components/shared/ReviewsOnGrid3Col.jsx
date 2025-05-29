@@ -11,25 +11,28 @@ export default function ReviewsOnGrid3Col({ selectedReview, setSelectedReview, r
   const [instagramHeight, setInstagramHeight] = useState(0);
   // dynamically store insta post container's height so that the 3-col grid's rows can resize accordingly
 
+  const combinedList = [...reviewList.internalReviews, ...reviewList.externalReviews];
+  const randomizedReviewList = combinedList.sort(() => Math.random() - 0.5);
+
   return (
     <GridCustomCols numOfCols={4} responsiveHeight={instagramHeight / 2}>
       {selectedReview ? (
         <>
           {/* Left two columns: nested grid of reviews */}
           <div className="col-span-3 grid grid-cols-3 gap-3">
-            {reviewList.map((review, i) =>
-              review.type === 'review' ? (
+            {randomizedReviewList.map((review, i) =>
+              review.photos ? (
                 <ReviewCard
                   key={i}
                   review={review}
-                  photos={review.data.photos}
-                  onClick={() => setSelectedReview(review.data)}
-                  isSelected={selectedReview?.title === review.data.title} // needs unique id
+                  photos={review.photos}
+                  onClick={() => setSelectedReview(review)}
+                  isSelected={selectedReview?._id === review._id} // highlight selected review
                 />
               ) : (
                 <InstagramEmbed
                   key={i}
-                  postUrl={review.embedLink}
+                  postUrl={review.content?.embedLink}
                   onHeightChange={height => setInstagramHeight(height)}
                 />
               )
@@ -40,13 +43,15 @@ export default function ReviewsOnGrid3Col({ selectedReview, setSelectedReview, r
         </>
       ) : (
         // Default 3-column review grid
-        reviewList.map((review, i) =>
-          //<ReviewCard key={i} review={review} photos={review.photos} onClick={() => setSelectedReview(review)} />
-
-          review.type === 'review' ? (
-            <ReviewCard key={i} review={review} photos={review.data.photos} onClick={() => setSelectedReview(review)} />
+        randomizedReviewList.map((review, i) =>
+          review.photos ? (
+            <ReviewCard key={i} review={review} photos={review.photos} onClick={() => setSelectedReview(review)} />
           ) : (
-            <InstagramEmbed key={i} postUrl={review.embedLink} onHeightChange={height => setInstagramHeight(height)} />
+            <InstagramEmbed
+              key={i}
+              postUrl={review.content?.embedLink}
+              onHeightChange={height => setInstagramHeight(height)}
+            />
           )
         )
       )}

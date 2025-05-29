@@ -17,23 +17,19 @@ export default function ReviewCard({ review, photos, onClick, isSelected }) {
     >
       <div className="p-4">
         <div className="flex justify-between">
-          <StarRating colour={'text-brand-green'} iconSize={'icon-lg'} ratingNum={review.data.rating} />
+          <StarRating colour={'text-brand-green'} iconSize={'icon-lg'} ratingNum={review.rating} />
           <div>
             <EngagementIconStat
               iconArr={reviewCardIconArr}
-              statNumArr={[review.data.likes.count, review.data.comments.length]}
+              statNumArr={[review.likes?.count, review.comments?.length]}
             />
           </div>
         </div>
-        <h3>{review.data.title}</h3>
+        <h3>{review.title}</h3>
         {/*TO DO for Cesca: Put word limit in review body preview.
         MISSING DYNAMIC VALUES: author name + pic*/}
-        <p>{review.data.body}</p>
-        <AuthorDateBlurb
-          authorPic="/img/profilepic.jpg"
-          authorName="AUTHOR NOT DYNAMIC"
-          date={review.data.date_posted}
-        />
+        <p>{review.body}</p>
+        <AuthorDateBlurb authorPic={review.user_pic?.url} authorName={review.user_id} date={review.date_posted} />
       </div>
 
       {photos?.length > 0 && (
