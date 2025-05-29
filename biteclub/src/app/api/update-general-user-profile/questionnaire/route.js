@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { User, Personalization } from '@/lib/model/dbSchema';
+import dbConnect from '@/lib/db/dbConnect';
 
 export async function POST(req) {
   try {
+    await dbConnect()
     const body = await req.json();
     const {
       supabaseId,

@@ -43,7 +43,7 @@ export default function Settings() {
       setDisplayFavouriteRestaurants(
         profile.displayFavouriteRestaurants == undefined ? false : profile.displayFavouriteRestaurants
       );
-      setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.setDisplayVisitedPlaces);
+      setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.displayVisitedPlaces);
       // setAvatarUrl(profile.avatarUrl || '');
     };
 
