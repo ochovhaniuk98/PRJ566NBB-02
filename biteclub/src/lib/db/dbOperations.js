@@ -1,3 +1,4 @@
+'use server';
 import dbConnect from './dbConnect';
 
 import {
@@ -188,4 +189,11 @@ export async function getGeneralUserProfile({ supabaseId }) {
     displayFavouriteRestaurants: user.displayFavouriteRestaurants,
     displayVisitedPlaces: user.displayVisitedPlaces,
   };
+}
+
+export async function getBusinessUserRestaurantId({ supabaseId }) {
+  await dbConnect();
+  const user = await BusinessUser.findOne({ supabaseId });
+  if (!user) return null;
+  return { restaurantId: user.restaurantId.toString() ?? null };
 }
