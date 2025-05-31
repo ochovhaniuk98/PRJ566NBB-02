@@ -50,13 +50,15 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen w-full pt-20 px-4 pb-10">
-      <SimpleEditor onContentChange={setEditorContent} />
-      <button onClick={handleSave} className="mt-4 ml-20 bg-blue-600 text-white py-2 px-4 rounded">
+    <div className="h-screen overflow-y-auto w-full mt-50">
+      <button onClick={handleSave} className="mt-30 mb-20 ml-20 bg-blue-600 text-white py-2 px-4 rounded">
         Save to MongoDB
       </button>
+
       {/* Call ReadOnlyEditor to display the Blog Post Content */}
       {displayPost && <ReadOnlyEditor content={editorContent} />}
+
+      <SimpleEditor onContentChange={setEditorContent} />
     </div>
   );
 }

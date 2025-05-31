@@ -30,6 +30,9 @@ import '@/components/tiptap-rich-text-editor/tiptap-node/list-node/list-node.scs
 import '@/components/tiptap-rich-text-editor/tiptap-node/image-node/image-node.scss';
 import '@/components/tiptap-rich-text-editor/tiptap-node/paragraph-node/paragraph-node.scss';
 
+// Instagram
+import { InstagramNode } from '../tiptap-extension/InstagramNode';
+
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE } from '@/lib/tiptap-utils';
 
@@ -41,6 +44,7 @@ export default function ReadOnlyEditor({ content }) {
     editable: false,
     extensions: [
       StarterKit,
+      InstagramNode,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Underline,
       TaskList,
