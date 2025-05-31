@@ -197,3 +197,16 @@ export async function getBusinessUserRestaurantId({ supabaseId }) {
   if (!user) return null;
   return { restaurantId: user.restaurantId.toString() ?? null };
 }
+
+// Update license for Business User
+export async function updateLicenseForBusinessUser(data) {
+  await dbConnect();
+
+  const user = await BusinessUser.findOneAndUpdate(
+    { supabaseId: data.superbaseId },
+    { licenseFileUrl: data.url },
+    { new: true } // returns the updated user
+  );
+
+  return user;
+}
