@@ -7,12 +7,16 @@ import { Dropzone } from '@/components/auth/ui/Dropzone';
 import { Input } from '@/components/shared/Input';
 import { Button } from '@/components/shared/Button';
 import { Label } from '@/components/shared/Label';
+import { CldUploadWidget } from 'next-cloudinary';
 
 export default function BusinessSetupForm() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [restaurantName, setRestaurantName] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [uploadedLicenseInfo, setUploadedLicenseInfo] = useState(null);
+  const [licenseDownloadUrl, setLicenseDownloadUrl] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -23,11 +27,54 @@ export default function BusinessSetupForm() {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    if (uploadedLicenseInfo?.public_id) {
+      console.log('public_id:', uploadedLicenseInfo.public_id);
+      console.log('version:', uploadedLicenseInfo.version);
+
+      const url = `https://res.cloudinary.com/dmcnahm5e/raw/upload/fl_attachment:license/v${uploadedLicenseInfo.version}/${uploadedLicenseInfo.public_id}`;
+
+      setLicenseDownloadUrl(url);
+
+      console.log('Generated License URL:', url);
+    }
+  }, [uploadedLicenseInfo]);
+
   const handleSubmit = async () => {
     setLoading(true);
+
+    // The Image has been stored to Cloudinary at this point
+    // Store License Download Url in Business User (MongoDB)
+    if (user && licenseDownloadUrl) {
+      try {
+        // Add License Download Url to MongoDB
+        const response = await fetch('/api/business-user/license/upload-license', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            superbaseId: user.id,
+            url: licenseDownloadUrl,
+          }),
+        });
+
+        const result = await response.json();
+        console.log('Result', result);
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to update the License PDF');
+        }
+
+        console.log('✅ Metadata saved to MongoDB:', result);
+      } catch (err) {
+        console.error('❌ Error saving metadata:', err.message);
+      }
+    }
+
     // TODO: Store restaurantName and uploaded file to MongoDB / Cloudinary
     router.push('/users/business');
   };
+
+  // if (!user) return <p>Loading...</p>;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-brand-green-lite">
@@ -74,8 +121,26 @@ export default function BusinessSetupForm() {
           <label htmlFor="businessLicense" className="block text-sm font-medium text-gray-700">
             Upload your business license
           </label>*/}
-          <Label htmlFor="businessLicense">Upload your business license.</Label>
-          <Dropzone onDrop={files => console.log(files)} />
+          {/* <Label htmlFor="businessLicense">Upload your business license.</Label> */}
+          {/* <Dropzone onDrop={files => console.log(files)} /> */}
+          <section className="flex flex-col items-center justify-between">
+            <CldUploadWidget
+              uploadPreset="my-uploads"
+              options={{
+                resourceType: 'raw', // Set here too
+              }}
+              onSuccess={async result => {
+                console.log('Upload Success:', result?.info);
+                setUploadedLicenseInfo(result?.info);
+              }}
+            >
+              {({ open }) => (
+                <button onClick={() => open()} className="bg-blue-500 text-white px-4 py-2 rounded">
+                  Upload your business license
+                </button>
+              )}
+            </CldUploadWidget>
+          </section>
         </div>
 
         {/*   <button
