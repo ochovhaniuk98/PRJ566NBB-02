@@ -62,7 +62,7 @@ export default function GeneralUserProfile() {
                 ))}
               </GridCustomCols>
             )}
-            {/* Blog Posts */}
+            {/* Favourite Blog Posts */}
             {selectedTab === profileTabs[3] && (
               <GridCustomCols numOfCols={4}>
                 {Array.from({ length: 12 }).map((_, i) => (
