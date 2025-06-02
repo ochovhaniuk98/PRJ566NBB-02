@@ -3,7 +3,10 @@ import { SimpleEditor } from '../tiptap-rich-text-editor/tiptap-templates/simple
 import { Input } from '../shared/Input';
 import { Label } from '../shared/Label';
 
-export default function TextEditorStyled({ setShowTextEditor }) {
+import { useState, useEffect } from 'react';
+
+export default function TextEditorStyled({ setShowTextEditor, generalUserId }) {
+  console.log('General User Id: ', generalUserId);
   return (
     <>
       <div className=" pt-0 text-center">

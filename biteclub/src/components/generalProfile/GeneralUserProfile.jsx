@@ -118,7 +118,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         {/**** Tab menu and contents - END ****/}
         {showTextEditor && (
           /* Blog Text Editor */
-          <TextEditorStyled setShowTextEditor={setShowTextEditor} />
+          <TextEditorStyled setShowTextEditor={setShowTextEditor} generalUserId={generalUserId} />
         )}
       </div>
     </MainBaseContainer>
