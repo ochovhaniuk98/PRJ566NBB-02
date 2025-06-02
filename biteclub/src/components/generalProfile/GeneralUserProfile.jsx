@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 //import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
@@ -18,8 +18,33 @@ import GeneralUserCard from '@/components/shared/GeneralUserCard';
 import { fakeBlogPost, fakeReviews, fakeUser } from '@/app/data/fakeData';
 
 // GENERAL USER DASHBOARD
-export default function GeneralUserProfile() {
-  const isOwner = true; // flag for showing certain components for profile owner
+export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
+
+  // userId: from MongoDB, not supabase. By default "false" just in-case.
+  //   const isOwner = true; // flag for showing certain components for profile owner
+
+  const [userProfile, setUserProfile] = useState(null);
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await fetch('/api/get-general-user-profile-by-mongoId', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ generalUserId }),
+      });
+
+      const { profile } = await res.json();
+      setUserProfile(profile);
+      console.log('USER profile:', profile);
+    } catch (err) {
+      console.error('Failed to fetch user profile:', err);
+    }
+  };
+
+  if (generalUserId) fetchData();
+}, [generalUserId]);
+
 
   const profileTabs = [
     'Blog Posts',
@@ -33,12 +58,14 @@ export default function GeneralUserProfile() {
   const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
   const [showTextEditor, setShowTextEditor] = useState(false);
 
+  if (!userProfile) return <div>Loading profile...</div>;
+
   return (
     <MainBaseContainer>
       <GeneralUserBanner
         showTextEditor={showTextEditor}
         setShowTextEditor={setShowTextEditor}
-        generalUserData={fakeUser}
+        generalUserData={userProfile}
         isOwner={isOwner}
       />
       <div className="main-side-padding w-full py-8">
@@ -74,7 +101,7 @@ export default function GeneralUserProfile() {
             {selectedTab === profileTabs[5] && (
               <GridCustomCols numOfCols={6}>
                 {Array.from({ length: 12 }).map((_, i) => (
-                  <GeneralUserCard key={i} generalUserData={fakeUser} isFollowing={false} />
+                  <GeneralUserCard key={i} generalUserData={userProfile} isFollowing={false} />
                 ))}{' '}
               </GridCustomCols>
             )}
@@ -82,7 +109,7 @@ export default function GeneralUserProfile() {
             {selectedTab === profileTabs[6] && (
               <GridCustomCols numOfCols={6}>
                 {Array.from({ length: 12 }).map((_, i) => (
-                  <GeneralUserCard key={i} generalUserData={fakeUser} isFollowing={true} />
+                  <GeneralUserCard key={i} generalUserData={userProfile} isFollowing={true} />
                 ))}
               </GridCustomCols>
             )}

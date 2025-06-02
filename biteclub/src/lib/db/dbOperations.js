@@ -28,6 +28,10 @@ import {
   TestCloudinaryImage,
 } from '../../lib/model/dbSchema';
 
+// ==================
+// FOR BUSINESS USERS
+// ==================
+
 export async function getAllRestaurants() {
   await dbConnect();
   const restaurants = await Restaurant.find({});
@@ -96,6 +100,81 @@ export async function addExternalReview(embedLink, userId, restaurantId) {
   return savedReview;
 }
 
+export async function getBusinessUserRestaurantId({ supabaseId }) {
+  await dbConnect();
+  const user = await BusinessUser.findOne({ supabaseId });
+  if (!user) return null;
+  return { restaurantId: user.restaurantId.toString() ?? null };
+}
+
+// Update license for Business User
+export async function updateLicenseForBusinessUser(data) {
+  await dbConnect();
+
+  const user = await BusinessUser.findOneAndUpdate(
+    { supabaseId: data.superbaseId },
+    { licenseFileUrl: data.url },
+    { new: true } // returns the updated user
+  );
+
+  return user;
+}
+
+// =================
+// FOR GENERAL USERS
+// =================
+
+// Update general user's username and bio
+export async function updateGeneralUsername(data) {
+  await dbConnect();
+
+  const user = await User.findOneAndUpdate(
+    { supabaseId: data.supabaseId },
+    {
+      username: data.username,
+      userBio: data.userBio,
+      displayFavouriteRestaurants: data.displayFavouriteRestaurants,
+      displayVisitedPlaces: data.displayVisitedPlaces,
+    },
+    { new: true } // returns the updated user
+  );
+
+  return user;
+}
+
+// Get general user's username and bio (for Account-setUp Page, Setting page)
+export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
+  await dbConnect();
+  const user = await User.findOne({ supabaseId });
+  if (!user) return null;
+  return {
+    username: user.username,
+    userBio: user.userBio,
+    displayFavouriteRestaurants: user.displayFavouriteRestaurants,
+    displayVisitedPlaces: user.displayVisitedPlaces,
+  };
+}
+
+// Return the whole user profile (for User Dashboard, and Public)
+export async function getGeneralUserProfileByMongoId({ mongoId }) {
+  await dbConnect();
+  // const user = await User.findOne({ _id: mongoId });
+  const user = await User.findById(mongoId.id); // Use findById for _id
+  if (!user) return null;
+  return user; // Returns entire User document
+}
+
+export async function getGeneralUserMongoIDbySupabaseId({ supabaseId }) {
+  await dbConnect();
+  const user = await User.findOne({ supabaseId });
+  if (!user) return null;
+  return { id: user._id.toString() ?? null };
+}
+
+// ==================
+// CLOUDINARY RELATED
+// ==================
+
 // Post to TestCloudinaryImage Collection
 export async function postTestCloudinaryImage(data) {
   await dbConnect();
@@ -158,55 +237,4 @@ export async function getProfilePicByUserSuperbaseId(supabaseId) {
   }
 
   return image;
-}
-
-// Update general user's username and bio
-export async function updateGeneralUsername(data) {
-  await dbConnect();
-
-  const user = await User.findOneAndUpdate(
-    { supabaseId: data.supabaseId },
-    {
-      username: data.username,
-      userBio: data.userBio,
-      displayFavouriteRestaurants: data.displayFavouriteRestaurants,
-      displayVisitedPlaces: data.displayVisitedPlaces,
-    },
-    { new: true } // returns the updated user
-  );
-
-  return user;
-}
-
-// Get general user's username and bio
-export async function getGeneralUserProfile({ supabaseId }) {
-  await dbConnect();
-  const user = await User.findOne({ supabaseId });
-  if (!user) return null;
-  return {
-    username: user.username,
-    userBio: user.userBio,
-    displayFavouriteRestaurants: user.displayFavouriteRestaurants,
-    displayVisitedPlaces: user.displayVisitedPlaces,
-  };
-}
-
-export async function getBusinessUserRestaurantId({ supabaseId }) {
-  await dbConnect();
-  const user = await BusinessUser.findOne({ supabaseId });
-  if (!user) return null;
-  return { restaurantId: user.restaurantId.toString() ?? null };
-}
-
-// Update license for Business User
-export async function updateLicenseForBusinessUser(data) {
-  await dbConnect();
-
-  const user = await BusinessUser.findOneAndUpdate(
-    { supabaseId: data.superbaseId },
-    { licenseFileUrl: data.url },
-    { new: true } // returns the updated user
-  );
-
-  return user;
 }
