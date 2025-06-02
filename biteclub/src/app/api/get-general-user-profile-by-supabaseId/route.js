@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getGeneralUserProfile } from '@/lib/db/dbOperations';
+import { getGeneralUserProfileBySupabaseId } from '@/lib/db/dbOperations';
 
 export async function POST(req) {
   try {
@@ -10,7 +10,7 @@ export async function POST(req) {
       return NextResponse.json({ message: 'Missing supabaseId' }, { status: 400 });
     }
 
-    const profile = await getGeneralUserProfile({ supabaseId });
+    const profile = await getGeneralUserProfileBySupabaseId({ supabaseId });
 
     if (!profile) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });

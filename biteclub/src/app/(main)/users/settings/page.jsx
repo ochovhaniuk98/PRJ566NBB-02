@@ -30,7 +30,7 @@ export default function Settings() {
 
       setUser(data.user);
 
-      const res = await fetch('/api/get-general-user-profile', {
+      const res = await fetch('/api/get-general-user-profile-by-supabaseId', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ supabaseId: data.user.id }),

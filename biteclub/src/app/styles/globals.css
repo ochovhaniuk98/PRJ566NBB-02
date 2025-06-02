@@ -71,7 +71,6 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
     @apply text-brand-grey;
   }
 
-  h1,
   h2,
   h3,
   h4,
@@ -79,6 +78,10 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   p,
   a {
     @apply font-primary;
+  }
+
+  h1 {
+    @apply font-secondary text-5xl;
   }
 
   h2 {

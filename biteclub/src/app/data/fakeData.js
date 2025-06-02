@@ -455,45 +455,65 @@ export const embedList = [
   { embedLink: 'https://www.instagram.com/p/DCZlEDqy2to/' },
 ];
 
-/*
-export const bannerImages = [
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-];
+export const fakeUser = {
+  username: 'Sarah008',
+  userBio: 'I love food!!',
+  userProfilePicture: {
+    url: '/img/placeholderImg.jpg',
+    caption: 'Beautifully plated lamb stew',
+    updated_at: new Date('2024-11-01'),
+  },
+};
 
-export const photosList = [
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-  '/img/placeholderImg.jpg',
-];
-
-export const reviewList = [
-  { id: 1, imageSrc: bannerImages },
-  { id: 2, imageSrc: bannerImages },
-  { id: 3 },
-  { id: 4, imageSrc: bannerImages },
-  { id: 5 },
-  { id: 6, imageSrc: bannerImages },
-  { id: 7, imageSrc: bannerImages },
-  { id: 8, imageSrc: bannerImages },
-  { id: 9 },
-  { id: 10 },
-  { id: 11, imageSrc: bannerImages },
-];
-*/
+export const fakeBlogPost = {
+  title: 'A Rainy Day Café Hunt',
+  body: "I wandered into this small café during a storm and discovered the best chai latte I've ever had. Cozy vibes, vintage décor, and friendly staff — what a gem!",
+  date_posted: new Date('2025-05-30T16:45:00Z'),
+  likes: {
+    count: 3,
+    users: [
+      '6650aeef5f0dcd889f6a1234', // User ObjectId
+      '6650aeef5f0dcd889f6a5678',
+      '6650aeef5f0dcd889f6a9876',
+    ],
+  },
+  dislikes: {
+    count: 0,
+    users: [],
+  },
+  comments: [
+    {
+      body: "This sounds like a place I'd love! Do they have good pastries too?",
+      author: ['6650aeef5f0dcd889f6a1234'], // User ObjectId
+      date_posted: new Date('2025-05-31T09:00:00Z'),
+      likes: {
+        count: 2,
+        users: ['6650aeef5f0dcd889f6a5678', '6650aeef5f0dcd889f6a9876'],
+      },
+      dislikes: {
+        count: 0,
+        users: [],
+      },
+    },
+    {
+      body: "I've been there! That chai is amazing. Great review :)",
+      author: ['6650aeef5f0dcd889f6a5678'],
+      date_posted: new Date('2025-05-31T10:22:00Z'),
+      likes: {
+        count: 1,
+        users: ['6650aeef5f0dcd889f6a1234'],
+      },
+      dislikes: {
+        count: 0,
+        users: [],
+      },
+    },
+  ],
+  photos: [
+    {
+      url: '/img/placeholderImg.jpg',
+      caption: 'Espresso served with a cookie on the side.',
+      updated_at: new Date('2025-05-30T14:05:00Z'),
+    },
+  ],
+};
