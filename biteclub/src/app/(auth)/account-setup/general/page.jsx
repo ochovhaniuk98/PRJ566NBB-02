@@ -107,7 +107,13 @@ export default function GeneralSetupForm() {
               onChange={e => setUsername(e.target.value)}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
             />*/}
-            <Input id="username" type="text" className="w-full" />
+            <Input
+              id="username"
+              type="text"
+              className="w-full"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+            />
           </div>
         </div>
 

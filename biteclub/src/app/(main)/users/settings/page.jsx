@@ -137,7 +137,7 @@ export default function Settings() {
                     id="password"
                     type="password"
                     placeholder="Set a new password"
-                    required
+                    // required // THIS IS OPTIONAL. WE DO NOT FORCE USER TO UPDATE PASSWORD EVERYTIME.
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     className="w-full"
