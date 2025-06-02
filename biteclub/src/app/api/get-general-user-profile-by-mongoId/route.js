@@ -10,7 +10,7 @@ export async function POST(req) {
       return NextResponse.json({ message: '(api/getGeneralUserProfile) Missing mongoId' }, { status: 400 });
     }
 
-    const profile = await getGeneralUserProfileByMongoId({ mongoId: generalUserId });
+    const profile = await getGeneralUserProfileByMongoId(generalUserId);
 
     if (!profile) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });

@@ -156,10 +156,10 @@ export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
 }
 
 // Return the whole user profile (for User Dashboard, and Public)
-export async function getGeneralUserProfileByMongoId({ mongoId }) {
+export async function getGeneralUserProfileByMongoId(mongoId) {
   await dbConnect();
   // const user = await User.findOne({ _id: mongoId });
-  const user = await User.findById(mongoId.id); // Use findById for _id
+  const user = await User.findById(mongoId); // Use findById for _id
   if (!user) return null;
   return user; // Returns entire User document
 }
@@ -168,7 +168,7 @@ export async function getGeneralUserMongoIDbySupabaseId({ supabaseId }) {
   await dbConnect();
   const user = await User.findOne({ supabaseId });
   if (!user) return null;
-  return { id: user._id.toString() ?? null };
+  return user._id.toString();
 }
 
 // ==================
