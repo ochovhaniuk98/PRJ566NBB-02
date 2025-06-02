@@ -113,7 +113,13 @@ export default function BusinessSetupForm() {
             onChange={e => setRestaurantName(e.target.value)}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           />*/}
-          <Input id="restaurantName" type="text" className="w-full" />
+          <Input
+            id="restaurantName"
+            type="text"
+            value={restaurantName}
+            onChange={e => setRestaurantName(e.target.value)}
+            className="w-full"
+          />
         </div>
 
         <div>
