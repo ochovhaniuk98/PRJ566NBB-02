@@ -3,8 +3,9 @@ import Image from 'next/image';
 import AuthorDateBlurb from './AuthorDateBlurb';
 import reviewCardIconArr from '@/app/data/iconData';
 import EngagementIconStat from './EngagementIconStat';
+import FormattedDate from './formattedDate';
 
-export default function ReviewCard({ review, photos, onClick, isSelected }) {
+export default function ReviewCard({ review, photos, onClick, isSelected, isOwner = false }) {
   //console.log('IMAGESRC: ', review.data);
   return (
     <div
@@ -29,7 +30,11 @@ export default function ReviewCard({ review, photos, onClick, isSelected }) {
         {/*TO DO for Cesca: Put word limit in review body preview.
         MISSING DYNAMIC VALUES: author name + pic*/}
         <p>{review.body}</p>
-        <AuthorDateBlurb authorPic={review.user_pic?.url} authorName={review.user_id} date={review.date_posted} />
+        {isOwner ? (
+          <FormattedDate yyyymmdd={review.date_posted} />
+        ) : (
+          <AuthorDateBlurb authorPic={review.user_pic?.url} authorName={review.user_id} date={review.date_posted} />
+        )}
       </div>
 
       {photos?.length > 0 && (
