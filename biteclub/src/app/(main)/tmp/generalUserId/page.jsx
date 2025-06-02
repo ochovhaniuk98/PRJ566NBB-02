@@ -62,6 +62,14 @@ export default function GeneralUserProfile() {
                 ))}
               </GridCustomCols>
             )}
+            {/* Blog Posts */}
+            {selectedTab === profileTabs[3] && (
+              <GridCustomCols numOfCols={4}>
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <BlogPostCard key={i} blogPostData={fakeBlogPost} writtenByOwner={isOwner} isFavourited={true} />
+                ))}
+              </GridCustomCols>
+            )}
             {/* My Followers (users who follow owner )*/}
             {selectedTab === profileTabs[5] && (
               <GridCustomCols numOfCols={6}>
