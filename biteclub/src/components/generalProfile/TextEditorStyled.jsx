@@ -55,7 +55,7 @@ export default function TextEditorStyled({ setShowTextEditor, generalUserId }) {
       setStatusMessage('');
       setStatusType('');
       setShowTextEditor(false);
-    }, 3000);
+    }, 5000);
   };
 
   return (

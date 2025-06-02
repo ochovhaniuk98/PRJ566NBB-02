@@ -8,9 +8,7 @@ import { createBlogPost } from '@/lib/db/dbOperations';
 
 export async function POST(request, { params }) {
   try {
-    console.log('Params', await params);
     const { id } = await params; // extract userId from URL param
-    console.log('ID in route: ', id);
     const body = await request.json();
     const { title, content } = body;
 

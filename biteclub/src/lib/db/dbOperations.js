@@ -251,11 +251,8 @@ export async function createBlogPost({ title, content, userId }) {
   });
 
   await newPost.save();
-  console.log('Blog Post in DB: ', newPost);
 
   if (!newPost) return null;
-
-  console.log('User ID: ', userId);
 
   const user = await User.findByIdAndUpdate(
     userId,
@@ -264,8 +261,6 @@ export async function createBlogPost({ title, content, userId }) {
     },
     { new: true } // return the updated user
   );
-
-  console.log('User in DB: ', user);
 
   if (!user) return null;
   return newPost;
