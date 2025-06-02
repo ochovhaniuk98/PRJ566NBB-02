@@ -19,32 +19,30 @@ import { fakeBlogPost, fakeReviews, fakeUser } from '@/app/data/fakeData';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
-
   // userId: from MongoDB, not supabase. By default "false" just in-case.
   //   const isOwner = true; // flag for showing certain components for profile owner
 
   const [userProfile, setUserProfile] = useState(null);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const res = await fetch('/api/get-general-user-profile-by-mongoId', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ generalUserId }),
-      });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch('/api/get-general-user-profile-by-mongoId', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ generalUserId }),
+        });
 
-      const { profile } = await res.json();
-      setUserProfile(profile);
-      console.log('USER profile:', profile);
-    } catch (err) {
-      console.error('Failed to fetch user profile:', err);
-    }
-  };
+        const { profile } = await res.json();
+        setUserProfile(profile);
+        console.log('USER profile:', profile);
+      } catch (err) {
+        console.error('Failed to fetch user profile:', err);
+      }
+    };
 
-  if (generalUserId) fetchData();
-}, [generalUserId]);
-
+    if (generalUserId) fetchData();
+  }, [generalUserId]);
 
   const profileTabs = [
     'Blog Posts',
@@ -93,6 +91,8 @@ useEffect(() => {
             {selectedTab === profileTabs[3] && (
               <GridCustomCols numOfCols={4}>
                 {Array.from({ length: 12 }).map((_, i) => (
+                  // The "Favourite Blog Posts" should not display posts written by the owner (i.e. isOwner should be false / !isOwner).
+                  // However, users may still favourite their own posts — so this logic (false) might be adjusted later.
                   <BlogPostCard key={i} blogPostData={fakeBlogPost} writtenByOwner={false} isFavourited={true} />
                 ))}
               </GridCustomCols>
