@@ -17,6 +17,7 @@ import ReviewCard from '@/components/shared/ReviewCard';
 import GeneralUserCard from '@/components/shared/GeneralUserCard';
 import { fakeBlogPost, fakeReviews, fakeUser } from '@/app/data/fakeData';
 
+// GENERAL USER DASHBOARD
 export default function GeneralUserProfile() {
   const isOwner = true; // flag for showing certain components for profile owner
 
