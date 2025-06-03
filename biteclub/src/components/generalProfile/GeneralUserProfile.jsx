@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { faLocationDot, faHeart, faUtensils, faPen, faPenClip } from '@fortawesome/free-solid-svg-icons';
+import { faPenClip } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
@@ -16,12 +16,25 @@ import { fakeBlogPost, fakeReviews, fakeUser } from '@/app/data/fakeData';
 import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
 import ReviewImageUpload from '../shared/ReviewImageUpload';
+import AddReviewForm from '../shared/AddReviewForm';
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // userId: from MongoDB, not supabase. By default "false" just in-case.
   //   const isOwner = true; // flag for showing certain components for profile owner
+  const profileTabs = [
+    'Blog Posts',
+    'Reviews',
+    'Favourite Restaurants',
+    'Favourite Blog Posts',
+    'Visited',
+    'My Followers',
+    'Following',
+  ];
 
   const [userProfile, setUserProfile] = useState(null);
+  const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
+  const [showTextEditor, setShowTextEditor] = useState(false);
+  const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // to edit rating on review
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,18 +55,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
     if (generalUserId) fetchData();
   }, [generalUserId]);
-
-  const profileTabs = [
-    'Blog Posts',
-    'Reviews',
-    'Favourite Restaurants',
-    'Favourite Blog Posts',
-    'Visited',
-    'My Followers',
-    'Following',
-  ];
-  const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
-  const [showTextEditor, setShowTextEditor] = useState(false);
 
   if (!userProfile) return <div>Loading profile...</div>;
 
@@ -120,37 +121,15 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           <TextEditorStyled setShowTextEditor={setShowTextEditor} />
         )}
       </div>
-      {/* review form */}
-      <div className="fixed inset-0 bg-black/50 flex justify-center  z-50  overflow-scroll scrollbar-hide">
-        <div className="bg-transparent p-8 w-xl h-fit ">
-          <form className="w-full h-full bg-white rounded-lg shadow-md flex flex-col items-center pb-8">
-            <div className="bg-brand-green-lite w-full font-secondary text-2xl py-3 pl-3 uppercase rounded-t-lg">
-              <FontAwesomeIcon icon={faPenClip} className={`text-2xl text-white mr-2`} />
-              Write a Review
-            </div>
-            <div className="w-full p-6">
-              <StarRating iconSize="text-4xl cursor-pointer" interactive={true} />
-              <div className="">
-                <Label>Headline</Label>
-                <Input type="text" className={'w-full'} />
-              </div>
-              <div className="">
-                <Label>Review</Label>
-                <textarea type="text" className={'w-full rounded-md p-2 h-40 resize-none'} />
-              </div>
-              <ReviewImageUpload buttonType={'abc'} />
-            </div>
-            <div className="flex justify-end gap-2 mt-8">
-              <Button type="submit" className="w-30" variant="default" disabled={false}>
-                Save
-              </Button>
-              <Button type="button" className="w-30" variant="secondary" disabled={false}>
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </div>
-      </div>
+      {/* review form + interactive star rating */}
+      <AddReviewForm>
+        <StarRating
+          iconSize="text-4xl cursor-pointer"
+          interactive={true}
+          onChange={(val, msg) => setReviewRating({ value: val, message: msg })}
+        />
+        {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
+      </AddReviewForm>
     </MainBaseContainer>
   );
 }

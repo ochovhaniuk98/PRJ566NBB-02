@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { CldUploadWidget, getCldImageUrl } from 'next-cloudinary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleXmark, faHeart, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark, faImage } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '../shared/SingleTabWithIcon';
 
-export default function ReviewImageUpload({ buttonType }) {
+export default function ReviewImageUpload({ onUploadClick }) {
   const [uploadedImageInfo, setUploadedImageInfo] = useState(null);
   const [savedImageId, setSavedImageId] = useState(null);
   const [fetchedImage, setFetchedImage] = useState(null);
@@ -82,24 +82,19 @@ export default function ReviewImageUpload({ buttonType }) {
           }
         }}
       >
-        {({ open }) =>
-          !buttonType ? (
-            <button onClick={() => open()} className="bg-blue-500 text-white px-4 py-2 rounded">
-              Upload an Image
-            </button>
-          ) : (
-            <div className="w-full flex justify-end mt-1">
-              <SingleTabWithIcon
-                icon={faHeart}
-                detailText={'Add Photo'}
-                onClick={() => {
-                  setUploadedImages([]); // clear data before opening modal
-                  open();
-                }}
-              />
-            </div>
-          )
-        }
+        {({ open }) => (
+          <div className="w-full flex justify-end mt-1">
+            <SingleTabWithIcon
+              icon={faImage}
+              detailText={'Add Photos'}
+              onClick={() => {
+                onUploadClick();
+                setUploadedImages([]); // clear data before opening modal
+                open();
+              }}
+            />
+          </div>
+        )}
       </CldUploadWidget>
 
       {/* Display fetched images and metadata */}

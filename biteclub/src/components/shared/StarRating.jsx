@@ -14,6 +14,14 @@ export default function StarRating({
   onChange = () => {},
   className,
 }) {
+  const reviewRatingMessages = [
+    'I regret everything.',
+    'Ehh, at least I tried it.',
+    'It was fine, nothing special.',
+    'Good, met all my expectations!',
+    'Chef’s kiss 👨‍🍳💋',
+  ];
+
   const [hoverRating, setHoverRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(ratingNum);
 
@@ -25,7 +33,8 @@ export default function StarRating({
   const handleClick = index => {
     if (!interactive) return;
     setSelectedRating(index);
-    onChange(index); // pass data to parent
+    const message = reviewRatingMessages[index - 1];
+    onChange(index, message); // pass data to parent
   };
 
   return (

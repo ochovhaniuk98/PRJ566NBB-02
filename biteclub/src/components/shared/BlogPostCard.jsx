@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as solidHeart, faTrashCan, faPenClip } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
 import Image from 'next/image';
 import reviewCardIconArr from '@/app/data/iconData';
@@ -51,6 +51,11 @@ export default function BlogPostCard({ blogPostData, writtenByOwner = false, isF
             className="rounded-b-md object-cover w-full"
           />
         </div>
+      </div>
+      <div className="absolute bottom-0 w-fit bg-white/70 rounded-full m-1 py-2 px-6 shadow-md flex gap-6 shadow-md">
+        <div className="custom-checkbox"></div>
+        <FontAwesomeIcon icon={faPenClip} className={'icon-lg text-brand-navy'} />
+        <FontAwesomeIcon icon={faTrashCan} className={'icon-lg text-brand-red'} />
       </div>
     </div>
   );

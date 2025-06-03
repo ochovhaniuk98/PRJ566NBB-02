@@ -164,6 +164,13 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   .scrollbar-hide {
     scrollbar-width: none;
   }
+
+  .custom-checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 3px;
+    @apply border border-brand-navy shadow-inner bg-white;
+  }
 }
 
 /*AUTH CSS (NICOLE ADDED) all tailwind css*/
