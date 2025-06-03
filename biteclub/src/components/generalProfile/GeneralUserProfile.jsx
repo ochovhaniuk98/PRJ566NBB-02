@@ -34,6 +34,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [userProfile, setUserProfile] = useState(null);
   const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
   const [showTextEditor, setShowTextEditor] = useState(false);
+  const [myBlogPosts, setMyBlogPosts] = useState([]);
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // to edit rating on review
 
   useEffect(() => {
