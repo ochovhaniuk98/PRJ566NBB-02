@@ -7,6 +7,7 @@ import reviewCardIconArr from '@/app/data/iconData';
 import EngagementIconStat from '@/components/shared/EngagementIconStat';
 import FormattedDate from './formattedDate';
 import AuthorDateBlurb from './AuthorDateBlurb';
+import Link from 'next/link';
 
 // writtenByOwner: tracks whether post is written by profile owner
 // isFavourited: tracks whether post is favourited
@@ -23,8 +24,10 @@ export default function BlogPostCard({ blogPostData, writtenByOwner = false, isF
             }`}
           />
         </div>
-        <h3>{blogPostData.title}</h3>
-        <p>{blogPostData.previewText}</p>
+        <Link href={`/blog-posts/${blogPostData._id}`} className="no-underline text-inherit">
+          <h3>{blogPostData.title}</h3>
+          <p>{blogPostData.previewText}</p>
+        </Link>
         <div className="flex justify-between items-center mb-4">
           {writtenByOwner ? (
             <FormattedDate yyyymmdd={blogPostData.date_posted} />

@@ -1,4 +1,5 @@
-// api/blog-posts/get-posts/[id]/route.js
+// api/blog-posts/get-posts-by-userId/[id]/route.js
+// get blog post by user id
 
 import { getBlogPosts } from '@/lib/db/dbOperations';
 
@@ -23,7 +24,7 @@ function extractPreviewImage(body) {
 
 export async function GET(request, { params }) {
   try {
-    const { id } = await params;
+    const { id } = await params; // user id
 
     const posts = await getBlogPosts({ userId: id });
 

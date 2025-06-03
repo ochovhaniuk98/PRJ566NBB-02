@@ -45,7 +45,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
       // get user's blog posts
       try {
-        const res = await fetch(`/api/blog-posts/get-posts/${generalUserId}`);
+        const res = await fetch(`/api/blog-posts/get-posts-by-userId/${generalUserId}`);
 
         if (!res.ok) {
           console.log('Failed to fetch blog posts');
