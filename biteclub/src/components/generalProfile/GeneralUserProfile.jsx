@@ -1,22 +1,21 @@
 'use client';
 import { useEffect, useState } from 'react';
-//import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faHeart, faUtensils, faPen, faPenClip } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
-//import ProfileStat from '@/components/generalProfile/ProfileStat';
-//import { Button } from '@/components/shared/Button';
+import { Button } from '@/components/shared/Button';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-//import reviewCardIconArr from '@/app/data/iconData';
-//import EngagementIconStat from '@/components/shared/EngagementIconStat';
-//import { SimpleEditor } from '@/components/tiptap-rich-text-editor/tiptap-templates/simple/simple-editor';
-//import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import BlogPostCard from '@/components/shared/BlogPostCard';
 import GeneralUserBanner from '@/components/generalProfile/GeneralUserBanner';
 import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
 import ReviewCard from '@/components/shared/ReviewCard';
 import GeneralUserCard from '@/components/shared/GeneralUserCard';
+import StarRating from '../shared/StarRating';
 import { fakeBlogPost, fakeReviews, fakeUser } from '@/app/data/fakeData';
-
+import { Label } from '../shared/Label';
+import { Input } from '../shared/Input';
+import ReviewImageUpload from '../shared/ReviewImageUpload';
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // userId: from MongoDB, not supabase. By default "false" just in-case.
@@ -120,6 +119,37 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           /* Blog Text Editor */
           <TextEditorStyled setShowTextEditor={setShowTextEditor} />
         )}
+      </div>
+      {/* review form */}
+      <div className="fixed inset-0 bg-black/50 flex justify-center  z-50  overflow-scroll scrollbar-hide">
+        <div className="bg-transparent p-8 w-xl h-fit ">
+          <form className="w-full h-full bg-white rounded-lg shadow-md flex flex-col items-center pb-8">
+            <div className="bg-brand-green-lite w-full font-secondary text-2xl py-3 pl-3 uppercase rounded-t-lg">
+              <FontAwesomeIcon icon={faPenClip} className={`text-2xl text-white mr-2`} />
+              Write a Review
+            </div>
+            <div className="w-full p-6">
+              <StarRating iconSize="text-4xl cursor-pointer" interactive={true} />
+              <div className="">
+                <Label>Headline</Label>
+                <Input type="text" className={'w-full'} />
+              </div>
+              <div className="">
+                <Label>Review</Label>
+                <textarea type="text" className={'w-full rounded-md p-2 h-40 resize-none'} />
+              </div>
+              <ReviewImageUpload buttonType={'abc'} />
+            </div>
+            <div className="flex justify-end gap-2 mt-8">
+              <Button type="submit" className="w-30" variant="default" disabled={false}>
+                Save
+              </Button>
+              <Button type="button" className="w-30" variant="secondary" disabled={false}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </MainBaseContainer>
   );
