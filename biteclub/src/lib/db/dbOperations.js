@@ -238,3 +238,49 @@ export async function getProfilePicByUserSuperbaseId(supabaseId) {
 
   return image;
 }
+
+// Create a Blog Post
+export async function createBlogPost({ title, content, userId }) {
+  await dbConnect();
+
+  const newPost = new BlogPost({
+    body: content,
+    title,
+    date_posted: new Date(),
+    user_id: userId,
+  });
+
+  await newPost.save();
+
+  if (!newPost) return null;
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      $push: { myBlogPosts: newPost._id },
+    },
+    { new: true } // return the updated user
+  );
+
+  if (!user) return null;
+  return newPost;
+}
+
+// Get user's Blog Posts by User ID
+export async function getBlogPosts({ userId }) {
+  await dbConnect();
+
+  // newest first
+  const posts = await BlogPost.find({ user_id: userId }).sort({ date_posted: -1 });
+
+  return posts;
+}
+
+// Get Blog Post by Id
+export async function getBlogPost({ id }) {
+  await dbConnect();
+
+  const post = await BlogPost.findOne({ _id: id });
+
+  return post;
+}

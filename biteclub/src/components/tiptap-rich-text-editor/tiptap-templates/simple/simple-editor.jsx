@@ -73,7 +73,10 @@ import '@/components/tiptap-rich-text-editor/tiptap-templates/simple/simple-edit
 
 import content from '@/components/tiptap-rich-text-editor/tiptap-templates/simple/data/content.json';
 
-const MainToolbarContent = ({ onHighlighterClick, onLinkClick, isMobile }) => {
+import { InstagramNode } from '../../tiptap-extension/InstagramNode';
+import { useCallback } from 'react';
+
+const MainToolbarContent = ({ onHighlighterClick, onLinkClick, isMobile, onInstagramClick }) => {
   return (
     <>
       <Spacer />
@@ -113,6 +116,14 @@ const MainToolbarContent = ({ onHighlighterClick, onLinkClick, isMobile }) => {
       <ToolbarSeparator />
       <ToolbarGroup>
         <ImageUploadButton text="Add" />
+        <button
+          onClick={onInstagramClick}
+          type="button"
+          title="Embed Instagram Post"
+          className="p-2 rounded hover:bg-gray-100"
+        >
+          📸 Add Instagram Post
+        </button>
       </ToolbarGroup>
       <Spacer />
       {isMobile && <ToolbarSeparator />}
@@ -142,7 +153,7 @@ const MobileToolbarContent = ({ type, onBack }) => (
   </>
 );
 
-export function SimpleEditor() {
+export function SimpleEditor({ onContentChange }) {
   const isMobile = useMobile();
   const windowSize = useWindowSize();
   const [mobileView, setMobileView] = React.useState('main');
@@ -160,6 +171,7 @@ export function SimpleEditor() {
     },
     extensions: [
       StarterKit,
+      InstagramNode,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Underline,
       TaskList,
@@ -181,7 +193,11 @@ export function SimpleEditor() {
       TrailingNode,
       Link.configure({ openOnClick: false }),
     ],
-    content: content,
+    // content: content,
+    onUpdate: ({ editor }) => {
+      const json = editor.getJSON();
+      onContentChange?.(json); // emit new content
+    },
   });
 
   const bodyRect = useCursorVisibility({
@@ -194,6 +210,20 @@ export function SimpleEditor() {
       setMobileView('main');
     }
   }, [isMobile, mobileView]);
+
+  const insertInstagram = useCallback(() => {
+    const url = prompt('Paste Instagram post URL:');
+    if (url) {
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: 'instagram',
+          attrs: { url },
+        })
+        .run();
+    }
+  }, [editor]);
 
   return (
     <EditorContext.Provider value={{ editor }}>
@@ -211,6 +241,7 @@ export function SimpleEditor() {
           <MainToolbarContent
             onHighlighterClick={() => setMobileView('highlighter')}
             onLinkClick={() => setMobileView('link')}
+            onInstagramClick={insertInstagram}
             isMobile={isMobile}
           />
         ) : (

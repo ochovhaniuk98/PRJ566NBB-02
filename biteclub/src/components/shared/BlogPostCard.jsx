@@ -7,6 +7,7 @@ import reviewCardIconArr from '@/app/data/iconData';
 import EngagementIconStat from '@/components/shared/EngagementIconStat';
 import FormattedDate from './formattedDate';
 import AuthorDateBlurb from './AuthorDateBlurb';
+import Link from 'next/link';
 
 // writtenByOwner: tracks whether post is written by profile owner
 // isFavourited: tracks whether post is favourited
@@ -23,8 +24,10 @@ export default function BlogPostCard({ blogPostData, writtenByOwner = false, isF
             }`}
           />
         </div>
-        <h3>{blogPostData.title}</h3>
-        <p>{blogPostData.body}</p>
+        <Link href={`/blog-posts/${blogPostData._id}`} className="no-underline text-inherit">
+          <h3>{blogPostData.previewTitle}</h3>
+          <p>{blogPostData.previewText}</p>
+        </Link>
         <div className="flex justify-between items-center mb-4">
           {writtenByOwner ? (
             <FormattedDate yyyymmdd={blogPostData.date_posted} />
@@ -42,14 +45,17 @@ export default function BlogPostCard({ blogPostData, writtenByOwner = false, isF
           />
         </div>
       </div>
+
       <div className="flex-1 flex">
-        <div className="relative w-full overflow-hidden bg-brand-green rounded-b-md">
-          <Image
-            src={blogPostData.photos[0].url}
-            alt={blogPostData.photos[0].caption}
-            fill={true}
-            className="rounded-b-md object-cover w-full"
-          />
+        <div className="relative w-full overflow-hidden rounded-b-md">
+          {blogPostData.previewImage ? (
+            <Image
+              src={blogPostData.previewImage}
+              alt="Preview image"
+              fill={true}
+              className="rounded-b-md object-cover w-full"
+            />
+          ) : null}
         </div>
       </div>
       <div className="absolute bottom-0 w-fit bg-white/70 rounded-full m-1 py-2 px-6 shadow-md flex gap-6 shadow-md">

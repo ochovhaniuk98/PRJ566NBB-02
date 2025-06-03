@@ -39,6 +39,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   useEffect(() => {
     const fetchData = async () => {
+      // get user profile
       try {
         const res = await fetch('/api/get-general-user-profile-by-mongoId', {
           method: 'POST',
@@ -52,10 +53,36 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       } catch (err) {
         console.error('Failed to fetch user profile:', err);
       }
+
+      // get user's blog posts
+      try {
+        const res = await fetch(`/api/blog-posts/get-posts-by-userId/${generalUserId}`);
+
+        if (!res.ok) {
+          console.log('Failed to fetch blog posts');
+          return;
+        }
+
+        const posts = await res.json();
+        setMyBlogPosts(posts);
+      } catch (err) {
+        console.error('Failed to fetch user data:', err);
+      }
     };
 
     if (generalUserId) fetchData();
-  }, [generalUserId]);
+  }, [generalUserId, showTextEditor]);
+
+  const profileTabs = [
+    'Blog Posts',
+    'Reviews',
+    'Favourite Restaurants',
+    'Favourite Blog Posts',
+    'Visited',
+    'My Followers',
+    'Following',
+  ];
+  const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
 
   if (!userProfile) return <div>Loading profile...</div>;
 
@@ -75,8 +102,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Blog Posts */}
             {selectedTab === profileTabs[0] && (
               <GridCustomCols numOfCols={4}>
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <BlogPostCard key={i} blogPostData={fakeBlogPost} writtenByOwner={isOwner} isFavourited={false} />
+                {myBlogPosts.map((post, i) => (
+                  <BlogPostCard key={post._id || i} blogPostData={post} writtenByOwner={isOwner} isFavourited={false} />
                 ))}
               </GridCustomCols>
             )}
@@ -119,7 +146,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         {/**** Tab menu and contents - END ****/}
         {showTextEditor && (
           /* Blog Text Editor */
-          <TextEditorStyled setShowTextEditor={setShowTextEditor} />
+          <TextEditorStyled setShowTextEditor={setShowTextEditor} generalUserId={generalUserId} />
         )}
       </div>
       {/* review form + interactive star rating */}
