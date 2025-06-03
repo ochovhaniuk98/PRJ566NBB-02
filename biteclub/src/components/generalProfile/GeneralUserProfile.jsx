@@ -1,10 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { faPenClip } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
-import { Button } from '@/components/shared/Button';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
 import BlogPostCard from '@/components/shared/BlogPostCard';
 import GeneralUserBanner from '@/components/generalProfile/GeneralUserBanner';
@@ -13,10 +10,8 @@ import ReviewCard from '@/components/shared/ReviewCard';
 import GeneralUserCard from '@/components/shared/GeneralUserCard';
 import StarRating from '../shared/StarRating';
 import { fakeBlogPost, fakeReviews, fakeUser } from '@/app/data/fakeData';
-import { Label } from '../shared/Label';
-import { Input } from '../shared/Input';
-import ReviewImageUpload from '../shared/ReviewImageUpload';
 import AddReviewForm from '../shared/AddReviewForm';
+
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // userId: from MongoDB, not supabase. By default "false" just in-case.
@@ -35,7 +30,12 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
   const [showTextEditor, setShowTextEditor] = useState(false);
   const [myBlogPosts, setMyBlogPosts] = useState([]);
-  const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // to edit rating on review
+
+  /* States below are for MANAGING/EDITING general profile */
+  const [editMode, setEditMode] = useState(false); // tracks whether owner wants to manage CONTENT on profile (displays edit/delete panel on each card)
+  const [editReviewForm, setEditReviewForm] = useState(false); // for opening/closing form to edit a SPECIFIC REVIEW
+  const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
+  const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,6 +82,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         setShowTextEditor={setShowTextEditor}
         generalUserData={userProfile}
         isOwner={isOwner}
+        editMode={editMode}
+        setEditMode={setEditMode}
       />
       <div className="main-side-padding w-full py-8">
         {/**** Tab menu and contents - START ****/}
@@ -92,7 +94,15 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {selectedTab === profileTabs[0] && (
               <GridCustomCols numOfCols={4}>
                 {myBlogPosts.map((post, i) => (
-                  <BlogPostCard key={post._id || i} blogPostData={post} writtenByOwner={isOwner} isFavourited={false} />
+                  <BlogPostCard
+                    key={post._id || i}
+                    blogPostData={post}
+                    writtenByOwner={isOwner}
+                    isFavourited={false}
+                    isEditModeOn={editMode}
+                    setShowTextEditor={setShowTextEditor}
+                    setEditBlogPost={setEditBlogPost}
+                  />
                 ))}
               </GridCustomCols>
             )}
@@ -100,7 +110,14 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {selectedTab === profileTabs[1] && (
               <GridCustomCols numOfCols={4}>
                 {Array.from({ length: 12 }).map((_, i) => (
-                  <ReviewCard key={i} review={fakeReviews[0]} photos={fakeReviews[0].photos} isOwner={isOwner} />
+                  <ReviewCard
+                    key={i}
+                    review={fakeReviews[0]}
+                    photos={fakeReviews[0].photos}
+                    isOwner={isOwner}
+                    isEditModeOn={editMode}
+                    setEditReviewForm={setEditReviewForm}
+                  />
                 ))}
               </GridCustomCols>
             )}
@@ -133,20 +150,32 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           </>
         )}
         {/**** Tab menu and contents - END ****/}
+
         {showTextEditor && (
           /* Blog Text Editor */
-          <TextEditorStyled setShowTextEditor={setShowTextEditor} generalUserId={generalUserId} />
+          <TextEditorStyled
+            setShowTextEditor={setShowTextEditor}
+            generalUserId={generalUserId}
+            editBlogPost={editBlogPost}
+          />
         )}
       </div>
+
       {/* review form + interactive star rating */}
-      <AddReviewForm>
-        <StarRating
-          iconSize="text-4xl cursor-pointer"
-          interactive={true}
-          onChange={(val, msg) => setReviewRating({ value: val, message: msg })}
-        />
-        {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
-      </AddReviewForm>
+      {editReviewForm && (
+        /* NOTE: "AddReviewForm" has two modes: Adding NEW reviews, and EDITING existing reviews.
+         The paramter "editReviewMode" is false by default, but TRUE when user wants to edit review.*/
+        <AddReviewForm onCancel={() => setEditReviewForm(false)} editReviewMode={true}>
+          {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
+          Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
+          <StarRating
+            iconSize="text-4xl cursor-pointer"
+            interactive={true}
+            onChange={(val, msg) => setReviewRating({ value: val, message: msg })}
+          />
+          {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
+        </AddReviewForm>
+      )}
     </MainBaseContainer>
   );
 }

@@ -6,7 +6,9 @@ import { Input } from '../shared/Input';
 import { Button } from '@/components/shared/Button';
 import ReviewImageUpload from './ReviewImageUpload';
 
-export default function AddReviewForm({ children }) {
+// Has 2 modes: ADDING a NEW review and EDITING an existing one.
+// editReviewMode: Tracks whether this form should display a review to be edited, or just empty fields (for writing new review)
+export default function AddReviewForm({ onCancel, children, editReviewMode = false }) {
   const [showPhotoPlaceholder, setShowPhotoPlaceholder] = useState(true);
   return (
     <>
@@ -15,7 +17,8 @@ export default function AddReviewForm({ children }) {
           <form className="relative w-full h-full bg-white rounded-lg shadow-md flex flex-col items-center pb-8">
             <div className="bg-brand-green-lite w-full font-secondary text-2xl py-3 pl-3 uppercase rounded-t-lg">
               <FontAwesomeIcon icon={faPenClip} className={`text-2xl text-white mr-2`} />
-              Write a Review
+              {/* Show title depending on mode */}
+              {editReviewMode ? 'Edit Review' : 'Write a Review'}
             </div>
             <div className="w-full p-6 flex flex-col gap-3">
               <div>
@@ -42,7 +45,7 @@ export default function AddReviewForm({ children }) {
               <Button type="submit" className="w-30" variant="default" disabled={false}>
                 Save
               </Button>
-              <Button type="button" className="w-30" variant="secondary" disabled={false}>
+              <Button type="button" className="w-30" variant="secondary" disabled={false} onClick={onCancel}>
                 Cancel
               </Button>
             </div>

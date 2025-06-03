@@ -4,14 +4,24 @@ import AuthorDateBlurb from './AuthorDateBlurb';
 import reviewCardIconArr from '@/app/data/iconData';
 import EngagementIconStat from './EngagementIconStat';
 import FormattedDate from './formattedDate';
+import EditModePanel from './EditModePanel';
 
-export default function ReviewCard({ review, photos, onClick, isSelected, isOwner = false }) {
-  //console.log('IMAGESRC: ', review.data);
+/* "AddReviewForm" has two modes: Adding NEW reviews, and EDITING existing reviews.
+    The parameter "editReviewMode" is false by default, but TRUE when user wants to edit review.*/
+export default function ReviewCard({
+  review,
+  photos,
+  onClick,
+  isSelected,
+  isOwner = false,
+  isEditModeOn = false,
+  setEditReviewForm = () => {},
+}) {
   return (
     <div
       className={`${
         isSelected ? 'bg-brand-peach-lite' : 'bg-white'
-      } border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2 ${
+      } relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2 ${
         photos?.length > 0 ? 'row-span-2' : 'row-span-1'
       }`}
       onClick={onClick}
@@ -44,16 +54,9 @@ export default function ReviewCard({ review, photos, onClick, isSelected, isOwne
           </div>
         </div>
       )}
+      {/* panel appears when general user selects to "Manage Content";
+       General user can select review to delete or edit. Editing opens "Add Review" form but enabled for editing.  */}
+      {isEditModeOn && <EditModePanel onEditClick={() => setEditReviewForm(true)} />}
     </div>
   );
 }
-/*
-${
-        photos?.length > 0 ? 'row-span-2' : 'row-span-1'
-      } */
-/*
- {photos[1] && (
-            <div className="relative w-1/2 h-50 overflow-hidden">
-              <Image src={photos[1].url} alt={photos[1].caption} className="object-cover rounded-br-md" fill={true} />
-            </div>
-          )} */

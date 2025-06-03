@@ -169,7 +169,11 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
     width: 1.25rem;
     height: 1.25rem;
     border-radius: 3px;
-    @apply border border-brand-navy shadow-inner bg-white;
+    @apply border border-brand-navy shadow-inner bg-white flex justify-center items-center;
+  }
+
+  .custom-checkmark {
+    @apply w-4 h-4 bg-brand-green rounded-full;
   }
 }
 

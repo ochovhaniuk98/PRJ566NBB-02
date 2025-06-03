@@ -1,12 +1,31 @@
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faUsers, faStarHalfStroke, faFeather, faGamepad } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPlus,
+  faUsers,
+  faStarHalfStroke,
+  faFeather,
+  faGamepad,
+  faGear,
+  faXmark,
+  faTrashCan,
+} from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import { Button } from '@/components/shared/Button';
 
-export default function GeneralUserBanner({ showTextEditor, setShowTextEditor, generalUserData, isOwner = false }) {
+/* Description: Shows general user info and allows OWNER to write blog post or manage content by clicking corresponding buttons in component.
+    showTextEditor: shows/hides text editor
+    editMode: tracks whether owner is editing/managing CONTENT IN GENERAL (NOT a specific post/review)*/
+export default function GeneralUserBanner({
+  showTextEditor,
+  setShowTextEditor,
+  editMode = false,
+  setEditMode,
+  generalUserData,
+  isOwner = false,
+}) {
   const iconStats = [
     { label: 'Followers', icon: faUsers, bgColour: 'white', iconColour: 'brand-aqua' },
     { label: 'Reviews', icon: faStarHalfStroke, bgColour: 'white', iconColour: 'brand-yellow' },
@@ -50,13 +69,49 @@ export default function GeneralUserBanner({ showTextEditor, setShowTextEditor, g
         </div>
       </GridCustomCols>
       {/*'Write a blog post' button*/}
+      {/*only shown when not editing and not writing */}
       {!showTextEditor && isOwner && (
-        <SingleTabWithIcon
-          className={'absolute bottom-2 right-20'}
-          icon={faPen}
-          detailText="Write a Blog Post"
-          onClick={() => setShowTextEditor(true)}
-        />
+        <div className="flex gap-0 absolute bottom-0 right-20">
+          {!editMode && (
+            <SingleTabWithIcon
+              className=""
+              icon={faPen}
+              detailText="Write a Blog Post"
+              onClick={() => setShowTextEditor(true)}
+            />
+          )}
+
+          {/* Progile management buttons */}
+          {/* If Owner clicks "Manage Content", show delete and cancel buttons */}
+          {!editMode ? (
+            <SingleTabWithIcon icon={faGear} detailText="Manage Content" onClick={() => setEditMode(true)} />
+          ) : (
+            <>
+              {/* only delete SELECTED */}
+              <SingleTabWithIcon
+                icon={faTrashCan}
+                detailText="Delete Selected"
+                bgColour="bg-white"
+                textColour="text-brand-red"
+                borderColour="border-brand-red"
+              />
+              {/* delete All */}
+              <SingleTabWithIcon
+                icon={faTrashCan}
+                detailText="DELETE ALL"
+                bgColour="bg-brand-red"
+                textColour="text-white"
+              />
+              {/* cancel content management */}
+              <SingleTabWithIcon
+                icon={faXmark}
+                detailText="Cancel"
+                onClick={() => setEditMode(false)}
+                bgColour="bg-brand-peach"
+              />
+            </>
+          )}
+        </div>
       )}
     </div>
   );
