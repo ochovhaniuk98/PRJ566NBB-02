@@ -4,7 +4,6 @@ import { Input } from '../shared/Input';
 import { Label } from '../shared/Label';
 
 import { useState, useEffect } from 'react';
-// console.log('General User Id: ', generalUserId);
 
 export default function TextEditorStyled({ setShowTextEditor, generalUserId }) {
   const [content, setContent] = useState(null);
@@ -55,7 +54,7 @@ export default function TextEditorStyled({ setShowTextEditor, generalUserId }) {
       setStatusMessage('');
       setStatusType('');
       setShowTextEditor(false);
-    }, 5000);
+    }, 4000);
   };
 
   return (

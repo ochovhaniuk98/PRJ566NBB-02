@@ -25,6 +25,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [userProfile, setUserProfile] = useState(null);
 
   const [myBlogPosts, setMyBlogPosts] = useState([]);
+  const [showTextEditor, setShowTextEditor] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +61,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     };
 
     if (generalUserId) fetchData();
-  }, [generalUserId]);
+  }, [generalUserId, showTextEditor]);
 
   const profileTabs = [
     'Blog Posts',
@@ -72,7 +73,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     'Following',
   ];
   const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
-  const [showTextEditor, setShowTextEditor] = useState(false);
 
   if (!userProfile) return <div>Loading profile...</div>;
 
