@@ -1,8 +1,10 @@
 // src/components/blogPosts/BlogPost.jsx
 import { useEffect, useState } from 'react';
+import ReadOnlyEditor from '../tiptap-rich-text-editor/tmp/ReadOnlyEditor';
 
 export default function BlogPost({ id }) {
-  const [post, setPost] = useState(null);
+  const [postContent, setPostContent] = useState(null);
+  const [postTitle, setPostTitle] = useState(null);
 
   useEffect(() => {
     if (!id) return;
@@ -14,7 +16,8 @@ export default function BlogPost({ id }) {
 
         const data = await res.json();
 
-        setPost(data || null); //?? data[0]
+        setPostContent(data?.body || null);
+        setPostTitle(data?.title || null);
       } catch (err) {
         console.log(err.message);
       }
@@ -22,4 +25,11 @@ export default function BlogPost({ id }) {
 
     fetchPost();
   }, [id]);
+
+  return (
+    <div className="mt-20">
+      {postTitle && <h2 className="simple-editor-content ml-[200px]">{postTitle}</h2>}
+      {postContent && <ReadOnlyEditor content={postContent} />}
+    </div>
+  );
 }

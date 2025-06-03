@@ -266,7 +266,7 @@ export async function createBlogPost({ title, content, userId }) {
   return newPost;
 }
 
-// Get user's Blog Posts
+// Get user's Blog Posts by User ID
 export async function getBlogPosts({ userId }) {
   await dbConnect();
 
@@ -274,4 +274,13 @@ export async function getBlogPosts({ userId }) {
   const posts = await BlogPost.find({ user_id: userId }).sort({ date_posted: -1 });
 
   return posts;
+}
+
+// Get Blog Post by Id
+export async function getBlogPost({ id }) {
+  await dbConnect();
+
+  const post = await BlogPost.findOne({ _id: id });
+
+  return post;
 }
