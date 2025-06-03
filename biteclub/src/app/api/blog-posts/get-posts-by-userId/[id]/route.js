@@ -11,7 +11,9 @@ function extractPreviewText(body) {
 
   if (!firstParagraph || !firstParagraph.content) return '';
 
-  return firstParagraph.content.map(segment => segment.text || '').join('');
+  const text = firstParagraph.content.map(segment => segment.text || '').join('');
+
+  return text.length > 160 ? text.slice(0, 157) + '...' : text; // return only 160 chars
 }
 
 // extract one image for preview
@@ -31,6 +33,7 @@ export async function GET(request, { params }) {
     // add previewText to each post
     const postsWithPreview = posts.map(post => ({
       ...post.toObject(), // convert mongoose doc to plain object
+      previewTitle: post.title.length > 50 ? post.title.slice(0, 33) + '...' : post.title, // allow only 50 chars for title preview
       previewText: extractPreviewText(post.body),
       previewImage: extractPreviewImage(post.body),
     }));

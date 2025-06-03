@@ -25,7 +25,7 @@ export default function BlogPostCard({ blogPostData, writtenByOwner = false, isF
           />
         </div>
         <Link href={`/blog-posts/${blogPostData._id}`} className="no-underline text-inherit">
-          <h3>{blogPostData.title}</h3>
+          <h3>{blogPostData.previewTitle}</h3>
           <p>{blogPostData.previewText}</p>
         </Link>
         <div className="flex justify-between items-center mb-4">

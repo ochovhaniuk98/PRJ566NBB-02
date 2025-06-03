@@ -519,4 +519,5 @@ export const fakeBlogPost = {
   previewText:
     "I wandered into this small café during a storm and discovered the best chai latte I've ever had. Cozy vibes, vintage décor, and friendly staff — what a gem!",
   previewImage: '/img/placeholderImg.jpg',
+  previewTitle: 'A Rainy Day Café Hunt',
 };
