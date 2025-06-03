@@ -19,13 +19,14 @@ const UserSchema = new mongoose.Schema({
   strike: Number,
   numOfPoints: Number,
   pointsResetDate: Date,
-  personalization_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Personalization'},
+  personalization_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Personalization' },
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   visitedPlaces: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   favouriteRestaurants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   favouriteBlogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost' }],
-  displayVisitedPlaces: {type: mongoose.Schema.Types.Boolean},
-  displayFavouriteRestaurants: {type: mongoose.Schema.Types.Boolean},
+  myBlogPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost' }],
+  displayVisitedPlaces: { type: mongoose.Schema.Types.Boolean },
+  displayFavouriteRestaurants: { type: mongoose.Schema.Types.Boolean },
   creditCards: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard' }],
   orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
   userType: String,
@@ -54,7 +55,11 @@ const InstagramPostSchema = new mongoose.Schema({
 
 // Blog post
 const BlogPostSchema = new mongoose.Schema({
-  body: String,
+  body: {
+    // stored as JSON
+    type: Object,
+    required: true,
+  },
   title: String,
   date_posted: Date,
   likes: {
@@ -66,8 +71,8 @@ const BlogPostSchema = new mongoose.Schema({
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
   comments: [CommentSchema],
-  Instagram_posts: [InstagramPostSchema],
-  photos: [PhotoSchema],
+  Instagram_posts: [InstagramPostSchema], // no longer needed, it's part of post body
+  photos: [PhotoSchema], // no longer needed, it's part of post body
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
 
@@ -240,8 +245,7 @@ const PersonalizationSchema = new mongoose.Schema({
   restaurantFrequency: mongoose.Schema.Types.Int32,
   decisionDifficulty: mongoose.Schema.Types.Int32,
   openToDiversity: mongoose.Schema.Types.Int32,
-})
-
+});
 
 // Export models
 export const User = mongoose.models?.User || mongoose.model('User', UserSchema);
@@ -273,4 +277,5 @@ export const Restaurant = mongoose.models?.Restaurant || mongoose.model('Restaur
 export const BusinessUser = mongoose.models?.BusinessUser || mongoose.model('BusinessUser', BusinessUserSchema);
 export const TestCloudinaryImage =
   mongoose.models?.TestCloudinaryImage || mongoose.model('TestCloudinaryImage', TestCloudinaryImageSchema);
-export const Personalization = mongoose.models?.Personalization || mongoose.model('Personalization', PersonalizationSchema);
+export const Personalization =
+  mongoose.models?.Personalization || mongoose.model('Personalization', PersonalizationSchema);
