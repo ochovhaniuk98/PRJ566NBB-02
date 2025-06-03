@@ -73,17 +73,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     if (generalUserId) fetchData();
   }, [generalUserId, showTextEditor]);
 
-  const profileTabs = [
-    'Blog Posts',
-    'Reviews',
-    'Favourite Restaurants',
-    'Favourite Blog Posts',
-    'Visited',
-    'My Followers',
-    'Following',
-  ];
-  const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
-
   if (!userProfile) return <div>Loading profile...</div>;
 
   return (
