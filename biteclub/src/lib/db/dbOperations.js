@@ -265,3 +265,13 @@ export async function createBlogPost({ title, content, userId }) {
   if (!user) return null;
   return newPost;
 }
+
+// Get user's Blog Posts
+export async function getBlogPosts({ userId }) {
+  await dbConnect();
+
+  // newest first
+  const posts = await BlogPost.find({ user_id: userId }).sort({ date_posted: -1 });
+
+  return posts;
+}

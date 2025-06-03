@@ -24,8 +24,11 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   const [userProfile, setUserProfile] = useState(null);
 
+  const [myBlogPosts, setMyBlogPosts] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
+      // get user profile
       try {
         const res = await fetch('/api/get-general-user-profile-by-mongoId', {
           method: 'POST',
@@ -38,6 +41,21 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         console.log('USER profile:', profile);
       } catch (err) {
         console.error('Failed to fetch user profile:', err);
+      }
+
+      // get user's blog posts
+      try {
+        const res = await fetch(`/api/blog-posts/get-posts/${generalUserId}`);
+
+        if (!res.ok) {
+          console.log('Failed to fetch blog posts');
+          return;
+        }
+
+        const posts = await res.json();
+        setMyBlogPosts(posts);
+      } catch (err) {
+        console.error('Failed to fetch user data:', err);
       }
     };
 
@@ -74,8 +92,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Blog Posts */}
             {selectedTab === profileTabs[0] && (
               <GridCustomCols numOfCols={4}>
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <BlogPostCard key={i} blogPostData={fakeBlogPost} writtenByOwner={isOwner} isFavourited={false} />
+                {myBlogPosts.map((post, i) => (
+                  <BlogPostCard key={post._id || i} blogPostData={post} writtenByOwner={isOwner} isFavourited={false} />
                 ))}
               </GridCustomCols>
             )}

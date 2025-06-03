@@ -24,7 +24,7 @@ export default function BlogPostCard({ blogPostData, writtenByOwner = false, isF
           />
         </div>
         <h3>{blogPostData.title}</h3>
-        <p>{blogPostData.body}</p>
+        <p>{blogPostData.previewText}</p>
         <div className="flex justify-between items-center mb-4">
           {writtenByOwner ? (
             <FormattedDate yyyymmdd={blogPostData.date_posted} />
@@ -42,14 +42,17 @@ export default function BlogPostCard({ blogPostData, writtenByOwner = false, isF
           />
         </div>
       </div>
+
       <div className="flex-1 flex">
         <div className="relative w-full overflow-hidden bg-brand-green rounded-b-md">
-          <Image
-            src={blogPostData.photos[0].url}
-            alt={blogPostData.photos[0].caption}
-            fill={true}
-            className="rounded-b-md object-cover w-full"
-          />
+          {blogPostData.previewImage ? (
+            <Image
+              src={blogPostData.previewImage}
+              alt="Preview image"
+              fill={true}
+              className="rounded-b-md object-cover w-full"
+            />
+          ) : null}
         </div>
       </div>
     </div>
