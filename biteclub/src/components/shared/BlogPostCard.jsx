@@ -44,7 +44,7 @@ export default function BlogPostCard({ blogPostData, writtenByOwner = false, isF
       </div>
 
       <div className="flex-1 flex">
-        <div className="relative w-full overflow-hidden bg-brand-green rounded-b-md">
+        <div className="relative w-full overflow-hidden rounded-b-md">
           {blogPostData.previewImage ? (
             <Image
               src={blogPostData.previewImage}
