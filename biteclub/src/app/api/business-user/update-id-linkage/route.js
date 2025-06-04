@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/dbConnect';
-import { BusinessUser } from '@/lib/model/dbSchema';  
+import { BusinessUser } from '@/lib/model/dbSchema';
 
 export async function POST(request) {
   await dbConnect();
@@ -13,9 +13,9 @@ export async function POST(request) {
     }
 
     const updatedUser = await BusinessUser.findOneAndUpdate(
-      { supabaseId },               // find with supabaseId
-      { restaurantId: restaurantId }, // Sets the restaurant field
-      { new: true, upsert: false }  // no user will be created if not found
+      { supabaseId }, // find with supabaseId
+      { restaurantId: restaurantId, verificationStatus: false }, // verificationStatus will be false at this moment.
+      { new: true, upsert: false } // no user will be created if not found
     );
 
     if (!updatedUser) {
@@ -23,7 +23,6 @@ export async function POST(request) {
     }
 
     return NextResponse.json({ message: 'Restaurant linked', user: updatedUser }, { status: 200 });
-
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

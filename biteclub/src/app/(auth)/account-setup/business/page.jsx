@@ -58,34 +58,6 @@ export default function BusinessSetupForm() {
     }
   }, [uploadedLicenseInfo]);
 
-  // --- Submit license URL to MongoDB and redirect ---
-  // const handleSubmit = async () => {
-  //   setLoading(true);
-  //   // The Image has been stored to Cloudinary at this point
-  //   // Store License Download Url in Business User (MongoDB)
-  //   if (user && licenseDownloadUrl) {
-  //     try {
-  //       // Add License Download Url to MongoDB
-  //       const response = await fetch('/api/business-user/license/upload-license', {
-  //         method: 'POST',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify({
-  //           superbaseId: user.id,
-  //           url: licenseDownloadUrl,
-  //         }),
-  //       });
-
-  //       const result = await response.json();
-  //       if (!response.ok) throw new Error(result.error || 'Failed to update the License PDF');
-  //       console.log('✅ Metadata saved to MongoDB:', result);
-  //     } catch (err) {
-  //       console.error('❌ Error saving metadata:', err.message);
-  //     }
-  //   }
-
-  //   router.push('/users/business');
-  // };
-
   const handleSubmit = async () => {
     setLoading(true);
 
@@ -121,16 +93,17 @@ export default function BusinessSetupForm() {
         if (!idResponse.ok) {
           throw new Error(idResult.error || 'Failed to update restaurant linkage');
         }
-        console.log('✅ Restaurant ID linked in MongoDB:', idResult);
+        console.log('Restaurant ID linked in MongoDB:', idResult);
       } catch (err) {
-        console.error('❌ Error saving metadata:', err.message);
+        console.error('Error saving metadata:', err.message);
       }
     } else {
       console.warn('Missing user, license URL, or restaurant ID');
     }
 
     setLoading(false);
-    router.push('/users/business');
+    // router.push('/users/business');
+    router.push('/users/business/awaiting-verification');
   };
 
   return (
