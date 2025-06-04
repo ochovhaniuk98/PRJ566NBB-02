@@ -104,7 +104,9 @@ export async function getBusinessUserRestaurantId({ supabaseId }) {
   await dbConnect();
   const user = await BusinessUser.findOne({ supabaseId });
   if (!user) return null;
-  return { restaurantId: user.restaurantId.toString() ?? null };
+  // return { restaurantId: user.restaurantId.toString() ?? null };
+  return { restaurantId: user.restaurantId ? user.restaurantId.toString() : null }; // safe version
+
 }
 
 // Update license for Business User

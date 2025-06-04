@@ -56,11 +56,6 @@ export async function GET(request) {
 
       const Model = userSelectedUserType === 'business' ? BusinessUser : User;
 
-      // const newUser = new Model({
-      //   supabaseId: user.id,
-      //   userType: userSelectedUserType,
-      // });
-
       let newUser;
 
       if (userSelectedUserType === 'business') {

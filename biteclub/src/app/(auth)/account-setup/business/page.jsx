@@ -12,6 +12,7 @@ export default function BusinessSetupForm() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState('');
 
   // --- Restaurant input & search states ---
   const [restaurantQuery, setRestaurantQuery] = useState(''); // What user types to search
@@ -59,7 +60,15 @@ export default function BusinessSetupForm() {
   }, [uploadedLicenseInfo]);
 
   const handleSubmit = async () => {
+    setFormError(''); // clear previous error
     setLoading(true);
+
+    // Validate required fields
+    if (!user || !licenseDownloadUrl || !restaurantId) {
+      setFormError('Please complete all required fields: upload your business license and select a restaurant.');
+      setLoading(false);
+      return;
+    }
 
     if (user && licenseDownloadUrl && restaurantId) {
       try {
@@ -96,6 +105,7 @@ export default function BusinessSetupForm() {
         console.log('Restaurant ID linked in MongoDB:', idResult);
       } catch (err) {
         console.error('Error saving metadata:', err.message);
+        setFormError('An unexpected error occurred. Please try again.');
       }
     } else {
       console.warn('Missing user, license URL, or restaurant ID');
@@ -191,6 +201,10 @@ export default function BusinessSetupForm() {
         <Button className="w-full" onClick={handleSubmit} variant="default" disabled={loading}>
           {loading ? 'Submitting...' : 'Update'}
         </Button>
+
+        {formError && (
+          <p className="text-sm text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2">{formError}</p>
+        )}
 
         {/* --- Sign Out Link --- */}
         <form action="/signout" method="post" className="relative">
