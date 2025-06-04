@@ -21,6 +21,7 @@ export async function GET(req) {
 
   return NextResponse.json(
     results.map(r => ({
+      id: r._id,
       name: r.name,
       location: r.location.toUpperCase(),
     }))
