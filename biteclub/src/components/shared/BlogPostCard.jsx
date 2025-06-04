@@ -8,11 +8,24 @@ import EngagementIconStat from '@/components/shared/EngagementIconStat';
 import FormattedDate from './formattedDate';
 import AuthorDateBlurb from './AuthorDateBlurb';
 import Link from 'next/link';
+import EditModePanel from './EditModePanel';
 
+// Description: BlogPostCard has multiple states: A post can be available to be edited (EditModePanel will appear),
+// and it can be selected for editing (text editor will appear with prepopulated data of post)
+// PARAMS:
 // writtenByOwner: tracks whether post is written by profile owner
 // isFavourited: tracks whether post is favourited
-export default function BlogPostCard({ blogPostData, writtenByOwner = false, isFavourited = false }) {
-  const [isHovered, setIsHovered] = useState(false);
+// isEditModeOn: tracks whether GENERAL user is managing content on their profile
+export default function BlogPostCard({
+  blogPostData,
+  writtenByOwner = false,
+  isFavourited = false,
+  isEditModeOn = false,
+  setShowTextEditor = () => {},
+  setEditBlogPost = () => {},
+}) {
+  const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
+
   return (
     <div className="relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2 row-span-2">
       <div className="px-4 pt-4">
@@ -58,6 +71,16 @@ export default function BlogPostCard({ blogPostData, writtenByOwner = false, isF
           ) : null}
         </div>
       </div>
+      {/* EditModePanel appears when general user selects to "Manage Content";
+      General user can select blog post to delete or edit. Editing opens the text editor. */}
+      {isEditModeOn && (
+        <EditModePanel
+          onEditClick={() => {
+            setShowTextEditor(true);
+            setEditBlogPost(true);
+          }}
+        />
+      )}
     </div>
   );
 }
