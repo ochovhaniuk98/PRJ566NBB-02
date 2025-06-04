@@ -7,6 +7,8 @@ import { Input } from '@/components/shared/Input';
 import { Button } from '@/components/shared/Button';
 import { Label } from '@/components/shared/Label';
 import { CldUploadWidget } from 'next-cloudinary';
+// import { Dropzone } from '@/components/auth/ui/Dropzone'; // CANNOT USE WITH CLOUDINARY UPLOAD
+
 
 export default function BusinessSetupForm() {
   const router = useRouter();
@@ -109,9 +111,11 @@ export default function BusinessSetupForm() {
               }}
             >
               {({ open }) => (
-                <button onClick={() => open()} className="bg-blue-500 text-white px-4 py-2 rounded">
+
+                <button onClick={() => open()} className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-16 text-center rounded-md cursor-pointer w-full">
                   Upload your business license
                 </button>
+
               )}
             </CldUploadWidget>
           </section>
