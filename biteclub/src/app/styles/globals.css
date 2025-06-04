@@ -173,7 +173,7 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   }
 
   .custom-checkmark {
-    @apply w-4 h-4 bg-brand-green rounded-full;
+    @apply w-4 h-4 bg-brand-yellow rounded-full;
   }
 }
 
