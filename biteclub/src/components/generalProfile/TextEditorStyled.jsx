@@ -5,7 +5,7 @@ import { Label } from '../shared/Label';
 
 import { useState, useEffect } from 'react';
 
-export default function TextEditorStyled({ setShowTextEditor, generalUserId }) {
+export default function TextEditorStyled({ setShowTextEditor, generalUserId, editBlogPost = false }) {
   const [content, setContent] = useState(null);
   const [title, setTitle] = useState(null);
 
@@ -75,8 +75,8 @@ export default function TextEditorStyled({ setShowTextEditor, generalUserId }) {
         >
           {statusMessage}
         </h6>
-
-        <h3>WRITE A BLOG POST</h3>
+        {/* Display caption depending on wether blog post is being added OR edited */}
+        <h3>{editBlogPost ? 'EDIT BLOG POST' : 'WRITE A BLOG POST'}</h3>
         <div className=" flex gap-2 items-center justify-center mb-2">
           <Label>Title</Label>
           <Input type="text" className={'w-[50%]'} onChange={e => setTitle(e.target.value)} />

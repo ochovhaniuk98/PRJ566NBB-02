@@ -154,6 +154,27 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   .instagram-media:hover {
     border: 2px solid #ffdcbe !important;
   }
+
+  /* For Chrome, Safari, and Edge */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* For Firefox */
+  .scrollbar-hide {
+    scrollbar-width: none;
+  }
+
+  .custom-checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 3px;
+    @apply border border-brand-navy shadow-inner bg-white flex justify-center items-center;
+  }
+
+  .custom-checkmark {
+    @apply w-4 h-4 bg-brand-yellow rounded-full;
+  }
 }
 
 /*AUTH CSS (NICOLE ADDED) all tailwind css*/

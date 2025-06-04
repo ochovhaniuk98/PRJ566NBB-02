@@ -7,21 +7,24 @@ import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
 import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 
-import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
 import { useEffect, useState } from 'react';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
+import AddReviewForm from '../shared/AddReviewForm';
+import StarRating from '../shared/StarRating';
 
 export default function RestaurantProfile({ isOwner = false, isVerified = false, restaurantId }) {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
+  const [showAddReviewForm, setShowAddReviewForm] = useState(false);
+  const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value when adding a review
 
   // states for editing profile
   const [showInstagramPopup, setShowInstagramPopup] = useState(false);
   const [showEditDetailsPopup, setShowEditDetailsPopup] = useState(false);
-  const [showAddPhotoPopup, setShowAddPhotoPopup] = useState(false);
 
   const [restaurantData, setRestaurantData] = useState(null);
   const [reviewsData, setReviewsData] = useState(null);
@@ -103,7 +106,7 @@ export default function RestaurantProfile({ isOwner = false, isVerified = false,
         ) : (
           <>
             <SingleTabWithIcon icon={faHeart} detailText={0} />
-            <SingleTabWithIcon icon={faPen} detailText="Write a Review" />
+            <SingleTabWithIcon icon={faPen} detailText="Write a Review" onClick={() => setShowAddReviewForm(true)} />
             <SingleTabWithIcon icon={faUtensils} detailText="Reserve Table" />
           </>
         )}
@@ -131,6 +134,22 @@ export default function RestaurantProfile({ isOwner = false, isVerified = false,
       )}
       {showEditDetailsPopup && (
         <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={restaurantData} />
+      )}
+
+      {/* review form + interactive star rating */}
+      {showAddReviewForm && (
+        /* NOTE: "AddReviewForm" has two modes: Adding NEW reviews, and EDITING existing reviews.
+               The paramter "editReviewMode" is false by default, but TRUE when user wants to edit review.*/
+        <AddReviewForm onCancel={() => setShowAddReviewForm(false)}>
+          {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
+                Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
+          <StarRating
+            iconSize="text-4xl cursor-pointer"
+            interactive={true}
+            onChange={(val, msg) => setReviewRating({ value: val, message: msg })}
+          />
+          {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
+        </AddReviewForm>
       )}
     </MainBaseContainer>
   );
