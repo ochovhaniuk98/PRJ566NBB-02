@@ -7,15 +7,24 @@ import { Input } from '@/components/shared/Input';
 import { Button } from '@/components/shared/Button';
 import { Label } from '@/components/shared/Label';
 import { CldUploadWidget } from 'next-cloudinary';
-// import { Dropzone } from '@/components/auth/ui/Dropzone'; // CANNOT USE WITH CLOUDINARY UPLOAD
 
 export default function BusinessSetupForm() {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  // const [restaurantName, setRestaurantName] = useState('');
-
   const [loading, setLoading] = useState(false);
 
+  // --- Restaurant input & search states ---
+  const [restaurantQuery, setRestaurantQuery] = useState(''); // What user types to search
+  const [restaurantName, setRestaurantName] = useState(''); // Final confirmed restaurant name
+  const [restaurantLocation, setRestaurantLocation] = useState(''); // Final confirmed restaurant location
+  const [results, setResults] = useState([]); // Autocomplete search results
+  const [timer, setTimer] = useState(null); // Timer for debounce effect
+
+  // --- License upload states ---
+  const [uploadedLicenseInfo, setUploadedLicenseInfo] = useState(null);
+  const [licenseDownloadUrl, setLicenseDownloadUrl] = useState(null);
+
+  // --- Fetch user from Supabase on component mount ---
   useEffect(() => {
     const fetchUser = async () => {
       const supabase = createClient();
@@ -25,43 +34,30 @@ export default function BusinessSetupForm() {
     fetchUser();
   }, []);
 
-  // search for restaurant name and location
-  // const [query, setQuery] = useState('');
-  const [restaurantQuery, setRestaurantQuery] = useState(''); // name or location
-  const [results, setResults] = useState([]);
-  const [timer, setTimer] = useState(null);
-
+  // --- Autocomplete logic: fetch results based on user input (debounced) ---
   useEffect(() => {
     if (!restaurantQuery) return setResults([]);
 
     if (timer) clearTimeout(timer);
+
     const newTimer = setTimeout(async () => {
       const res = await fetch(`/api/restaurants-search?q=${restaurantQuery}`);
       const data = await res.json();
       setResults(data);
-    }, 300);
+    }, 300); // 300ms debounce
 
     setTimer(newTimer);
   }, [restaurantQuery]);
 
-  // Business license upload
-  const [uploadedLicenseInfo, setUploadedLicenseInfo] = useState(null);
-  const [licenseDownloadUrl, setLicenseDownloadUrl] = useState(null);
-
+  // --- Generate downloadable license URL after successful Cloudinary upload ---
   useEffect(() => {
     if (uploadedLicenseInfo?.public_id) {
-      console.log('public_id:', uploadedLicenseInfo.public_id);
-      console.log('version:', uploadedLicenseInfo.version);
-
       const url = `https://res.cloudinary.com/dmcnahm5e/raw/upload/fl_attachment:license/v${uploadedLicenseInfo.version}/${uploadedLicenseInfo.public_id}`;
-
       setLicenseDownloadUrl(url);
-
-      console.log('Generated License URL:', url);
     }
   }, [uploadedLicenseInfo]);
 
-  // form submission
+  // --- Submit license URL to MongoDB and redirect ---
   const handleSubmit = async () => {
     setLoading(true);
     // The Image has been stored to Cloudinary at this point
@@ -79,12 +75,7 @@ export default function BusinessSetupForm() {
         });
 
         const result = await response.json();
-        console.log('Result', result);
-
-        if (!response.ok) {
-          throw new Error(result.error || 'Failed to update the License PDF');
-        }
-
+        if (!response.ok) throw new Error(result.error || 'Failed to update the License PDF');
         console.log('✅ Metadata saved to MongoDB:', result);
       } catch (err) {
         console.error('❌ Error saving metadata:', err.message);
@@ -96,33 +87,36 @@ export default function BusinessSetupForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-brand-green-lite">
-      <div className="form-widget max-w-md w-full px-12 py-16 border border-brand-yellow-lite shadow-md rounded-md space-y-4 bg-brand-yellow-extralite flex  flex-col justify-center items-stretch">
+      <div className="form-widget max-w-md w-full px-12 py-16 border border-brand-yellow-lite shadow-md rounded-md space-y-4 bg-brand-yellow-extralite flex flex-col justify-center items-stretch">
         <h2 className="text-center">Ready to reach new customers?</h2>
+
+        {/* --- Hidden Email Field (bound to Supabase user) --- */}
+        <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
+
+        {/* --- Restaurant Search Input --- */}
         <div>
-          <Label htmlFor="email" className={'hidden'}>
-            Email
-          </Label>
-
-          <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
-        </div>
-
-        <div>
-          <Label htmlFor="restaurantName">Restaurant Name</Label>
-
+          <Label htmlFor="restaurantName">Search your restaurant by name and location</Label>
           <Input
             id="restaurantQuery"
             type="text"
             value={restaurantQuery}
             onChange={e => setRestaurantQuery(e.target.value)}
             className="w-full"
+            placeholder="e.g. Pomegranate or College Street"
           />
 
+          {/* --- Autocomplete Result Dropdown --- */}
           {results.length > 0 && (
-            <ul className=" border-2 border-brand-blue rounded bg-white mt-1 max-h-48 overflow-y-auto">
+            <ul className="border-2 border-brand-blue rounded bg-white mt-1 max-h-48 overflow-y-auto z-10 relative">
               {results.slice(0, 5).map((r, i) => (
                 <li
                   key={i}
-                  onClick={() => setRestaurantQuery(`${r.name} — ${r.location}`)}
+                  onClick={() => {
+                    setRestaurantQuery(`${r.name} — ${r.location}`); // For display only
+                    setRestaurantName(r.name); // Save confirmed name
+                    setRestaurantLocation(r.location); // Save confirmed location
+                    setResults([]); // Hide result dropdown
+                  }}
                   className="cursor-pointer hover:bg-gray-100 px-3 py-1"
                 >
                   {r.name} — {r.location}
@@ -131,16 +125,29 @@ export default function BusinessSetupForm() {
             </ul>
           )}
 
-          
+          {/* --- Confirmed Restaurant Preview --- */}
+          {restaurantName && restaurantLocation && (
+            <div className="text-sm mt-2 text-brand-navy">
+              <p>
+                <strong>Restaurant name:</strong>
+                <br />
+                {restaurantName}
+              </p>
+              <p className="mt-1">
+                <strong>Restaurant location:</strong>
+                <br />
+                {restaurantLocation}
+              </p>
+            </div>
+          )}
         </div>
 
+        {/* --- Business License Upload --- */}
         <div>
           <section className="flex flex-col items-center justify-between">
             <CldUploadWidget
               uploadPreset="my-uploads"
-              options={{
-                resourceType: 'raw', // Set here too
-              }}
+              options={{ resourceType: 'raw' }}
               onSuccess={async result => {
                 console.log('Upload Success:', result?.info);
                 setUploadedLicenseInfo(result?.info);
@@ -158,10 +165,12 @@ export default function BusinessSetupForm() {
           </section>
         </div>
 
+        {/* --- Submit Button --- */}
         <Button className="w-full" onClick={handleSubmit} variant="default" disabled={loading}>
           {loading ? 'Submitting...' : 'Update'}
         </Button>
 
+        {/* --- Sign Out Link --- */}
         <form action="/signout" method="post" className="relative">
           <button
             className="text-sm text-brand-navy font-primary font-medium p-2 rounded-md absolute -left-8 -bottom-15 underline cursor-pointer"
