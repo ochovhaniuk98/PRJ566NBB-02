@@ -113,7 +113,7 @@ export default function BusinessSetupForm() {
 
     setLoading(false);
     // router.push('/users/business');
-    router.push('/users/business/awaiting-verification');
+    router.push('/account-setup/business/awaiting-verification');
   };
 
   return (

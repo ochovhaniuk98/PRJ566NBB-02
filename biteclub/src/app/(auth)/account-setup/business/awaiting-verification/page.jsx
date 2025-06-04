@@ -15,7 +15,7 @@ export default function Page() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                We’ve received your business license and details. Once we complete the verification process, we’ll
+                We've received your business license and details. Once we complete the verification process, we'll
                 notify you by email.
               </p>
               <Button className="w-full font-roboto font-normal mt-4" onClick={() => router.push('/users/business')}>
