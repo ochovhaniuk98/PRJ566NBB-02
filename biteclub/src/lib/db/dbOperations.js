@@ -120,6 +120,8 @@ export async function updateLicenseForBusinessUser(data) {
   return user;
 }
 
+
+
 // =================
 // FOR GENERAL USERS
 // =================

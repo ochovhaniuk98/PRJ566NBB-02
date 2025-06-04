@@ -9,15 +9,12 @@ import { Label } from '@/components/shared/Label';
 import { CldUploadWidget } from 'next-cloudinary';
 // import { Dropzone } from '@/components/auth/ui/Dropzone'; // CANNOT USE WITH CLOUDINARY UPLOAD
 
-
 export default function BusinessSetupForm() {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const [restaurantName, setRestaurantName] = useState('');
-  const [loading, setLoading] = useState(false);
+  // const [restaurantName, setRestaurantName] = useState('');
 
-  const [uploadedLicenseInfo, setUploadedLicenseInfo] = useState(null);
-  const [licenseDownloadUrl, setLicenseDownloadUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -27,6 +24,29 @@ export default function BusinessSetupForm() {
     };
     fetchUser();
   }, []);
+
+  // search for restaurant name and location
+  // const [query, setQuery] = useState('');
+  const [restaurantQuery, setRestaurantQuery] = useState(''); // name or location
+  const [results, setResults] = useState([]);
+  const [timer, setTimer] = useState(null);
+
+  useEffect(() => {
+    if (!restaurantQuery) return setResults([]);
+
+    if (timer) clearTimeout(timer);
+    const newTimer = setTimeout(async () => {
+      const res = await fetch(`/api/restaurants-search?q=${restaurantQuery}`);
+      const data = await res.json();
+      setResults(data);
+    }, 300);
+
+    setTimer(newTimer);
+  }, [restaurantQuery]);
+
+  // Business license upload
+  const [uploadedLicenseInfo, setUploadedLicenseInfo] = useState(null);
+  const [licenseDownloadUrl, setLicenseDownloadUrl] = useState(null);
 
   useEffect(() => {
     if (uploadedLicenseInfo?.public_id) {
@@ -41,9 +61,9 @@ export default function BusinessSetupForm() {
     }
   }, [uploadedLicenseInfo]);
 
+  // form submission
   const handleSubmit = async () => {
     setLoading(true);
-
     // The Image has been stored to Cloudinary at this point
     // Store License Download Url in Business User (MongoDB)
     if (user && licenseDownloadUrl) {
@@ -90,12 +110,28 @@ export default function BusinessSetupForm() {
           <Label htmlFor="restaurantName">Restaurant Name</Label>
 
           <Input
-            id="restaurantName"
+            id="restaurantQuery"
             type="text"
-            value={restaurantName}
-            onChange={e => setRestaurantName(e.target.value)}
+            value={restaurantQuery}
+            onChange={e => setRestaurantQuery(e.target.value)}
             className="w-full"
           />
+
+          {results.length > 0 && (
+            <ul className=" border-2 border-brand-blue rounded bg-white mt-1 max-h-48 overflow-y-auto">
+              {results.slice(0, 5).map((r, i) => (
+                <li
+                  key={i}
+                  onClick={() => setRestaurantQuery(`${r.name} — ${r.location}`)}
+                  className="cursor-pointer hover:bg-gray-100 px-3 py-1"
+                >
+                  {r.name} — {r.location}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          
         </div>
 
         <div>
@@ -111,11 +147,12 @@ export default function BusinessSetupForm() {
               }}
             >
               {({ open }) => (
-
-                <button onClick={() => open()} className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-16 text-center rounded-md cursor-pointer w-full">
+                <button
+                  onClick={() => open()}
+                  className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-16 text-center rounded-md cursor-pointer w-full"
+                >
                   Upload your business license
                 </button>
-
               )}
             </CldUploadWidget>
           </section>
