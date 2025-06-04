@@ -14,7 +14,7 @@ export async function POST(request) {
 
     const updatedUser = await BusinessUser.findOneAndUpdate(
       { supabaseId }, // find with supabaseId
-      { restaurantId: restaurantId, verificationStatus: false }, // verificationStatus will be false at this moment.
+      { restaurantId: restaurantId}, // update restaurantId to BusinessUser Schema
       { new: true, upsert: false } // no user will be created if not found
     );
 
