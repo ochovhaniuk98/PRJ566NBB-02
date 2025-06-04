@@ -13,7 +13,7 @@ import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetail
 import { useEffect, useState } from 'react';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 
-export default function RestaurantProfile({ isOwner = false, restaurantId }) {
+export default function RestaurantProfile({ isOwner = false, isVerified = false, restaurantId }) {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
@@ -84,7 +84,8 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     <MainBaseContainer>
       <ImageBanner images={bannerImages} />
       <InfoBanner name={name} avgRating={rating} numReviews={numReviews} cuisine={cuisines} address={location}>
-        {isOwner ? (
+        
+        {isOwner && isVerified ? (
           <>
             <SingleTabWithIcon
               icon={faHeart}

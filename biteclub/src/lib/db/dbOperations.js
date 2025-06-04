@@ -122,6 +122,21 @@ export async function updateLicenseForBusinessUser(data) {
   return user;
 }
 
+// Check if the business user is verified
+export async function getBusinessUserVerificationStatus({ supabaseId }) {
+  await dbConnect();
+  // Only fetch the verificationStatus field from MongoDB
+  const user = await BusinessUser.findOne(
+    { supabaseId },
+    'verificationStatus'
+  );
+  // If user not found, return null
+  if (!user) return null;
+  // Return true or false explicitly
+  return user.verificationStatus === true;
+}
+
+
 
 
 // =================
