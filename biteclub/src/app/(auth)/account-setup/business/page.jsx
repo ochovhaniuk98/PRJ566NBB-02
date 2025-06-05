@@ -126,7 +126,7 @@ export default function BusinessSetupForm() {
 
         {/* --- Restaurant Search Input --- */}
         <div>
-          <Label htmlFor="restaurantName">Search your restaurant by name and location</Label>
+          <Label htmlFor="restaurantName">Search your restaurant by NAME or LOCATION</Label>
           <Input
             id="restaurantQuery"
             type="text"
@@ -139,7 +139,7 @@ export default function BusinessSetupForm() {
           {/* --- Autocomplete Result Dropdown --- */}
           {results.length > 0 && (
             <ul className="border-2 border-brand-blue rounded bg-white mt-1 max-h-48 overflow-y-auto z-10 relative">
-              {results.slice(0, 5).map((r, i) => (
+              {results.slice(0, 10).map((r, i) => (
                 <li
                   key={i}
                   onClick={() => {
