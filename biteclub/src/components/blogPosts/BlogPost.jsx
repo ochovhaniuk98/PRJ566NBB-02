@@ -1,6 +1,6 @@
 // src/components/blogPosts/BlogPost.jsx
 import { useEffect, useState } from 'react';
-import ReadOnlyEditor from '../tiptap-rich-text-editor/tmp/ReadOnlyEditor';
+import ReadOnlyEditor from '../tiptap-rich-text-editor/ReadOnlyEditor';
 
 export default function BlogPost({ id }) {
   const [postContent, setPostContent] = useState(null);

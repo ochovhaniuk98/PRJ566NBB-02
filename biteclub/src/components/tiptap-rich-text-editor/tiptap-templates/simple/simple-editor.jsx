@@ -74,6 +74,7 @@ import '@/components/tiptap-rich-text-editor/tiptap-templates/simple/simple-edit
 import content from '@/components/tiptap-rich-text-editor/tiptap-templates/simple/data/content.json';
 
 import { InstagramNode } from '../../tiptap-extension/InstagramNode';
+import { RestaurantMention } from '../../tiptap-node/restaurant-mention-node/RestaurantMention';
 import { useCallback } from 'react';
 
 const MainToolbarContent = ({ onHighlighterClick, onLinkClick, isMobile, onInstagramClick }) => {
@@ -172,6 +173,7 @@ export function SimpleEditor({ onContentChange }) {
     extensions: [
       StarterKit,
       InstagramNode,
+      RestaurantMention,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Underline,
       TaskList,
