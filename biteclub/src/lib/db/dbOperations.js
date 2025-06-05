@@ -284,3 +284,15 @@ export async function getBlogPost({ id }) {
 
   return post;
 }
+
+// Search for a Restaurant by Search Query (User Input)
+export async function searchRestaurantsByQuery(query) {
+  await dbConnect();
+  const restaurants = await Restaurant.find({
+    // $regex: query means partial matching
+    // $options: 'i' makes it case-insensitive
+    name: { $regex: query, $options: 'i' },
+  }).limit(10);
+
+  return restaurants;
+}

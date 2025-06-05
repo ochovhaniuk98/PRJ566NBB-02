@@ -1,5 +1,5 @@
 // components/tiptap-rich-text-editor/tmp/ReadOnlyEditor.js
-// temporarily used to display blog post
+// used to display blog post
 'use client';
 
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -31,7 +31,10 @@ import '@/components/tiptap-rich-text-editor/tiptap-node/image-node/image-node.s
 import '@/components/tiptap-rich-text-editor/tiptap-node/paragraph-node/paragraph-node.scss';
 
 // Instagram
-import { InstagramNode } from '../tiptap-extension/InstagramNode';
+import { InstagramNode } from './tiptap-extension/InstagramNode';
+
+// Restaurant Mentions
+import { RestaurantMention } from './tiptap-node/restaurant-mention-node/RestaurantMention';
 
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE } from '@/lib/tiptap-utils';
@@ -45,6 +48,7 @@ export default function ReadOnlyEditor({ content }) {
     extensions: [
       StarterKit,
       InstagramNode,
+      RestaurantMention,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Underline,
       TaskList,

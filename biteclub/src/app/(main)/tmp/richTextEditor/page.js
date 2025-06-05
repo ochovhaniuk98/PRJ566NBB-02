@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 import { createClient } from '@/lib/auth/client'; //to get user
 
-import ReadOnlyEditor from '@/components/tiptap-rich-text-editor/tmp/ReadOnlyEditor';
+import ReadOnlyEditor from '@/components/tiptap-rich-text-editor/ReadOnlyEditor';
 
 export default function Page() {
   const [editorContent, setEditorContent] = useState(null);
