@@ -1,8 +1,4 @@
-import React, { useEffect, useRef } from 'react';
-
 export default function SuggestionList({ items, command }) {
-  const ulRef = useRef();
-
   const selectItem = item => {
     command(item);
   };
