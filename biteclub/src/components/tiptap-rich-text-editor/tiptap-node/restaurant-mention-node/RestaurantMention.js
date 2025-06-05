@@ -6,7 +6,17 @@ import './restaurantMention.scss';
 
 export const RestaurantMention = Mention.extend({
   renderHTML({ node, HTMLAttributes }) {
-    return ['span', { ...HTMLAttributes, class: 'mention' }, `@${node.attrs.label}`];
+    return [
+      'a',
+      {
+        ...HTMLAttributes,
+        class: 'restaurant-mention',
+        href: `/restaurants/${node.attrs.id}`, // link to restaurant page
+        target: '_blank', // open in new tab (optional)
+        rel: 'noopener noreferrer', // security best practice
+      },
+      `@${node.attrs.label}`,
+    ];
   },
 }).configure({
   HTMLAttributes: {
