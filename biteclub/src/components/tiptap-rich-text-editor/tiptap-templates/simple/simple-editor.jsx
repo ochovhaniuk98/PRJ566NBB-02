@@ -128,9 +128,6 @@ const MainToolbarContent = ({ onHighlighterClick, onLinkClick, isMobile, onInsta
       </ToolbarGroup>
       <Spacer />
       {isMobile && <ToolbarSeparator />}
-      <ToolbarGroup>
-        <ThemeToggle />
-      </ToolbarGroup>
     </>
   );
 };
@@ -181,8 +178,6 @@ export function SimpleEditor({ onContentChange }) {
       Highlight.configure({ multicolor: true }),
       Image,
       Typography,
-      Superscript,
-      Subscript,
 
       Selection,
       ImageUploadNode.configure({
