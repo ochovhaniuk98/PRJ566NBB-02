@@ -15,11 +15,13 @@ export default function Page() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                We've received your business license and details. Once we complete the verification process, we'll
-                notify you by email.
+                We've received your business license and details. The verification process will take up to 3 business
+                days to complete.
               </p>
-              <Button className="w-full font-roboto font-normal mt-4" onClick={() => router.push('/users/business')}>
-                Go to Dashboard
+              {/* Only when "verificationStatus" is set to true will users be allowed to access the user dashboard route. 
+                  Therefore, even if they are logged in, we will redirect them to the homepage instead of the dashboard. */}
+              <Button className="w-full font-roboto font-normal mt-4" onClick={() => router.push('/')}>
+                Go to Homepage
               </Button>
             </CardContent>
           </Card>
