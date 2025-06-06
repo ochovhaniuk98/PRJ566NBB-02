@@ -44,7 +44,7 @@ export async function GET(request) {
     if (!existingUser) {
       if (!isNewSignup) {
         console.error('No userType found in DB and no userType provided by searchParams');
-        
+
         // If a new user logs in (not signs up) using Google, they won't have a userType.
         // However, Google OAuth still creates a user record in the Supabase Auth database.
         // We want to remove this user from the Auth database.
@@ -56,10 +56,20 @@ export async function GET(request) {
 
       const Model = userSelectedUserType === 'business' ? BusinessUser : User;
 
-      const newUser = new Model({
-        supabaseId: user.id,
-        userType: userSelectedUserType,
-      });
+      let newUser;
+
+      if (userSelectedUserType === 'business') {
+        newUser = new BusinessUser({
+          supabaseId: user.id,
+          userType: userSelectedUserType,
+          verificationStatus: false, // only for business users
+        });
+      } else {
+        newUser = new User({
+          supabaseId: user.id,
+          userType: userSelectedUserType,
+        });
+      }
 
       await newUser.save();
 

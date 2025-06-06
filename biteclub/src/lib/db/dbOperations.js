@@ -104,7 +104,9 @@ export async function getBusinessUserRestaurantId({ supabaseId }) {
   await dbConnect();
   const user = await BusinessUser.findOne({ supabaseId });
   if (!user) return null;
-  return { restaurantId: user.restaurantId.toString() ?? null };
+  // return { restaurantId: user.restaurantId.toString() ?? null };
+  return { restaurantId: user.restaurantId ? user.restaurantId.toString() : null }; // safe version
+
 }
 
 // Update license for Business User
@@ -119,6 +121,23 @@ export async function updateLicenseForBusinessUser(data) {
 
   return user;
 }
+
+// Check if the business user is verified
+export async function getBusinessUserVerificationStatus({ supabaseId }) {
+  await dbConnect();
+  // Only fetch the verificationStatus field from MongoDB
+  const user = await BusinessUser.findOne(
+    { supabaseId },
+    'verificationStatus'
+  );
+  // If user not found, return null
+  if (!user) return null;
+  // Return true or false explicitly
+  return user.verificationStatus === true;
+}
+
+
+
 
 // =================
 // FOR GENERAL USERS

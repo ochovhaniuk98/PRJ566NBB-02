@@ -226,7 +226,7 @@ const BusinessUserSchema = new mongoose.Schema({
   restaurantId: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
   userType: String,
   licenseFileUrl: String,
-  verificationStatus: String,
+  verificationStatus: Boolean, // String,
 });
 
 // Temporary Collection for Testing Purposes

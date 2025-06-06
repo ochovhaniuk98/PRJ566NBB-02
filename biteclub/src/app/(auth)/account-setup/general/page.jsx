@@ -75,58 +75,25 @@ export default function GeneralSetupForm() {
           )}
 
           <div>
-            {/* <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>*/}
-
             <Label htmlFor="email" className={'hidden'}>
               Email
             </Label>
-            {/* 
-            <input
-              id="email"
-              type="text"
-              value={user?.email || ''}
-              disabled
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-gray-500 cursor-not-allowed"
-            /> */}
-
             <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
           </div>
-          <div className="mt-8">
-            {/*<label htmlFor="username" className="block text-sm font-medium text-gray-700">
-              Set your username
-            </label> */}
 
+          <div className="mt-8">
             <Label htmlFor="username">Username</Label>
-            {/* 
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-            />*/}
             <Input
               id="username"
               type="text"
-              className="w-full"
               value={username}
               onChange={e => setUsername(e.target.value)}
+              className="w-full"
             />
           </div>
         </div>
 
         <div>
-          {/* 
-          <button
-            className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-900 transition disabled:opacity-50"
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? 'Submitting...' : 'Update'}
-          </button> */}
-
           <Button className="w-full" onClick={handleSubmit} variant="default" disabled={loading}>
             {loading ? 'Submitting...' : 'Update'}
           </Button>

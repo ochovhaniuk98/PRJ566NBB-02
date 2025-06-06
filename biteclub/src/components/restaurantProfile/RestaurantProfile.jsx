@@ -87,7 +87,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     <MainBaseContainer>
       <ImageBanner images={bannerImages} />
       <InfoBanner name={name} avgRating={rating} numReviews={numReviews} cuisine={cuisines} address={location}>
-        {isOwner ? (
+        {isOwner ? ( 
           <>
             <SingleTabWithIcon
               icon={faHeart}
