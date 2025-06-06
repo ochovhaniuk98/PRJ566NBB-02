@@ -16,7 +16,6 @@ import AddReviewForm from '../shared/AddReviewForm';
 import StarRating from '../shared/StarRating';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
-  // isVerified = false,
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
@@ -88,7 +87,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     <MainBaseContainer>
       <ImageBanner images={bannerImages} />
       <InfoBanner name={name} avgRating={rating} numReviews={numReviews} cuisine={cuisines} address={location}>
-        {isOwner ? ( // && isVerified
+        {isOwner ? ( 
           <>
             <SingleTabWithIcon
               icon={faHeart}

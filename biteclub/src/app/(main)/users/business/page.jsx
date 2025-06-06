@@ -41,7 +41,6 @@ export default function BusinessUserRestaurantPage() {
         }
       } catch (err) {
         console.error('Failed to fetch restaurant ID:', err);
-        // router.push('/account-setup/business'); // Still redirect if server fails
       } finally {
         setLoading(false);
       }
@@ -52,5 +51,5 @@ export default function BusinessUserRestaurantPage() {
 
   if (loading) return <p>Loading...</p>;
 
-  return <RestaurantProfile isOwner={true} restaurantId={restaurantId} />; // isVerified={isVerified}
+  return <RestaurantProfile isOwner={true} restaurantId={restaurantId} />;
 }

@@ -175,7 +175,7 @@ export default function BusinessSetupForm() {
         </div>
 
         {/* --- Business License Upload --- */}
-        <div>
+        {/* <div>
           <section className="flex flex-col items-center justify-between">
             <CldUploadWidget
               uploadPreset="my-uploads"
@@ -195,7 +195,37 @@ export default function BusinessSetupForm() {
               )}
             </CldUploadWidget>
           </section>
-        </div>
+        </div> */}
+{/* --- Business License Upload --- */}
+<div>
+  <section className="flex flex-col items-center justify-between">
+    <CldUploadWidget
+      uploadPreset="my-uploads"
+      options={{ resourceType: 'raw' }}
+      onSuccess={async result => {
+        console.log('Upload Success:', result?.info);
+        setUploadedLicenseInfo(result?.info);
+      }}
+    >
+      {({ open }) => (
+        <>
+          <button
+            onClick={() => open()}
+            className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-16 text-center rounded-md cursor-pointer w-full"
+          >
+            Upload your business license
+          </button>
+
+          {uploadedLicenseInfo?.original_filename && (
+            <p className="mt-2 text-sm text-gray-700">
+              Uploaded: {uploadedLicenseInfo.original_filename}
+            </p>
+          )}
+        </>
+      )}
+    </CldUploadWidget>
+  </section>
+</div>
 
         {/* --- Submit Button --- */}
         <Button className="w-full" onClick={handleSubmit} variant="default" disabled={loading}>
