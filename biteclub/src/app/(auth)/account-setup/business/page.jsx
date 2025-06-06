@@ -151,7 +151,10 @@ export default function BusinessSetupForm() {
                   }}
                   className="cursor-pointer hover:bg-gray-100 px-3 py-1"
                 >
-                  {r.name} — {r.location}
+                  <div className="flex flex-col">
+                    <span className="font-medium text-brand-navy">{r.name}</span>
+                    <span className="text-sm text-gray-600">{r.location}</span>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -175,7 +178,7 @@ export default function BusinessSetupForm() {
         </div>
 
         {/* --- Business License Upload --- */}
-        {/* <div>
+        <div>
           <section className="flex flex-col items-center justify-between">
             <CldUploadWidget
               uploadPreset="my-uploads"
@@ -186,46 +189,29 @@ export default function BusinessSetupForm() {
               }}
             >
               {({ open }) => (
-                <button
-                  onClick={() => open()}
-                  className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-16 text-center rounded-md cursor-pointer w-full"
-                >
-                  Upload your business license
-                </button>
+                <>
+                  <button
+                    onClick={() => open()}
+                    className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-16 text-center rounded-md cursor-pointer w-full"
+                  >
+                    Upload your business license
+                    {uploadedLicenseInfo?.original_filename && (
+                      <span className="mt-2 flex items-center gap-2">
+                        <img
+                          width="24"
+                          height="24"
+                          src="https://img.icons8.com/material-outlined/24/cloud-checked.png"
+                          alt="cloud-checked"
+                        />
+                        <p className="text-sm text-brand-navy">Uploaded: {uploadedLicenseInfo.original_filename}</p>
+                      </span>
+                    )}
+                  </button>
+                </>
               )}
             </CldUploadWidget>
           </section>
-        </div> */}
-{/* --- Business License Upload --- */}
-<div>
-  <section className="flex flex-col items-center justify-between">
-    <CldUploadWidget
-      uploadPreset="my-uploads"
-      options={{ resourceType: 'raw' }}
-      onSuccess={async result => {
-        console.log('Upload Success:', result?.info);
-        setUploadedLicenseInfo(result?.info);
-      }}
-    >
-      {({ open }) => (
-        <>
-          <button
-            onClick={() => open()}
-            className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-16 text-center rounded-md cursor-pointer w-full"
-          >
-            Upload your business license
-          </button>
-
-          {uploadedLicenseInfo?.original_filename && (
-            <p className="mt-2 text-sm text-gray-700">
-              Uploaded: {uploadedLicenseInfo.original_filename}
-            </p>
-          )}
-        </>
-      )}
-    </CldUploadWidget>
-  </section>
-</div>
+        </div>
 
         {/* --- Submit Button --- */}
         <Button className="w-full" onClick={handleSubmit} variant="default" disabled={loading}>
