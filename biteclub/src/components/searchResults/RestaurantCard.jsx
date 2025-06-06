@@ -39,6 +39,7 @@ export default function RestaurantCard({ restaurantData, isFavourited = false })
             <p className="font-medium">{restaurantData.rating}</p>
             <StarRating colour={'text-brand-green'} iconSize={'icon-lg'} ratingNum={restaurantData.rating} />
             <p>{restaurantData.numReviews}</p>
+            {/* price range tag */}
             <div className="bg-brand-blue-lite px-2 rounded-full w-15 flex justify-center text-primary">
               {restaurantData.priceRange}
             </div>
