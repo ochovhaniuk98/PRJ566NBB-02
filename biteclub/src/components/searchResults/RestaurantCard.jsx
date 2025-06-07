@@ -9,17 +9,20 @@ import StarRating from '../shared/StarRating';
 
 export default function RestaurantCard({ restaurantData, isFavourited = false }) {
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
+  const image = Array.isArray(restaurantData?.images) ? restaurantData.images[0] : null;
 
   return (
     <Link href="/restaurants/682a2ecf70221a179b693583" className="w-full">
       <div className="w-full aspect-square border border-brand-yellow-lite flex flex-col items-center rounded-md cursor-pointer text-black hover:bg-brand-peach-lite">
         <div className="relative w-full aspect-3/2">
-          <Image
-            src={restaurantData.images[0].url}
-            alt={restaurantData.images[0].caption}
-            fill={true}
-            className="object-cover w-full rounded-t-md"
-          />
+          {restaurantData?.images[0]?.url && (
+            <Image
+              src={restaurantData?.images[0]?.url}
+              alt={restaurantData?.images[0]?.caption}
+              fill={true}
+              className="object-cover w-full rounded-t-md"
+            />
+          )}
         </div>
         <div className="py-2 px-3 text-left w-full">
           <div className="flex justify-between">
