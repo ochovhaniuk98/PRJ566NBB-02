@@ -89,7 +89,7 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
   }
 
   h3 {
-    @apply font-semibold my-1 text-lg;
+    @apply font-semibold my-1 text-base;
   }
 
   h4 {
@@ -126,6 +126,10 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
 
   .icon-md {
     font-size: 1rem;
+  }
+
+  .icon-sm {
+    font-size: 0.75rem;
   }
 
   /*** left/right margins for main content on most pages ***/

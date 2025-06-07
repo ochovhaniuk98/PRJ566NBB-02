@@ -3,7 +3,7 @@ export const fakeRestaurantData = {
   cuisines: ['Persian', 'Middle Eastern'],
   rating: 4.6,
   numReviews: 1234,
-  priceRange: '10–20',
+  priceRange: '$',
   dietaryOptions: ['Vegetarian', 'Vegan', 'Gluten-Free'],
   location: '420 College St, Toronto, ON M5T 1T3',
 
