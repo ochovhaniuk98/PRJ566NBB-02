@@ -23,6 +23,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [blogPosts, setBlogPosts] = useState([]);
   const [postsCount, setPostsCount] = useState(0);
   const [users, setUsers] = useState([]);
+  const [usersCount, setUsersCount] = useState(0);
 
   // Fetch restaurant data based on the search query
   const fetchRestaurants = async (reset = false) => {
@@ -56,7 +57,6 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   // Fetch restaurant data based on the search query
   const fetchBlogPosts = async (reset = false) => {
     setFetchCompleted(false);
-    console.log('Page: ', page);
     if (reset) {
       setPage(1);
     }
@@ -86,6 +86,39 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     }
   };
 
+  // Fetch user data based on the search query
+  const fetchUsers = async (reset = false) => {
+    setFetchCompleted(false);
+    console.log('Page: ', page);
+    if (reset) {
+      setPage(1);
+    }
+
+    try {
+      const res = await fetch(`/api/users/search?q=${searchQuery}&page=${page}&limit=20`);
+      const data = await res.json();
+
+      if (reset) {
+        setUsers(data.users);
+        setUsersCount(data.totalCount);
+      } else {
+        // append data to existing list
+        setUsers(prev => [...prev, ...data.users]);
+      }
+
+      // if we've fetched everything, stop loading more
+      if ((reset ? data.users.length : users.length + data.users.length) >= data.totalCount) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+      }
+      setFetchCompleted(true);
+    } catch (error) {
+      setFetchCompleted(true);
+      console.error('Failed to fetch users:', error);
+    }
+  };
+
   // reset page = 1
   useEffect(() => {
     setFetchCompleted(false);
@@ -95,6 +128,9 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     } else if (selectedTab === 1 && searchQuery) {
       setPage(1);
       fetchBlogPosts(true); // reset = true
+    } else if (selectedTab === 2 && searchQuery) {
+      setPage(1);
+      fetchUsers(true); // reset = true
     }
   }, [searchQuery, selectedTab]);
 
@@ -104,6 +140,8 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
       fetchRestaurants();
     } else if (selectedTab === 1 && page > 1) {
       fetchBlogPosts();
+    } else if (selectedTab === 2 && page > 1) {
+      fetchUsers();
     }
   }, [page]);
 
@@ -166,12 +204,17 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
           {/* User Results */}
           {selectedTab === 2 && (
             <>
-              <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={0} searchString={searchQuery} />
-              <GridCustomCols numOfCols={6} className="mt-4">
-                {Array.from({ length: 18 }).map((_, i) => (
-                  <GeneralUserCard key={i} generalUserData={fakeUser} isFollowing={false} />
+              <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={usersCount} searchString={searchQuery} />
+              <GridCustomCols numOfCols={4} className="mt-4">
+                {users.map((user, i) => (
+                  <GeneralUserCard key={user._id || i} generalUserData={user} isFollowing={false} />
                 ))}
               </GridCustomCols>
+              {hasMore && (
+                <div className="mt-6 flex justify-center">
+                  <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
+                </div>
+              )}
             </>
           )}
         </div>

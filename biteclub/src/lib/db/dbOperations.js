@@ -359,14 +359,16 @@ export async function searchBlogPostsByQuery(query, { page = 1, limit = 20 } = {
   return { posts, totalCount };
 }
 // Search for a General Users by Search Query (User Input)
-export async function searchUsersByQuery(query) {
+export async function searchUsersByQuery(query, { page = 1, limit = 20 } = {}) {
   await dbConnect();
+  const skip = (page - 1) * limit;
 
-  const users = await User.find({
-    // $regex: query means partial matching
-    // $options: 'i' makes it case-insensitive
-    username: { $regex: query, $options: 'i' },
-  });
+  const [users, totalCount] = await Promise.all([
+    User.find({ username: { $regex: query, $options: 'i' } })
+      .skip(skip)
+      .limit(limit),
+    User.countDocuments({ username: { $regex: query, $options: 'i' } }),
+  ]);
 
-  return users;
+  return { users, totalCount };
 }
