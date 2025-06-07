@@ -74,6 +74,9 @@ const BlogPostSchema = new mongoose.Schema({
   Instagram_posts: [InstagramPostSchema], // no longer needed, it's part of post body
   photos: [PhotoSchema], // no longer needed, it's part of post body
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  previewTitle: String,
+  previewText: String,
+  previewImage: String, // src url
 });
 
 // Internal Review

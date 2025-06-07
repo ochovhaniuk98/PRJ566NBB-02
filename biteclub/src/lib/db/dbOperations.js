@@ -255,11 +255,31 @@ export async function getProfilePicByUserSuperbaseId(supabaseId) {
 export async function createBlogPost({ title, content, userId }) {
   await dbConnect();
 
+  const blocks = content?.content;
+
+  let previewText = '';
+  if (Array.isArray(blocks)) {
+    const firstParagraph = blocks.find(block => block.type === 'paragraph');
+    if (firstParagraph?.content) {
+      const text = firstParagraph.content.map(segment => segment.text || '').join('');
+      previewText = text.length > 160 ? text.slice(0, 157) + '...' : text;
+    }
+  }
+
+  let previewImage = null;
+  if (Array.isArray(blocks)) {
+    const imageBlock = blocks.find(block => block.type === 'image');
+    previewImage = imageBlock?.attrs?.src || null;
+  }
+
   const newPost = new BlogPost({
     body: content,
     title,
     date_posted: new Date(),
     user_id: userId,
+    previewTitle: title.length > 50 ? title.slice(0, 33) + '...' : title,
+    previewText: previewText,
+    previewImage: previewImage,
   });
 
   await newPost.save();

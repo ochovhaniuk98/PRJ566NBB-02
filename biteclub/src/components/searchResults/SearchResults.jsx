@@ -66,15 +66,15 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
       const data = await res.json();
 
       if (reset) {
-        setBlogPosts(data.postsWithPreview);
+        setBlogPosts(data.posts);
         setPostsCount(data.totalCount);
       } else {
         // append data to existing list
-        setBlogPosts(prev => [...prev, ...data.postsWithPreview]);
+        setBlogPosts(prev => [...prev, ...data.posts]);
       }
 
       // if we've fetched everything, stop loading more
-      if ((reset ? data.postsWithPreview.length : blogPosts.length + data.postsWithPreview.length) >= data.totalCount) {
+      if ((reset ? data.posts.length : blogPosts.length + data.posts.length) >= data.totalCount) {
         setHasMore(false);
       } else {
         setHasMore(true);
