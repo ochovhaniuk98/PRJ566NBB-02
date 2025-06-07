@@ -325,16 +325,18 @@ export async function searchRestaurantsBySearchQuery(query, { page = 1, limit = 
 }
 
 // Search for a Posts by Search Query (User Input)
-export async function searchBlogPostsByQuery(query) {
+export async function searchBlogPostsByQuery(query, { page = 1, limit = 20 } = {}) {
   await dbConnect();
+  const skip = (page - 1) * limit;
 
-  const posts = await BlogPost.find({
-    // $regex: query means partial matching
-    // $options: 'i' makes it case-insensitive
-    title: { $regex: query, $options: 'i' },
-  });
+  const [posts, totalCount] = await Promise.all([
+    BlogPost.find({ title: { $regex: query, $options: 'i' } })
+      .skip(skip)
+      .limit(limit),
+    BlogPost.countDocuments({ title: { $regex: query, $options: 'i' } }),
+  ]);
 
-  return posts;
+  return { posts, totalCount };
 }
 // Search for a General Users by Search Query (User Input)
 export async function searchUsersByQuery(query) {

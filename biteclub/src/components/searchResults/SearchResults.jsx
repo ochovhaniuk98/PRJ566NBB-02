@@ -13,17 +13,20 @@ import SearchResultsNumMessage from '@/components/searchResults/SearchResultsNum
 // shows search results of restaurants, blog posts, and users
 export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [selectedTab, setSelectedTab] = useState(searchType); // for selecting search results type (default is restaurants)
-  const [restaurants, setRestaurants] = useState([]);
-  const [restaurantsCount, setRestaurantsCount] = useState(0);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [fetchCompleted, setFetchCompleted] = useState(false);
+
+  const [restaurants, setRestaurants] = useState([]);
+  const [restaurantsCount, setRestaurantsCount] = useState(0);
 
   const [blogPosts, setBlogPosts] = useState([]);
+  const [postsCount, setPostsCount] = useState(0);
   const [users, setUsers] = useState([]);
 
   // Fetch restaurant data based on the search query
   const fetchRestaurants = async (reset = false) => {
-    console.log('Page: ', page);
+    setFetchCompleted(false);
     try {
       const res = await fetch(`/api/restaurants/search?q=${searchQuery}&page=${page}&limit=20`);
       const data = await res.json();
@@ -43,25 +46,69 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
       } else {
         setHasMore(true);
       }
+      setFetchCompleted(true);
     } catch (error) {
+      setFetchCompleted(true);
       console.error('Failed to fetch restaurants:', error);
     }
   };
 
+  // Fetch restaurant data based on the search query
+  const fetchBlogPosts = async (reset = false) => {
+    setFetchCompleted(false);
+    console.log('Page: ', page);
+    if (reset) {
+      setPage(1);
+    }
+
+    try {
+      const res = await fetch(`/api/blog-posts/search?q=${searchQuery}&page=${page}&limit=20`);
+      const data = await res.json();
+
+      if (reset) {
+        setBlogPosts(data.postsWithPreview);
+        setPostsCount(data.totalCount);
+      } else {
+        // append data to existing list
+        setBlogPosts(prev => [...prev, ...data.postsWithPreview]);
+      }
+
+      // if we've fetched everything, stop loading more
+      if ((reset ? data.postsWithPreview.length : blogPosts.length + data.postsWithPreview.length) >= data.totalCount) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+      }
+      setFetchCompleted(true);
+    } catch (error) {
+      setFetchCompleted(true);
+      console.error('Failed to fetch posts:', error);
+    }
+  };
+
+  // reset page = 1
   useEffect(() => {
+    setFetchCompleted(false);
     if (selectedTab === 0 && searchQuery) {
       setPage(1);
       fetchRestaurants(true); // reset = true
+    } else if (selectedTab === 1 && searchQuery) {
+      setPage(1);
+      fetchBlogPosts(true); // reset = true
     }
   }, [searchQuery, selectedTab]);
 
+  // when page > 1
   useEffect(() => {
     if (selectedTab === 0 && page > 1) {
       fetchRestaurants();
+    } else if (selectedTab === 1 && page > 1) {
+      fetchBlogPosts();
     }
   }, [page]);
 
   useEffect(() => {
+    setFetchCompleted(false);
     setSelectedTab(searchType);
   }, [searchType]);
 
@@ -79,7 +126,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
             )}
           </div>
           {/* Restaurant Results */}
-          {selectedTab === 0 && (
+          {selectedTab === 0 && fetchCompleted && (
             <>
               {/* shows message depending on search results */}
               <SearchResultsNumMessage
@@ -101,14 +148,19 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
             </>
           )}
           {/* Blog Post Results */}
-          {selectedTab === 1 && (
+          {selectedTab === 1 && fetchCompleted && (
             <>
-              <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={1} searchString={searchQuery} />
+              <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={postsCount} searchString={searchQuery} />
               <GridCustomCols numOfCols={4} className="mt-4">
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <BlogPostCard key={i} blogPostData={fakeBlogPost} />
+                {blogPosts.map((post, i) => (
+                  <BlogPostCard key={post._id || i} blogPostData={post} />
                 ))}
               </GridCustomCols>
+              {hasMore && (
+                <div className="mt-6 flex justify-center">
+                  <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
+                </div>
+              )}
             </>
           )}
           {/* User Results */}
