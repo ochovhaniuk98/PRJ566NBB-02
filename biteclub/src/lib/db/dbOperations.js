@@ -106,7 +106,6 @@ export async function getBusinessUserRestaurantId({ supabaseId }) {
   if (!user) return null;
   // return { restaurantId: user.restaurantId.toString() ?? null };
   return { restaurantId: user.restaurantId ? user.restaurantId.toString() : null }; // safe version
-
 }
 
 // Update license for Business User
@@ -126,18 +125,12 @@ export async function updateLicenseForBusinessUser(data) {
 export async function getBusinessUserVerificationStatus({ supabaseId }) {
   await dbConnect();
   // Only fetch the verificationStatus field from MongoDB
-  const user = await BusinessUser.findOne(
-    { supabaseId },
-    'verificationStatus'
-  );
+  const user = await BusinessUser.findOne({ supabaseId }, 'verificationStatus');
   // If user not found, return null
   if (!user) return null;
   // Return true or false explicitly
   return user.verificationStatus === true;
 }
-
-
-
 
 // =================
 // FOR GENERAL USERS
@@ -262,11 +255,31 @@ export async function getProfilePicByUserSuperbaseId(supabaseId) {
 export async function createBlogPost({ title, content, userId }) {
   await dbConnect();
 
+  const blocks = content?.content;
+
+  let previewText = '';
+  if (Array.isArray(blocks)) {
+    const firstParagraph = blocks.find(block => block.type === 'paragraph');
+    if (firstParagraph?.content) {
+      const text = firstParagraph.content.map(segment => segment.text || '').join('');
+      previewText = text.length > 160 ? text.slice(0, 157) + '...' : text;
+    }
+  }
+
+  let previewImage = null;
+  if (Array.isArray(blocks)) {
+    const imageBlock = blocks.find(block => block.type === 'image');
+    previewImage = imageBlock?.attrs?.src || null;
+  }
+
   const newPost = new BlogPost({
     body: content,
     title,
     date_posted: new Date(),
     user_id: userId,
+    previewTitle: title.length > 50 ? title.slice(0, 33) + '...' : title,
+    previewText: previewText,
+    previewImage: previewImage,
   });
 
   await newPost.save();
@@ -314,4 +327,48 @@ export async function searchRestaurantsByQuery(query) {
   }).limit(10);
 
   return restaurants;
+}
+
+// Search for a Restaurant (limit 20 searches per page)
+export async function searchRestaurantsBySearchQuery(query, { page = 1, limit = 20 } = {}) {
+  await dbConnect();
+  const skip = (page - 1) * limit;
+
+  const [restaurants, totalCount] = await Promise.all([
+    Restaurant.find({ name: { $regex: query, $options: 'i' } })
+      .skip(skip)
+      .limit(limit),
+    Restaurant.countDocuments({ name: { $regex: query, $options: 'i' } }),
+  ]);
+
+  return { restaurants, totalCount };
+}
+
+// Search for a Posts by Search Query (User Input)
+export async function searchBlogPostsByQuery(query, { page = 1, limit = 20 } = {}) {
+  await dbConnect();
+  const skip = (page - 1) * limit;
+
+  const [posts, totalCount] = await Promise.all([
+    BlogPost.find({ title: { $regex: query, $options: 'i' } })
+      .skip(skip)
+      .limit(limit),
+    BlogPost.countDocuments({ title: { $regex: query, $options: 'i' } }),
+  ]);
+
+  return { posts, totalCount };
+}
+// Search for a General Users by Search Query (User Input)
+export async function searchUsersByQuery(query, { page = 1, limit = 20 } = {}) {
+  await dbConnect();
+  const skip = (page - 1) * limit;
+
+  const [users, totalCount] = await Promise.all([
+    User.find({ username: { $regex: query, $options: 'i' } })
+      .skip(skip)
+      .limit(limit),
+    User.countDocuments({ username: { $regex: query, $options: 'i' } }),
+  ]);
+
+  return { users, totalCount };
 }
