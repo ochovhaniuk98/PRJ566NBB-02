@@ -1,11 +1,10 @@
-'use client';
-import SearchResults from '@/components/searchResults/SearchResults';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import Search from '@/components/searchResults/Search';
 
-export default function RestaurantResults() {
-  const searchParams = useSearchParams();
-  const searchQuery = searchParams.get('search') || '';
-
-  // shows restuarant type results by default (0)
-  return <SearchResults searchType={0} searchQuery={searchQuery} />;
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>Loading search results…</div>}>
+      <Search />
+    </Suspense>
+  );
 }
