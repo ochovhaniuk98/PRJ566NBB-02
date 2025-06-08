@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import EditModePanel from '../shared/EditModePanel';
 
-export default function InstagramEmbed({ postUrl, onHeightChange }) {
+export default function InstagramEmbed({ postUrl, onHeightChange = () => {}, isEditModeOn = false }) {
   const wrapperRef = useRef();
   const [measuredHeight, setMeasuredHeight] = useState(null); // 🔄 dynamic height
 
@@ -35,7 +36,7 @@ export default function InstagramEmbed({ postUrl, onHeightChange }) {
   return (
     <div
       ref={wrapperRef}
-      className=" border rounded-md border-brand-yellow-lite"
+      className=" border rounded-md border-brand-yellow-lite relative"
       style={{
         height: '630px',
         gridRow: 'span 2',
@@ -51,6 +52,7 @@ export default function InstagramEmbed({ postUrl, onHeightChange }) {
           height: '100%',
         }}
       />
+      {isEditModeOn && <EditModePanel onEditClick={() => ''} forInstagram={true} />}
     </div>
   );
 }
