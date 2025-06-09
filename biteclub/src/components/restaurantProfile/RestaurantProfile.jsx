@@ -85,16 +85,17 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
 
   return (
     <MainBaseContainer>
-      <ImageBanner images={bannerImages} />
+      {/* 4 banner images (can be modified by owner) */}
+      <ImageBanner images={bannerImages} isOwner={isOwner} />
       <InfoBanner name={name} avgRating={rating} numReviews={numReviews} cuisine={cuisines} address={location}>
-        {isOwner ? ( 
+        {isOwner ? (
           <>
             <SingleTabWithIcon
               icon={faHeart}
               detailText={'Add Instagram Post'}
               onClick={() => setShowInstagramPopup(true)}
             />
-            <RestaurantImageUpload buttonType={'iconTab'} />
+            <RestaurantImageUpload />
 
             <SingleTabWithIcon
               icon={faHeart}

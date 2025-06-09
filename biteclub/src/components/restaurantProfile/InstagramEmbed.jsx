@@ -2,7 +2,12 @@
 import { useEffect, useRef, useState } from 'react';
 import EditModePanel from '../shared/EditModePanel';
 
-export default function InstagramEmbed({ postUrl, onHeightChange = () => {}, isEditModeOn = false }) {
+export default function InstagramEmbed({
+  postUrl,
+  onHeightChange = () => {},
+  isEditModeOn = false,
+  forEditRestaurant = false,
+}) {
   const wrapperRef = useRef();
   const [measuredHeight, setMeasuredHeight] = useState(null); // 🔄 dynamic height
 
@@ -20,7 +25,6 @@ export default function InstagramEmbed({ postUrl, onHeightChange = () => {}, isE
         setTimeout(() => {
           if (wrapperRef.current) {
             const fullHeight = wrapperRef.current.offsetHeight;
-            console.log('✅ Actual Instagram height:', fullHeight);
             setMeasuredHeight(fullHeight); // 🟡 Store height locally
             if (onHeightChange) onHeightChange(fullHeight); // 🟡 Send to parent
           }
@@ -36,9 +40,11 @@ export default function InstagramEmbed({ postUrl, onHeightChange = () => {}, isE
   return (
     <div
       ref={wrapperRef}
-      className=" border rounded-md border-brand-yellow-lite relative"
+      className={`border rounded-md border-brand-yellow-lite relative ${
+        forEditRestaurant ? '' : 'hover:border-brand-peach'
+      }`}
       style={{
-        height: '630px',
+        height: forEditRestaurant ? '550px' : '630px', // shorten height if it's for the Restaurant Profile's editing forms (e.g.delete embed)
         gridRow: 'span 2',
         overflow: 'hidden',
       }}
@@ -52,7 +58,7 @@ export default function InstagramEmbed({ postUrl, onHeightChange = () => {}, isE
           height: '100%',
         }}
       />
-      {isEditModeOn && <EditModePanel onEditClick={() => ''} forInstagram={true} />}
+      {isEditModeOn && <EditModePanel forInstagram={true} />}
     </div>
   );
 }

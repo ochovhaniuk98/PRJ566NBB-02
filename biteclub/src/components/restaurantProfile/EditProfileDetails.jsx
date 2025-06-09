@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
@@ -5,10 +6,11 @@ import { Switch } from '../shared/Switch';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImages } from '@fortawesome/free-solid-svg-icons';
 import EditPhotosModal from './EditPhotosModal';
-import { useState } from 'react';
+import DeleteInstagramForm from './DeleteInstagramForm';
 
 export default function EditProfileDetails({ onClose, restaurantData }) {
   const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [showDeleteInstaModal, setShowDeleteInstaModal] = useState(false);
 
   const [name, setName] = useState(restaurantData.name);
   const [address, setAddress] = useState(restaurantData.location);
@@ -139,23 +141,38 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
               />
               <h6 className="m-0 p-0 text-xs font-primary">Seperate cusines with a comma.</h6>
             </div>
+
             <div>
-              <div>
-                {/* photos */}
-                <Label htmlFor="cusisines">
-                  <h4>Delete Photos</h4>
-                </Label>
-                <Button
-                  type="button"
-                  className="w-full mt-2"
-                  onClick={() => setShowPhotoModal(true)}
-                  variant="third"
-                  disabled={false}
-                >
-                  <FontAwesomeIcon icon={faImages} className="icon-2xl text-brand-navy cursor-pointer" />
-                  Photos
-                </Button>
-              </div>
+              {/* Delete Instagram Embeds */}
+              <Label htmlFor="instagram">
+                <h4>Delete Instagram Embeds</h4>
+              </Label>
+              <Button
+                type="button"
+                className="w-full mt-2"
+                onClick={() => setShowDeleteInstaModal(true)}
+                variant="third"
+                disabled={false}
+              >
+                <FontAwesomeIcon icon={faImages} className="icon-2xl text-brand-navy cursor-pointer" />
+                Instagram Embeds
+              </Button>
+            </div>
+            <div>
+              {/* photos */}
+              <Label htmlFor="cusisines">
+                <h4>Delete Photos</h4>
+              </Label>
+              <Button
+                type="button"
+                className="w-full mt-2"
+                onClick={() => setShowPhotoModal(true)}
+                variant="third"
+                disabled={false}
+              >
+                <FontAwesomeIcon icon={faImages} className="icon-2xl text-brand-navy cursor-pointer" />
+                Photos
+              </Button>
             </div>
           </div>
 
@@ -217,11 +234,12 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
           </Button>
         </div>
       </form>
-      {/* Edit Photos Modal */}
+      {/* Edit GALLERY Photos Modal */}
       {showPhotoModal && (
         <EditPhotosModal photos={restaurantData.images} showModal={showPhotoModal} setShowModal={setShowPhotoModal} />
       )}
-      {console.log('photos', restaurantData)}
+      {/* Delete Instagram Modal */}
+      {showDeleteInstaModal && <DeleteInstagramForm setShowDeleteInstaModal={setShowDeleteInstaModal} />}
     </div>
   );
 }

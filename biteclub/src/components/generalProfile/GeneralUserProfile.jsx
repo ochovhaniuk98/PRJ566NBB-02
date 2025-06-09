@@ -134,7 +134,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                     ))}
                   </GridCustomCols>
                 )}
-
+                {/* Instagram Reviews */}
                 {showInstaReview && (
                   <GridCustomCols numOfCols={4}>
                     {Array.from({ length: 12 }).map((_, i) => (

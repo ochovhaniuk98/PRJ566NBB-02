@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPenClip } from '@fortawesome/free-solid-svg-icons';
 
 // panel appears when general user selects to "Manage Content" on profile
-export default function EditModePanel({ onEditClick, forInstagram = false }) {
+export default function EditModePanel({ onEditClick = () => {}, forInstagram = false }) {
   const [checked, setChecked] = useState(false); // tracks on user checks off item for deletion
   return (
     <div className="absolute bottom-0 w-fit h-11 bg-white/70 rounded-full m-1 px-5  shadow-md flex gap-6 justify-between items-center">
