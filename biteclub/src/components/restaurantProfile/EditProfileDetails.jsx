@@ -139,7 +139,7 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
                 onChange={e => setCuisines(e.target.value)}
                 required
               />
-              <h6 className="m-0 p-0 text-xs font-primary">Seperate cusines with a comma.</h6>
+              <h6 className="m-0 p-0 text-xs font-primary">Separate cusines with a comma.</h6>
             </div>
 
             <div>
