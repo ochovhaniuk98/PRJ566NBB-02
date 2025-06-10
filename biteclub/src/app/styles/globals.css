@@ -155,9 +155,10 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
     border-color: transparent !important;
   }
 
+  /*
   .instagram-media:hover {
     border: 2px solid #ffdcbe !important;
-  }
+  } */
 
   /* For Chrome, Safari, and Edge */
   .scrollbar-hide::-webkit-scrollbar {
