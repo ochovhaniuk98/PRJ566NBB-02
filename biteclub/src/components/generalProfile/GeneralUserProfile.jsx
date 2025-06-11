@@ -11,6 +11,8 @@ import GeneralUserCard from '@/components/shared/GeneralUserCard';
 import StarRating from '../shared/StarRating';
 import { fakeBlogPost, fakeReviews, fakeUser } from '@/app/data/fakeData';
 import AddReviewForm from '../shared/AddReviewForm';
+import { Button } from '../shared/Button';
+import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
@@ -30,6 +32,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
   const [showTextEditor, setShowTextEditor] = useState(false);
   const [myBlogPosts, setMyBlogPosts] = useState([]);
+  const [showInstaReview, setShowInstaReview] = useState(false);
 
   /* States below are for MANAGING/EDITING general profile */
   const [editMode, setEditMode] = useState(false); // tracks whether owner wants to manage CONTENT on profile (displays edit/delete panel on each card)
@@ -108,18 +111,44 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             )}
             {/* Reviews*/}
             {selectedTab === profileTabs[1] && (
-              <GridCustomCols numOfCols={4}>
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <ReviewCard
-                    key={i}
-                    review={fakeReviews[0]}
-                    photos={fakeReviews[0].photos}
-                    isOwner={isOwner}
-                    isEditModeOn={editMode}
-                    setEditReviewForm={setEditReviewForm}
-                  />
-                ))}
-              </GridCustomCols>
+              <>
+                <div className="flex gap-x-2 mb-4">
+                  <Button onClick={() => setShowInstaReview(false)} type="button" className="w-30" variant={'roundTab'}>
+                    From BiteClub
+                  </Button>
+                  <Button onClick={() => setShowInstaReview(true)} type="button" className="w-30" variant={'roundTab'}>
+                    From Instagram
+                  </Button>
+                </div>
+                {!showInstaReview && (
+                  <GridCustomCols numOfCols={4}>
+                    {Array.from({ length: 12 }).map((_, i) => (
+                      <ReviewCard
+                        key={i}
+                        review={fakeReviews[0]}
+                        photos={fakeReviews[0].photos}
+                        isOwner={isOwner}
+                        isEditModeOn={editMode}
+                        setEditReviewForm={setEditReviewForm}
+                      />
+                    ))}
+                  </GridCustomCols>
+                )}
+                {/* Instagram Reviews */}
+                {showInstaReview && (
+                  <GridCustomCols numOfCols={4}>
+                    {Array.from({ length: 12 }).map((_, i) => (
+                      <InstagramEmbed
+                        key={i}
+                        postUrl={
+                          'https://www.instagram.com/p/CokYC2Jr20p/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA%3D%3D&img_index=1'
+                        }
+                        isEditModeOn={editMode}
+                      />
+                    ))}
+                  </GridCustomCols>
+                )}
+              </>
             )}
             {/* Favourite Blog Posts */}
             {selectedTab === profileTabs[3] && (

@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { CldUploadWidget, getCldImageUrl } from 'next-cloudinary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleXmark, faHeart, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark, faHeart, faCircleCheck, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '../shared/SingleTabWithIcon';
 
-export default function RestaurantImageUpload({ buttonType }) {
+export default function RestaurantImageUpload({ forBanner = false }) {
   const [uploadedImageInfo, setUploadedImageInfo] = useState(null);
   const [savedImageId, setSavedImageId] = useState(null);
   const [fetchedImage, setFetchedImage] = useState(null);
@@ -43,10 +43,6 @@ export default function RestaurantImageUpload({ buttonType }) {
 
     fetchImageById();
   }, [savedImageId]);
-
-  {
-    /*  <section className="flex flex-col items-center justify-between bg-brand-yellow-lite size-full"> */
-  }
   return (
     <>
       <CldUploadWidget
@@ -83,10 +79,15 @@ export default function RestaurantImageUpload({ buttonType }) {
         }}
       >
         {({ open }) =>
-          !buttonType ? (
-            <button onClick={() => open()} className="bg-blue-500 text-white px-4 py-2 rounded">
-              Upload an Image
-            </button>
+          forBanner ? (
+            <FontAwesomeIcon
+              icon={faPlusCircle}
+              className="icon-lg text-brand-navy cursor-pointer"
+              onClick={() => {
+                setUploadedImages([]);
+                open();
+              }}
+            />
           ) : (
             <SingleTabWithIcon
               icon={faHeart}
@@ -100,6 +101,7 @@ export default function RestaurantImageUpload({ buttonType }) {
         }
       </CldUploadWidget>
 
+      {/* NOTE: Might be unnecessary for restaurant; Could be removed!!! */}
       {/* Display fetched images and metadata */}
       {/* Only show the modal after the button is clicked */}
       {showModal && (
