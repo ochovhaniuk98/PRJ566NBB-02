@@ -41,19 +41,18 @@ export async function updateSession(request) {
   }
 
   if (user) {
-    if (pathname.startsWith('/users/business') && userType !== 'business') {
+    // Check if the user is trying to access a page that requires a specific user type
+    // and redirect them to a 403 Forbidden page if they don't match
+    if (
+      (pathname.startsWith('/users/business') && userType !== 'business') ||
+      (pathname.startsWith('/users/general') && userType !== 'general') ||
+      (pathname.startsWith('/users/admin') && userType !== 'admin')
+    ) {
       const forbiddenUrl = request.nextUrl.clone();
       forbiddenUrl.pathname = '/403';
       return NextResponse.redirect(forbiddenUrl);
     }
-
-    if (pathname.startsWith('/users/general') && userType !== 'general') {
-      const forbiddenUrl = request.nextUrl.clone();
-      forbiddenUrl.pathname = '/403';
-      return NextResponse.redirect(forbiddenUrl);
-    }
-  }  
-
+  }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:
