@@ -1,15 +1,6 @@
-import Link from 'next/link';
-import MainBaseContainer from '@/components/shared/MainBaseContainer';
+import SearchResults from '@/components/searchResults/SearchResults';
 
 export default function RestaurantResults() {
-  return (
-    <MainBaseContainer>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center">
-        {/* Add contents/components here */}
-        <Link href="/restaurants/682a2ecf70221a179b693583" className="mt-12">
-          Click here to see The Pomegranate Restaurant’s profile.
-        </Link>
-      </div>
-    </MainBaseContainer>
-  );
+  // shows restuarant type results by default (0)
+  return <SearchResults searchType={0} />;
 }
