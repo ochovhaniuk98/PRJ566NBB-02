@@ -183,6 +183,23 @@ export async function getGeneralUserMongoIDbySupabaseId({ supabaseId }) {
   return user._id.toString();
 }
 
+export async function getUserReviews(userId) {
+  await dbConnect();
+
+  try {
+    const internalReviews = await InternalReview.find({ user_id: userId }).lean();
+    const externalReviews = await ExternalReview.find({ user_id: userId }).lean();
+
+    return {
+      internalReviews: internalReviews,
+      externalReviews: externalReviews,
+    };
+  } catch (error) {
+    console.error('Error fetching user reviews:', error);
+    throw new Error('Failed to fetch user reviews');
+  }
+}
+
 // ==================
 // CLOUDINARY RELATED
 // ==================
