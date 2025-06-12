@@ -372,3 +372,31 @@ export async function searchUsersByQuery(query, { page = 1, limit = 20 } = {}) {
 
   return { users, totalCount };
 }
+
+export async function getBusinessUsersAwaitingVerification() {
+  try {
+    await dbConnect();
+
+    // Fetch all business users with verificationStatus false and populate restaurantId with necessary fields
+    const users = await BusinessUser.find({ verificationStatus: false }).populate('restaurantId', '_id name location');
+    return JSON.parse(JSON.stringify(users));
+  } catch (error) {
+    console.error('Error fetching business users:', error);
+    throw new Error('Failed to get business users');
+  }
+}
+
+export async function approveBusinessUser(userId) {
+  try {
+    await dbConnect();
+    const updatedUser = await BusinessUser.findByIdAndUpdate(userId, { verificationStatus: true }, { new: true });
+
+    if (!updatedUser) {
+      throw new Error('Business user not found');
+    }
+    return updatedUser.verificationStatus === true;
+  } catch (error) {
+    console.error('Error approving business user:', error);
+    throw new Error('Failed to approve business user');
+  }
+}
