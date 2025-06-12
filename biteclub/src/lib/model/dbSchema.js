@@ -20,7 +20,8 @@ const UserSchema = new mongoose.Schema({
   numOfPoints: Number,
   pointsResetDate: Date,
   personalization_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Personalization' },
-  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // users that following us. (sprint 2) newly added. 
+  followings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // users that we follow
   visitedPlaces: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   favouriteRestaurants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   favouriteBlogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost' }],
@@ -30,6 +31,7 @@ const UserSchema = new mongoose.Schema({
   creditCards: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard' }],
   orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
   userType: String,
+  joinedSince: Date, // (sprint 2) newly added. for user dashboard.
 });
 
 // TODO: Review if counts can be removed and be calculated through the users array

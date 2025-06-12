@@ -15,7 +15,7 @@ import AddReviewForm from '../shared/AddReviewForm';
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // userId: from MongoDB, not supabase. By default "false" just in-case.
-  //   const isOwner = true; // flag for showing certain components for profile owner
+  // const isOwner = true; // flag for showing certain components for profile owner
   const profileTabs = [
     'Blog Posts',
     'Reviews',
@@ -36,6 +36,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [editReviewForm, setEditReviewForm] = useState(false); // for opening/closing form to edit a SPECIFIC REVIEW
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,7 +74,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     if (generalUserId) fetchData();
   }, [generalUserId, showTextEditor]);
 
+
   if (!userProfile) return <div>Loading profile...</div>;
+
 
   return (
     <MainBaseContainer>

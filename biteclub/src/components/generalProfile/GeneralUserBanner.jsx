@@ -27,10 +27,34 @@ export default function GeneralUserBanner({
   isOwner = false,
 }) {
   const iconStats = [
-    { label: 'Followers', icon: faUsers, bgColour: 'white', iconColour: 'brand-aqua' },
-    { label: 'Reviews', icon: faStarHalfStroke, bgColour: 'white', iconColour: 'brand-yellow' },
-    { label: 'Blog Posts', icon: faFeather, bgColour: 'white', iconColour: 'brand-peach' },
-    { label: 'Challenges', icon: faGamepad, bgColour: 'white', iconColour: 'brand-green' },
+    {
+      label: 'Followers',
+      icon: faUsers,
+      bgColour: 'white',
+      iconColour: 'brand-aqua',
+      statNum: generalUserData?.followers?.length || 0,
+    },
+    {
+      label: 'Reviews',
+      icon: faStarHalfStroke,
+      bgColour: 'white',
+      iconColour: 'brand-yellow',
+      statNum: generalUserData?.myReviews?.length || 0, // !!! TODO: (commented in sprint 2) we have no myReviews in db USER schema. We should store this in USER schema instead of using db to match user.id in Reivews (time cost fetching data)
+    },
+    {
+      label: 'Blog Posts',
+      icon: faFeather,
+      bgColour: 'white',
+      iconColour: 'brand-peach',
+      statNum: generalUserData?.myBlogPosts?.length || 0,
+    },
+    {
+      label: 'Challenges',
+      icon: faGamepad,
+      bgColour: 'white',
+      iconColour: 'brand-green',
+      statNum: generalUserData?.challenges?.length || 0, // !!! TODO: (commented in sprint 2) we have no Challenges in db USER schema
+    },
   ];
 
   return (
@@ -53,19 +77,30 @@ export default function GeneralUserBanner({
           <div className="min-h-28 py-4">
             <p>{generalUserData.userBio}</p>
           </div>
-          {/* !!! join date missing in schema !!! */}
-          <h5>Joined Since: June 16, 2025</h5>
-          {/* Follow button */}
-          <Button type="submit" className="w-40" variant="default">
-            <FontAwesomeIcon icon={faPlus} className={`text-3xl text-navy`} />
-            Follow
-          </Button>
+          {/* JOIN DATE DISPLAY IF AVAILABLE */}
+          {generalUserData?.joinedSince && (
+            <h5>
+              Joined Since:{' '}
+              {new Date(generalUserData.joinedSince).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </h5>
+          )}
+
+          {/* Follow button -- only show if you're not the owner of the dashboard (you cannot follow yourself) */}
+          {!isOwner && (
+            <Button type="submit" className="w-40" variant="default">
+              <FontAwesomeIcon icon={faPlus} className={`text-3xl text-navy`} />
+              Follow
+            </Button>
+          )}
         </div>
-        {/*user stats*/} {/* !!! user stats missing in schema !!! */}
         <div className="transparent">
-          {iconStats.map((stat, i) => {
-            return <ProfileStat key={i} statNum={123} stat={stat} />;
-          })}
+          {iconStats.map((stat, i) => (
+            <ProfileStat key={i} statNum={stat.statNum} stat={stat} />
+          ))}
         </div>
       </GridCustomCols>
       {/*'Write a blog post' button*/}
