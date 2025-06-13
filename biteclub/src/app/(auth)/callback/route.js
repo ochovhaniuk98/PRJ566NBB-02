@@ -54,7 +54,7 @@ export async function GET(request) {
         return NextResponse.redirect(`${origin}/auth-error?reason=unauthorised_google_signup`);
       }
 
-      const Model = userSelectedUserType === 'business' ? BusinessUser : User;
+      // const Model = userSelectedUserType === 'business' ? BusinessUser : User;
 
       let newUser;
 
@@ -68,6 +68,7 @@ export async function GET(request) {
         newUser = new User({
           supabaseId: user.id,
           userType: userSelectedUserType,
+          joinedSince: new Date(),
         });
       }
 

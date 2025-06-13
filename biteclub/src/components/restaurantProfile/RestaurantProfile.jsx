@@ -1,3 +1,5 @@
+import { createClient } from '@/lib/auth/client';
+
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
 import InfoBanner from '@/components/restaurantProfile/InfoBanner';
@@ -21,6 +23,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value when adding a review
+  const [numOfFavourites, setNumOfFavourites] = useState(0);
 
   // states for editing profile
   const [showInstagramPopup, setShowInstagramPopup] = useState(false);
@@ -29,42 +32,69 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const [restaurantData, setRestaurantData] = useState(null);
   const [reviewsData, setReviewsData] = useState(null);
 
+  // Fetch restaurant data
   useEffect(() => {
     if (!restaurantId) return;
 
-    const fetchData = async () => {
+    const fetchAll = async () => {
       try {
-        const res = await fetch(`/api/restaurants/${restaurantId}`);
-        if (!res.ok) {
-          throw new Error('Failed to fetch restaurant data');
+        const [restaurantRes, reviewsRes, favouritesRes] = await Promise.all([
+          fetch(`/api/restaurants/${restaurantId}`),
+          fetch(`/api/restaurant-reviews/${restaurantId}`),
+          fetch(`/api/restaurants/num-of-favourites/${restaurantId}`),
+        ]);
+
+        if (!restaurantRes.ok || !reviewsRes.ok || !favouritesRes.ok) {
+          throw new Error('Fetch failed');
         }
-        const restaurantData = await res.json();
+
+        const [restaurantData, reviewsData, favouritesData] = await Promise.all([
+          restaurantRes.json(),
+          reviewsRes.json(),
+          favouritesRes.json(),
+        ]);
+
         setRestaurantData(restaurantData);
-      } catch (error) {
-        console.error('Error fetching restaurant data:', error);
-      }
-    };
-
-    fetchData();
-  }, [restaurantId]);
-
-  useEffect(() => {
-    if (!restaurantId) return;
-
-    const fetchReviews = async () => {
-      try {
-        const res = await fetch(`/api/restaurant-reviews/${restaurantId}`);
-        if (!res.ok) {
-          throw new Error('Failed to fetch restaurant reviews');
-        }
-        const reviewsData = await res.json();
         setReviewsData(reviewsData);
+        setNumOfFavourites(favouritesData.numOfFavourites);
       } catch (error) {
-        console.error('Error fetching restaurant reviews:', error);
+        console.error('Error fetching restaurant, review, or favourites data:', error);
       }
     };
-    fetchReviews();
+    fetchAll();
   }, [restaurantId]);
+
+  // When user save restaurant as favourite
+  const handleFavouriteRestaurantClick = async () => {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data?.user?.id) throw new Error('User not logged in');
+
+      const res = await fetch('/api/restaurants/save-as-favourite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          restaurantId,
+          supabaseUserId: data.user.id,
+        }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
+
+      // Re-fetch the updated Favourite count immediately from backend
+      const countRes = await fetch(`/api/restaurants/num-of-favourites/${restaurantId}`);
+      if (!countRes.ok) {
+        throw new Error('Failed to fetch updated favourite count');
+      }
+
+      const countData = await countRes.json();
+      setNumOfFavourites(countData.numOfFavourites);
+    } catch (err) {
+      console.error('Error toggling favourite:', err.message);
+    }
+  };
 
   if (!restaurantData || !reviewsData) {
     return <p>isLoading...</p>;
@@ -105,7 +135,11 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
           </>
         ) : (
           <>
-            <SingleTabWithIcon icon={faHeart} detailText={0} />
+            <SingleTabWithIcon
+              icon={faHeart}
+              detailText={numOfFavourites ?? 0}
+              onClick={handleFavouriteRestaurantClick}
+            />
             <SingleTabWithIcon icon={faPen} detailText="Write a Review" onClick={() => setShowAddReviewForm(true)} />
             <SingleTabWithIcon icon={faUtensils} detailText="Reserve Table" />
           </>

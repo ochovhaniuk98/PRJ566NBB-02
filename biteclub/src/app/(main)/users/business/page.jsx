@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 
 export default function BusinessUserRestaurantPage() {
   const [restaurantId, setRestaurantId] = useState(null);
-  const [isVerified, setIsVerified] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -25,22 +24,23 @@ export default function BusinessUserRestaurantPage() {
 
         const user = data.user;
 
-        // find and validate profile
-        const profile = await getBusinessUserRestaurantId({ supabaseId: user.id });
-        const verified = await getBusinessUserVerificationStatus({ supabaseId: user.id });
-        setIsVerified(verified);
+        // Fetch restaurantId and verification status in parallel
+        const [profile, verified] = await Promise.all([
+          getBusinessUserRestaurantId({ supabaseId: user.id }),
+          getBusinessUserVerificationStatus({ supabaseId: user.id }),
+        ]);
 
         // If restaurantId is not found (i.e., null), it means the business user has not set up their account.
         // We will redirect them back to the account setup page.
         if (profile?.restaurantId && !verified) {
-          router.push('/account-setup/business/awaiting-verification');
-        } else if (profile?.restaurantId) {
-          setRestaurantId(profile.restaurantId);
-        } else {
           router.push('/account-setup/business');
+        } else if (!verified) {
+          router.push('/account-setup/business/awaiting-verification');
+        } else {
+          setRestaurantId(profile.restaurantId);
         }
       } catch (err) {
-        console.error('Failed to fetch restaurant ID:', err);
+        console.error('Failed to fetch restaurant or verification status:', err);
       } finally {
         setLoading(false);
       }
