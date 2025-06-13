@@ -117,28 +117,34 @@ export default function BusinessSetupForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-green-lite">
-      <div className="form-widget max-w-md w-full px-12 py-16 border border-brand-yellow-lite shadow-md rounded-md space-y-4 bg-brand-yellow-extralite flex flex-col justify-center items-stretch">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-[length:90%]"
+      style={{
+        backgroundImage: "url('/img/greenOnYellowBG.png')",
+        backgroundPosition: '-2rem',
+      }}
+    >
+      <div className="form-widget max-w-md w-full px-12 py-16 h-150 border border-brand-yellow-lite shadow-md rounded-md space-y-4 bg-brand-yellow-extralite flex flex-col ">
         <h2 className="text-center">Ready to reach new customers?</h2>
 
         {/* --- Hidden Email Field (bound to Supabase user) --- */}
         <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
 
         {/* --- Restaurant Search Input --- */}
-        <div>
+        <div className="relative w-full">
           <Label htmlFor="restaurantName">Search your restaurant by NAME or LOCATION</Label>
           <Input
             id="restaurantQuery"
             type="text"
             value={restaurantQuery}
             onChange={e => setRestaurantQuery(e.target.value)}
-            className="w-full"
+            className={`w-full ${results.length > 0 && 'm-0 mt-2 rounded-b-none rounded-t-md'}`}
             placeholder="e.g. Pomegranate or College Street"
           />
 
           {/* --- Autocomplete Result Dropdown --- */}
           {results.length > 0 && (
-            <ul className="border-2 border-brand-blue rounded bg-white mt-1 max-h-48 overflow-y-auto z-10 relative">
+            <ul className="absolute border border-t-0 border-brand-blue rounded-b bg-white mt-[1px] h-48 overflow-y-auto z-10 ">
               {results.slice(0, 10).map((r, i) => (
                 <li
                   key={i}
@@ -192,7 +198,7 @@ export default function BusinessSetupForm() {
                 <>
                   <button
                     onClick={() => open()}
-                    className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-16 text-center rounded-md cursor-pointer w-full"
+                    className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-6 text-center rounded-md cursor-pointer w-full"
                   >
                     Upload your business license
                     {uploadedLicenseInfo?.original_filename && (

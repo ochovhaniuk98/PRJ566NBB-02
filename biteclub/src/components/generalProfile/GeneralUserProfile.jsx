@@ -9,7 +9,7 @@ import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
 import ReviewCard from '@/components/shared/ReviewCard';
 import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
 import StarRating from '../shared/StarRating';
-import { fakeBlogPost, fakeReviews, fakeUser } from '@/app/data/fakeData';
+import { fakeBlogPost, fakeReviews, fakeRestaurantData } from '@/app/data/fakeData';
 import AddReviewForm from '../shared/AddReviewForm';
 import { Button } from '../shared/Button';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
@@ -22,9 +22,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const profileTabs = [
     'Blog Posts',
     'Reviews',
+    'Visited',
     'Favourite Restaurants',
     'Favourite Blog Posts',
-    'Visited',
     'My Followers',
     'Following',
   ];
@@ -167,16 +167,16 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               </>
             )}
             {/* Favourite Restaurants */}
-            {selectedTab === profileTabs[2] && (
-              <GridCustomCols numOfCols={4}>
+            {selectedTab === profileTabs[3] && (
+              <GridCustomCols numOfCols={6}>
                 {favouritedRestaurants.map(restaurant => (
-                  // isFavourited here will always be true. isFavourited={true} 
+                  // isFavourited here will always be true. isFavourited={true}
                   <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
                 ))}
               </GridCustomCols>
             )}
             {/* Favourite Blog Posts */}
-            {selectedTab === profileTabs[3] && (
+            {selectedTab === profileTabs[4] && (
               <GridCustomCols numOfCols={4}>
                 {Array.from({ length: 12 }).map((_, i) => (
                   // The "Favourite Blog Posts" should not display posts written by the owner (i.e. isOwner should be false / !isOwner).
