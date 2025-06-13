@@ -13,7 +13,6 @@ import { fakeBlogPost, fakeReviews, fakeRestaurantData } from '@/app/data/fakeDa
 import AddReviewForm from '../shared/AddReviewForm';
 import { Button } from '../shared/Button';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
-import RestaurantCard from '../searchResults/RestaurantCard';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
@@ -151,14 +150,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 )}
               </>
             )}
-            {/* Favourite Restaurants */}
-            {selectedTab === profileTabs[3] && (
-              <GridCustomCols numOfCols={6}>
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <RestaurantCard key={i} restaurantData={fakeRestaurantData} isFavourited={true} />
-                ))}
-              </GridCustomCols>
-            )}
+
             {/* Favourite Blog Posts */}
             {selectedTab === profileTabs[4] && (
               <GridCustomCols numOfCols={4}>
