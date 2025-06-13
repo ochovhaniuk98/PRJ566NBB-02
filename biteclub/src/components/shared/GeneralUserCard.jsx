@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faUsers, faStarHalfStroke, faFeather, faGamepad } from '@fortawesome/free-solid-svg-icons';
 
@@ -11,37 +12,41 @@ export default function GeneralUserCard({ generalUserData, isFollowing = false }
     { icon: faGamepad, bgColour: 'white', iconColour: 'brand-green' },
   ];
 
+  const generalUserUrl = `/generals/${generalUserData._id}`;
+
   return (
-    <div className="w-full aspect-square border border-brand-yellow-lite flex flex-col items-center justify-between gap-4 p-4 rounded-md cursor-pointer hover:bg-brand-peach-lite">
-      <div className="flex flex-col items-center font-secondary text-brand-navy text-2xl relative">
-        {generalUserData.username}
-        <div
-          className={`relative aspect-square w-30 rounded-full bg-brand-grey mt-4 border-3 ${
-            isFollowing ? 'border-white' : 'border-brand-green'
-          }`}
-        >
-          <Image
-            src={generalUserData.userProfilePicture.url}
-            alt={generalUserData.userProfilePicture.caption}
-            fill={true}
-            className="rounded-full object-cover w-full"
-          />
-        </div>
-        {isFollowing ? (
-          ''
-        ) : (
-          <div className="aspect-square w-10 rounded-full bg-brand-green absolute top-12 right-0 flex justify-center items-center shadow-sm cursor-pointer hover:w-12">
-            <FontAwesomeIcon icon={faPlus} className={`text-2xl text-white`} />
+    <Link href={generalUserUrl} className="w-full">
+      <div className="w-full aspect-square border border-brand-yellow-lite flex flex-col items-center justify-between gap-4 p-4 rounded-md cursor-pointer hover:bg-brand-peach-lite">
+        <div className="flex flex-col items-center font-secondary text-brand-navy text-2xl relative">
+          {generalUserData.username}
+          <div
+            className={`relative aspect-square w-30 rounded-full bg-brand-grey mt-4 border-3 ${
+              isFollowing ? 'border-white' : 'border-brand-green'
+            }`}
+          >
+            <Image
+              src={generalUserData.userProfilePicture.url}
+              alt={generalUserData.userProfilePicture.caption}
+              fill={true}
+              className="rounded-full object-cover w-full"
+            />
           </div>
-        )}
+          {isFollowing ? (
+            ''
+          ) : (
+            <div className="aspect-square w-10 rounded-full bg-brand-green absolute top-12 right-0 flex justify-center items-center shadow-sm cursor-pointer hover:w-12">
+              <FontAwesomeIcon icon={faPlus} className={`text-2xl text-white`} />
+            </div>
+          )}
+        </div>
+        {/* !!! General user stats not included in schema !!! */}
+        <div className="flex justify-between space-x-7">
+          {iconStats.map((elem, i) => (
+            <IconStat key={i} iconStyles={elem} />
+          ))}
+        </div>
       </div>
-      {/* !!! General user stats not included in schema !!! */}
-      <div className="flex justify-between space-x-7">
-        {iconStats.map((elem, i) => (
-          <IconStat key={i} iconStyles={elem} />
-        ))}
-      </div>
-    </div>
+    </Link>
   );
 }
 
