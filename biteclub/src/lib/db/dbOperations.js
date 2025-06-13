@@ -72,6 +72,26 @@ export async function getRestaurantReviews(id) {
   };
 }
 
+// "Favourte Restaurant" Related
+// Calculate the number of likes and display to restaurant page
+export async function getRestaurantNumOfFavourites(restaurantId) {
+  await dbConnect();
+  console.log('(DB) received ID: ', restaurantId);
+
+  // cast restaurantId back to ObjectId type
+  // const objectId = new mongoose.Types.ObjectId(restaurantId);
+  // console.log('(DB) OBJECTID: ', objectId)
+
+  // const count = await User.countDocuments({
+  //   favouriteRestaurants: objectId,
+  // });
+
+  const count = await User.countDocuments({
+    favouriteRestaurants: { $in: [restaurantId] },
+  });
+  return count;
+}
+
 export async function updateRestaurant(id, data) {
   await dbConnect();
 
