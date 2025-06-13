@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
-import StarRating from '../shared/StarRating';
+import StarRating from './StarRating';
 
 export default function RestaurantCard({ restaurantData, isFavourited = false }) {
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon

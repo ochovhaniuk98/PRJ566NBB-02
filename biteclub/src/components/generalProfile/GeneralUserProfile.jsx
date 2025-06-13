@@ -13,7 +13,7 @@ import { fakeBlogPost, fakeReviews, fakeUser } from '@/app/data/fakeData';
 import AddReviewForm from '../shared/AddReviewForm';
 import { Button } from '../shared/Button';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
-import RestaurantCard from '../searchResults/RestaurantCard';
+import RestaurantCard from '../shared/RestaurantCard';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {

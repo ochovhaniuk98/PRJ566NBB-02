@@ -7,7 +7,7 @@ import GridCustomCols from '@/components/shared/GridCustomCols';
 import { fakeBlogPost, fakeUser, fakeRestaurantData } from '@/app/data/fakeData';
 import BlogPostCard from '@/components/shared/BlogPostCard';
 import GeneralUserCard from '@/components/shared/GeneralUserCard';
-import RestaurantCard from '@/components/searchResults/RestaurantCard';
+import RestaurantCard from '@/components/shared/RestaurantCard';
 import SearchResultsNumMessage from '@/components/searchResults/SearchResultsNumMessage';
 
 // shows search results of restaurants, blog posts, and users
