@@ -78,14 +78,6 @@ export async function getRestaurantNumOfFavourites(restaurantId) {
   await dbConnect();
   console.log('(DB) received ID: ', restaurantId);
 
-  // cast restaurantId back to ObjectId type
-  // const objectId = new mongoose.Types.ObjectId(restaurantId);
-  // console.log('(DB) OBJECTID: ', objectId)
-
-  // const count = await User.countDocuments({
-  //   favouriteRestaurants: objectId,
-  // });
-
   const count = await User.countDocuments({
     favouriteRestaurants: { $in: [restaurantId] },
   });
@@ -143,15 +135,9 @@ export async function updateLicenseForBusinessUser(data) {
 
 // Check if the business user is verified
 export async function getBusinessUserVerificationStatus({ supabaseId }) {
-  // console.log('(dbOperation) supabaseId: ', supabaseId);
   await dbConnect();
-  // Only fetch the verificationStatus field from MongoDB
   const user = await BusinessUser.findOne({ supabaseId }, 'verificationStatus');
-  // If user not found, return null
   if (!user) return null;
-  // Return true or false explicitly
-  // console.log('(dbOperation) user: ', user);
-  // console.log('(dbOperation) user.verificationStatus: ', user.verificationStatus);
   return user.verificationStatus;
 }
 

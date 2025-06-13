@@ -3,7 +3,7 @@ import { Restaurant } from '@/lib/model/dbSchema';
 import dbConnect from '@/lib/db/dbConnect';
 
 // Used in: General User Dashboard - fetch Restaurant Profile to display on "Favourite Restaurants" Tab
-export async function POST(req) {
+export async function GET(req) {
   try {
     const { ids } = await req.json();
     await dbConnect();
