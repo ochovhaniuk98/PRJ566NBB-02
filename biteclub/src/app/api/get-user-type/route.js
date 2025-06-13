@@ -1,15 +1,13 @@
-// biteclub/src/app/api/get-user-type/route.js
 // Get userType from MongoDB using supabaseID
 
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/dbConnect';
 import { User, BusinessUser } from '@/lib/model/dbSchema';
 
-
-export async function POST(req) {
+export async function GET(req) {
   try {
-    const body = await req.json();
-    const { supabaseId } = body;
+    const { searchParams } = new URL(req.url);
+    const supabaseId = searchParams.get('authId');
 
     if (!supabaseId) {
       return NextResponse.json({ message: 'Missing Supabase ID' }, { status: 400 });
@@ -25,7 +23,6 @@ export async function POST(req) {
     }
 
     return NextResponse.json({ userType: user.userType }, { status: 200 });
-
   } catch (err) {
     console.error('Error fetching userType:', err);
     return NextResponse.json({ message: 'Server error' }, { status: 500 });
