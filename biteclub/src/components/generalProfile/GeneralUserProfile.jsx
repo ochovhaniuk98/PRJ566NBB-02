@@ -167,8 +167,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               </>
             )}
             {/* Favourite Restaurants */}
-            {selectedTab === profileTabs[2] && (
-              <GridCustomCols numOfCols={4}>
+            {selectedTab === profileTabs[3] && (
+              <GridCustomCols numOfCols={6}>
                 {favouritedRestaurants.map(restaurant => (
                   // isFavourited here will always be true. isFavourited={true}
                   <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
