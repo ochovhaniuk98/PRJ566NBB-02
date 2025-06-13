@@ -47,11 +47,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       try {
         // Fetch general user profile and their blog posts concurrently
         const [profileRes, postsRes] = await Promise.all([
-          fetch('/api/get-general-user-profile-by-mongoId', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ generalUserId }),
-          }),
+          fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`), // dbId = mongoId
           fetch(`/api/blog-posts/get-posts-by-userId/${generalUserId}`),
         ]);
 
@@ -170,7 +166,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {selectedTab === profileTabs[2] && (
               <GridCustomCols numOfCols={4}>
                 {favouritedRestaurants.map(restaurant => (
-                  // isFavourited here will always be true. isFavourited={true} 
+                  // isFavourited here will always be true. isFavourited={true}
                   <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
                 ))}
               </GridCustomCols>

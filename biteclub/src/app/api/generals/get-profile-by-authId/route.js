@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getGeneralUserProfileBySupabaseId } from '@/lib/db/dbOperations';
 
-export async function POST(req) {
+export async function GET(req) {
   try {
-    const body = await req.json();
-    const { supabaseId } = body;
+    const { searchParams } = new URL(req.url);
+    const supabaseId = searchParams.get('authId');
 
     if (!supabaseId) {
       return NextResponse.json({ message: 'Missing supabaseId' }, { status: 400 });
@@ -17,7 +17,6 @@ export async function POST(req) {
     }
 
     return NextResponse.json({ profile }, { status: 200 });
-
   } catch (err) {
     console.error('Error fetching user profile:', err);
     return NextResponse.json({ message: 'Server error' }, { status: 500 });
