@@ -72,6 +72,18 @@ export async function getRestaurantReviews(id) {
   };
 }
 
+// "Favourte Restaurant" Related
+// Calculate the number of likes and display to restaurant page
+export async function getRestaurantNumOfFavourites(restaurantId) {
+  await dbConnect();
+  console.log('(DB) received ID: ', restaurantId);
+
+  const count = await User.countDocuments({
+    favouriteRestaurants: { $in: [restaurantId] },
+  });
+  return count;
+}
+
 export async function updateRestaurant(id, data) {
   await dbConnect();
 
@@ -124,12 +136,9 @@ export async function updateLicenseForBusinessUser(data) {
 // Check if the business user is verified
 export async function getBusinessUserVerificationStatus({ supabaseId }) {
   await dbConnect();
-  // Only fetch the verificationStatus field from MongoDB
   const user = await BusinessUser.findOne({ supabaseId }, 'verificationStatus');
-  // If user not found, return null
   if (!user) return null;
-  // Return true or false explicitly
-  return user.verificationStatus === true;
+  return user.verificationStatus;
 }
 
 // =================

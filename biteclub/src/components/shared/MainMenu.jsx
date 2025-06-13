@@ -10,33 +10,36 @@ import { useEffect, useState } from 'react';
 export default function MainMenu() {
   const pathname = usePathname();
   const [userType, setUserType] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  const fetchUserType = async () => {
-    try {
-      const supabase = createClient();
-      const { data } = await supabase.auth.getUser();
+  useEffect(() => {
+    const fetchUserType = async () => {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase.auth.getUser();
 
-      if (data?.user?.id) {
-        const response = await fetch('/api/get-user-type', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ supabaseId: data.user.id }),
-        });
+        if (data?.user?.id) {
+          const response = await fetch('/api/get-user-type', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ supabaseId: data.user.id }),
+          });
 
-        const { userType } = await response.json();
-        setUserType(userType);
-      } else {
-        // Optional: explicitly set userType to null
+          const { userType } = await response.json();
+          setUserType(userType);
+        } else {
+          setUserType(null);
+        }
+      } catch (error) {
+        console.error('Error fetching user type:', error);
         setUserType(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching user type:', error);
-    }
-  };
+    };
 
-  fetchUserType();
-}, []);
+    fetchUserType();
+  }, []);
 
   const menuIcons = [faHouseChimney, faUser, faGamepad, faUtensils, faMicroblog, faGear];
   // !!! settings link temporary - will put it inside general user's profile later !!!
@@ -48,6 +51,12 @@ useEffect(() => {
     '#',
     '/users/settings',
   ];
+
+  // Now the menu bar will not load until the user profile is ready.
+  // This prevents users from clicking it too early (i.e., before the user profile is loaded), which could cause an unintended redirect to the login page.
+  if (loading) {
+    return null;
+  }
 
   return (
     <aside className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey">

@@ -14,6 +14,10 @@ export default function GeneralUserDashboard() {
     const fetchData = async () => {
       try {
         const supabase = createClient();
+
+        // Always use supabase.auth.getUser() to protect pages and user data.
+        // Never trust supabase.auth.getSession() inside Server Components. It isn't guaranteed to revalidate the Auth token.
+        // It's safe to trust getUser() because it sends a request to the Supabase Auth server every time to revalidate the Auth token.
         const { data, error: authError } = await supabase.auth.getUser();
 
         if (authError || !data.user) {
