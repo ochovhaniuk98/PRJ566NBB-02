@@ -7,17 +7,18 @@ import BlogPostCard from '@/components/shared/BlogPostCard';
 import GeneralUserBanner from '@/components/generalProfile/GeneralUserBanner';
 import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
 import ReviewCard from '@/components/shared/ReviewCard';
-import GeneralUserCard from '@/components/shared/GeneralUserCard';
+import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
 import StarRating from '../shared/StarRating';
 import { fakeBlogPost, fakeReviews, fakeRestaurantData } from '@/app/data/fakeData';
 import AddReviewForm from '../shared/AddReviewForm';
 import { Button } from '../shared/Button';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
+import RestaurantCard from '../restaurantProfile/RestaurantCard';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // userId: from MongoDB, not supabase. By default "false" just in-case.
-  //   const isOwner = true; // flag for showing certain components for profile owner
+  // const isOwner = true; // flag for showing certain components for profile owner
   const profileTabs = [
     'Blog Posts',
     'Reviews',
@@ -32,6 +33,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
   const [showTextEditor, setShowTextEditor] = useState(false);
   const [myBlogPosts, setMyBlogPosts] = useState([]);
+  const [favouritedRestaurants, setFavouritedRestaurants] = useState([]);
   const [showInstaReview, setShowInstaReview] = useState(false);
 
   /* States below are for MANAGING/EDITING general profile */
@@ -42,37 +44,51 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      // get user profile
       try {
-        const res = await fetch('/api/get-general-user-profile-by-mongoId', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ generalUserId }),
-        });
+        // Fetch general user profile and their blog posts concurrently
+        const [profileRes, postsRes] = await Promise.all([
+          fetch('/api/get-general-user-profile-by-mongoId', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ generalUserId }),
+          }),
+          fetch(`/api/blog-posts/get-posts-by-userId/${generalUserId}`),
+        ]);
 
-        const { profile } = await res.json();
-        setUserProfile(profile);
-        console.log('USER profile:', profile);
-      } catch (err) {
-        console.error('Failed to fetch user profile:', err);
-      }
-
-      // get user's blog posts
-      try {
-        const res = await fetch(`/api/blog-posts/get-posts-by-userId/${generalUserId}`);
-
-        if (!res.ok) {
-          console.log('Failed to fetch blog posts');
+        // If either request fails, log and stop execution
+        if (!profileRes.ok || !postsRes.ok) {
+          console.error('One or both requests failed');
           return;
         }
 
-        const posts = await res.json();
-        setMyBlogPosts(posts);
+        // Parse both JSON responses
+        const [profileData, postsData] = await Promise.all([profileRes.json(), postsRes.json()]);
+
+        // Set user profile and blog posts to state
+        setUserProfile(profileData.profile); // profileData = { profile: { ... } }
+        setMyBlogPosts(postsData);
+        console.log('USER profile:', profileData.profile);
+
+        // If favouriteRestaurants exist, fetch full restaurant objects by IDs
+        const restaurantIds = profileData.profile.favouriteRestaurants;
+        if (restaurantIds?.length > 0) {
+          const res = await fetch('/api/restaurants/by-ids', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: restaurantIds }),
+          });
+
+          // Parse and store the full restaurant documents
+          const data = await res.json();
+          setFavouritedRestaurants(data.restaurants);
+        }
       } catch (err) {
-        console.error('Failed to fetch user data:', err);
+        // Catch any unexpected errors in the fetch chain
+        console.error('Failed to fetch user profile or blog posts:', err);
       }
     };
 
+    // Ensure we have a valid generalUserId before starting fetch
     if (generalUserId) fetchData();
   }, [generalUserId, showTextEditor]);
 
@@ -150,7 +166,15 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 )}
               </>
             )}
-
+            {/* Favourite Restaurants */}
+            {selectedTab === profileTabs[2] && (
+              <GridCustomCols numOfCols={4}>
+                {favouritedRestaurants.map(restaurant => (
+                  // isFavourited here will always be true. isFavourited={true}
+                  <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
+                ))}
+              </GridCustomCols>
+            )}
             {/* Favourite Blog Posts */}
             {selectedTab === profileTabs[4] && (
               <GridCustomCols numOfCols={4}>
