@@ -6,8 +6,8 @@ import SearchResultsTabBar from '@/components/searchResults/SearchResultsTabBar'
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import { fakeBlogPost, fakeUser, fakeRestaurantData } from '@/app/data/fakeData';
 import BlogPostCard from '@/components/shared/BlogPostCard';
-import GeneralUserCard from '@/components/shared/GeneralUserCard';
-import RestaurantCard from '@/components/shared/RestaurantCard';
+import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
+import RestaurantCard from '@/components/restaurantProfile/RestaurantCard';
 import SearchResultsNumMessage from '@/components/searchResults/SearchResultsNumMessage';
 
 // shows search results of restaurants, blog posts, and users
@@ -175,7 +175,8 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
               <GridCustomCols numOfCols={6} className="mt-4">
                 {/* isFavourited is false by default */}
                 {restaurants.map((restaurant, i) => (
-                  <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} isFavourited={false} />
+                  //  isFavourited={false} 
+                  <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
                 ))}
               </GridCustomCols>
               {hasMore && (

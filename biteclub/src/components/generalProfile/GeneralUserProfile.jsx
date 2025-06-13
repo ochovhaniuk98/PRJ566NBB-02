@@ -7,13 +7,13 @@ import BlogPostCard from '@/components/shared/BlogPostCard';
 import GeneralUserBanner from '@/components/generalProfile/GeneralUserBanner';
 import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
 import ReviewCard from '@/components/shared/ReviewCard';
-import GeneralUserCard from '@/components/shared/GeneralUserCard';
+import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
 import StarRating from '../shared/StarRating';
 import { fakeBlogPost, fakeReviews, fakeUser } from '@/app/data/fakeData';
 import AddReviewForm from '../shared/AddReviewForm';
 import { Button } from '../shared/Button';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
-import RestaurantCard from '../shared/RestaurantCard';
+import RestaurantCard from '../restaurantProfile/RestaurantCard';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
@@ -170,8 +170,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {selectedTab === profileTabs[2] && (
               <GridCustomCols numOfCols={4}>
                 {favouritedRestaurants.map(restaurant => (
-                  // isFavourited here will always be true
-                  <RestaurantCard key={restaurant._id} restaurantData={restaurant} isFavourited={true} />
+                  // isFavourited here will always be true. isFavourited={true} 
+                  <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
                 ))}
               </GridCustomCols>
             )}
