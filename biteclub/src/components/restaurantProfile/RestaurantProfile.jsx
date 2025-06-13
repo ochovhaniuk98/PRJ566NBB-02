@@ -41,7 +41,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         const [restaurantRes, reviewsRes, favouritesRes] = await Promise.all([
           fetch(`/api/restaurants/${restaurantId}`),
           fetch(`/api/restaurant-reviews/${restaurantId}`),
-          fetch(`/api/restaurant-num-of-favourites/${restaurantId}`),
+          fetch(`/api/restaurants/num-of-favourites/${restaurantId}`),
         ]);
 
         if (!restaurantRes.ok || !reviewsRes.ok || !favouritesRes.ok) {
@@ -71,7 +71,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
       const { data, error } = await supabase.auth.getUser();
       if (error || !data?.user?.id) throw new Error('User not logged in');
 
-      const res = await fetch('/api/save-favourite-restaurant-toggle', {
+      const res = await fetch('/api/restaurants/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -83,7 +83,14 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
 
-      setNumOfFavourites(result.numOfFavourites);
+      // Re-fetch the updated Favourite count immediately from backend
+      const countRes = await fetch(`/api/restaurants/num-of-favourites/${restaurantId}`);
+      if (!countRes.ok) {
+        throw new Error('Failed to fetch updated favourite count');
+      }
+
+      const countData = await countRes.json();
+      setNumOfFavourites(countData.numOfFavourites);
     } catch (err) {
       console.error('Error toggling favourite:', err.message);
     }

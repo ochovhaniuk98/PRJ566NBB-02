@@ -58,7 +58,7 @@ export default function RestaurantCard({ restaurantData }) {
       const { data, error } = await supabase.auth.getUser();
       if (error || !data?.user?.id) throw new Error('User not logged in');
 
-      const res = await fetch('/api/save-favourite-restaurant-toggle', {
+      const res = await fetch('/api/restaurants/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
