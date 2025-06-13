@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 
 // This route checks whether a restaurant is currently favourited by users
-export async function GET(req) {
+export async function POST(req) {
   try {
     const { supabaseUserId, restaurantId } = await req.json();
 
