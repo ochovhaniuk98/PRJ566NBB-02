@@ -39,7 +39,7 @@ export default function GeneralUserBanner({
       icon: faStarHalfStroke,
       bgColour: 'white',
       iconColour: 'brand-yellow',
-      statNum: generalUserData?.myReviews?.length || 0, // !!! TODO: (commented in sprint 2) we have no myReviews in db USER schema. We should store this in USER schema instead of using db to match user.id in Reivews (time cost fetching data)
+      statNum: generalUserData?.myReviews?.length || 0, 
     },
     {
       label: 'Blog Posts',
@@ -53,7 +53,7 @@ export default function GeneralUserBanner({
       icon: faGamepad,
       bgColour: 'white',
       iconColour: 'brand-green',
-      statNum: generalUserData?.challenges?.length || 0, // !!! TODO: (commented in sprint 2) we have no Challenges in db USER schema
+      statNum: generalUserData?.challenges?.length || 0, // !!! TODO: (commented in sprint 2) should we have Challenges in db USER schema
     },
   ];
 
