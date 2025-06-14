@@ -33,6 +33,10 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
   const [showTextEditor, setShowTextEditor] = useState(false);
   const [myBlogPosts, setMyBlogPosts] = useState([]);
+  const [myReviews, setMyReviews] = useState({
+    internalReviews: [],
+    externalReviews: [],
+  });
   const [favouritedRestaurants, setFavouritedRestaurants] = useState([]);
   const [showInstaReview, setShowInstaReview] = useState(false);
 
@@ -92,6 +96,28 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     if (generalUserId) fetchData();
   }, [generalUserId, showTextEditor]);
 
+  useEffect(() => {
+    const fetchUserReviews = async () => {
+      try {
+        const res = await fetch(`/api/user-reviews/${generalUserId}`);
+
+        if (!res.ok) {
+          console.log('Failed to fetch reviews');
+          return;
+        }
+
+        const reviews = await res.json();
+        setMyReviews(reviews);
+      } catch (err) {
+        console.error('Failed to fetch user reviews:', err);
+      }
+    };
+    // Fetch user review only when the user selects the "Reviews" tab
+    if (selectedTab === profileTabs[1] && generalUserId) {
+      fetchUserReviews();
+    }
+  }, [selectedTab, generalUserId]);
+
   if (!userProfile) return <div>Loading profile...</div>;
 
   return (
@@ -136,34 +162,38 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                     From Instagram
                   </Button>
                 </div>
-                {!showInstaReview && (
-                  <GridCustomCols numOfCols={4}>
-                    {Array.from({ length: 12 }).map((_, i) => (
-                      <ReviewCard
-                        key={i}
-                        review={fakeReviews[0]}
-                        photos={fakeReviews[0].photos}
-                        isOwner={isOwner}
-                        isEditModeOn={editMode}
-                        setEditReviewForm={setEditReviewForm}
-                      />
-                    ))}
-                  </GridCustomCols>
-                )}
+                {!showInstaReview &&
+                  (myReviews?.internalReviews.length === 0 ? (
+                    <div className="col-span-3 text-center text-gray-500">No internal review yet.</div>
+                  ) : (
+                    <GridCustomCols numOfCols={4}>
+                      {myReviews?.internalReviews.map((review, i) => (
+                        <ReviewCard
+                          key={review._id || i}
+                          review={review}
+                          photos={review.photos}
+                          isOwner={isOwner}
+                          isEditModeOn={editMode}
+                          setEditReviewForm={setEditReviewForm}
+                        />
+                      ))}
+                    </GridCustomCols>
+                  ))}
                 {/* Instagram Reviews */}
-                {showInstaReview && (
-                  <GridCustomCols numOfCols={4}>
-                    {Array.from({ length: 12 }).map((_, i) => (
-                      <InstagramEmbed
-                        key={i}
-                        postUrl={
-                          'https://www.instagram.com/p/CokYC2Jr20p/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA%3D%3D&img_index=1'
-                        }
-                        isEditModeOn={editMode}
-                      />
-                    ))}
-                  </GridCustomCols>
-                )}
+                {showInstaReview &&
+                  (myReviews?.externalReviews.length === 0 ? (
+                    <div className="col-span-3 text-center text-gray-500">No Instagram review yet.</div>
+                  ) : (
+                    <GridCustomCols numOfCols={4}>
+                      {myReviews?.externalReviews.map((review, i) => (
+                        <InstagramEmbed
+                          key={review._id || i}
+                          postUrl={review.content?.embedLink}
+                          isEditModeOn={editMode}
+                        />
+                      ))}
+                    </GridCustomCols>
+                  ))}
               </>
             )}
             {/* Favourite Restaurants */}

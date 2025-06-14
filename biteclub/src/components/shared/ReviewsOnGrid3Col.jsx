@@ -11,7 +11,11 @@ export default function ReviewsOnGrid3Col({ selectedReview, setSelectedReview, r
   const [instagramHeight, setInstagramHeight] = useState(0);
   // dynamically store insta post container's height so that the 3-col grid's rows can resize accordingly
 
-  const combinedList = [...reviewList.internalReviews, ...reviewList.externalReviews];
+  if (!reviewList || (!reviewList?.internalReviews?.length && !reviewList?.externalReviews?.length)) {
+    return <div className="col-span-3 text-center text-gray-500">No reviews available</div>;
+  }
+
+  const combinedList = [...reviewList?.internalReviews, ...reviewList?.externalReviews];
   const randomizedReviewList = combinedList.sort(() => Math.random() - 0.5);
 
   return (
