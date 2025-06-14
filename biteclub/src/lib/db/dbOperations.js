@@ -112,6 +112,31 @@ export async function addExternalReview(embedLink, userId, restaurantId) {
   return savedReview;
 }
 
+export async function addInternalReview(data) {
+  await dbConnect();
+
+  const { body, title, rating, photos, userId, restaurantId } = data;
+
+  const newReview = new InternalReview({
+    body,
+    title,
+    rating,
+    date_posted: new Date(),
+    comments: [],
+    photos: photos || [],
+    likes: { count: 0, users: [] },
+    dislikes: { count: 0, users: [] },
+    user_id: userId,
+    restaurant_id: restaurantId,
+  });
+
+  const savedReview = await newReview.save();
+  if (!savedReview) {
+    throw new Error('Failed to save internal review');
+  }
+  return JSON.parse(JSON.stringify(savedReview));
+}
+
 export async function getBusinessUserRestaurantId({ supabaseId }) {
   await dbConnect();
   const user = await BusinessUser.findOne({ supabaseId });
