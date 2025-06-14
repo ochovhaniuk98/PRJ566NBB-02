@@ -15,7 +15,6 @@ import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetail
 import { useEffect, useState } from 'react';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import AddReviewForm from '../shared/AddReviewForm';
-import StarRating from '../shared/StarRating';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
@@ -216,16 +215,11 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
       {userId && showAddReviewForm && (
         /* NOTE: "AddReviewForm" has two modes: Adding NEW reviews, and EDITING existing reviews.
                The paramter "editReviewMode" is false by default, but TRUE when user wants to edit review.*/
-        <AddReviewForm restaurantId={restaurantId} userId={userId} onCancel={() => setShowAddReviewForm(false)}>
-          {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
-                Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
-          <StarRating
-            iconSize="text-4xl cursor-pointer"
-            interactive={true}
-            onChange={(val, msg) => setReviewRating({ value: val, message: msg })}
-          />
-          {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
-        </AddReviewForm>
+        <AddReviewForm
+          restaurantId={restaurantId}
+          userId={userId}
+          onCancel={() => setShowAddReviewForm(false)}
+        ></AddReviewForm>
       )}
     </MainBaseContainer>
   );
