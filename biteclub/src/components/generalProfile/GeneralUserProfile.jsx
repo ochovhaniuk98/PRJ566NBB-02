@@ -9,7 +9,7 @@ import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
 import ReviewCard from '@/components/shared/ReviewCard';
 import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
 import StarRating from '../shared/StarRating';
-import { fakeBlogPost, fakeReviews, fakeRestaurantData } from '@/app/data/fakeData';
+// import { fakeBlogPost, fakeReviews, fakeRestaurantData } from '@/app/data/fakeData';
 import AddReviewForm from '../shared/AddReviewForm';
 import { Button } from '../shared/Button';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
@@ -38,6 +38,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     externalReviews: [],
   });
   const [favouritedRestaurants, setFavouritedRestaurants] = useState([]);
+  const [favouritedBlogs, setFavouritedBlogs] = useState([]);
   const [showInstaReview, setShowInstaReview] = useState(false);
 
   /* States below are for MANAGING/EDITING general profile */
@@ -67,20 +68,36 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         // Set user profile and blog posts to state
         setUserProfile(profileData.profile); // profileData = { profile: { ... } }
         setMyBlogPosts(postsData);
-        console.log('USER profile:', profileData.profile);
 
         // If favouriteRestaurants exist, fetch full restaurant objects by IDs
-        const restaurantIds = profileData.profile.favouriteRestaurants;
-        if (restaurantIds?.length > 0) {
+        const favRestaurantIds = profileData.profile.favouriteRestaurants;
+        if (favRestaurantIds?.length > 0) {
           const res = await fetch('/api/restaurants/by-ids', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: restaurantIds }),
+            body: JSON.stringify({ ids: favRestaurantIds }),
           });
 
           // Parse and store the full restaurant documents
           const data = await res.json();
           setFavouritedRestaurants(data.restaurants);
+        }
+
+        // If favouriteBlogs exist, fetch full blog objects by IDs
+        const favBlogIds = profileData.profile.favouriteBlogs;
+        console.log('(GeneralUserProfile) favouritedBlogs: ', favBlogIds);
+
+        if (favBlogIds?.length > 0) {
+          const res = await fetch('/api/blog-posts/by-ids', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: favBlogIds }),
+          });
+
+          // Parse and store the full documents
+          const blogData = await res.json();
+          console.log('(GeneralUserProfile) favouritedBlogs: ', blogData); // [!] IMP: the data is not complete
+          setFavouritedBlogs(blogData);
         }
       } catch (err) {
         // Catch any unexpected errors in the fetch chain
@@ -196,7 +213,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {selectedTab === profileTabs[3] && (
               <GridCustomCols numOfCols={6}>
                 {favouritedRestaurants.map(restaurant => (
-                  // isFavourited here will always be true. isFavourited={true}
                   <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
                 ))}
               </GridCustomCols>
@@ -204,10 +220,21 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Favourite Blog Posts */}
             {selectedTab === profileTabs[4] && (
               <GridCustomCols numOfCols={4}>
-                {Array.from({ length: 12 }).map((_, i) => (
+                {/* {favouritedBlogs.map(blog => (
                   // The "Favourite Blog Posts" should not display posts written by the owner (i.e. isOwner should be false / !isOwner).
                   // However, users may still favourite their own posts — so this logic (false) might be adjusted later.
-                  <BlogPostCard key={i} blogPostData={fakeBlogPost} writtenByOwner={false} isFavourited={true} />
+                  <BlogPostCard key={blog._id} blogPostData={blog} userId={userProfile._id} />
+                ))} */}
+                {favouritedBlogs.map((post, i) => (
+                  <BlogPostCard
+                    key={post._id || i}
+                    blogPostData={post}
+                    writtenByOwner={isOwner}
+                    isFavourited={false}
+                    isEditModeOn={editMode}
+                    setShowTextEditor={setShowTextEditor}
+                    setEditBlogPost={setEditBlogPost}
+                  />
                 ))}
               </GridCustomCols>
             )}

@@ -22,7 +22,6 @@ export default function RestaurantCard({ restaurantData }) {
   const image = Array.isArray(restaurantData?.images) ? restaurantData.images[0] : null;
   const restaurantId = restaurantData._id;
 
-
   const [isFavourited, setIsFavourited] = useState(false);
 
   // Check if this restaurant is favourited by current user

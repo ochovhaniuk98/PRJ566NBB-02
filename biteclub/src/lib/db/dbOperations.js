@@ -209,6 +209,16 @@ export async function getUserReviews(userId) {
   }
 }
 
+export async function getBlogPostNumOfFavourites(postId) {
+  await dbConnect();
+  console.log('(DB) received ID: ', postId);
+
+  const count = await User.countDocuments({
+    favouriteBlogs: { $in: [postId] },
+  });
+  return count;
+}
+
 // ==================
 // CLOUDINARY RELATED
 // ==================
