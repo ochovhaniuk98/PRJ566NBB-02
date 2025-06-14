@@ -7,6 +7,8 @@ import { Input } from '../shared/Input';
 import { Button } from '@/components/shared/Button';
 import ReviewImageUpload from './ReviewImageUpload';
 import { useSubmitExternalReview } from '@/hooks/use-submit-external-review';
+import StarRating from './StarRating';
+import { addInternalReview } from '@/lib/db/dbOperations';
 
 // Has 2 modes: ADDING a NEW review (along with embed instagram link option) and EDITING an existing one.
 // editReviewMode: Tracks whether this form should display a review to be edited, or just empty fields (for writing new review + instagram link)
@@ -21,6 +23,34 @@ export default function AddReviewForm({ restaurantId, userId, onCancel, children
     error: externalReviewError,
     handleSubmit: handleInstagramSubmit,
   } = useSubmitExternalReview({ userId, restaurantId, onSuccess: onCancel });
+
+  const [internalReviewError, setInternalReviewError] = useState(null);
+
+  const [reviewRating, setReviewRating] = useState({ value: 0, message: '' });
+  const [reviewTitle, setReviewTitle] = useState('');
+  const [reviewContent, setReviewContent] = useState('');
+  const [reviewImages, setReviewImages] = useState([]);
+
+  const handleInternalSubmit = async e => {
+    e.preventDefault();
+
+    const reviewData = {
+      body: reviewContent,
+      title: reviewTitle,
+      rating: reviewRating.value,
+      photos: reviewImages,
+      userId: userId,
+      restaurantId: restaurantId,
+    };
+
+    const res = await addInternalReview(reviewData);
+    if (res) {
+      console.log('Internal review added successfully:', res);
+    } else {
+      setInternalReviewError('Failed to add internal review. Please try again.');
+    }
+    onCancel(); // Close the form after submission
+  };
 
   return (
     <>
@@ -50,22 +80,48 @@ export default function AddReviewForm({ restaurantId, userId, onCancel, children
           </div>
           <div className="relative">
             {/* EDIT or WRITE a Reveiw form */}
-            <form className=" w-full min-h-full bg-white rounded-b-lg shadow-md flex flex-col items-center pb-8">
+            <form
+              onSubmit={handleInternalSubmit}
+              className=" w-full min-h-full bg-white rounded-b-lg shadow-md flex flex-col items-center pb-8"
+            >
               <div className="w-full p-6 flex flex-col gap-3">
                 <div>
                   <div className="font-secondary text-4xl mb-4">
                     {editReviewMode ? 'Edit Review' : 'Write a Review'}
                   </div>
                   <Label>Rating</Label>
-                  <div className="flex items-center gap-6">{children}</div>
+                  <div className="flex items-center gap-6">
+                    {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
+                Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
+                    <StarRating
+                      iconSize="text-4xl cursor-pointer"
+                      interactive={true}
+                      onChange={(val, msg) => setReviewRating({ value: val, message: msg })}
+                    />
+                    {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
+                  </div>
                 </div>
                 <div>
                   <Label>Headline</Label>
-                  <Input type="text" className={'w-full'} />
+                  <Input
+                    type="text"
+                    className={'w-full'}
+                    value={reviewTitle}
+                    onChange={e => setReviewTitle(e.target.value)}
+                    placeholder="Enter a catchy headline for your review"
+                    required
+                  />
                 </div>
                 <div>
                   <Label>Review</Label>
-                  <textarea type="text" className={'w-full rounded-md p-2 h-50 resize-none'} />
+                  <textarea
+                    type="text"
+                    className={'w-full rounded-md p-2 h-50 resize-none'}
+                    onChange={e => setReviewContent(e.target.value)}
+                    placeholder="Write your review here..."
+                    value={reviewContent}
+                    required
+                  />
                 </div>
                 <ReviewImageUpload onUploadClick={() => setShowPhotoPlaceholder(false)} />
                 {
@@ -75,6 +131,10 @@ export default function AddReviewForm({ restaurantId, userId, onCancel, children
                   )
                 }
               </div>
+              {
+                /* Show error message if there was an error submitting the internal review */
+                internalReviewError && <p className="text-red-600 mt-2 text-center">{internalReviewError}</p>
+              }
               <div className=" flex justify-end gap-2 mt-16">
                 <Button type="submit" className="w-30" variant="default" disabled={false}>
                   Save
