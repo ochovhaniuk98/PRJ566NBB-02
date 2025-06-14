@@ -6,12 +6,22 @@ import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
 import { Button } from '@/components/shared/Button';
 import ReviewImageUpload from './ReviewImageUpload';
+import { useSubmitExternalReview } from '@/hooks/use-submit-external-review';
 
 // Has 2 modes: ADDING a NEW review (along with embed instagram link option) and EDITING an existing one.
 // editReviewMode: Tracks whether this form should display a review to be edited, or just empty fields (for writing new review + instagram link)
-export default function AddReviewForm({ onCancel, children, editReviewMode = false }) {
+export default function AddReviewForm({ restaurantId, userId, onCancel, children, editReviewMode = false }) {
   const [showPhotoPlaceholder, setShowPhotoPlaceholder] = useState(true);
   const [showInstagramForm, setShowInstagramForm] = useState(false);
+
+  const {
+    embedLink,
+    setEmbedLink,
+    loading: externalReviewLoading,
+    error: externalReviewError,
+    handleSubmit: handleInstagramSubmit,
+  } = useSubmitExternalReview({ userId, restaurantId, onSuccess: onCancel });
+
   return (
     <>
       <div className="fixed inset-0 bg-black/50 flex justify-center  z-50  overflow-scroll scrollbar-hide">
@@ -76,21 +86,32 @@ export default function AddReviewForm({ onCancel, children, editReviewMode = fal
             </form>
             {/* Add Instagram post form */}
             {showInstagramForm && (
-              <form className="bg-white absolute top-0 w-full h-full rounded-b-lg p-6 flex flex-col items-center">
+              <form
+                onSubmit={handleInstagramSubmit}
+                className="bg-white absolute top-0 w-full h-full rounded-b-lg p-6 flex flex-col items-center"
+              >
                 <div className="font-secondary text-4xl mb-4 w-full">Add Instagram Post</div>
                 <div className="w-full">
                   <Label>Link</Label>
-                  <Input type="text" className={'w-full'} />
+                  <Input
+                    type="text"
+                    className={'w-full'}
+                    value={embedLink}
+                    onChange={e => setEmbedLink(e.target.value)}
+                    disabled={externalReviewLoading}
+                    placeholder="https://www.instagram.com/p/DCZlEDqy2to/"
+                  />
                 </div>
+                {externalReviewError && <p className="text-red-600 mt-2">{externalReviewError}</p>}
                 <div className=" flex justify-end gap-2 mt-16">
-                  <Button type="submit" className="w-30" variant="default" disabled={false}>
-                    Save
+                  <Button type="submit" className="w-30" variant="default" disabled={externalReviewLoading}>
+                    {externalReviewLoading ? 'Posting...' : 'Save'}
                   </Button>
                   <Button
                     type="button"
                     className="w-30"
                     variant="secondary"
-                    disabled={false}
+                    disabled={externalReviewLoading}
                     onClick={() => setShowInstagramForm(false)}
                   >
                     Cancel
