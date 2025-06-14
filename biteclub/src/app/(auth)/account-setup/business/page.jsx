@@ -7,6 +7,8 @@ import { Input } from '@/components/shared/Input';
 import { Button } from '@/components/shared/Button';
 import { Label } from '@/components/shared/Label';
 import { CldUploadWidget } from 'next-cloudinary';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 export default function BusinessSetupForm() {
   const router = useRouter();
@@ -118,125 +120,137 @@ export default function BusinessSetupForm() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-[length:90%]"
+      className="h-full min-h-screen flex bg-cover bg-[length:100%]"
       style={{
         backgroundImage: "url('/img/greenOnYellowBG.png')",
         backgroundPosition: '-2rem',
       }}
     >
-      <div className="form-widget max-w-md w-full px-12 py-16 h-150 border border-brand-yellow-lite shadow-md rounded-md space-y-4 bg-brand-yellow-extralite flex flex-col ">
-        <h2 className="text-center">Ready to reach new customers?</h2>
+      <div className="w-1/2 px-12 py-16 h-full min-h-screen ml-auto bg-white flex flex-col ">
+        <div className="form-widget flex flex-col space-y-4 bg-brand-yellow-extralite w-md h-content m-auto px-14 py-16 shadow-md">
+          <h2 className="text-center">Ready to reach new customers?</h2>
 
-        {/* --- Hidden Email Field (bound to Supabase user) --- */}
-        <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
+          {/* --- Hidden Email Field (bound to Supabase user) --- */}
+          <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
 
-        {/* --- Restaurant Search Input --- */}
-        <div className="relative w-full">
-          <Label htmlFor="restaurantName">Search your restaurant by NAME or LOCATION</Label>
-          <Input
-            id="restaurantQuery"
-            type="text"
-            value={restaurantQuery}
-            onChange={e => setRestaurantQuery(e.target.value)}
-            className={`w-full ${results.length > 0 && 'm-0 mt-2 rounded-b-none rounded-t-md'}`}
-            placeholder="e.g. Pomegranate or College Street"
-          />
+          {/* --- Restaurant Search Input --- */}
+          <div className="relative w-full">
+            <Label htmlFor="restaurantName">Search your restaurant by NAME or LOCATION</Label>
+            <Input
+              id="restaurantQuery"
+              type="text"
+              value={restaurantQuery}
+              onChange={e => setRestaurantQuery(e.target.value)}
+              className={`w-full ${results.length > 0 && 'm-0 mt-2 rounded-b-none rounded-t-md'}`}
+              placeholder="e.g. Pomegranate or College Street"
+            />
 
-          {/* --- Autocomplete Result Dropdown --- */}
-          {results.length > 0 && (
-            <ul className="absolute border border-t-0 border-brand-blue rounded-b bg-white mt-[1px] h-48 overflow-y-auto z-10 ">
-              {results.slice(0, 10).map((r, i) => (
-                <li
-                  key={i}
-                  onClick={() => {
-                    setRestaurantQuery(`${r.name} — ${r.location}`); // For display only
-                    setRestaurantId(r.id);
-                    setRestaurantName(r.name); // Save confirmed name
-                    setRestaurantLocation(r.location); // Save confirmed location
-                    setResults([]); // Hide result dropdown
-                  }}
-                  className="cursor-pointer hover:bg-gray-100 px-3 py-1"
-                >
-                  <div className="flex flex-col">
-                    <span className="font-medium text-brand-navy">{r.name}</span>
-                    <span className="text-sm text-gray-600">{r.location}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {/* --- Confirmed Restaurant Preview --- */}
-          {restaurantName && restaurantLocation && (
-            <div className="text-sm mt-2 text-brand-navy">
-              <p>
-                <strong>Restaurant name:</strong>
-                <br />
-                {restaurantName}
-              </p>
-              <p className="mt-1">
-                <strong>Restaurant location:</strong>
-                <br />
-                {restaurantLocation}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* --- Business License Upload --- */}
-        <div>
-          <section className="flex flex-col items-center justify-between">
-            <CldUploadWidget
-              uploadPreset="my-uploads"
-              options={{ resourceType: 'raw' }}
-              onSuccess={async result => {
-                console.log('Upload Success:', result?.info);
-                setUploadedLicenseInfo(result?.info);
-              }}
-            >
-              {({ open }) => (
-                <>
-                  <button
-                    onClick={() => open()}
-                    className="border-2 border-dashed border-brand-blue bg-brand-blue-lite px-6 py-6 text-center rounded-md cursor-pointer w-full"
+            {/* --- Autocomplete Result Dropdown --- */}
+            {results.length > 0 && (
+              <ul className="absolute border border-t-0 border-brand-blue rounded-b bg-white mt-[1px] max-h-max h-90 w-full overflow-y-auto z-10 ">
+                {results.slice(0, 10).map((r, i) => (
+                  <li
+                    key={i}
+                    onClick={() => {
+                      setRestaurantQuery(`${r.name} — ${r.location}`); // For display only
+                      setRestaurantId(r.id);
+                      setRestaurantName(r.name); // Save confirmed name
+                      setRestaurantLocation(r.location); // Save confirmed location
+                      setResults([]); // Hide result dropdown
+                    }}
+                    className="cursor-pointer hover:bg-gray-100 px-3 py-1"
                   >
-                    Upload your business license
-                    {uploadedLicenseInfo?.original_filename && (
-                      <span className="mt-2 flex items-center gap-2">
-                        <img
-                          width="24"
-                          height="24"
-                          src="https://img.icons8.com/material-outlined/24/cloud-checked.png"
-                          alt="cloud-checked"
-                        />
-                        <p className="text-sm text-brand-navy">Uploaded: {uploadedLicenseInfo.original_filename}</p>
-                      </span>
-                    )}
-                  </button>
-                </>
-              )}
-            </CldUploadWidget>
-          </section>
+                    <div className="flex flex-col">
+                      <span className="font-medium text-brand-navy">{r.name}</span>
+                      <span className="text-sm text-gray-600">{r.location}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* --- Confirmed Restaurant Preview --- */}
+
+            <div className="text-sm text-center mt-2 text-black border-2 border-dashed border-brand-yellow-lite py-6 px-3 bg-brand-yellow-extralite cursor-default">
+              Selected Restaurant
+              <Label>Name</Label>
+              <div className="w-full border-2 border-brand-yellow-lite rounded-full my-2 mb-4 px-3 py-2 text-center bg-brand-yellow-lite">
+                {restaurantName && restaurantLocation ? (
+                  <p>{restaurantName}</p>
+                ) : (
+                  <h5 className="text-brand-grey">{'Select your restaurant above.'}</h5>
+                )}
+              </div>
+              <Label>Location</Label>
+              <div className="w-full border-2 border-brand-yellow-lite rounded-full my-2 px-3 py-2 text-center bg-brand-yellow-lite">
+                {restaurantName && restaurantLocation ? (
+                  <p>{restaurantLocation}</p>
+                ) : (
+                  <h5 className="text-brand-grey">
+                    Select your restaurant above.
+                    <br />
+                  </h5>
+                )}
+              </div>
+            </div>
+
+            {/* --- Business License Upload --- */}
+            <div>
+              <section className="flex flex-col items-center">
+                <CldUploadWidget
+                  uploadPreset="my-uploads"
+                  options={{ resourceType: 'raw' }}
+                  onSuccess={async result => {
+                    console.log('Upload Success:', result?.info);
+                    setUploadedLicenseInfo(result?.info);
+                  }}
+                >
+                  {({ open }) => (
+                    <>
+                      <button
+                        onClick={() => open()}
+                        className="border-1 border-brand-peach bg-brand-peach p-2 px-6 my-6 ml-auto font-primary font-medium shadow-sm text-sm text-brand-navy text-center rounded-md cursor-pointer"
+                      >
+                        <FontAwesomeIcon icon={faCloudArrowUp} className={`icon-lg text-brand-navy mr-2`} />
+                        Upload Business License
+                        {uploadedLicenseInfo?.original_filename && (
+                          <span className="mt-2 flex items-center gap-2">
+                            <img
+                              width="24"
+                              height="24"
+                              src="https://img.icons8.com/material-outlined/24/cloud-checked.png"
+                              alt="cloud-checked"
+                            />
+                            <p className="text-sm text-brand-navy">Uploaded: {uploadedLicenseInfo.original_filename}</p>
+                          </span>
+                        )}
+                      </button>
+                    </>
+                  )}
+                </CldUploadWidget>
+              </section>
+            </div>
+          </div>
+
+          {/* --- Submit Button --- */}
+          <Button className="w-60 m-auto mt-12" onClick={handleSubmit} variant="default" disabled={loading}>
+            {loading ? 'Saving...' : 'Save'}
+          </Button>
+
+          {formError && (
+            <p className="text-sm text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2">{formError}</p>
+          )}
+
+          {/* --- Sign Out Link --- */}
+          <form action="/signout" method="post" className="relative">
+            <button
+              className="text-sm text-brand-navy font-primary font-medium p-2 rounded-md absolute -left-8 -bottom-15 underline cursor-pointer"
+              type="submit"
+            >
+              Sign out
+            </button>
+          </form>
         </div>
-
-        {/* --- Submit Button --- */}
-        <Button className="w-full" onClick={handleSubmit} variant="default" disabled={loading}>
-          {loading ? 'Submitting...' : 'Update'}
-        </Button>
-
-        {formError && (
-          <p className="text-sm text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2">{formError}</p>
-        )}
-
-        {/* --- Sign Out Link --- */}
-        <form action="/signout" method="post" className="relative">
-          <button
-            className="text-sm text-brand-navy font-primary font-medium p-2 rounded-md absolute -left-8 -bottom-15 underline cursor-pointer"
-            type="submit"
-          >
-            Sign out
-          </button>
-        </form>
       </div>
     </div>
   );
