@@ -16,6 +16,9 @@ import { useEffect, useState } from 'react';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import AddReviewForm from '../shared/AddReviewForm';
 import StarRating from '../shared/StarRating';
+import GridCustomCols from '../shared/GridCustomCols';
+import BlogPostCard from '../shared/BlogPostCard';
+import { fakeBlogPost } from '@/app/data/fakeData';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
@@ -156,6 +159,14 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
             setSelectedReview={setSelectedReview}
             reviewList={reviewsData} // internal + external reviews
           />
+        )}
+        {/* Mentioned */}
+        {selectedTab === restaurantTabs[1] && (
+          <GridCustomCols numOfCols={4}>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <BlogPostCard key={i} blogPostData={fakeBlogPost} />
+            ))}
+          </GridCustomCols>
         )}
         {/* Photos */}
         {selectedTab === restaurantTabs[2] && <PhotoGallery photos={images} />}
