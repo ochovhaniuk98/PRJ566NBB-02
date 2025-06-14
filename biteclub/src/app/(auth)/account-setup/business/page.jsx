@@ -8,7 +8,7 @@ import { Button } from '@/components/shared/Button';
 import { Label } from '@/components/shared/Label';
 import { CldUploadWidget } from 'next-cloudinary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faCloudArrowUp, faUtensils } from '@fortawesome/free-solid-svg-icons';
 
 export default function BusinessSetupForm() {
   const router = useRouter();
@@ -127,14 +127,17 @@ export default function BusinessSetupForm() {
       }}
     >
       <div className="w-1/2 px-12 py-16 h-full min-h-screen ml-auto bg-white flex flex-col ">
-        <div className="form-widget flex flex-col space-y-4 bg-brand-yellow-extralite w-md h-content m-auto px-14 py-16 shadow-md">
+        <div className="form-widget flex flex-col space-y-4 bg-brand-yellow-extralite w-lg h-content m-auto px-14 py-16 shadow-md">
+          <div className="aspect-square w-fit p-2 bg-brand-yellow border border-brand-navy rounded-full mx-auto flex flex-col justify-center items-center">
+            <FontAwesomeIcon icon={faUtensils} className={`icon-lg text-brand-navy`} />
+          </div>
           <h2 className="text-center">Ready to reach new customers?</h2>
 
           {/* --- Hidden Email Field (bound to Supabase user) --- */}
           <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
 
           {/* --- Restaurant Search Input --- */}
-          <div className="relative w-full">
+          <div className="relative w-full mt-4">
             <Label htmlFor="restaurantName">Search your restaurant by NAME or LOCATION</Label>
             <Input
               id="restaurantQuery"
@@ -171,20 +174,20 @@ export default function BusinessSetupForm() {
 
             {/* --- Confirmed Restaurant Preview --- */}
 
-            <div className="text-sm text-center mt-2 text-black border-2 border-dashed border-brand-yellow-lite py-6 px-3 bg-brand-yellow-extralite cursor-default">
+            <div className="text-sm font-medium font-primary text-center mt-2 text-brand-grey border-2 border-dashed border-brand-yellow-lite py-6 px-3 bg-brand-yellow-extralite cursor-default">
               Selected Restaurant
               <Label>Name</Label>
-              <div className="w-full border-2 border-brand-yellow-lite rounded-full my-2 mb-4 px-3 py-2 text-center bg-brand-yellow-lite">
+              <div className=" w-full border-2 border-brand-yellow-lite rounded-md my-2 mb-4 px-3 py-2 text-center bg-brand-yellow-lite">
                 {restaurantName && restaurantLocation ? (
-                  <p>{restaurantName}</p>
+                  <h5 className="uppercase">{restaurantName}</h5>
                 ) : (
                   <h5 className="text-brand-grey">{'Select your restaurant above.'}</h5>
                 )}
               </div>
               <Label>Location</Label>
-              <div className="w-full border-2 border-brand-yellow-lite rounded-full my-2 px-3 py-2 text-center bg-brand-yellow-lite">
+              <div className="w-full  border-2 border-brand-yellow-lite rounded-md my-2 px-3 py-2 text-center bg-brand-yellow-lite">
                 {restaurantName && restaurantLocation ? (
-                  <p>{restaurantLocation}</p>
+                  <h5>{restaurantLocation.length > 43 ? restaurantLocation.slice(0, 43) : restaurantLocation}</h5>
                 ) : (
                   <h5 className="text-brand-grey">
                     Select your restaurant above.
@@ -207,24 +210,27 @@ export default function BusinessSetupForm() {
                 >
                   {({ open }) => (
                     <>
+                      <Label className="w-full border-t-1 border-brand-grey-lite mt-6 pt-6 leading-normal">
+                        Please upload a copy of your business license. We will verify your restaurant within 2-3 days.
+                      </Label>
                       <button
                         onClick={() => open()}
                         className="border-1 border-brand-peach bg-brand-peach p-2 px-6 my-6 ml-auto font-primary font-medium shadow-sm text-sm text-brand-navy text-center rounded-md cursor-pointer"
                       >
                         <FontAwesomeIcon icon={faCloudArrowUp} className={`icon-lg text-brand-navy mr-2`} />
                         Upload Business License
-                        {uploadedLicenseInfo?.original_filename && (
-                          <span className="mt-2 flex items-center gap-2">
-                            <img
-                              width="24"
-                              height="24"
-                              src="https://img.icons8.com/material-outlined/24/cloud-checked.png"
-                              alt="cloud-checked"
-                            />
-                            <p className="text-sm text-brand-navy">Uploaded: {uploadedLicenseInfo.original_filename}</p>
-                          </span>
-                        )}
                       </button>
+                      {uploadedLicenseInfo?.original_filename && (
+                        <span className="mt-2 flex items-center gap-2">
+                          <img
+                            width="24"
+                            height="24"
+                            src="https://img.icons8.com/material-outlined/24/cloud-checked.png"
+                            alt="cloud-checked"
+                          />
+                          <p className="text-sm text-brand-navy">Uploaded: {uploadedLicenseInfo.original_filename}</p>
+                        </span>
+                      )}
                     </>
                   )}
                 </CldUploadWidget>
