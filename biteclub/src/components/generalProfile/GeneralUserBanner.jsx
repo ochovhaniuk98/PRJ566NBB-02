@@ -1,3 +1,5 @@
+import { createClient } from '@/lib/auth/client';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -39,7 +41,7 @@ export default function GeneralUserBanner({
       icon: faStarHalfStroke,
       bgColour: 'white',
       iconColour: 'brand-yellow',
-      statNum: generalUserData?.myReviews?.length || 0, 
+      statNum: generalUserData?.myReviews?.length || 0,
     },
     {
       label: 'Blog Posts',
@@ -56,6 +58,61 @@ export default function GeneralUserBanner({
       statNum: generalUserData?.challenges?.length || 0, // !!! TODO: (commented in sprint 2) should we have Challenges in db USER schema
     },
   ];
+
+  // If the current user is the owner, we can use generalUserData directly as userId.
+  const [currentUserId, setCurrentUserId] = useState(isOwner ? generalUserData._id : null);
+  const [anotherUserId, setAnotherUserId]= useState(!isOwner ? generalUserData._id : null);
+
+  const getSupabaseUserId = async () => {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error || !data?.user?.id) {
+        console.error('Supabase user not logged in:', error?.message);
+        return null;
+      }
+
+      return data.user.id;
+    } catch (err) {
+      console.error('Error retrieving Supabase user ID:', err.message);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchMongoUserId = async () => {
+      const supabaseUserId = await getSupabaseUserId();
+      if (!supabaseUserId) return;
+
+      try {
+        const mongoUserId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: supabaseUserId });
+
+        if (!mongoUserId) {
+          console.error(`MongoDB User ID not found for Supabase ID: ${supabaseUserId}`);
+          return;
+        }
+
+        setCurrentUserId(mongoUserId);
+      } catch (err) {
+        console.error('Error fetching MongoDB user ID:', err.message);
+      }
+    };
+
+    // Only fetch user ID if not the owner and userId is not already set
+    if (!isOwner && !currentUserId) {
+      fetchMongoUserId();
+    }
+  }, [isOwner, currentUserId]); // Only re-run this effect when isOwner or userId changes
+
+  // If (isOwner == true), generalUserData = CURRENT userData. Else (i.e. !isOwner), generalUserData = ANOTHER userData
+  // If (!isOwner), fetch current user data (e.g. my own data).
+  // If follow, add THEIR id to my "follower" array, and add MY id to their "followings" array
+  // If unfollow, remove THEIR id from my "follower" array, and remove MY id from their "followings" array
+  const handleFollowClick = () => {
+    // POST call: similar to save-as-favourite
+    // GET call: similar to isFollowing
+  };
 
   return (
     <div className="main-side-padding w-full flex flex-col items-center bg-brand-yellow-extralite relative">
@@ -91,7 +148,7 @@ export default function GeneralUserBanner({
 
           {/* Follow button -- only show if you're not the owner of the dashboard (you cannot follow yourself) */}
           {!isOwner && (
-            <Button type="submit" className="w-40" variant="default">
+            <Button type="submit" className="w-40" variant="default" onClick={handleFollowClick}>
               <FontAwesomeIcon icon={faPlus} className={`text-3xl text-navy`} />
               Follow
             </Button>

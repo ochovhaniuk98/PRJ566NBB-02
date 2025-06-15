@@ -209,7 +209,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 </div>
                 {!showInstaReview &&
                   (myReviews?.internalReviews.length === 0 ? (
-                    <div className="col-span-3 text-center text-gray-500">No internal review yet.</div>
+                    <div className="col-span-3 text-center text-gray-500">No internal reviews yet.</div>
                   ) : (
                     <GridCustomCols numOfCols={4}>
                       {myReviews?.internalReviews.map((review, i) => (
@@ -227,7 +227,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 {/* Instagram Reviews */}
                 {showInstaReview &&
                   (myReviews?.externalReviews.length === 0 ? (
-                    <div className="col-span-3 text-center text-gray-500">No Instagram review yet.</div>
+                    <div className="col-span-3 text-center text-gray-500">No Instagram reviews yet.</div>
                   ) : (
                     <GridCustomCols numOfCols={4}>
                       {myReviews?.externalReviews.map((review, i) => (
@@ -242,34 +242,40 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               </>
             )}
             {/* Favourite Restaurants */}
-            {selectedTab === profileTabs[3] && (
-              <GridCustomCols numOfCols={6}>
-                {favouritedRestaurants.map(restaurant => (
-                  <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
-                ))}
-              </GridCustomCols>
-            )}
+            {selectedTab === profileTabs[3] &&
+              (favouritedRestaurants.length === 0 ? (
+                <div className="col-span-3 text-center text-gray-500">No favourite restaurants yet.</div>
+              ) : (
+                <GridCustomCols numOfCols={6}>
+                  {favouritedRestaurants.map(restaurant => (
+                    <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
+                  ))}
+                </GridCustomCols>
+              ))}
             {/* Favourite Blog Posts */}
-            {selectedTab === profileTabs[4] && (
-              <GridCustomCols numOfCols={4}>
-                {/* {favouritedBlogs.map(blog => (
+            {selectedTab === profileTabs[4] &&
+              (favouritedBlogs.length === 0 ? (
+                <div className="col-span-3 text-center text-gray-500">No favourite blog posts yet.</div>
+              ) : (
+                <GridCustomCols numOfCols={4}>
+                  {/* {favouritedBlogs.map(blog => (
                   // The "Favourite Blog Posts" should not display posts written by the owner (i.e. isOwner should be false / !isOwner).
                   // However, users may still favourite their own posts — so this logic (false) might be adjusted later.
                   <BlogPostCard key={blog._id} blogPostData={blog} userId={userProfile._id} />
                 ))} */}
-                {favouritedBlogs.map((post, i) => (
-                  <BlogPostCard
-                    key={post._id || i}
-                    blogPostData={post}
-                    writtenByOwner={isOwner}
-                    // isFavourited={false}
-                    isEditModeOn={editMode}
-                    setShowTextEditor={setShowTextEditor}
-                    setEditBlogPost={setEditBlogPost}
-                  />
-                ))}
-              </GridCustomCols>
-            )}
+                  {favouritedBlogs.map((post, i) => (
+                    <BlogPostCard
+                      key={post._id || i}
+                      blogPostData={post}
+                      writtenByOwner={isOwner}
+                      // isFavourited={false}
+                      isEditModeOn={editMode}
+                      setShowTextEditor={setShowTextEditor}
+                      setEditBlogPost={setEditBlogPost}
+                    />
+                  ))}
+                </GridCustomCols>
+              ))}
             {/* My Followers (users who follow owner )*/}
             {selectedTab === profileTabs[5] &&
               (followers.length === 0 ? (
@@ -284,7 +290,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
             {/* Following (users who are followed by owner )*/}
             {selectedTab === profileTabs[6] &&
-              (followers.length === 0 ? (
+              (followings.length === 0 ? (
                 <div className="col-span-3 text-center text-gray-500">No followings yet.</div>
               ) : (
                 <GridCustomCols numOfCols={6}>
