@@ -73,7 +73,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         setMyBlogPosts(postsData);
 
         // If favouriteRestaurants exist, fetch full restaurant objects by IDs
-        const favRestaurantIds = userProfile.favouriteRestaurants;
+        const favRestaurantIds = profileData.profile.favouriteRestaurants;
         if (favRestaurantIds?.length > 0) {
           const res = await fetch('/api/restaurants/by-ids', {
             method: 'POST',
@@ -87,7 +87,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         }
 
         // If favouriteBlogs exist, fetch full blog objects by IDs
-        const favBlogIds = userProfile.favouriteBlogs;
+        const favBlogIds = profileData.profile.favouriteBlogs;
 
         if (favBlogIds?.length > 0) {
           const res = await fetch('/api/blog-posts/by-ids', {
@@ -102,11 +102,11 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         }
 
         // If followers exist, fetch full followers (users) objects by IDs (MongoDB)
-        const followersIds = userProfile.followers;
+        const followersIds = profileData.profile.followers;
         console.log('(GeneralUserProfile) followersIds: ', followersIds);
 
         if (followersIds?.length > 0) {
-          const res = await fetch('/api/generals/get-profile-by-dbId', {
+          const res = await fetch('/api/generals/get-profiles-by-dbIds', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ids: followersIds }),
@@ -114,14 +114,14 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
           // Parse and store the full documents
           const followersData = await res.json();
-          setFollowers(followersData);
+          setFollowers(followersData.users);
         }
 
         // If followers exist, fetch full followers (users) objects by IDs (MongoDB)
-        const followingsIds = userProfile.followings;
+        const followingsIds = profileData.profile.followings;
         console.log('(GeneralUserProfile) followingsIds: ', followingsIds);
         if (followingsIds?.length > 0) {
-          const res = await fetch('/api/generals/get-profile-by-dbId', {
+          const res = await fetch('/api/generals/get-profiles-by-dbIds', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ids: followingsIds }),
@@ -129,9 +129,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
           // Parse and store the full documents
           const followingsData = await res.json();
-          setFollowers(followingsData);
+          setFollowers(followingsData.users);
         }
-
       } catch (err) {
         // Catch any unexpected errors in the fetch chain
         console.error('(GeneralUserProfile) Failed to fetch user data: ', err);
@@ -272,21 +271,28 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               </GridCustomCols>
             )}
             {/* My Followers (users who follow owner )*/}
-            {selectedTab === profileTabs[5] && (
-              <GridCustomCols numOfCols={6}>
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <GeneralUserCard key={i} generalUserData={userProfile} isFollowing={false} />
-                ))}{' '}
-              </GridCustomCols>
-            )}
+            {selectedTab === profileTabs[5] &&
+              (followers.length === 0 ? (
+                <div className="col-span-3 text-center text-gray-500">No followers yet.</div>
+              ) : (
+                <GridCustomCols numOfCols={6}>
+                  {followers.map((follower, i) => (
+                    <GeneralUserCard key={i} generalUserData={follower} isFollowing={false} />
+                  ))}
+                </GridCustomCols>
+              ))}
+
             {/* Following (users who are followed by owner )*/}
-            {selectedTab === profileTabs[6] && (
-              <GridCustomCols numOfCols={6}>
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <GeneralUserCard key={i} generalUserData={userProfile} isFollowing={true} />
-                ))}
-              </GridCustomCols>
-            )}
+            {selectedTab === profileTabs[6] &&
+              (followers.length === 0 ? (
+                <div className="col-span-3 text-center text-gray-500">No followings yet.</div>
+              ) : (
+                <GridCustomCols numOfCols={6}>
+                  {followings.map((following, i) => (
+                    <GeneralUserCard key={i} generalUserData={following} isFollowing={true} />
+                  ))}
+                </GridCustomCols>
+              ))}
           </>
         )}
         {/**** Tab menu and contents - END ****/}
