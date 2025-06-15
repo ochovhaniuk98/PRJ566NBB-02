@@ -105,10 +105,6 @@ export default function GeneralUserBanner({
 
     if (!anotherUserId || !authUserId) return;
 
-    console.log('Follow button clicked');
-    console.log('(GeneralUserBanner) anotherUserId: ', anotherUserId);
-    console.log('(GeneralUserBanner) authUserId: ', authUserId);
-
     try {
       const res = await fetch('/api/generals/follow-user', {
         method: 'POST',

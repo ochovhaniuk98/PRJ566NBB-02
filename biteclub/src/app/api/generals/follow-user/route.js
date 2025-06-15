@@ -12,7 +12,9 @@ export async function POST(req) {
 
     await dbConnect();
 
-    const currentUser = await User.findOne({ supabaseId: supabaseUserId });
+    // Only need _id and followings
+    const currentUser = await User.findOne({ supabaseId: supabaseUserId }).select('_id followings');
+
     if (!currentUser) {
       return NextResponse.json({ error: 'Current user not found' }, { status: 404 });
     }
@@ -22,7 +24,9 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Cannot follow yourself' }, { status: 400 });
     }
 
-    const anotherUser = await User.findOne({ _id: anotherUserId });
+    // Only need _id and followers
+    const anotherUser = await User.findOne({ _id: anotherUserId }).select('_id followers');
+
     if (!anotherUser) {
       return NextResponse.json({ error: 'Target user not found' }, { status: 404 });
     }

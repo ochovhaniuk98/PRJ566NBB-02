@@ -15,14 +15,16 @@ export async function GET(req) {
 
     await dbConnect();
 
-    const user = await User.findOne({ supabaseId: supabaseUserId });
+    // .lean(): returns a plain JS object instead of a Mongoose document (faster, no virtuals/methods)
+    const userFollowings = await User.findOne({ supabaseId: supabaseUserId }).select('followings').lean();
 
-    if (!user) {
+    if (!userFollowings) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const isFollowing =
-      Array.isArray(user.followings) && user.followings.some(followedId => followedId.toString() === followingId);
+      Array.isArray(userFollowings.followings) &&
+      userFollowings.followings.some(followedId => followedId.toString() === followingId);
 
     return NextResponse.json({ isFollowing });
   } catch (err) {
