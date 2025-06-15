@@ -123,7 +123,11 @@ export default function AddReviewForm({ restaurantId, userId, onCancel, children
                     required
                   />
                 </div>
-                <ReviewImageUpload onUploadClick={() => setShowPhotoPlaceholder(false)} />
+                <ReviewImageUpload
+                  reviewImages={reviewImages}
+                  setReviewImages={setReviewImages}
+                  onUploadClick={() => setShowPhotoPlaceholder(false)}
+                />
                 {
                   /* The div below is just a PLACEHOLDER/for styling puposes so that the form stays the same height when the "Add Photos" button is clicked.
                 Do NOT use for backend logic. The "real" photo div is inside ReviewImageUpload.*/ showPhotoPlaceholder && (
