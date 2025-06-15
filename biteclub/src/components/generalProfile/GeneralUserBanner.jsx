@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/auth/client';
 import { useState, useEffect } from 'react';
+
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -59,59 +60,69 @@ export default function GeneralUserBanner({
     },
   ];
 
-  // If the current user is the owner, we can use generalUserData directly as userId.
-  const [currentUserId, setCurrentUserId] = useState(isOwner ? generalUserData._id : null);
-  const [anotherUserId, setAnotherUserId]= useState(!isOwner ? generalUserData._id : null);
+  // if the authenticated user is the owner of this profile, we set the generalUserData._id to this user. If not, fetch from DB.
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [authUserId, setAuthUserId] = useState(null);
+  const anotherUserId = !isOwner ? generalUserData._id : null;
 
-  const getSupabaseUserId = async () => {
-    try {
-      const supabase = createClient();
-      const { data, error } = await supabase.auth.getUser();
-
-      if (error || !data?.user?.id) {
-        console.error('Supabase user not logged in:', error?.message);
-        return null;
-      }
-
-      return data.user.id;
-    } catch (err) {
-      console.error('Error retrieving Supabase user ID:', err.message);
-      return null;
-    }
-  };
 
   useEffect(() => {
-    const fetchMongoUserId = async () => {
-      const supabaseUserId = await getSupabaseUserId();
-      if (!supabaseUserId) return;
+    if (isOwner) return;
 
+    // If we miss Ids, we cannot perform check.
+    if (!anotherUserId) {
+      console.log('(isFollowing) anotherUserId: ', anotherUserId);
+      console.error('anotherUserId is missing -- skipping check');
+      return;
+    }
+
+    const checkFollowingStatus = async () => {
       try {
-        const mongoUserId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: supabaseUserId });
+        const supabase = createClient();
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data?.user?.id) return;
 
-        if (!mongoUserId) {
-          console.error(`MongoDB User ID not found for Supabase ID: ${supabaseUserId}`);
-          return;
-        }
-
-        setCurrentUserId(mongoUserId);
+        const res = await fetch(`/api/generals/is-following?authId=${data.user.id}&fId=${anotherUserId}`);
+        const result = await res.json();
+        if (res.ok) setIsFollowing(result.isFollowing);
       } catch (err) {
-        console.error('Error fetching MongoDB user ID:', err.message);
+        console.error('Error checking favourite status:', err.message);
       }
     };
 
-    // Only fetch user ID if not the owner and userId is not already set
-    if (!isOwner && !currentUserId) {
-      fetchMongoUserId();
-    }
-  }, [isOwner, currentUserId]); // Only re-run this effect when isOwner or userId changes
+    checkFollowingStatus();
+  }, [authUserId, anotherUserId, isOwner]);
 
-  // If (isOwner == true), generalUserData = CURRENT userData. Else (i.e. !isOwner), generalUserData = ANOTHER userData
-  // If (!isOwner), fetch current user data (e.g. my own data).
-  // If follow, add THEIR id to my "follower" array, and add MY id to their "followings" array
-  // If unfollow, remove THEIR id from my "follower" array, and remove MY id from their "followings" array
-  const handleFollowClick = () => {
-    // POST call: similar to save-as-favourite
-    // GET call: similar to isFollowing
+  
+
+  const handleFollowClick = async () => {
+    // Since we are not the owner of this profile:
+    // - The "Follow" button is shown
+    // - We need to fetch authUser's Supabase ID to send to the API route
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) setAuthUserId(data.user.id);
+
+    if (!anotherUserId || !authUserId) return;
+
+    console.log('Follow button clicked');
+    console.log('(GeneralUserBanner) anotherUserId: ', anotherUserId);
+    console.log('(GeneralUserBanner) authUserId: ', authUserId);
+
+    try {
+      const res = await fetch('/api/generals/follow-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ supabaseUserId: authUserId, anotherUserId }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to follow / unfollow user');
+
+      setIsFollowing(result.isFollowing); // Update state
+    } catch (err) {
+      console.error('Error toggling follow:', err.message);
+    }
   };
 
   return (
@@ -149,8 +160,8 @@ export default function GeneralUserBanner({
           {/* Follow button -- only show if you're not the owner of the dashboard (you cannot follow yourself) */}
           {!isOwner && (
             <Button type="submit" className="w-40" variant="default" onClick={handleFollowClick}>
-              <FontAwesomeIcon icon={faPlus} className={`text-3xl text-navy`} />
-              Follow
+              <FontAwesomeIcon icon={faPlus} className="text-3xl text-navy" />
+              {isFollowing ? 'Following' : 'Follow'}
             </Button>
           )}
         </div>
