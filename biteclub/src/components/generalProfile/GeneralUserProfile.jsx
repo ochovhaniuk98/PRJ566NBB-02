@@ -15,6 +15,7 @@ import { Button } from '../shared/Button';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
 import RestaurantCard from '../restaurantProfile/RestaurantCard';
 
+
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // userId: from MongoDB, not supabase. By default "false" just in-case.
@@ -25,7 +26,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     'Visited',
     'Favourite Restaurants',
     'Favourite Blog Posts',
-    'My Followers',
+    'Followers', // 'My Followers', The profile might not be yours.
     'Following',
   ];
 

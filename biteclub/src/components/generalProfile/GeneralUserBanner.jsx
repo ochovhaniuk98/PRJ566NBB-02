@@ -61,6 +61,7 @@ export default function GeneralUserBanner({
     },
   ];
 
+
   // if the authenticated user is the owner of this profile, we set the generalUserData._id to this user. If not, fetch from DB.
   const [isFollowing, setIsFollowing] = useState(false);
   const [authUserId, setAuthUserId] = useState(null);
@@ -159,7 +160,7 @@ export default function GeneralUserBanner({
               variant={isFollowing ? 'secondary' : 'default'}
               onClick={handleFollowClick}
             >
-              <FontAwesomeIcon icon={isFollowing? faMinus: faPlus} className="text-3xl text-navy" />
+              <FontAwesomeIcon icon={isFollowing ? faMinus : faPlus} className="text-3xl text-navy" />
               {isFollowing ? 'Following' : 'Follow'}
             </Button>
           )}

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // useRouter instead of Link, so we can manually handle the redirection on Clicking the Card (vs Saving the Restaurant as Favourite)
@@ -19,7 +19,6 @@ export default function RestaurantCard({ restaurantData }) {
   const [isFavourited, setIsFavourited] = useState(false);
   const restaurantId = restaurantData._id;
   // const image = Array.isArray(restaurantData?.images) ? restaurantData.images[0] : null;
-
 
   // Check if this restaurant is favourited by current user
   useEffect(() => {
