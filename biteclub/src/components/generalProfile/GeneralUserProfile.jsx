@@ -50,118 +50,107 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
 
+  // FIRST: Fetch general user profile and their blog posts in parallel
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch general user profile and their blog posts concurrently
         const [profileRes, postsRes] = await Promise.all([
-          fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`), // dbId = mongoId
+          fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`),
           fetch(`/api/blog-posts/get-posts-by-userId/${generalUserId}`),
         ]);
 
-        // If either request fails, log and stop execution
         if (!profileRes.ok || !postsRes.ok) {
           console.error('One or both requests failed');
           return;
         }
 
-        // Parse both JSON responses
         const [profileData, postsData] = await Promise.all([profileRes.json(), postsRes.json()]);
 
-        // Set user profile and blog posts to state
-        setUserProfile(profileData.profile); // profileData = { profile: { ... } }
+        setUserProfile(profileData.profile);
         setMyBlogPosts(postsData);
-
-        // If favouriteRestaurants exist, fetch full restaurant objects by IDs
-        const favRestaurantIds = profileData.profile.favouriteRestaurants;
-        if (favRestaurantIds?.length > 0) {
-          const res = await fetch('/api/restaurants/by-ids', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: favRestaurantIds }),
-          });
-
-          // Parse and store the full restaurant documents
-          const data = await res.json();
-          setFavouritedRestaurants(data.restaurants);
-        }
-
-        // If favouriteBlogs exist, fetch full blog objects by IDs
-        const favBlogIds = profileData.profile.favouriteBlogs;
-
-        if (favBlogIds?.length > 0) {
-          const res = await fetch('/api/blog-posts/by-ids', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: favBlogIds }),
-          });
-
-          // Parse and store the full documents
-          const blogData = await res.json();
-          setFavouritedBlogs(blogData);
-        }
-
-        // If followers exist, fetch full followers (users) objects by IDs (MongoDB)
-        const followersIds = profileData.profile.followers;
-        console.log('(GeneralUserProfile) followersIds: ', followersIds);
-
-        if (followersIds?.length > 0) {
-          const res = await fetch('/api/generals/get-profiles-by-dbIds', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: followersIds }),
-          });
-
-          // Parse and store the full documents
-          const followersData = await res.json();
-          setFollowers(followersData.users);
-        }
-
-        // If followers exist, fetch full followers (users) objects by IDs (MongoDB)
-        const followingsIds = profileData.profile.followings;
-        console.log('(GeneralUserProfile) followingsIds: ', followingsIds);
-        if (followingsIds?.length > 0) {
-          const res = await fetch('/api/generals/get-profiles-by-dbIds', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: followingsIds }),
-          });
-
-          // Parse and store the full documents
-          const followingsData = await res.json();
-          setFollowings(followingsData.users);
-        }
       } catch (err) {
-        // Catch any unexpected errors in the fetch chain
         console.error('(GeneralUserProfile) Failed to fetch user data: ', err);
       }
     };
 
-    // Ensure we have a valid generalUserId before starting fetch
     if (generalUserId) fetchData();
   }, [generalUserId, showTextEditor]);
 
+  // THEN: Load data ONLY when the tab is selected
   useEffect(() => {
-    const fetchUserReviews = async () => {
-      try {
-        const res = await fetch(`/api/user-reviews/${generalUserId}`);
+    if (!generalUserId || !selectedTab) return;
 
-        if (!res.ok) {
-          console.log('Failed to fetch reviews');
-          return;
+    const fetchTabData = async () => {
+      try {
+        if (selectedTab === profileTabs[1]) {
+          // Reviews
+          const res = await fetch(`/api/user-reviews/${generalUserId}`);
+          if (res.ok) {
+            const reviews = await res.json();
+            setMyReviews(reviews);
+          } else {
+            console.error('Failed to fetch reviews');
+          }
         }
 
-        const reviews = await res.json();
-        setMyReviews(reviews);
+        if (selectedTab === profileTabs[3]) {
+          // Favourite Restaurants
+          const res = await fetch(`/api/restaurants/by-ids`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: userProfile?.favouriteRestaurants || [] }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setFavouritedRestaurants(data.restaurants);
+          }
+        }
+
+        if (selectedTab === profileTabs[4]) {
+          // Favourite Blog Posts
+          const res = await fetch(`/api/blog-posts/by-ids`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: userProfile?.favouriteBlogs || [] }),
+          });
+          if (res.ok) {
+            const blogData = await res.json();
+            setFavouritedBlogs(blogData);
+          }
+        }
+
+        if (selectedTab === profileTabs[5]) {
+          // My Followers
+          const res = await fetch(`/api/generals/get-profiles-by-dbIds`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: userProfile?.followers || [] }),
+          });
+          if (res.ok) {
+            const followersData = await res.json();
+            setFollowers(followersData.users);
+          }
+        }
+
+        if (selectedTab === profileTabs[6]) {
+          // Following
+          const res = await fetch(`/api/generals/get-profiles-by-dbIds`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: userProfile?.followings || [] }),
+          });
+          if (res.ok) {
+            const followingsData = await res.json();
+            setFollowings(followingsData.users);
+          }
+        }
       } catch (err) {
-        console.error('Failed to fetch user reviews:', err);
+        console.error(`Failed to fetch data for tab: ${selectedTab}`, err);
       }
     };
-    // Fetch user review only when the user selects the "Reviews" tab
-    if (selectedTab === profileTabs[1] && generalUserId) {
-      fetchUserReviews();
-    }
-  }, [selectedTab, generalUserId]);
+
+    fetchTabData();
+  }, [selectedTab, generalUserId, userProfile]);
 
   if (!userProfile) return <div>Loading profile...</div>;
 
