@@ -15,10 +15,10 @@ import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetail
 import { useEffect, useState } from 'react';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import AddReviewForm from '../shared/AddReviewForm';
-import StarRating from '../shared/StarRating';
 import GridCustomCols from '../shared/GridCustomCols';
 import BlogPostCard from '../shared/BlogPostCard';
 import { fakeBlogPost } from '@/app/data/fakeData';
+import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
@@ -27,6 +27,9 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value when adding a review
   const [numOfFavourites, setNumOfFavourites] = useState(0);
+
+  // stores the MongoDB user ID of the logged-in user, or restaurantId if owner
+  const [userId, setUserId] = useState(isOwner ? restaurantId : null); // If the user is the owner, we can use restaurantId directly as userId.
 
   // states for editing profile
   const [showInstagramPopup, setShowInstagramPopup] = useState(false);
@@ -67,19 +70,57 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     fetchAll();
   }, [restaurantId]);
 
-  // When user save restaurant as favourite
-  const handleFavouriteRestaurantClick = async () => {
+  const getSupabaseUserId = async () => {
     try {
       const supabase = createClient();
       const { data, error } = await supabase.auth.getUser();
       if (error || !data?.user?.id) throw new Error('User not logged in');
+      return data.user.id;
+    } catch (err) {
+      console.error('Error getting Supabase user ID:', err.message);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchMongoUserId = async () => {
+      try {
+        const supabaseUserId = await getSupabaseUserId();
+        if (!supabaseUserId) {
+          console.error('Supabase User ID not found');
+          return;
+        }
+        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: supabaseUserId });
+
+        if (!userMongoId) {
+          console.error('MongoDB User ID not found for Supabase ID:', supabaseUserId);
+          return;
+        }
+        setUserId(userMongoId);
+      } catch (err) {
+        console.error('Error getting user ID:', err.message);
+        return;
+      }
+    };
+    // Only fetch user ID if not the owner and userId is not already set
+    if (!isOwner && !userId) fetchMongoUserId();
+  }, []);
+
+  // When user save restaurant as favourite
+  const handleFavouriteRestaurantClick = async () => {
+    try {
+      const supabaseUserId = await getSupabaseUserId();
+      if (!supabaseUserId) {
+        console.error('Supabase User ID not found');
+        return;
+      }
 
       const res = await fetch('/api/restaurants/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurantId,
-          supabaseUserId: data.user.id,
+          supabaseUserId: supabaseUserId,
         }),
       });
 
@@ -175,26 +216,21 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         {selectedTab === restaurantTabs[5] && <BusinessInfo restaurant={restaurantData} />}
       </div>
       {showInstagramPopup && (
-        <AddInstagramEmbed restaurantId={restaurantData._id} onClose={() => setShowInstagramPopup(false)} />
+        <AddInstagramEmbed restaurantId={restaurantId} userId={userId} onClose={() => setShowInstagramPopup(false)} />
       )}
       {showEditDetailsPopup && (
         <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={restaurantData} />
       )}
 
       {/* review form + interactive star rating */}
-      {showAddReviewForm && (
+      {userId && showAddReviewForm && (
         /* NOTE: "AddReviewForm" has two modes: Adding NEW reviews, and EDITING existing reviews.
                The paramter "editReviewMode" is false by default, but TRUE when user wants to edit review.*/
-        <AddReviewForm onCancel={() => setShowAddReviewForm(false)}>
-          {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
-                Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
-          <StarRating
-            iconSize="text-4xl cursor-pointer"
-            interactive={true}
-            onChange={(val, msg) => setReviewRating({ value: val, message: msg })}
-          />
-          {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
-        </AddReviewForm>
+        <AddReviewForm
+          restaurantId={restaurantId}
+          userId={userId}
+          onCancel={() => setShowAddReviewForm(false)}
+        ></AddReviewForm>
       )}
     </MainBaseContainer>
   );
