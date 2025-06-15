@@ -15,6 +15,9 @@ import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetail
 import { useEffect, useState } from 'react';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import AddReviewForm from '../shared/AddReviewForm';
+import GridCustomCols from '../shared/GridCustomCols';
+import BlogPostCard from '../shared/BlogPostCard';
+import { fakeBlogPost } from '@/app/data/fakeData';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
@@ -197,6 +200,14 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
             setSelectedReview={setSelectedReview}
             reviewList={reviewsData} // internal + external reviews
           />
+        )}
+        {/* Mentioned */}
+        {selectedTab === restaurantTabs[1] && (
+          <GridCustomCols numOfCols={4}>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <BlogPostCard key={i} blogPostData={fakeBlogPost} />
+            ))}
+          </GridCustomCols>
         )}
         {/* Photos */}
         {selectedTab === restaurantTabs[2] && <PhotoGallery photos={images} />}
