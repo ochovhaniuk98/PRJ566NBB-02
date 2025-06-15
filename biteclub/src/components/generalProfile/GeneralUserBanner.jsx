@@ -1,7 +1,11 @@
+import { createClient } from '@/lib/auth/client';
+import { useState, useEffect } from 'react';
+
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
+  faMinus,
   faUsers,
   faStarHalfStroke,
   faFeather,
@@ -39,7 +43,7 @@ export default function GeneralUserBanner({
       icon: faStarHalfStroke,
       bgColour: 'white',
       iconColour: 'brand-yellow',
-      statNum: generalUserData?.myReviews?.length || 0, 
+      statNum: generalUserData?.myReviews?.length || 0,
     },
     {
       label: 'Blog Posts',
@@ -56,6 +60,65 @@ export default function GeneralUserBanner({
       statNum: generalUserData?.challenges?.length || 0, // !!! TODO: (commented in sprint 2) should we have Challenges in db USER schema
     },
   ];
+
+
+  // if the authenticated user is the owner of this profile, we set the generalUserData._id to this user. If not, fetch from DB.
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [authUserId, setAuthUserId] = useState(null);
+  const anotherUserId = !isOwner ? generalUserData._id : null;
+
+  useEffect(() => {
+    if (isOwner) return;
+
+    // If we miss Ids, we cannot perform check.
+    if (!anotherUserId) {
+      console.log('(isFollowing) anotherUserId: ', anotherUserId);
+      console.error('anotherUserId is missing -- skipping check');
+      return;
+    }
+
+    const checkFollowingStatus = async () => {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data?.user?.id) return;
+
+        const res = await fetch(`/api/generals/is-following?authId=${data.user.id}&fId=${anotherUserId}`);
+        const result = await res.json();
+        if (res.ok) setIsFollowing(result.isFollowing);
+      } catch (err) {
+        console.error('Error checking favourite status:', err.message);
+      }
+    };
+
+    checkFollowingStatus();
+  }, [anotherUserId, isOwner]);
+
+  const handleFollowClick = async () => {
+    // Since we are not the owner of this profile:
+    // - The "Follow" button is shown
+    // - We need to fetch authUser's Supabase ID to send to the API route
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) setAuthUserId(data.user.id);
+
+    if (!anotherUserId || !authUserId) return;
+
+    try {
+      const res = await fetch('/api/generals/follow-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ supabaseUserId: authUserId, anotherUserId }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to follow / unfollow user');
+
+      setIsFollowing(result.isFollowing); // Update state
+    } catch (err) {
+      console.error('Error toggling follow:', err.message);
+    }
+  };
 
   return (
     <div className="main-side-padding w-full flex flex-col items-center bg-brand-yellow-extralite relative">
@@ -91,9 +154,14 @@ export default function GeneralUserBanner({
 
           {/* Follow button -- only show if you're not the owner of the dashboard (you cannot follow yourself) */}
           {!isOwner && (
-            <Button type="submit" className="w-40" variant="default">
-              <FontAwesomeIcon icon={faPlus} className={`text-3xl text-navy`} />
-              Follow
+            <Button
+              type="submit"
+              className="w-40"
+              variant={isFollowing ? 'secondary' : 'default'}
+              onClick={handleFollowClick}
+            >
+              <FontAwesomeIcon icon={isFollowing ? faMinus : faPlus} className="text-3xl text-navy" />
+              {isFollowing ? 'Following' : 'Follow'}
             </Button>
           )}
         </div>

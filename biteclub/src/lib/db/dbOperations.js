@@ -76,8 +76,6 @@ export async function getRestaurantReviews(id) {
 // Calculate the number of likes and display to restaurant page
 export async function getRestaurantNumOfFavourites(restaurantId) {
   await dbConnect();
-  console.log('(DB) received ID: ', restaurantId);
-
   const count = await User.countDocuments({
     favouriteRestaurants: { $in: [restaurantId] },
   });
@@ -212,10 +210,10 @@ export async function getGeneralUserProfileByMongoId(mongoId) {
 
 export async function getGeneralUserMongoIDbySupabaseId({ supabaseId }) {
   await dbConnect();
-  const user = await User.findOne({ supabaseId });
-  if (!user) return null;
-  return user._id.toString();
+  const user = await User.findOne({ supabaseId }).select('_id').lean();
+  return user?._id?.toString() || null; // without "|| null", it will return undefined if not found
 }
+
 
 export async function getUserReviews(userId) {
   await dbConnect();
@@ -232,6 +230,14 @@ export async function getUserReviews(userId) {
     console.error('Error fetching user reviews:', error);
     throw new Error('Failed to fetch user reviews');
   }
+}
+
+export async function getBlogPostNumOfFavourites(blogId) {
+  await dbConnect();
+  const count = await User.countDocuments({
+    favouriteBlogs: { $in: [blogId] },
+  });
+  return count;
 }
 
 // ==================

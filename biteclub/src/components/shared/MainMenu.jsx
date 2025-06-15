@@ -19,11 +19,8 @@ export default function MainMenu() {
         const { data } = await supabase.auth.getUser();
 
         if (data?.user?.id) {
-          const response = await fetch('/api/get-user-type', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ supabaseId: data.user.id }),
-          });
+
+          const response = await fetch(`/api/get-user-type?authId=${data.user.id}`);
 
           const { userType } = await response.json();
           setUserType(userType);

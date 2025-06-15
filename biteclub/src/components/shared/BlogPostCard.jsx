@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+// import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { createClient } from '@/lib/auth/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
@@ -7,29 +10,78 @@ import reviewCardIconArr from '@/app/data/iconData';
 import EngagementIconStat from '@/components/shared/EngagementIconStat';
 import FormattedDate from './formattedDate';
 import AuthorDateBlurb from './AuthorDateBlurb';
-import Link from 'next/link';
 import EditModePanel from './EditModePanel';
 
 // Description: BlogPostCard has multiple states: A post can be available to be edited (EditModePanel will appear),
 // and it can be selected for editing (text editor will appear with prepopulated data of post)
 // PARAMS:
 // writtenByOwner: tracks whether post is written by profile owner
-// isFavourited: tracks whether post is favourited
 // isEditModeOn: tracks whether GENERAL user is managing content on their profile
 export default function BlogPostCard({
   blogPostData,
   writtenByOwner = false,
-  isFavourited = false,
   isEditModeOn = false,
   setShowTextEditor = () => {},
   setEditBlogPost = () => {},
 }) {
+  const supabase = createClient();
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
+  const [isFavourited, setIsFavourited] = useState(false); // tracks whether post is favourited
+  const blogId = blogPostData._id;
+
+  // Check if this restaurant is favourited by current user
+  useEffect(() => {
+    const checkFavouriteStatus = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data?.user?.id) return;
+
+        const res = await fetch(`/api/blog-posts/is-favourited?authId=${data.user.id}&blogId=${blogId}`);
+
+        const result = await res.json();
+        if (res.ok) {
+          setIsFavourited(result.isFavourited);
+        }
+      } catch (err) {
+        console.error('Error checking favourite status:', err.message);
+      }
+    };
+    checkFavouriteStatus();
+  }, [blogId]);
+
+  const handleFavouriteBlogPostClick = async e => {
+    e.stopPropagation();
+
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data?.user?.id) throw new Error('User not logged in');
+
+      const res = await fetch('/api/blog-posts/save-as-favourite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          blogId,
+          supabaseUserId: data.user.id,
+        }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
+
+      setIsFavourited(result.isFavourited);
+    } catch (err) {
+      console.error('Error toggling favourite:', err.message);
+    }
+  };
 
   return (
     <div className="relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2 row-span-2">
       <div className="px-4 pt-4">
-        <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+        <div
+          onClick={handleFavouriteBlogPostClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <FontAwesomeIcon
             icon={isHovered || isFavourited ? solidHeart : strokedHeart}
             className={`icon-xl absolute right-3 hover:text-brand-red ${
@@ -37,7 +89,7 @@ export default function BlogPostCard({
             }`}
           />
         </div>
-        <Link href={`/blog-posts/${blogPostData._id}`} className="no-underline text-inherit">
+        <Link href={`/blog-posts/${blogId}`} className="no-underline text-inherit">
           <h3>{blogPostData.previewTitle}</h3>
           <p>{blogPostData.previewText}</p>
         </Link>
