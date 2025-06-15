@@ -44,7 +44,7 @@ export default function InstagramEmbed({
         forEditRestaurant ? '' : 'hover:border-brand-peach'
       }`}
       style={{
-        height: forEditRestaurant ? '550px' : '630px', // shorten height if it's for the Restaurant Profile's editing forms (e.g.delete embed)
+        height: measuredHeight ? `${measuredHeight}px` : forEditRestaurant ? '550px' : '630px',
         gridRow: 'span 2',
         overflow: 'hidden',
       }}

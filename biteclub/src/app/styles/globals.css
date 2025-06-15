@@ -134,7 +134,7 @@ https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
 
   /*** left/right margins for main content on most pages ***/
   .main-side-padding {
-    @apply 2xl:px-20 xl:px-20 lg:px-10 md:px-5;
+    @apply 2xl:px-60 xl:px-20 lg:px-10 md:px-5;
   }
 
   .class-font-roboto {

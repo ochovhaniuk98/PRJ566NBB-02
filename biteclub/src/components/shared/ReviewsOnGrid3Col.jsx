@@ -19,11 +19,11 @@ export default function ReviewsOnGrid3Col({ selectedReview, setSelectedReview, r
   const randomizedReviewList = combinedList.sort(() => Math.random() - 0.5);
 
   return (
-    <GridCustomCols numOfCols={4} responsiveHeight={instagramHeight / 2}>
+    <GridCustomCols numOfCols={3} responsiveHeight={instagramHeight / 2}>
       {selectedReview ? (
         <>
           {/* Left two columns: nested grid of reviews */}
-          <div className="col-span-3 grid grid-cols-3 gap-3">
+          <div className="col-span-2 grid grid-cols-2 gap-3">
             {randomizedReviewList.map((review, i) =>
               review.photos ? (
                 <ReviewCard
