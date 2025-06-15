@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
+  faMinus,
   faUsers,
   faStarHalfStroke,
   faFeather,
@@ -65,7 +66,6 @@ export default function GeneralUserBanner({
   const [authUserId, setAuthUserId] = useState(null);
   const anotherUserId = !isOwner ? generalUserData._id : null;
 
-
   useEffect(() => {
     if (isOwner) return;
 
@@ -92,8 +92,6 @@ export default function GeneralUserBanner({
 
     checkFollowingStatus();
   }, [anotherUserId, isOwner]);
-
-  
 
   const handleFollowClick = async () => {
     // Since we are not the owner of this profile:
@@ -155,8 +153,13 @@ export default function GeneralUserBanner({
 
           {/* Follow button -- only show if you're not the owner of the dashboard (you cannot follow yourself) */}
           {!isOwner && (
-            <Button type="submit" className="w-40" variant="default" onClick={handleFollowClick}>
-              <FontAwesomeIcon icon={faPlus} className="text-3xl text-navy" />
+            <Button
+              type="submit"
+              className="w-40"
+              variant={isFollowing ? 'secondary' : 'default'}
+              onClick={handleFollowClick}
+            >
+              <FontAwesomeIcon icon={isFollowing? faMinus: faPlus} className="text-3xl text-navy" />
               {isFollowing ? 'Following' : 'Follow'}
             </Button>
           )}
