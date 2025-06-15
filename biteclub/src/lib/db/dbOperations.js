@@ -209,12 +209,12 @@ export async function getUserReviews(userId) {
   }
 }
 
-export async function getBlogPostNumOfFavourites(postId) {
+export async function getBlogPostNumOfFavourites(blogId) {
   await dbConnect();
-  console.log('(DB) received ID: ', postId);
+  console.log('(DB) received ID: ', blogId);
 
   const count = await User.countDocuments({
-    favouriteBlogs: { $in: [postId] },
+    favouriteBlogs: { $in: [blogId] },
   });
   return count;
 }

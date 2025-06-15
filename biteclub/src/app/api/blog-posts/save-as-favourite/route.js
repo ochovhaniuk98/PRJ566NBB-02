@@ -4,9 +4,9 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req) {
   try {
-    const { supabaseUserId, postId } = await req.json();
+    const { supabaseUserId, blogId } = await req.json();
 
-    if (!supabaseUserId || !postId) {
+    if (!supabaseUserId || !blogId) {
       return NextResponse.json({ error: 'Missing user or post ID' }, { status: 400 });
     }
 
@@ -21,7 +21,7 @@ export async function POST(req) {
 
     // Check if the post is already in the user's favourite list
     const index = user.favouriteBlogs.findIndex(
-      (favId) => favId.toString() === postId
+      (favId) => favId.toString() === blogId
     );
 
     let isFavourited;
@@ -32,7 +32,7 @@ export async function POST(req) {
       isFavourited = false;
     } else {
       // Not yet favourited → add to list (toggle on)
-      user.favouriteBlogs.push(postId);
+      user.favouriteBlogs.push(blogId);
       isFavourited = true;
     }
 

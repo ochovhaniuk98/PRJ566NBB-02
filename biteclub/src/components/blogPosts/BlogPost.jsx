@@ -51,7 +51,7 @@ export default function BlogPost({ id }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          postId: id,
+          blogId: id,
           supabaseUserId: data.user.id,
         }),
       });

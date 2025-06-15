@@ -3,26 +3,23 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // useRouter instead of Link, so we can manually handle the redirection on Clicking the Card (vs Saving the Restaurant as Favourite)
 // import Link from 'next/link';
-
-import Image from 'next/image';
-
 import { createClient } from '@/lib/auth/client';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
+import Image from 'next/image';
 import StarRating from '../shared/StarRating';
 
 export default function RestaurantCard({ restaurantData }) {
-  // , isFavourited = false
   const router = useRouter();
   const supabase = createClient();
 
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
-  const image = Array.isArray(restaurantData?.images) ? restaurantData.images[0] : null;
-  const restaurantId = restaurantData._id;
-
   const [isFavourited, setIsFavourited] = useState(false);
+  const restaurantId = restaurantData._id;
+  // const image = Array.isArray(restaurantData?.images) ? restaurantData.images[0] : null;
+
 
   // Check if this restaurant is favourited by current user
   useEffect(() => {
