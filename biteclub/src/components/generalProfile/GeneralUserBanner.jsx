@@ -91,7 +91,7 @@ export default function GeneralUserBanner({
     };
 
     checkFollowingStatus();
-  }, [authUserId, anotherUserId, isOwner]);
+  }, [anotherUserId, isOwner]);
 
   
 

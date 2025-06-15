@@ -129,7 +129,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
           // Parse and store the full documents
           const followingsData = await res.json();
-          setFollowers(followingsData.users);
+          setFollowings(followingsData.users);
         }
       } catch (err) {
         // Catch any unexpected errors in the fetch chain
@@ -283,7 +283,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               ) : (
                 <GridCustomCols numOfCols={6}>
                   {followers.map((follower, i) => (
-                    <GeneralUserCard key={i} generalUserData={follower} isFollowing={false} />
+                    <GeneralUserCard key={follower._id} generalUserData={follower} isFollowing={false} />
                   ))}
                 </GridCustomCols>
               ))}
@@ -295,7 +295,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               ) : (
                 <GridCustomCols numOfCols={6}>
                   {followings.map((following, i) => (
-                    <GeneralUserCard key={i} generalUserData={following} isFollowing={true} />
+                    <GeneralUserCard key={following._id} generalUserData={following} isFollowing={true} />
                   ))}
                 </GridCustomCols>
               ))}
