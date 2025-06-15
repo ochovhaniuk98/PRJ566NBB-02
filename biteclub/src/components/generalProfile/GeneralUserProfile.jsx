@@ -39,6 +39,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   });
   const [favouritedRestaurants, setFavouritedRestaurants] = useState([]);
   const [favouritedBlogs, setFavouritedBlogs] = useState([]);
+  const [followers, setFollowers] = useState([]);
+  const [followings, setFollowings] = useState([]);
+
   const [showInstaReview, setShowInstaReview] = useState(false);
 
   /* States below are for MANAGING/EDITING general profile */
@@ -70,7 +73,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         setMyBlogPosts(postsData);
 
         // If favouriteRestaurants exist, fetch full restaurant objects by IDs
-        const favRestaurantIds = profileData.profile.favouriteRestaurants;
+        const favRestaurantIds = userProfile.favouriteRestaurants;
         if (favRestaurantIds?.length > 0) {
           const res = await fetch('/api/restaurants/by-ids', {
             method: 'POST',
@@ -84,8 +87,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         }
 
         // If favouriteBlogs exist, fetch full blog objects by IDs
-        const favBlogIds = profileData.profile.favouriteBlogs;
-        console.log('(GeneralUserProfile) favouritedBlogs: ', favBlogIds);
+        const favBlogIds = userProfile.favouriteBlogs;
 
         if (favBlogIds?.length > 0) {
           const res = await fetch('/api/blog-posts/by-ids', {
@@ -96,12 +98,43 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
           // Parse and store the full documents
           const blogData = await res.json();
-          console.log('(GeneralUserProfile) favouritedBlogs: ', blogData); // [!] IMP: the data is not complete
           setFavouritedBlogs(blogData);
         }
+
+        // If followers exist, fetch full followers (users) objects by IDs (MongoDB)
+        const followersIds = userProfile.followers;
+        console.log('(GeneralUserProfile) followersIds: ', followersIds);
+
+        if (followersIds?.length > 0) {
+          const res = await fetch('/api/generals/get-profile-by-dbId', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: followersIds }),
+          });
+
+          // Parse and store the full documents
+          const followersData = await res.json();
+          setFollowers(followersData);
+        }
+
+        // If followers exist, fetch full followers (users) objects by IDs (MongoDB)
+        const followingsIds = userProfile.followings;
+        console.log('(GeneralUserProfile) followingsIds: ', followingsIds);
+        if (followingsIds?.length > 0) {
+          const res = await fetch('/api/generals/get-profile-by-dbId', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: followingsIds }),
+          });
+
+          // Parse and store the full documents
+          const followingsData = await res.json();
+          setFollowers(followingsData);
+        }
+
       } catch (err) {
         // Catch any unexpected errors in the fetch chain
-        console.error('Failed to fetch user profile or blog posts:', err);
+        console.error('(GeneralUserProfile) Failed to fetch user data: ', err);
       }
     };
 
