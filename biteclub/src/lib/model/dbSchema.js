@@ -7,7 +7,10 @@ const PhotoSchema = new mongoose.Schema(
     caption: String,
     updated_at: Date,
   },
-  { _id: true } // ensure _id is created - needed for Cloudinary image retrieval
+  {
+    _id: true, // ensure _id is created - needed for Cloudinary image retrieval
+    strict: false, // allow additional fields to be added later
+  }
 );
 
 // User
