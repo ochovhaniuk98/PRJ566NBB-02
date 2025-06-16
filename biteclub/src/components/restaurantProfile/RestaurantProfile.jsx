@@ -215,7 +215,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
           </GridCustomCols>
         )}
         {/* Photos */}
-        {selectedTab === restaurantTabs[2] && <PhotoGallery photos={restaurantImages} />}
+        {selectedTab === restaurantTabs[2] && <PhotoGallery photos={restaurantImages} isOwner={isOwner} />}
 
         {/* Business Info */}
         {selectedTab === restaurantTabs[5] && <BusinessInfo restaurant={restaurantData} />}
