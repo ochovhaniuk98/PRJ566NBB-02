@@ -17,6 +17,7 @@ export default function ReviewCard({
   isEditModeOn = false,
   setEditReviewForm = () => {},
 }) {
+  console.log('PHOTOS LENGTH: ', photos[0].url);
   return (
     <div
       className={`${
