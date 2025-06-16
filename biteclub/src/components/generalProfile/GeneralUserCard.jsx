@@ -63,7 +63,7 @@ export default function GeneralUserCard({ generalUserData }) {
     // If we miss Ids, we cannot perform check.
     if (!anotherUserId) {
       console.log('(isFollowing) anotherUserId: ', anotherUserId);
-      console.error('anotherUserId is missing -- skipping check');
+      console.warn('anotherUserId is missing -- skipping check');
       return;
     }
 
