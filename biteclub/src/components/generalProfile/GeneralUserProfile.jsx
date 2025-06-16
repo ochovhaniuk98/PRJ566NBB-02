@@ -1,19 +1,21 @@
 'use client';
+
 import { useEffect, useState } from 'react';
+import { Button } from '../shared/Button';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-import BlogPostCard from '@/components/shared/BlogPostCard';
-import GeneralUserBanner from '@/components/generalProfile/GeneralUserBanner';
 import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
-import ReviewCard from '@/components/shared/ReviewCard';
+import GeneralUserBanner from '@/components/generalProfile/GeneralUserBanner';
 import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
-import StarRating from '../shared/StarRating';
-// import { fakeBlogPost, fakeReviews, fakeRestaurantData } from '@/app/data/fakeData';
-import AddReviewForm from '../shared/AddReviewForm';
-import { Button } from '../shared/Button';
-import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
+import BlogPostCard from '@/components/shared/BlogPostCard';
 import RestaurantCard from '../restaurantProfile/RestaurantCard';
+import ReviewCard from '@/components/shared/ReviewCard';
+import StarRating from '../shared/StarRating';
+import AddReviewForm from '../shared/AddReviewForm';
+import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
+
+// import { fakeBlogPost, fakeReviews, fakeRestaurantData } from '@/app/data/fakeData';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
@@ -25,7 +27,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     'Visited',
     'Favourite Restaurants',
     'Favourite Blog Posts',
-    'Followers', // 'My Followers', The profile might not be yours.
+    'Followers', // instead of 'My Followers', the profile might not be yours.
     'Following',
   ];
 
@@ -119,7 +121,11 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
           if (res.ok) {
             const data = await res.json();
+            // Might use setTimeout to delay the UI update later,
+            // so the user can immediately favourite it again if they mistakenly unfavourited it.
+            // setTimeout(() => {
             setFavouritedRestaurants(data.restaurants);
+            // }, 1000);
           }
           return;
         }
@@ -149,7 +155,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
           if (postsRes.ok) {
             const postsData = await postsRes.json();
+            // setTimeout(() => {
             setFavouritedBlogs(postsData);
+            // }, 1000);
           }
           return;
         }
@@ -179,7 +187,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
           if (followerRes.ok) {
             const followersData = await followerRes.json();
+            // setTimeout(() => {
             setFollowers(followersData.users);
+            // }, 1000); // Delay UI update
           }
           return;
         }
@@ -209,7 +219,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
           if (followingsRes.ok) {
             const followingsData = await followingsRes.json();
+            // setTimeout(() => {
             setFollowings(followingsData.users);
+            // }, 1000); // Delay UI update
           }
           return;
         }
