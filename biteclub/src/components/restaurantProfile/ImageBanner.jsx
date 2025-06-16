@@ -36,7 +36,14 @@ export default function ImageBanner({ restaurantId, images, setImages, isOwner =
       </div>{' '}
       {/* show delete banner images form */}
       {isOwner && showPhotoModal && (
-        <EditPhotosModal photos={images} showModal={showPhotoModal} setShowModal={setShowPhotoModal} forBanner={true} />
+        <EditPhotosModal
+          restaurantId={restaurantId}
+          photos={images}
+          setImages={setImages}
+          showModal={showPhotoModal}
+          setShowModal={setShowPhotoModal}
+          forBanner={true}
+        />
       )}
     </>
   );

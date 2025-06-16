@@ -224,7 +224,12 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         <AddInstagramEmbed restaurantId={restaurantId} userId={userId} onClose={() => setShowInstagramPopup(false)} />
       )}
       {showEditDetailsPopup && (
-        <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={restaurantData} />
+        <EditProfileDetails
+          onClose={() => setShowEditDetailsPopup(false)}
+          images={restaurantImages}
+          setImages={setRestaurantImages}
+          restaurantData={restaurantData}
+        />
       )}
 
       {/* review form + interactive star rating */}
