@@ -10,6 +10,10 @@ export default function EditPhotosModal({
   forBanner = false,
 }) {
   const handleRemove = async (public_id, index, object_id) => {
+    if (forBanner && photos?.length <= 1) {
+      alert('You must have at least one banner image. Please upload another before deleting this one.');
+      return;
+    }
     try {
       const res = await fetch('/api/images/', {
         method: 'DELETE',
