@@ -96,7 +96,16 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
         // TAB 3 -- FAVOURITE RESTAURANT
         if (selectedTab === profileTabs[3]) {
-          const restaurantIds = userProfile?.favouriteRestaurants;
+          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+          if (!profileRes.ok) {
+            console.error('Failed to fetch profile');
+            return;
+          }
+
+          const profileData = await profileRes.json();
+          setUserProfile(profileData.profile);
+
+          const restaurantIds = profileData.profile?.favouriteRestaurants;
           if (!Array.isArray(restaurantIds) || restaurantIds.length === 0) {
             setFavouritedRestaurants([]);
             return;
