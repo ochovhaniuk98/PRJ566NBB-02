@@ -82,8 +82,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
     const fetchTabData = async () => {
       try {
+        // TAB 1 -- REVIEWS
         if (selectedTab === profileTabs[1]) {
-          // Reviews
           const res = await fetch(`/api/user-reviews/${generalUserId}`);
           if (res.ok) {
             const reviews = await res.json();
@@ -91,101 +91,118 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           } else {
             console.error('Failed to fetch reviews');
           }
+          return;
         }
 
+        // TAB 3 -- FAVOURITE RESTAURANT
         if (selectedTab === profileTabs[3]) {
-          // Favourite Restaurants
+          const restaurantIds = userProfile?.favouriteRestaurants;
+          if (!Array.isArray(restaurantIds) || restaurantIds.length === 0) {
+            setFavouritedRestaurants([]);
+            return;
+          }
+
           const res = await fetch(`/api/restaurants/by-ids`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: userProfile?.favouriteRestaurants || [] }),
+            body: JSON.stringify({ ids: restaurantIds }),
           });
+
           if (res.ok) {
             const data = await res.json();
             setFavouritedRestaurants(data.restaurants);
           }
+          return;
         }
 
+        // TAB 4 -- FAVOURITE BLOG POSTS
         if (selectedTab === profileTabs[4]) {
-          // Favourite Blog Posts
-          const [profileRes, postsRes] = await Promise.all([
-            fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`),
-            fetch(`/api/blog-posts/by-ids`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ids: userProfile?.favouriteBlogs || [] }),
-            }),
-          ]);
-
-          if (!profileRes.ok || !postsRes.ok) {
-            console.error('One or both requests failed');
+          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+          if (!profileRes.ok) {
+            console.error('Failed to fetch profile');
             return;
           }
-          const [profileData, postsData] = await Promise.all([profileRes.json(), postsRes.json()]);
 
+          const profileData = await profileRes.json();
           setUserProfile(profileData.profile);
-          setFavouritedBlogs(postsData);
+
+          const blogIds = profileData.profile?.favouriteBlogs;
+          if (!Array.isArray(blogIds) || blogIds.length === 0) {
+            setFavouritedBlogs([]);
+            return;
+          }
+
+          const postsRes = await fetch(`/api/blog-posts/by-ids`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: blogIds }),
+          });
+
+          if (postsRes.ok) {
+            const postsData = await postsRes.json();
+            setFavouritedBlogs(postsData);
+          }
+          return;
         }
 
+        // TAB 5 -- FOLLOWERS
         if (selectedTab === profileTabs[5]) {
-          const followersList = userProfile?.followers;
-
-          // Skip fetch if followers list is null, undefined, or empty
-          if (!Array.isArray(followersList) || followersList.length === 0) {
-            setFollowers([]); // Optional: clear previous results
+          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+          if (!profileRes.ok) {
+            console.error('Failed to fetch profile');
             return;
           }
 
-          try {
-            const [profileRes, followerRes] = await Promise.all([
-              fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`),
-              fetch(`/api/generals/get-profiles-by-dbIds`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ids: followersList }),
-              }),
-            ]);
+          const profileData = await profileRes.json();
+          setUserProfile(profileData.profile);
 
-            if (!profileRes.ok || !followerRes.ok) {
-              console.error('One or both requests failed');
-              return;
-            }
-
-            const [profileData, followersData] = await Promise.all([profileRes.json(), followerRes.json()]);
-
-            setUserProfile(profileData.profile);
-            setFollowers(followersData.users);
-          } catch (err) {
-            console.error('Error fetching followers tab data:', err);
+          const followerIds = profileData.profile?.followers;
+          if (!Array.isArray(followerIds) || followerIds.length === 0) {
+            setFollowers([]);
+            return;
           }
+
+          const followerRes = await fetch(`/api/generals/get-profiles-by-dbIds`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: followerIds }),
+          });
+
+          if (followerRes.ok) {
+            const followersData = await followerRes.json();
+            setFollowers(followersData.users);
+          }
+          return;
         }
 
+        // TAB 6 -- FOLLOWINGS
         if (selectedTab === profileTabs[6]) {
-          // Following
-          const followingsList = userProfile?.followings;
-          // Skip if null, undefined, or empty
-          if (!Array.isArray(followingsList) || followingsList.length === 0) {
-            setFollowings([]); // Optional: clear previous results
-            return;
-          }
-          const [profileRes, followingsRes] = await Promise.all([
-            fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`),
-            fetch(`/api/generals/get-profiles-by-dbIds`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ids: followingsList }),
-            }),
-          ]);
-
-          if (!profileRes.ok || !followingsRes.ok) {
-            console.error('One or both requests failed');
+          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+          if (!profileRes.ok) {
+            console.error('Failed to fetch profile');
             return;
           }
 
-          const [profileData, followingsData] = await Promise.all([profileRes.json(), followingsRes.json()]);
-
+          const profileData = await profileRes.json();
           setUserProfile(profileData.profile);
-          setFollowings(followingsData.users);
+
+          const followingIds = profileData.profile?.followings;
+          if (!Array.isArray(followingIds) || followingIds.length === 0) {
+            setFollowings([]);
+            return;
+          }
+
+          const followingsRes = await fetch(`/api/generals/get-profiles-by-dbIds`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: followingIds }),
+          });
+
+          if (followingsRes.ok) {
+            const followingsData = await followingsRes.json();
+            setFollowings(followingsData.users);
+          }
+          return;
         }
       } catch (err) {
         console.error(`Failed to fetch data for tab: ${selectedTab}`, err);
@@ -193,7 +210,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     };
 
     fetchTabData();
-  }, [selectedTab, generalUserId, userProfile]);
+  }, [selectedTab, generalUserId]);
 
   if (!userProfile) return <div>Loading profile...</div>;
 
