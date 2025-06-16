@@ -63,7 +63,7 @@ export default function GeneralUserCard({ generalUserData }) {
     // If we miss Ids, we cannot perform check.
     if (!anotherUserId) {
       console.log('(isFollowing) anotherUserId: ', anotherUserId);
-      console.log('anotherUserId is missing -- skipping check');
+      console.error('anotherUserId is missing -- skipping check');
       return;
     }
 
@@ -146,6 +146,17 @@ export default function GeneralUserCard({ generalUserData }) {
               fill={true}
               className="rounded-full object-cover w-full"
             />
+            {!isOwner && !isFollowing && (
+              <div
+                className="aspect-square w-10 rounded-full bg-brand-green absolute top-0 -right-3 flex justify-center items-center shadow-sm cursor-pointer hover:w-12"
+                onClick={e => {
+                  e.stopPropagation(); // Prevent redirect
+                  handleFollowClick(e);
+                }}
+              >
+                <FontAwesomeIcon icon={faPlus} className="text-2xl text-white" />
+              </div>
+            )}
           </div>
         </div>
         {/* !!! General user stats not included in schema !!! */}
@@ -180,6 +191,7 @@ function MorePopup({ isFollowing = false, setPopupHovered, handleFollowClick }) 
         {isFollowing && (
           <li
             className="hover:bg-brand-peach-lite py-3 px-4"
+            onClick={handleFollowClick}
             onMouseEnter={() => setPopupHovered(true)}
             onMouseLeave={() => setPopupHovered(false)}
           >
