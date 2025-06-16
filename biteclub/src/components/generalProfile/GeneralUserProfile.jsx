@@ -15,7 +15,6 @@ import { Button } from '../shared/Button';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
 import RestaurantCard from '../restaurantProfile/RestaurantCard';
 
-
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // userId: from MongoDB, not supabase. By default "false" just in-case.
@@ -51,7 +50,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
 
-  // FIRST: Fetch general user profile and their blog posts in parallel
+  // TAB 0 -- BLOG POSTS
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -76,6 +75,39 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
     if (generalUserId) fetchData();
   }, [generalUserId, showTextEditor]);
+
+
+  // TAB 4 -- FAVOURITE BLOG POSTS
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [profileRes, postsRes] = await Promise.all([
+          fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`),
+          fetch(`/api/blog-posts/by-ids`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: userProfile?.favouriteBlogs || [] }),
+          }),
+        ]);
+
+        if (!profileRes.ok || !postsRes.ok) {
+          console.error('One or both requests failed');
+          return;
+        }
+
+        const [profileData, postsData] = await Promise.all([profileRes.json(), postsRes.json()]);
+
+        setUserProfile(profileData.profile);
+        setFavouritedBlogs(postsData);
+      } catch (err) {
+        console.error('(GeneralUserProfile) Failed to fetch user data: ', err);
+      }
+    };
+
+    if (generalUserId) fetchData();
+  }, [generalUserId, selectedTab]);
+
+
 
   // THEN: Load data ONLY when the tab is selected
   useEffect(() => {
@@ -107,18 +139,18 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           }
         }
 
-        if (selectedTab === profileTabs[4]) {
-          // Favourite Blog Posts
-          const res = await fetch(`/api/blog-posts/by-ids`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: userProfile?.favouriteBlogs || [] }),
-          });
-          if (res.ok) {
-            const blogData = await res.json();
-            setFavouritedBlogs(blogData);
-          }
-        }
+        // if (selectedTab === profileTabs[4]) {
+        //   // Favourite Blog Posts
+        //   const res = await fetch(`/api/blog-posts/by-ids`, {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({ ids: userProfile?.favouriteBlogs || [] }),
+        //   });
+        //   if (res.ok) {
+        //     const blogData = await res.json();
+        //     setFavouritedBlogs(blogData);
+        //   }
+        // }
 
         if (selectedTab === profileTabs[5]) {
           // My Followers
