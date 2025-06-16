@@ -4,7 +4,7 @@ import { faPenToSquare, faPlusCircle, faTrashCan } from '@fortawesome/free-solid
 import RestaurantImageUpload from './RestaurantImageUpload';
 import EditPhotosModal from './EditPhotosModal';
 
-export default function ImageBanner({ images = [], isOwner = false }) {
+export default function ImageBanner({ restaurantId, images, setImages, isOwner = false }) {
   const [showPhotoModal, setShowPhotoModal] = useState(false);
 
   return (
@@ -17,7 +17,12 @@ export default function ImageBanner({ images = [], isOwner = false }) {
         {isOwner && (
           <div className="absolute  bottom-2 right-2 flex gap-2">
             <div className=" flex justify-center items-center rounded-full h-8 w-8 bg-brand-yellow-lite/80 cursor shadow-md">
-              <RestaurantImageUpload forBanner={true} />
+              <RestaurantImageUpload
+                restaurantId={restaurantId}
+                images={images}
+                setImages={setImages}
+                forBanner={true}
+              />
             </div>
             <div className="flex justify-center items-center rounded-full h-8 w-8 bg-brand-yellow-lite/80 cursor shadow-md">
               <FontAwesomeIcon
