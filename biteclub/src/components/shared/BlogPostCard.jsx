@@ -20,9 +20,12 @@ import EditModePanel from './EditModePanel';
 export default function BlogPostCard({
   blogPostData,
   writtenByOwner = false,
-  isEditModeOn = false,
   setShowTextEditor = () => {},
   setEditBlogPost = () => {},
+  isEditModeOn = false,
+  isSelected = false,
+  onSelect = () => {},
+  onDeleteClick, // optional — do NOT provide a default
 }) {
   const supabase = createClient();
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
@@ -127,10 +130,13 @@ export default function BlogPostCard({
       General user can select blog post to delete or edit. Editing opens the text editor. */}
       {isEditModeOn && (
         <EditModePanel
+          isSelected={isSelected}
+          onSelect={onSelect}
           onEditClick={() => {
             setShowTextEditor(true);
             setEditBlogPost(true);
           }}
+          onDeleteClick={onDeleteClick} // will be undefined if not passed
         />
       )}
     </div>

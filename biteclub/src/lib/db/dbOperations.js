@@ -207,6 +207,7 @@ export async function updateGeneralUsername(data) {
       username: data.username,
       userBio: data.userBio,
       displayFavouriteRestaurants: data.displayFavouriteRestaurants,
+      displayFavouriteBlogPosts: data.displayFavouriteBlogPosts,
       displayVisitedPlaces: data.displayVisitedPlaces,
     },
     { new: true } // returns the updated user
@@ -224,6 +225,7 @@ export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
     username: user.username,
     userBio: user.userBio,
     displayFavouriteRestaurants: user.displayFavouriteRestaurants,
+    displayFavouriteBlogPosts: user.displayFavouriteBlogPosts,
     displayVisitedPlaces: user.displayVisitedPlaces,
   };
 }

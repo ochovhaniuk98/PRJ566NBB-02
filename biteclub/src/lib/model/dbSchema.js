@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
   numOfPoints: Number,
   pointsResetDate: Date,
   personalization_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Personalization' },
-  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // users that following us. (sprint 2) newly added. 
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // users that following us. (sprint 2) newly added.
   followings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // users that we follow
   visitedPlaces: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   favouriteRestaurants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
@@ -31,6 +31,7 @@ const UserSchema = new mongoose.Schema({
   myBlogPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost' }],
   displayVisitedPlaces: { type: mongoose.Schema.Types.Boolean },
   displayFavouriteRestaurants: { type: mongoose.Schema.Types.Boolean },
+  displayFavouriteBlogPosts: { type: mongoose.Schema.Types.Boolean },
   creditCards: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CreditCard' }],
   orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
   userType: String,

@@ -29,6 +29,8 @@ export default function GeneralUserBanner({
   setEditMode,
   generalUserData,
   isOwner = false,
+  handleDeleteSelectedBlogPost,
+  handleDeleteAllBlogPost,
 }) {
   const iconStats = [
     {
@@ -60,7 +62,6 @@ export default function GeneralUserBanner({
       statNum: generalUserData?.challenges?.length || 0, // !!! TODO: (commented in sprint 2) should we have Challenges in db USER schema
     },
   ];
-
 
   // if the authenticated user is the owner of this profile, we set the generalUserData._id to this user. If not, fetch from DB.
   const [isFollowing, setIsFollowing] = useState(false);
@@ -197,6 +198,7 @@ export default function GeneralUserBanner({
                 bgColour="bg-white"
                 textColour="text-brand-red"
                 borderColour="border-brand-red"
+                onClick={handleDeleteSelectedBlogPost}
               />
               {/* delete All */}
               <SingleTabWithIcon
@@ -204,6 +206,7 @@ export default function GeneralUserBanner({
                 detailText="DELETE ALL"
                 bgColour="bg-brand-red"
                 textColour="text-white"
+                onClick={handleDeleteAllBlogPost} 
               />
               {/* cancel content management */}
               <SingleTabWithIcon

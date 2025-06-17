@@ -19,6 +19,7 @@ export default function Settings() {
   const [password, setPassword] = useState('');
   const [userBio, setUserBio] = useState('');
   const [displayFavouriteRestaurants, setDisplayFavouriteRestaurants] = useState(false);
+  const [displayFavouriteBlogPosts, setDisplayFavouriteBlogPosts] = useState(false);
   const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
   const [error, setError] = useState(null);
   const supabase = createClient();
@@ -30,13 +31,16 @@ export default function Settings() {
 
       setUser(data.user);
 
-      const res = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`)
+      const res = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
       const { profile } = await res.json();
 
       setUsername(profile.username || '');
       setUserBio(profile.userBio || '');
       setDisplayFavouriteRestaurants(
         profile.displayFavouriteRestaurants == undefined ? false : profile.displayFavouriteRestaurants
+      );
+      setDisplayFavouriteBlogPosts(
+        profile.displayFavouriteBlogPosts == undefined ? false : profile.displayFavouriteBlogPosts
       );
       setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.displayVisitedPlaces);
       // setAvatarUrl(profile.avatarUrl || '');
@@ -66,7 +70,8 @@ export default function Settings() {
             userBio,
             username,
             displayFavouriteRestaurants,
-            displayVisitedPlaces
+            displayFavouriteBlogPosts,
+            displayVisitedPlaces,
           }),
         });
 
@@ -170,15 +175,30 @@ export default function Settings() {
                 />
               </div>
 
+              <div className="flex items-center justify-between mb-4">
+                <label htmlFor="user-role">
+                  <h4>Favourite Blog Posts</h4>
+                </label>
+                <Switch
+                  id="user-role"
+                  checked={displayFavouriteBlogPosts}
+                  onCheckedChange={checked => {
+                    setDisplayFavouriteBlogPosts(checked);
+                  }}
+                />
+              </div>
+
               <div className="flex items-center justify-between mb-8">
                 <label htmlFor="user-role">
                   <h4>Visited Places</h4>
                 </label>
-                <Switch id="user-role" 
-                checked={displayVisitedPlaces} 
-                onCheckedChange={checked => {
-                  setDisplayVisitedPlaces(checked)
-                }}/>
+                <Switch
+                  id="user-role"
+                  checked={displayVisitedPlaces}
+                  onCheckedChange={checked => {
+                    setDisplayVisitedPlaces(checked);
+                  }}
+                />
               </div>
             </div>
           </GridCustomCols>
