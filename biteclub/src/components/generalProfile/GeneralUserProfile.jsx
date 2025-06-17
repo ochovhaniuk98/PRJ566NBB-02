@@ -52,6 +52,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
 
+  const [selectedBlogPosts, setSelectedBlogPosts] = useState([]);
+
   // TAB 0 -- BLOG POSTS
   useEffect(() => {
     const fetchData = async () => {
@@ -235,6 +237,49 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   if (!userProfile) return <div>Loading profile...</div>;
 
+  // HANDLE DELETE: Blog Post
+  const handleDeleteSelectedBlogPost = async () => {
+    if (selectedBlogPosts.length === 0) return;
+    const res = await fetch('/api/blog-posts/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: selectedBlogPosts, userId: generalUserId }),
+    });
+
+    if (res.ok) {
+      const updatedPosts = myBlogPosts.filter(post => !selectedBlogPosts.includes(post._id));
+      setMyBlogPosts(updatedPosts);
+      setSelectedBlogPosts([]);
+    }
+  };
+
+  const handleDeleteAllBlogPost = async () => {
+    const allIds = myBlogPosts.map(post => post._id);
+    const res = await fetch('/api/blog-posts/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: allIds, userId: generalUserId }),
+    });
+
+    if (res.ok) {
+      setMyBlogPosts([]);
+      setSelectedBlogPosts([]);
+    }
+  };
+
+  const handleDeleteSingle = async blogId => {
+    const res = await fetch('/api/blog-posts/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: [blogId], userId: generalUserId }),
+    });
+
+    if (res.ok) {
+      setMyBlogPosts(prev => prev.filter(post => post._id !== blogId));
+      setSelectedBlogPosts(prev => prev.filter(id => id !== blogId));
+    }
+  };
+
   return (
     <MainBaseContainer>
       <GeneralUserBanner
@@ -244,6 +289,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         isOwner={isOwner}
         editMode={editMode}
         setEditMode={setEditMode}
+        handleDeleteSelectedBlogPost={handleDeleteSelectedBlogPost} 
+        handleDeleteAllBlogPost={handleDeleteAllBlogPost}
       />
       <div className="main-side-padding w-full py-8">
         {/**** Tab menu and contents - START ****/}
@@ -253,17 +300,34 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Blog Posts */}
             {selectedTab === profileTabs[0] && (
               <GridCustomCols numOfCols={4}>
-                {myBlogPosts.map((post, i) => (
-                  <BlogPostCard
-                    key={post._id || i}
-                    blogPostData={post}
-                    writtenByOwner={isOwner}
-                    // isFavourited={false}
-                    isEditModeOn={editMode}
-                    setShowTextEditor={setShowTextEditor}
-                    setEditBlogPost={setEditBlogPost}
-                  />
-                ))}
+                {myBlogPosts.map((post, i) => {
+                  // Check if this blog post's ID is currently in the list of selected posts
+                  const isSelected = selectedBlogPosts.includes(post._id);
+                  // Toggle selection on checkbox click
+                  const toggleSelect = () => {
+                    setSelectedBlogPosts(prev =>
+                      // If this post is already selected, remove it from the list
+                      prev.includes(post._id)
+                        ? prev.filter(id => id !== post._id)
+                        : // If it's not selected yet, add it to the list
+                          [...prev, post._id]
+                    );
+                  };
+
+                  return (
+                    <BlogPostCard
+                      key={post._id || i}
+                      blogPostData={post}
+                      writtenByOwner={isOwner}
+                      setShowTextEditor={setShowTextEditor}
+                      setEditBlogPost={setEditBlogPost}
+                      isEditModeOn={editMode}
+                      isSelected={isSelected}
+                      onSelect={toggleSelect}
+                      onDeleteClick={() => handleDeleteSingle(post._id)}
+                    />
+                  );
+                })}
               </GridCustomCols>
             )}
             {/* Reviews*/}
@@ -338,10 +402,12 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                       key={post._id || i}
                       blogPostData={post}
                       writtenByOwner={isOwner}
-                      // isFavourited={false}
-                      isEditModeOn={editMode}
                       setShowTextEditor={setShowTextEditor}
                       setEditBlogPost={setEditBlogPost}
+                      isEditModeOn={editMode}
+                      isSelected={false} // no selection needed
+                      onSelect={() => {}} // do nothing on checkbox click
+                      // onDeleteClick={() => {}} // Do NOT show delete functionality in this tab. Users should not be able to delete anything in favBlogs tab
                     />
                   ))}
                 </GridCustomCols>
