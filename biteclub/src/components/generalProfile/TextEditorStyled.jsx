@@ -17,15 +17,6 @@ export default function TextEditorStyled({
   const [statusMessage, setStatusMessage] = useState('');
   const [statusType, setStatusType] = useState('');
 
-  // useEffect(() => {
-  //   // ADDEd
-  //   if (editBlogPost && blogPostData) {
-  //     setTitle(blogPostData.previewTitle || '');
-  //     // setContent(blogPostData.previewText || '');
-  //      setContent(blogPostData.content || blogPostData.previewText || '');
-  //   }
-  // }, [editBlogPost, blogPostData]);
-
   useEffect(() => {
   if (editBlogPost && blogPostData) {
     setTitle(blogPostData.previewTitle || '');
@@ -45,18 +36,8 @@ export default function TextEditorStyled({
     if (!content || !title) return;
 
     // get title and content
-    // create a blog post
+    // create or edit a blog post
     try {
-      // const response = await fetch(`/api/blog-posts/create-post/${generalUserId}`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     title,
-      //     content,
-      //   }),
-      // });
       console.log('blogPostData._id', blogPostData._id);
       const url = editBlogPost
         ? `/api/blog-posts/update-post/${blogPostData._id}` // blogPostData must contain `_id`
@@ -87,8 +68,6 @@ export default function TextEditorStyled({
 
       const data = await response.json();
 
-      // setStatusType('success');
-      // setStatusMessage('Blog post created successfully!');
       setStatusType('success');
       setStatusMessage(editBlogPost ? 'Blog post updated successfully!' : 'Blog post created successfully!');
       // ADDED
