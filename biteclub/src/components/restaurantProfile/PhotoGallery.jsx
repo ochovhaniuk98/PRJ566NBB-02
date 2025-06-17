@@ -1,7 +1,13 @@
 import Image from 'next/image';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 
-export default function PhotoGallery({ photos, isBusinessUser = false }) {
+export default function PhotoGallery({ photos, isOwner = false }) {
+  if (!photos || photos.length === 0) {
+    return (
+      <div className="text-center text-gray-500">{isOwner ? 'No photos uploaded yet.' : 'No photos available.'}</div>
+    );
+  }
+
   const getRandomSpan = () => {
     const spans = [1, 1, 2];
     return spans[Math.floor(Math.random() * spans.length)];

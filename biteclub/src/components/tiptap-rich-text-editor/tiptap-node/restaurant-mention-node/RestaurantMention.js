@@ -28,7 +28,8 @@ export const RestaurantMention = Mention.extend({
 
     items: async ({ query }) => {
       const res = await fetch(`/api/restaurants/search?q=${query}`);
-      const restaurants = await res.json();
+      const data = await res.json();
+      const restaurants = Array.isArray(data) ? data : data.restaurants || [];
       return restaurants.map(r => ({ id: r._id, label: r.name }));
     },
 
