@@ -36,6 +36,8 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const [showEditDetailsPopup, setShowEditDetailsPopup] = useState(false);
 
   const [restaurantData, setRestaurantData] = useState(null);
+  const [restaurantImages, setRestaurantImages] = useState([]);
+  const [bannerImages, setBannerImages] = useState([]);
   const [reviewsData, setReviewsData] = useState(null);
 
   // Fetch restaurant data
@@ -69,6 +71,16 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     };
     fetchAll();
   }, [restaurantId]);
+
+  useEffect(() => {
+    // Update images and banner images when restaurantData changes
+    if (restaurantData?.images.length > 0) {
+      setRestaurantImages(restaurantData.images);
+    }
+    if (restaurantData?.bannerImages.length > 0) {
+      setBannerImages(restaurantData.bannerImages);
+    }
+  }, [restaurantData]);
 
   const getSupabaseUserId = async () => {
     try {
@@ -144,23 +156,12 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     return <p>isLoading...</p>;
   }
 
-  const {
-    name,
-    cuisines,
-    rating,
-    numReviews,
-    priceRange,
-    dietaryOptions,
-    BusinessHours,
-    bannerImages,
-    images,
-    location,
-  } = restaurantData;
+  const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
 
   return (
     <MainBaseContainer>
       {/* 4 banner images (can be modified by owner) */}
-      <ImageBanner images={bannerImages} isOwner={isOwner} />
+      <ImageBanner restaurantId={restaurantId} images={bannerImages} setImages={setBannerImages} isOwner={isOwner} />
       <InfoBanner name={name} avgRating={rating} numReviews={numReviews} cuisine={cuisines} address={location}>
         {isOwner ? (
           <>
@@ -169,7 +170,11 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
               detailText={'Add Instagram Post'}
               onClick={() => setShowInstagramPopup(true)}
             />
-            <RestaurantImageUpload />
+            <RestaurantImageUpload
+              restaurantId={restaurantId}
+              images={restaurantImages}
+              setImages={setRestaurantImages}
+            />
 
             <SingleTabWithIcon
               icon={faHeart}
@@ -210,7 +215,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
           </GridCustomCols>
         )}
         {/* Photos */}
-        {selectedTab === restaurantTabs[2] && <PhotoGallery photos={images} />}
+        {selectedTab === restaurantTabs[2] && <PhotoGallery photos={restaurantImages} isOwner={isOwner} />}
 
         {/* Business Info */}
         {selectedTab === restaurantTabs[5] && <BusinessInfo restaurant={restaurantData} />}
@@ -219,7 +224,12 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         <AddInstagramEmbed restaurantId={restaurantId} userId={userId} onClose={() => setShowInstagramPopup(false)} />
       )}
       {showEditDetailsPopup && (
-        <EditProfileDetails onClose={() => setShowEditDetailsPopup(false)} restaurantData={restaurantData} />
+        <EditProfileDetails
+          onClose={() => setShowEditDetailsPopup(false)}
+          images={restaurantImages}
+          setImages={setRestaurantImages}
+          restaurantData={restaurantData}
+        />
       )}
 
       {/* review form + interactive star rating */}

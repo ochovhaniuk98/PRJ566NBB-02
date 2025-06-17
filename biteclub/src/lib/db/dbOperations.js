@@ -97,6 +97,35 @@ export async function updateRestaurant(id, data) {
   return restaurant;
 }
 
+export async function removeRestaurantImage(restaurantId, image_public_id, image_object_id, type) {
+  await dbConnect();
+
+  const imagesField = type === 'restaurant-image' ? 'images' : 'bannerImages';
+  const restaurant = await Restaurant.findById(restaurantId);
+
+  if (!restaurant) {
+    throw new Error('Restaurant not found');
+  }
+  if (!restaurant[imagesField]) {
+    throw new Error(`Field ${imagesField} not found`);
+  }
+
+  const updatedImages = restaurant[imagesField].filter(image => {
+    const publicIdMatches = image.public_id === image_public_id;
+    const objectIdMatches = image._id && image._id.toString() === image_object_id?.toString();
+    return !(publicIdMatches || objectIdMatches);
+  });
+
+  if (updatedImages.length === restaurant[imagesField].length) {
+    console.warn('Image not found for deletion:', image_public_id, image_object_id);
+  }
+
+  restaurant[imagesField] = updatedImages;
+  const updatedRestaurant = await restaurant.save();
+
+  return !!updatedRestaurant;
+}
+
 export async function addExternalReview(embedLink, userId, restaurantId) {
   await dbConnect();
 
@@ -213,7 +242,6 @@ export async function getGeneralUserMongoIDbySupabaseId({ supabaseId }) {
   const user = await User.findOne({ supabaseId }).select('_id').lean();
   return user?._id?.toString() || null; // without "|| null", it will return undefined if not found
 }
-
 
 export async function getUserReviews(userId) {
   await dbConnect();
