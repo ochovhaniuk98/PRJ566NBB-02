@@ -21,7 +21,8 @@ export default function BlogPostCard({
   blogPostData,
   writtenByOwner = false,
   setShowTextEditor = () => {},
-  setEditBlogPost = () => {},
+  // setEditBlogPost = () => {},
+  setEditBlogPost = null,
   isEditModeOn = false,
   isSelected = false,
   onSelect = () => {},
@@ -132,9 +133,15 @@ export default function BlogPostCard({
         <EditModePanel
           isSelected={isSelected}
           onSelect={onSelect}
+          // onEditClick={() => {
+          //   setShowTextEditor(true);
+          //   setEditBlogPost(true);
+          // }}
           onEditClick={() => {
             setShowTextEditor(true);
-            setEditBlogPost(true);
+            if (setEditBlogPost) {
+              setEditBlogPost(true);
+            }
           }}
           onDeleteClick={onDeleteClick} // will be undefined if not passed
         />

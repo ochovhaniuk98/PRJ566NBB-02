@@ -151,7 +151,7 @@ const MobileToolbarContent = ({ type, onBack }) => (
   </>
 );
 
-export function SimpleEditor({ onContentChange }) {
+export function SimpleEditor({ onContentChange, content = null }) {
   const isMobile = useMobile();
   const windowSize = useWindowSize();
   const [mobileView, setMobileView] = React.useState('main');
@@ -190,12 +190,18 @@ export function SimpleEditor({ onContentChange }) {
       TrailingNode,
       Link.configure({ openOnClick: false }),
     ],
-    // content: content,
+    content: content,
     onUpdate: ({ editor }) => {
       const json = editor.getJSON();
       onContentChange?.(json); // emit new content
     },
   });
+
+  React.useEffect(() => {
+    if (editor && content) {
+      editor.commands.setContent(content);
+    }
+  }, [editor, content]);
 
   const bodyRect = useCursorVisibility({
     editor,

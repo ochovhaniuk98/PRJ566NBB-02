@@ -56,6 +56,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [editReviewForm, setEditReviewForm] = useState(false); // for opening/closing form to edit a SPECIFIC REVIEW
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
+  const [editBlogPostData, setEditBlogPostData] = useState(null);
 
   const [selectedBlogPosts, setSelectedBlogPosts] = useState([]);
 
@@ -339,7 +340,11 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                       blogPostData={post}
                       writtenByOwner={isOwner}
                       setShowTextEditor={setShowTextEditor}
-                      setEditBlogPost={setEditBlogPost}
+                      // setEditBlogPost={setEditBlogPost}
+                      setEditBlogPost={() => {
+                        setEditBlogPost(true);
+                        setEditBlogPostData(post); // ⬅️ this line populates the editor
+                      }}
                       isEditModeOn={editMode}
                       isSelected={isSelected}
                       onSelect={toggleSelect}
@@ -422,11 +427,12 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                       blogPostData={post}
                       writtenByOwner={isOwner}
                       setShowTextEditor={setShowTextEditor}
-                      setEditBlogPost={setEditBlogPost}
-                      isEditModeOn={editMode}
+                      // setEditBlogPost={setEditBlogPost}
+                      // Users should not be able to delete or edit anything in favBlogs tab
+                      isEditModeOn={false} 
                       isSelected={false} // no selection needed
                       onSelect={() => {}} // do nothing on checkbox click
-                      // onDeleteClick={() => {}} // Do NOT show delete functionality in this tab. Users should not be able to delete anything in favBlogs tab
+                      // onDeleteClick={() => {}} // Do NOT show delete functionality in this tab. 
                     />
                   ))}
                 </GridCustomCols>
@@ -464,6 +470,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             setShowTextEditor={setShowTextEditor}
             generalUserId={generalUserId}
             editBlogPost={editBlogPost}
+            blogPostData={editBlogPostData} // ADDED
           />
         )}
       </div>
