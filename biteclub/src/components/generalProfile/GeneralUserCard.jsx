@@ -141,8 +141,8 @@ export default function GeneralUserCard({ generalUserData }) {
             }`}
           >
             <Image
-              src={generalUserData.userProfilePicture.url}
-              alt={generalUserData.userProfilePicture.caption}
+              src={generalUserData.userProfilePicture?.url || ''}
+              alt={generalUserData.userProfilePicture?.caption || ''}
               fill={true}
               className="rounded-full object-cover w-full"
             />

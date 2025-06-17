@@ -44,6 +44,11 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
 
+  // Display on Public Toggle (Yes / No)
+  const [displayFavouriteRestaurants, setDisplayFavouriteRestaurants] = useState(false);
+  const [displayFavouriteBlogPosts, setDisplayFavouriteBlogPosts] = useState(false);
+  const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
+
   const [showInstaReview, setShowInstaReview] = useState(false);
 
   /* States below are for MANAGING/EDITING general profile */
@@ -53,6 +58,13 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
 
   const [selectedBlogPosts, setSelectedBlogPosts] = useState([]);
+
+  const filteredTabs = profileTabs.filter((tab, index) => {
+    if (index === 2 && !displayVisitedPlaces) return false; // Tab 2
+    if (index === 3 && !displayFavouriteRestaurants) return false; // Tab 3
+    if (index === 4 && !displayFavouriteBlogPosts) return false; // Tab 4
+    return true;
+  });
 
   // TAB 0 -- BLOG POSTS
   useEffect(() => {
@@ -72,6 +84,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
         setUserProfile(profileData.profile);
         setMyBlogPosts(postsData);
+        setDisplayFavouriteRestaurants(profileData.profile.displayFavouriteRestaurants);
+        setDisplayFavouriteBlogPosts(profileData.profile.displayFavouriteBlogPosts);
+        setDisplayVisitedPlaces(profileData.profile.displayVisitedPlaces);
       } catch (err) {
         console.error('(GeneralUserProfile) Failed to fetch user data: ', err);
       }
@@ -289,14 +304,18 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         isOwner={isOwner}
         editMode={editMode}
         setEditMode={setEditMode}
-        handleDeleteSelectedBlogPost={handleDeleteSelectedBlogPost} 
+        handleDeleteSelectedBlogPost={handleDeleteSelectedBlogPost}
         handleDeleteAllBlogPost={handleDeleteAllBlogPost}
       />
       <div className="main-side-padding w-full py-8">
         {/**** Tab menu and contents - START ****/}
         {!showTextEditor && (
           <>
-            <ProfileTabBar tabs={profileTabs} onTabChange={setSelectedTab} />
+            {isOwner ? (
+              <ProfileTabBar tabs={profileTabs} onTabChange={setSelectedTab} />
+            ) : (
+              <ProfileTabBar tabs={filteredTabs} onTabChange={setSelectedTab} />
+            )}
             {/* Blog Posts */}
             {selectedTab === profileTabs[0] && (
               <GridCustomCols numOfCols={4}>
