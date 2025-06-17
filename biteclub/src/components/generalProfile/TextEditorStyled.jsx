@@ -17,14 +17,29 @@ export default function TextEditorStyled({
   const [statusMessage, setStatusMessage] = useState('');
   const [statusType, setStatusType] = useState('');
 
+  // useEffect(() => {
+  //   // ADDEd
+  //   if (editBlogPost && blogPostData) {
+  //     setTitle(blogPostData.previewTitle || '');
+  //     // setContent(blogPostData.previewText || '');
+  //      setContent(blogPostData.content || blogPostData.previewText || '');
+  //   }
+  // }, [editBlogPost, blogPostData]);
+
   useEffect(() => {
-    // ADDEd
-    if (editBlogPost && blogPostData) {
-      setTitle(blogPostData.previewTitle || '');
-      // setContent(blogPostData.previewText || '');
-       setContent(blogPostData.content || blogPostData.previewText || '');
+  if (editBlogPost && blogPostData) {
+    setTitle(blogPostData.previewTitle || '');
+
+    const fullContent = blogPostData.body || blogPostData.content;
+
+    if (fullContent && typeof fullContent === 'object' && fullContent.type === 'doc') {
+      setContent(fullContent); // ✅ loads the real Tiptap JSON with images
+    } else {
+      setContent(null); // fallback (still safe)
     }
-  }, [editBlogPost, blogPostData]);
+  }
+}, [editBlogPost, blogPostData]);
+
 
   const handlePublish = async () => {
     if (!content || !title) return;

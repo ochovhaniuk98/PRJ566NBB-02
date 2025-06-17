@@ -340,10 +340,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                       blogPostData={post}
                       writtenByOwner={isOwner}
                       setShowTextEditor={setShowTextEditor}
-                      // setEditBlogPost={setEditBlogPost}
                       setEditBlogPost={() => {
                         setEditBlogPost(true);
-                        setEditBlogPostData(post); // ⬅️ this line populates the editor
+                        setEditBlogPostData(post);
                       }}
                       isEditModeOn={editMode}
                       isSelected={isSelected}
@@ -427,8 +426,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                       blogPostData={post}
                       writtenByOwner={isOwner}
                       setShowTextEditor={setShowTextEditor}
-                      // setEditBlogPost={setEditBlogPost}
                       // Users should not be able to delete or edit anything in favBlogs tab
+                      // setEditBlogPost={setEditBlogPost}
                       isEditModeOn={false} 
                       isSelected={false} // no selection needed
                       onSelect={() => {}} // do nothing on checkbox click
