@@ -4,7 +4,6 @@ import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
 import InfoBanner from '@/components/restaurantProfile/InfoBanner';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-import ReviewsOnGrid3Col from '@/components/shared/ReviewsOnGrid3Col';
 import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
 import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
@@ -212,13 +211,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
           /> */
         )}
         {/* Mentioned */}
-        {selectedTab === restaurantTabs[1] && (
-          <GridCustomCols numOfCols={3}>
-            {Array.from({ length: 12 }).map((_, i) => (
-              <BlogPostCard key={i} blogPostData={fakeBlogPost} />
-            ))}
-          </GridCustomCols>
-        )}
+        {selectedTab === restaurantTabs[1] && <MentionedTab restaurantId={restaurantId} />}
         {/* Photos */}
         {selectedTab === restaurantTabs[2] && <PhotoGallery photos={restaurantImages} isOwner={isOwner} />}
 
