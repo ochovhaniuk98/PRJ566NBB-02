@@ -97,9 +97,9 @@ export default function RestaurantCard({ restaurantData }) {
           </div>
           {/* shows only the first 3 cuisines */}
           <h5>{restaurantData.cuisines.slice(0, 3).join(', ')}</h5>
-          <div className="flex items-center gap-1">
+          <div className="flex  items-center gap-1">
             <p className="font-medium">{restaurantData.rating}</p>
-            <StarRating colour={'text-brand-green'} iconSize={'icon-lg'} ratingNum={restaurantData.rating} />
+            <StarRating colour={'text-brand-green'} iconSize={'icon-md'} ratingNum={restaurantData.rating} />
             <p>{restaurantData.numReviews}</p>
             {/* price range tag */}
             <div className="bg-brand-blue-lite px-2 rounded-full w-15 flex justify-center text-primary">

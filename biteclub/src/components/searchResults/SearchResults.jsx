@@ -172,10 +172,10 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
                 numResults={restaurantsCount}
                 searchString={searchQuery}
               />
-              <GridCustomCols numOfCols={6} className="mt-4">
+              <GridCustomCols numOfCols={5} className="mt-4">
                 {/* isFavourited is false by default */}
                 {restaurants.map((restaurant, i) => (
-                  //  isFavourited={false} 
+                  //  isFavourited={false}
                   <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
                 ))}
               </GridCustomCols>
@@ -190,7 +190,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
           {selectedTab === 1 && fetchCompleted && (
             <>
               <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={postsCount} searchString={searchQuery} />
-              <GridCustomCols numOfCols={4} className="mt-4">
+              <GridCustomCols numOfCols={3} className="mt-4">
                 {blogPosts.map((post, i) => (
                   <BlogPostCard key={post._id || i} blogPostData={post} />
                 ))}
@@ -206,7 +206,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
           {selectedTab === 2 && (
             <>
               <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={usersCount} searchString={searchQuery} />
-              <GridCustomCols numOfCols={4} className="mt-4">
+              <GridCustomCols numOfCols={5} className="mt-4">
                 {users.map((user, i) => (
                   <GeneralUserCard key={user._id || i} generalUserData={user} isFollowing={false} />
                 ))}
