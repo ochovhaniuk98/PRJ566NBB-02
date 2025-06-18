@@ -53,11 +53,7 @@ export function LoginForm({ className, ...props }) {
       // if (!response.ok) throw new Error(`Failed to get user role: ${userType || 'unknown error'}`);
 
       // Redirect based on userType
-      if (userType === 'business') {
-        router.push('/users/business');
-      } else {
-        router.push('/users/general');
-      }
+      router.push(`/users/${userType}`);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {

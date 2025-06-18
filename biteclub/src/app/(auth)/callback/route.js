@@ -100,7 +100,7 @@ export async function GET(request) {
     target = finalUserType === 'business' ? '/account-setup/business' : '/account-setup/general';
   } else {
     // Returning user → dashboard
-    target = finalUserType === 'business' ? '/users/business' : '/users/general';
+    target = `/users/${finalUserType}`;
   }
 
   // Vercel-aware redirect handling

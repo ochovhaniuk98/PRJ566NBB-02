@@ -29,7 +29,8 @@
   * Add Instagram embeds
   * View restaurant photos and reviews (with dynamic data from the database)
 - Added Google Maps integration for restaurant location display in business info section.
-[!NOTE]: The restaurant profile management features are currently not fully implemented. The business user has limited editing capabilities.
+>[!NOTE]
+>The restaurant profile management features are currently not fully implemented. The business user has limited editing capabilities.
 
 ## Front-End Development
 Components created for the following:
@@ -64,6 +65,12 @@ Components created for the following:
    * Restaurant Tagging
    * Multiple Images Embed
 
+ ### Reviews
+  - General Users can create and view internal and external reviews for restaurants
+    * Internal Review: Users can write reviews for restaurants, which will be visible to other users. They can also attach photos to their reviews and give a rating.
+    * External Review: Users can share Instagram post links related to the restaurant or their experience at the restaurant. These links will be displayed as embedded posts on the restaurant's profile page.
+  - Reviews will be displayed on the restaurant profile page and on the user's profile page. They can view internal and external reviews separately.
+
 ### Search
  * General User can search for a restaurant, blog post, and user
 
@@ -79,3 +86,22 @@ Components created for the following:
 ## Business User Related
 ### Business Users' Licences Upload
 - A page where business users can upload documents to verify their restaurant ownership. 
+
+### Reviews Management
+  - Business users can now delete the external reviews that they have posted on their restaurant's profile page.
+  >[!NOTE]
+  >Business user cannot delete any internal reviews posted by general users. They can only delete their own external reviews.
+
+### Images Management
+- Business users can upload images to their restaurant profile to enhance the visual appeal of their restaurant's profile page.
+- They can upload multiple images to showcase on the banner or in the photos section of the restaurant profile.
+
+### Blog Posts
+- Blog posts mentioning the restaurant are now visible on the restaurant profile page under the "Mentioned" tab.
+>[!NOTE]
+>Business users can view the blog posts that mention their restaurant, but they cannot edit or delete them.
+
+## Administration
+### Admin Dashboard
+- Admin Panel created for managing approval of business users' accounts based on their uploaded documents.
+- Admins can view and approve/reject business user accounts.

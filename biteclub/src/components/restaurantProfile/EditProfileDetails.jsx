@@ -245,7 +245,9 @@ export default function EditProfileDetails({ onClose, images, setImages, restaur
         />
       )}
       {/* Delete Instagram Modal */}
-      {showDeleteInstaModal && <DeleteInstagramForm setShowDeleteInstaModal={setShowDeleteInstaModal} />}
+      {showDeleteInstaModal && (
+        <DeleteInstagramForm restaurantId={restaurantData._id} setShowDeleteInstaModal={setShowDeleteInstaModal} />
+      )}
     </div>
   );
 }

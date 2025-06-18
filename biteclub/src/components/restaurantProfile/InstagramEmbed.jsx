@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import EditModePanel from '../shared/EditModePanel';
 
 // instagram embed component
-export default function InstagramEmbed({ url, isEditModeOn = false }) {
+export default function InstagramEmbed({ url, isEditModeOn = false, forEditRestaurant = false }) {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -47,7 +47,7 @@ export default function InstagramEmbed({ url, isEditModeOn = false }) {
           className="instagram-media"
           data-instgrm-permalink={url}
           data-instgrm-version="14"
-          data-instgrm-captioned
+          {...(!forEditRestaurant ? { 'data-instgrm-captioned': true } : {})}
           style={{ width: '100%' }}
         ></blockquote>
       ) : (
