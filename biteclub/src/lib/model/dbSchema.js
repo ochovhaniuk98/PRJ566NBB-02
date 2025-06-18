@@ -66,6 +66,7 @@ const BlogPostSchema = new mongoose.Schema({
     type: Object,
     required: true,
   },
+  mentions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
   title: String,
   date_posted: Date,
   likes: {
