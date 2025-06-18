@@ -57,11 +57,25 @@ Components created for the following:
    * forms for profile modification (i.e. delete photo modal, Instagram embed form, edit profile details form)
 
  # Sprint 2
+ ## General User Related
  ### Blog Post
  - General User can create, view, edit and delete a blog post
    * Instagram Post Embed
    * Restaurant Tagging
    * Multiple Images Embed
 
- ### Search
- - General User can search for a restaurant, blog post, and user
+### Search
+ * General User can search for a restaurant, blog post, and user
+
+### Display Preferences
+-  Users can toggle display preferences on the Settings page.
+  - If toggle is off, that tab will be hided from public for their privacy. 
+
+### Add to Favourite
+- Users can add/remove item to/from their favourite list, and shown on user dashboard.
+  - Restaurant
+  - Blog Post
+
+## Business User Related
+### Business Users' Licences Upload
+- A page where business users can upload documents to verify their restaurant ownership.
