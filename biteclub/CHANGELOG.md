@@ -78,4 +78,4 @@ Components created for the following:
 
 ## Business User Related
 ### Business Users' Licences Upload
-- A page where business users can upload documents to verify their restaurant ownership.
+- A page where business users can upload documents to verify their restaurant ownership. 
