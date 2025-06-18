@@ -140,6 +140,27 @@ export async function addExternalReview(embedLink, userId, restaurantId) {
   return savedReview;
 }
 
+export async function getExternalReviewsByTheRestaurantId(restaurantId) {
+  await dbConnect();
+
+  if (!restaurantId) {
+    throw new Error('Restaurant ID is required to fetch external reviews');
+  }
+
+  const reviews = await ExternalReview.find({ user_id: restaurantId, restaurant_id: restaurantId }).lean();
+  return reviews ? JSON.parse(JSON.stringify(reviews)) : [];
+}
+
+export async function removeExternalReview(reviewId) {
+  await dbConnect();
+
+  const deletedReview = await ExternalReview.findByIdAndDelete(reviewId);
+  if (!deletedReview) {
+    throw new Error('External review not found');
+  }
+  return true;
+}
+
 export async function addInternalReview(data) {
   await dbConnect();
 
