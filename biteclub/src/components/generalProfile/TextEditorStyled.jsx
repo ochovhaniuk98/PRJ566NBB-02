@@ -18,19 +18,18 @@ export default function TextEditorStyled({
   const [statusType, setStatusType] = useState('');
 
   useEffect(() => {
-  if (editBlogPost && blogPostData) {
-    setTitle(blogPostData.previewTitle || '');
+    if (editBlogPost && blogPostData) {
+      setTitle(blogPostData.previewTitle || '');
 
-    const fullContent = blogPostData.body || blogPostData.content;
+      const fullContent = blogPostData.body || blogPostData.content;
 
-    if (fullContent && typeof fullContent === 'object' && fullContent.type === 'doc') {
-      setContent(fullContent); // ✅ loads the real Tiptap JSON with images
-    } else {
-      setContent(null); // fallback (still safe)
+      if (fullContent && typeof fullContent === 'object' && fullContent.type === 'doc') {
+        setContent(fullContent); // ✅ loads the real Tiptap JSON with images
+      } else {
+        setContent(null); // fallback (still safe)
+      }
     }
-  }
-}, [editBlogPost, blogPostData]);
-
+  }, [editBlogPost, blogPostData]);
 
   const handlePublish = async () => {
     if (!content || !title) return;
@@ -38,7 +37,6 @@ export default function TextEditorStyled({
     // get title and content
     // create or edit a blog post
     try {
-      console.log('blogPostData._id', blogPostData._id);
       const url = editBlogPost
         ? `/api/blog-posts/update-post/${blogPostData._id}` // blogPostData must contain `_id`
         : `/api/blog-posts/create-post/${generalUserId}`;
