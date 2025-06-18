@@ -55,4 +55,13 @@ Components created for the following:
 
  * **Business User Profile Management**
    * forms for profile modification (i.e. delete photo modal, Instagram embed form, edit profile details form)
- 
+
+ # Sprint 2
+ ### Blog Post
+ - General User can create, view, edit and delete a blog post
+   * Instagram Post Embed
+   * Restaurant Tagging
+   * Multiple Images Embed
+
+ ### Search
+ - General User can search for a restaurant, blog post, and user
