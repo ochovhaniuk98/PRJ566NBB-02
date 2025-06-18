@@ -487,6 +487,18 @@ export async function searchUsersByQuery(query, { page = 1, limit = 20 } = {}) {
   return { users, totalCount };
 }
 
+export async function getBlogsMentioningRestaurant(restaurantId) {
+  await dbConnect();
+
+  const blogs = await BlogPost.find({
+    mentions: { $in: [new mongoose.Types.ObjectId(`${restaurantId}`)] },
+  })
+    .populate('user_id', 'username userProfilePicture')
+    .lean();
+
+  return JSON.parse(JSON.stringify(blogs));
+}
+
 export async function getBusinessUsersAwaitingVerification() {
   try {
     await dbConnect();
