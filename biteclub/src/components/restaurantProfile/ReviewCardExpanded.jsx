@@ -4,7 +4,7 @@ import EngagementIconStat from '../shared/EngagementIconStat';
 import StarRating from '../shared/StarRating';
 import AuthorDateBlurb from '../shared/AuthorDateBlurb';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faFlag } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faFlag, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import reviewCardIconArr from '@/app/data/iconData';
 import FormattedDate from '../shared/formattedDate';
 
@@ -51,17 +51,17 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
             {/* Left Button */}
             <button
               onClick={handlePrev}
-              className="absolute left-2 bottom-0 -translate-y-1/2 bg-brand-peach  border border-brand-navy rounded-full p-2 w-10 aspect-square shadow"
+              className="absolute left-2/5 bottom-0 -translate-y-1/2 bg-white  border border-brand-navy rounded-full p-1 w-8 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
             >
-              ←
+              <FontAwesomeIcon icon={faArrowLeft} className={`icon-lg text-brand-navy`} />
             </button>
 
             {/* Right Button */}
             <button
               onClick={handleNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-2 shadow"
+              className="absolute right-2/5 bottom-0 -translate-y-1/2 bg-white  border border-brand-navy rounded-full p-1 w-8 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
             >
-              →
+              <FontAwesomeIcon icon={faArrowRight} className={`icon-lg text-brand-navy`} />
             </button>
           </div>
         )}
