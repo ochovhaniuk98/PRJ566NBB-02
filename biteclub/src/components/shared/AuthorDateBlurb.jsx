@@ -8,7 +8,7 @@ export default function AuthorDateBlurb({ authorPic, authorName, date }) {
     day: 'numeric',
   });
   return (
-    <div className="flex mt-4 gap-x-2">
+    <div className="flex gap-x-2">
       <div className="relative w-10 h-10 outline-1 outline-white rounded-full">
         <Image src={authorPic} alt="profile pic" className="object-cover rounded-full" fill={true} />
       </div>

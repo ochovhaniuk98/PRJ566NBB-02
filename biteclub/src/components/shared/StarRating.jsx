@@ -38,7 +38,7 @@ export default function StarRating({
   };
 
   return (
-    <div className="my-2">
+    <div className="mb-0">
       {[...Array(5)].map((_, i) => {
         const starPosition = i + 1;
         const isFull = starPosition <= Math.floor(activeRating);

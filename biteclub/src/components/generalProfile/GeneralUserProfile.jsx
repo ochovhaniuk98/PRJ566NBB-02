@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from '../shared/Button';
+import { useMemo } from 'react';
+import Masonry from 'react-masonry-css';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
@@ -9,14 +10,13 @@ import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
 import GeneralUserBanner from '@/components/generalProfile/GeneralUserBanner';
 import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
 import BlogPostCard from '@/components/shared/BlogPostCard';
-import RestaurantCard from '../restaurantProfile/RestaurantCard';
 import ReviewCard from '@/components/shared/ReviewCard';
 import StarRating from '../shared/StarRating';
 import AddReviewForm from '../shared/AddReviewForm';
+import { Button } from '../shared/Button';
+import RestaurantCard from '../restaurantProfile/RestaurantCard';
+import ReviewCardExpanded from '../restaurantProfile/ReviewCardExpanded';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
-
-// import { fakeBlogPost, fakeReviews, fakeRestaurantData } from '@/app/data/fakeData';
-
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // userId: from MongoDB, not supabase. By default "false" just in-case.
@@ -50,6 +50,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
 
   const [showInstaReview, setShowInstaReview] = useState(false);
+  const [selectedReview, setSelectedReview] = useState(null);
 
   /* States below are for MANAGING/EDITING general profile */
   const [editMode, setEditMode] = useState(false); // tracks whether owner wants to manage CONTENT on profile (displays edit/delete panel on each card)
@@ -251,6 +252,21 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     fetchTabData();
   }, [selectedTab, generalUserId]);
 
+  // breakpoints for internal reviews and expanded review side panel
+  const breakpointColumnsObj = useMemo(() => {
+    return selectedReview
+      ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
+      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
+  }, [selectedReview]);
+
+  // breakpoints for external reviews (Instagram)
+  const breakpointColumnsObjInsta = {
+    default: 3,
+    1024: 3,
+    768: 2,
+    0: 1,
+  };
+
   if (!userProfile) return <div>Loading profile...</div>;
 
   // HANDLE DELETE: Blog Post
@@ -319,7 +335,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             )}
             {/* Blog Posts */}
             {selectedTab === profileTabs[0] && (
-              <GridCustomCols numOfCols={4}>
+              <GridCustomCols numOfCols={3}>
                 {myBlogPosts.map((post, i) => {
                   // Check if this blog post's ID is currently in the list of selected posts
                   const isSelected = selectedBlogPosts.includes(post._id);
@@ -368,6 +384,39 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                   (myReviews?.internalReviews.length === 0 ? (
                     <div className="col-span-3 text-center text-gray-500">No internal reviews yet.</div>
                   ) : (
+                    /* internal reviews */
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <Masonry
+                          breakpointCols={breakpointColumnsObj}
+                          className="flex gap-2"
+                          columnClassName="space-y-2"
+                        >
+                          {myReviews?.internalReviews.map((review, i) => (
+                            /* internal reviews */
+                            <ReviewCard
+                              key={review._id || i}
+                              review={review}
+                              photos={review.photos}
+                              isOwner={isOwner}
+                              isEditModeOn={editMode}
+                              setEditReviewForm={setEditReviewForm}
+                              onClick={() => setSelectedReview(review)}
+                              isSelected={selectedReview?._id === review._id}
+                            />
+                          ))}
+                        </Masonry>
+                      </div>
+                      {/* Expanded side panel (visible when internal review is selected) */}
+                      {selectedReview && (
+                        <ReviewCardExpanded
+                          selectedReview={selectedReview}
+                          onClose={() => setSelectedReview(null)}
+                          isOwner={isOwner}
+                        />
+                      )}
+                    </div>
+                    /*
                     <GridCustomCols numOfCols={4}>
                       {myReviews?.internalReviews.map((review, i) => (
                         <ReviewCard
@@ -379,22 +428,20 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                           setEditReviewForm={setEditReviewForm}
                         />
                       ))}
-                    </GridCustomCols>
+                    </GridCustomCols> */
                   ))}
                 {/* Instagram Reviews */}
                 {showInstaReview &&
                   (myReviews?.externalReviews.length === 0 ? (
                     <div className="col-span-3 text-center text-gray-500">No Instagram reviews yet.</div>
                   ) : (
-                    <GridCustomCols numOfCols={4}>
+                    <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
                       {myReviews?.externalReviews.map((review, i) => (
-                        <InstagramEmbed
-                          key={review._id || i}
-                          postUrl={review.content?.embedLink}
-                          isEditModeOn={editMode}
-                        />
+                        <div key={review._id || i} className="mb-4 break-inside-avoid">
+                          <InstagramEmbed key={review._id} url={review.content?.embedLink} isEditModeOn={editMode} />
+                        </div>
                       ))}
-                    </GridCustomCols>
+                    </Masonry>
                   ))}
               </>
             )}
@@ -403,7 +450,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (favouritedRestaurants.length === 0 ? (
                 <div className="col-span-3 text-center text-gray-500">No favourite restaurants yet.</div>
               ) : (
-                <GridCustomCols numOfCols={6}>
+                <GridCustomCols numOfCols={5}>
                   {favouritedRestaurants.map(restaurant => (
                     <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
                   ))}
@@ -414,7 +461,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (favouritedBlogs.length === 0 ? (
                 <div className="col-span-3 text-center text-gray-500">No favourite blog posts yet.</div>
               ) : (
-                <GridCustomCols numOfCols={4}>
+                <GridCustomCols numOfCols={3}>
                   {/* {favouritedBlogs.map(blog => (
                   // The "Favourite Blog Posts" should not display posts written by the owner (i.e. isOwner should be false / !isOwner).
                   // However, users may still favourite their own posts — so this logic (false) might be adjusted later.
@@ -428,10 +475,10 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                       setShowTextEditor={setShowTextEditor}
                       // Users should not be able to delete or edit anything in favBlogs tab
                       // setEditBlogPost={setEditBlogPost}
-                      isEditModeOn={false} 
+                      isEditModeOn={false}
                       isSelected={false} // no selection needed
                       onSelect={() => {}} // do nothing on checkbox click
-                      // onDeleteClick={() => {}} // Do NOT show delete functionality in this tab. 
+                      // onDeleteClick={() => {}} // Do NOT show delete functionality in this tab.
                     />
                   ))}
                 </GridCustomCols>
@@ -441,7 +488,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (followers.length === 0 ? (
                 <div className="col-span-3 text-center text-gray-500">No followers yet.</div>
               ) : (
-                <GridCustomCols numOfCols={6}>
+                <GridCustomCols numOfCols={5}>
                   {followers.map((follower, i) => (
                     <GeneralUserCard key={follower._id} generalUserData={follower} isFollowing={false} />
                   ))}
@@ -453,7 +500,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (followings.length === 0 ? (
                 <div className="col-span-3 text-center text-gray-500">No followings yet.</div>
               ) : (
-                <GridCustomCols numOfCols={6}>
+                <GridCustomCols numOfCols={5}>
                   {followings.map((following, i) => (
                     <GeneralUserCard key={following._id} generalUserData={following} isFollowing={true} />
                   ))}

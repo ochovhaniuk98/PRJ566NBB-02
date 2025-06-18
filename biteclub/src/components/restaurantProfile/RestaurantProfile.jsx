@@ -17,6 +17,7 @@ import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImag
 import AddReviewForm from '../shared/AddReviewForm';
 import MentionedTab from './MentionedTab';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
+import MasonryReviewGrid from './MasonryReviewGrid';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
@@ -198,14 +199,26 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
 
         {/* Reviews */}
         {selectedTab === restaurantTabs[0] && (
+          <MasonryReviewGrid
+            reviewList={reviewsData} // internal + external reviews
+            selectedReview={selectedReview}
+            setSelectedReview={setSelectedReview}
+          />
+          /*
           <ReviewsOnGrid3Col
             selectedReview={selectedReview}
             setSelectedReview={setSelectedReview}
-            reviewList={reviewsData} // internal + external reviews
-          />
+            reviewList={reviewsData}
+          /> */
         )}
         {/* Mentioned */}
-        {selectedTab === restaurantTabs[1] && <MentionedTab restaurantId={restaurantId} />}
+        {selectedTab === restaurantTabs[1] && (
+          <GridCustomCols numOfCols={3}>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <BlogPostCard key={i} blogPostData={fakeBlogPost} />
+            ))}
+          </GridCustomCols>
+        )}
         {/* Photos */}
         {selectedTab === restaurantTabs[2] && <PhotoGallery photos={restaurantImages} isOwner={isOwner} />}
 
