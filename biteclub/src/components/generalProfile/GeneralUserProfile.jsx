@@ -62,9 +62,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [selectedBlogPosts, setSelectedBlogPosts] = useState([]);
 
   const filteredTabs = profileTabs.filter((tab, index) => {
-    if (index === 2 && !displayVisitedPlaces) return false; // Tab 2
-    if (index === 3 && !displayFavouriteRestaurants) return false; // Tab 3
-    if (index === 4 && !displayFavouriteBlogPosts) return false; // Tab 4
+    if (index === 2 && !displayVisitedPlaces) return false; // Tab 2 - visited places
+    if (index === 3 && !displayFavouriteRestaurants) return false; // Tab 3 - favourite restaurants
+    if (index === 4 && !displayFavouriteBlogPosts) return false; // Tab 4 - favourite blog posts
     return true;
   });
 

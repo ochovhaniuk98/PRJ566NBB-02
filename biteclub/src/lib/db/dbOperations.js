@@ -27,6 +27,7 @@ import {
   Restaurant,
   TestCloudinaryImage,
 } from '../../lib/model/dbSchema';
+import mongoose from 'mongoose';
 
 // ==================
 // FOR BUSINESS USERS
@@ -338,6 +339,27 @@ export async function getProfilePicByUserSuperbaseId(supabaseId) {
   return image;
 }
 
+function extractMentionedRestaurantIds(contentJSON) {
+  const ids = [];
+
+  function walk(node) {
+    if (!node) return;
+
+    if (node.type === 'mention' && node.attrs?.id) {
+      ids.push(node.attrs.id);
+    }
+
+    if (Array.isArray(node.content)) {
+      node.content.forEach(walk);
+    }
+  }
+
+  walk(contentJSON);
+
+  const uniqueIds = new Set(ids); // Eliminate duplicates
+  return Array.from(uniqueIds);
+}
+
 // Create a Blog Post
 export async function createBlogPost({ title, content, userId }) {
   await dbConnect();
@@ -359,6 +381,10 @@ export async function createBlogPost({ title, content, userId }) {
     previewImage = imageBlock?.attrs?.src || null;
   }
 
+  const mentionedRestaurantIds = (extractMentionedRestaurantIds(content) || []).map(
+    id => new mongoose.Types.ObjectId(`${id}`)
+  ); // Convert to ObjectIds
+
   const newPost = new BlogPost({
     body: content,
     title,
@@ -367,6 +393,7 @@ export async function createBlogPost({ title, content, userId }) {
     previewTitle: title.length > 50 ? title.slice(0, 33) + '...' : title,
     previewText: previewText,
     previewImage: previewImage,
+    mentions: mentionedRestaurantIds,
   });
 
   await newPost.save();
@@ -458,6 +485,18 @@ export async function searchUsersByQuery(query, { page = 1, limit = 20 } = {}) {
   ]);
 
   return { users, totalCount };
+}
+
+export async function getBlogsMentioningRestaurant(restaurantId) {
+  await dbConnect();
+
+  const blogs = await BlogPost.find({
+    mentions: { $in: [new mongoose.Types.ObjectId(`${restaurantId}`)] },
+  })
+    .populate('user_id', 'username userProfilePicture')
+    .lean();
+
+  return JSON.parse(JSON.stringify(blogs));
 }
 
 export async function getBusinessUsersAwaitingVerification() {

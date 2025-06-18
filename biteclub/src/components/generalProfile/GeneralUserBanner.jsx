@@ -32,6 +32,18 @@ export default function GeneralUserBanner({
   handleDeleteSelectedBlogPost,
   handleDeleteAllBlogPost,
 }) {
+  const [reviewCount, setReviewCount] = useState(0);
+
+  useEffect(() => {
+    const fetchReviewCount = async () => {
+      const res = await fetch(`/api/generals/${generalUserData._id}/get-review-count`);
+      const data = await res.json();
+      setReviewCount(data.total || 0);
+    };
+
+    if (generalUserData._id) fetchReviewCount();
+  }, [generalUserData._id]);
+
   const iconStats = [
     {
       label: 'Followers',
@@ -45,7 +57,8 @@ export default function GeneralUserBanner({
       icon: faStarHalfStroke,
       bgColour: 'white',
       iconColour: 'brand-yellow',
-      statNum: generalUserData?.myReviews?.length || 0,
+      // statNum: generalUserData?.myReviews?.length || 0,
+      statNum: reviewCount,
     },
     {
       label: 'Blog Posts',
@@ -206,7 +219,7 @@ export default function GeneralUserBanner({
                 detailText="DELETE ALL"
                 bgColour="bg-brand-red"
                 textColour="text-white"
-                onClick={handleDeleteAllBlogPost} 
+                onClick={handleDeleteAllBlogPost}
               />
               {/* cancel content management */}
               <SingleTabWithIcon

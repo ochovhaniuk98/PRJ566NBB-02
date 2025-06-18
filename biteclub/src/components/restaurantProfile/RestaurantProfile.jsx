@@ -15,9 +15,7 @@ import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetail
 import { useEffect, useState } from 'react';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import AddReviewForm from '../shared/AddReviewForm';
-import GridCustomCols from '../shared/GridCustomCols';
-import BlogPostCard from '../shared/BlogPostCard';
-import { fakeBlogPost } from '@/app/data/fakeData';
+import MentionedTab from './MentionedTab';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 import MasonryReviewGrid from './MasonryReviewGrid';
 
