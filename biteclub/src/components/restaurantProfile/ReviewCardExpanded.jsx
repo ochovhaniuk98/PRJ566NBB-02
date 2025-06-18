@@ -4,9 +4,17 @@ import EngagementIconStat from '../shared/EngagementIconStat';
 import StarRating from '../shared/StarRating';
 import AuthorDateBlurb from '../shared/AuthorDateBlurb';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faFlag, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import {
+  faXmark,
+  faFlag,
+  faArrowLeft,
+  faArrowRight,
+  faChevronLeft,
+  faChevronRight,
+} from '@fortawesome/free-solid-svg-icons';
 import reviewCardIconArr from '@/app/data/iconData';
 import FormattedDate from '../shared/formattedDate';
+import { ChevronLeft } from 'lucide-react';
 
 export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = false }) {
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -53,7 +61,7 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
               onClick={handlePrev}
               className="absolute left-2/5 bottom-0 -translate-y-1/2 bg-white  border border-brand-navy rounded-full p-1 w-8 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
             >
-              <FontAwesomeIcon icon={faArrowLeft} className={`icon-lg text-brand-navy`} />
+              <FontAwesomeIcon icon={faChevronLeft} className={`icon-lg text-brand-grey`} />
             </button>
 
             {/* Right Button */}
@@ -61,7 +69,7 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
               onClick={handleNext}
               className="absolute right-2/5 bottom-0 -translate-y-1/2 bg-white  border border-brand-navy rounded-full p-1 w-8 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
             >
-              <FontAwesomeIcon icon={faArrowRight} className={`icon-lg text-brand-navy`} />
+              <FontAwesomeIcon icon={faChevronRight} className={`icon-lg text-brand-grey`} />
             </button>
           </div>
         )}
