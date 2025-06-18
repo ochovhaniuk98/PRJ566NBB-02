@@ -35,7 +35,7 @@ export default function GeneralSetupForm() {
     };
 
     try {
-      const res = await fetch('/api/update-general-user-profile', {
+      const res = await fetch('/api/generals/update-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

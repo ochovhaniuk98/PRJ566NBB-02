@@ -76,8 +76,6 @@ export async function getRestaurantReviews(id) {
 // Calculate the number of likes and display to restaurant page
 export async function getRestaurantNumOfFavourites(restaurantId) {
   await dbConnect();
-  console.log('(DB) received ID: ', restaurantId);
-
   const count = await User.countDocuments({
     favouriteRestaurants: { $in: [restaurantId] },
   });
@@ -97,6 +95,35 @@ export async function updateRestaurant(id, data) {
     throw new Error('Restaurant not found');
   }
   return restaurant;
+}
+
+export async function removeRestaurantImage(restaurantId, image_public_id, image_object_id, type) {
+  await dbConnect();
+
+  const imagesField = type === 'restaurant-image' ? 'images' : 'bannerImages';
+  const restaurant = await Restaurant.findById(restaurantId);
+
+  if (!restaurant) {
+    throw new Error('Restaurant not found');
+  }
+  if (!restaurant[imagesField]) {
+    throw new Error(`Field ${imagesField} not found`);
+  }
+
+  const updatedImages = restaurant[imagesField].filter(image => {
+    const publicIdMatches = image.public_id === image_public_id;
+    const objectIdMatches = image._id && image._id.toString() === image_object_id?.toString();
+    return !(publicIdMatches || objectIdMatches);
+  });
+
+  if (updatedImages.length === restaurant[imagesField].length) {
+    console.warn('Image not found for deletion:', image_public_id, image_object_id);
+  }
+
+  restaurant[imagesField] = updatedImages;
+  const updatedRestaurant = await restaurant.save();
+
+  return !!updatedRestaurant;
 }
 
 export async function addExternalReview(embedLink, userId, restaurantId) {
@@ -180,6 +207,7 @@ export async function updateGeneralUsername(data) {
       username: data.username,
       userBio: data.userBio,
       displayFavouriteRestaurants: data.displayFavouriteRestaurants,
+      displayFavouriteBlogPosts: data.displayFavouriteBlogPosts,
       displayVisitedPlaces: data.displayVisitedPlaces,
     },
     { new: true } // returns the updated user
@@ -197,6 +225,7 @@ export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
     username: user.username,
     userBio: user.userBio,
     displayFavouriteRestaurants: user.displayFavouriteRestaurants,
+    displayFavouriteBlogPosts: user.displayFavouriteBlogPosts,
     displayVisitedPlaces: user.displayVisitedPlaces,
   };
 }
@@ -212,9 +241,8 @@ export async function getGeneralUserProfileByMongoId(mongoId) {
 
 export async function getGeneralUserMongoIDbySupabaseId({ supabaseId }) {
   await dbConnect();
-  const user = await User.findOne({ supabaseId });
-  if (!user) return null;
-  return user._id.toString();
+  const user = await User.findOne({ supabaseId }).select('_id').lean();
+  return user?._id?.toString() || null; // without "|| null", it will return undefined if not found
 }
 
 export async function getUserReviews(userId) {
@@ -232,6 +260,14 @@ export async function getUserReviews(userId) {
     console.error('Error fetching user reviews:', error);
     throw new Error('Failed to fetch user reviews');
   }
+}
+
+export async function getBlogPostNumOfFavourites(blogId) {
+  await dbConnect();
+  const count = await User.countDocuments({
+    favouriteBlogs: { $in: [blogId] },
+  });
+  return count;
 }
 
 // ==================

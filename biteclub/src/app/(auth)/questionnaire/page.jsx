@@ -91,7 +91,7 @@ export default function Questionnaire() {
     console.log(restaurantFrequency);
     console.log(decisionDifficulty);
     console.log(openToDiversity);
-    const res = await fetch('/api/update-general-user-profile/questionnaire', {
+    const res = await fetch('/api/generals/update-profile/questionnaire', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

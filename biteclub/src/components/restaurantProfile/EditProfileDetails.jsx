@@ -8,7 +8,7 @@ import { faImages } from '@fortawesome/free-solid-svg-icons';
 import EditPhotosModal from './EditPhotosModal';
 import DeleteInstagramForm from './DeleteInstagramForm';
 
-export default function EditProfileDetails({ onClose, restaurantData }) {
+export default function EditProfileDetails({ onClose, images, setImages, restaurantData }) {
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [showDeleteInstaModal, setShowDeleteInstaModal] = useState(false);
 
@@ -236,7 +236,13 @@ export default function EditProfileDetails({ onClose, restaurantData }) {
       </form>
       {/* Edit GALLERY Photos Modal */}
       {showPhotoModal && (
-        <EditPhotosModal photos={restaurantData.images} showModal={showPhotoModal} setShowModal={setShowPhotoModal} />
+        <EditPhotosModal
+          restaurantId={restaurantData._id}
+          photos={images}
+          setImages={setImages}
+          showModal={showPhotoModal}
+          setShowModal={setShowPhotoModal}
+        />
       )}
       {/* Delete Instagram Modal */}
       {showDeleteInstaModal && <DeleteInstagramForm setShowDeleteInstaModal={setShowDeleteInstaModal} />}

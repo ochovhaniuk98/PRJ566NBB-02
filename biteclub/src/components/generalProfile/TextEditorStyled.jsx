@@ -5,21 +5,48 @@ import { Label } from '../shared/Label';
 
 import { useState, useEffect } from 'react';
 
-export default function TextEditorStyled({ setShowTextEditor, generalUserId, editBlogPost = false }) {
+export default function TextEditorStyled({
+  setShowTextEditor,
+  generalUserId,
+  editBlogPost = false,
+  blogPostData = null, // ADDED
+}) {
   const [content, setContent] = useState(null);
   const [title, setTitle] = useState(null);
 
   const [statusMessage, setStatusMessage] = useState('');
   const [statusType, setStatusType] = useState('');
 
+  useEffect(() => {
+  if (editBlogPost && blogPostData) {
+    setTitle(blogPostData.previewTitle || '');
+
+    const fullContent = blogPostData.body || blogPostData.content;
+
+    if (fullContent && typeof fullContent === 'object' && fullContent.type === 'doc') {
+      setContent(fullContent); // ✅ loads the real Tiptap JSON with images
+    } else {
+      setContent(null); // fallback (still safe)
+    }
+  }
+}, [editBlogPost, blogPostData]);
+
+
   const handlePublish = async () => {
     if (!content || !title) return;
 
     // get title and content
-    // create a blog post
+    // create or edit a blog post
     try {
-      const response = await fetch(`/api/blog-posts/create-post/${generalUserId}`, {
-        method: 'POST',
+      console.log('blogPostData._id', blogPostData._id);
+      const url = editBlogPost
+        ? `/api/blog-posts/update-post/${blogPostData._id}` // blogPostData must contain `_id`
+        : `/api/blog-posts/create-post/${generalUserId}`;
+
+      const method = editBlogPost ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -28,6 +55,8 @@ export default function TextEditorStyled({ setShowTextEditor, generalUserId, edi
           content,
         }),
       });
+
+      // ---------------------------------------
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -40,7 +69,19 @@ export default function TextEditorStyled({ setShowTextEditor, generalUserId, edi
       const data = await response.json();
 
       setStatusType('success');
-      setStatusMessage('Blog post created successfully!');
+      setStatusMessage(editBlogPost ? 'Blog post updated successfully!' : 'Blog post created successfully!');
+      // ADDED
+      if (!editBlogPost) {
+        setTitle(null);
+        setContent(null);
+      }
+
+      // ADDED
+      if (!editBlogPost) {
+        setTitle(null);
+        setContent(null);
+      }
+
       setTitle(null);
       setContent(null);
 
@@ -79,10 +120,12 @@ export default function TextEditorStyled({ setShowTextEditor, generalUserId, edi
         <h3>{editBlogPost ? 'EDIT BLOG POST' : 'WRITE A BLOG POST'}</h3>
         <div className=" flex gap-2 items-center justify-center mb-2">
           <Label>Title</Label>
-          <Input type="text" className={'w-[50%]'} onChange={e => setTitle(e.target.value)} />
+          {/* <Input type="text" className={'w-[50%]'} onChange={e => setTitle(e.target.value)} /> */}
+          <Input type="text" className="w-[50%]" value={title || ''} onChange={e => setTitle(e.target.value)} />
         </div>
         <div className=" w-full h-700 border border-brand-yellow-lite">
-          <SimpleEditor onContentChange={setContent} />
+          {/* <SimpleEditor onContentChange={setContent} /> */}
+          <SimpleEditor onContentChange={setContent} content={content} />
         </div>
       </div>
     </>

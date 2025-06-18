@@ -3,16 +3,16 @@ import { User } from '@/lib/model/dbSchema';
 import { NextResponse } from 'next/server';
 
 
-// This route checks whether a restaurant is currently favourited by users
+// This route checks whether a blog-post is currently favourited by users
 export async function GET(req) {
   try {
     const {searchParams} = new URL(req.url);
     const supabaseUserId = searchParams.get('authId');
-    const restaurantId = searchParams.get('restaurantId');
+    const blogId = searchParams.get('blogId');
 
 
-    if (!supabaseUserId || !restaurantId) {
-      return NextResponse.json({ error: 'Missing user or restaurant ID' }, { status: 400 });
+    if (!supabaseUserId || !blogId) {
+      return NextResponse.json({ error: 'Missing user or blog ID' }, { status: 400 });
     }
 
     await dbConnect();
@@ -23,8 +23,8 @@ export async function GET(req) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const isFavourited = user.favouriteRestaurants.some(
-      (favId) => favId.toString() === restaurantId
+    const isFavourited = user.favouriteBlogs.some(
+      (favId) => favId.toString() === blogId
     );
 
     return NextResponse.json({ isFavourited });

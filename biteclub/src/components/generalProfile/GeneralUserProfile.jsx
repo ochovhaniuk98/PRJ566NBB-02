@@ -1,17 +1,18 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useMemo } from 'react';
 import Masonry from 'react-masonry-css';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-import BlogPostCard from '@/components/shared/BlogPostCard';
-import GeneralUserBanner from '@/components/generalProfile/GeneralUserBanner';
 import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
-import ReviewCard from '@/components/shared/ReviewCard';
+import GeneralUserBanner from '@/components/generalProfile/GeneralUserBanner';
 import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
+import BlogPostCard from '@/components/shared/BlogPostCard';
+import RestaurantCard from '../restaurantProfile/RestaurantCard';
+import ReviewCard from '@/components/shared/ReviewCard';
 import StarRating from '../shared/StarRating';
-import { fakeBlogPost, fakeReviews, fakeRestaurantData } from '@/app/data/fakeData';
 import AddReviewForm from '../shared/AddReviewForm';
 import { Button } from '../shared/Button';
 import InstagramEmbedOld from '../restaurantProfile/InstagramEmbedOld';
@@ -28,7 +29,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     'Visited',
     'Favourite Restaurants',
     'Favourite Blog Posts',
-    'My Followers',
+    'Followers', // instead of 'My Followers', the profile might not be yours.
     'Following',
   ];
 
@@ -41,6 +42,15 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     externalReviews: [],
   });
   const [favouritedRestaurants, setFavouritedRestaurants] = useState([]);
+  const [favouritedBlogs, setFavouritedBlogs] = useState([]);
+  const [followers, setFollowers] = useState([]);
+  const [followings, setFollowings] = useState([]);
+
+  // Display on Public Toggle (Yes / No)
+  const [displayFavouriteRestaurants, setDisplayFavouriteRestaurants] = useState(false);
+  const [displayFavouriteBlogPosts, setDisplayFavouriteBlogPosts] = useState(false);
+  const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
+
   const [showInstaReview, setShowInstaReview] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
 
@@ -49,77 +59,199 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [editReviewForm, setEditReviewForm] = useState(false); // for opening/closing form to edit a SPECIFIC REVIEW
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
+  const [editBlogPostData, setEditBlogPostData] = useState(null);
 
+  const [selectedBlogPosts, setSelectedBlogPosts] = useState([]);
+
+  const filteredTabs = profileTabs.filter((tab, index) => {
+    if (index === 2 && !displayVisitedPlaces) return false; // Tab 2
+    if (index === 3 && !displayFavouriteRestaurants) return false; // Tab 3
+    if (index === 4 && !displayFavouriteBlogPosts) return false; // Tab 4
+    return true;
+  });
+
+  // TAB 0 -- BLOG POSTS
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch general user profile and their blog posts concurrently
         const [profileRes, postsRes] = await Promise.all([
-          fetch('/api/get-general-user-profile-by-mongoId', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ generalUserId }),
-          }),
+          fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`),
           fetch(`/api/blog-posts/get-posts-by-userId/${generalUserId}`),
         ]);
 
-        // If either request fails, log and stop execution
         if (!profileRes.ok || !postsRes.ok) {
           console.error('One or both requests failed');
           return;
         }
 
-        // Parse both JSON responses
         const [profileData, postsData] = await Promise.all([profileRes.json(), postsRes.json()]);
 
-        // Set user profile and blog posts to state
-        setUserProfile(profileData.profile); // profileData = { profile: { ... } }
+        setUserProfile(profileData.profile);
         setMyBlogPosts(postsData);
-        console.log('USER profile:', profileData.profile);
+        setDisplayFavouriteRestaurants(profileData.profile.displayFavouriteRestaurants);
+        setDisplayFavouriteBlogPosts(profileData.profile.displayFavouriteBlogPosts);
+        setDisplayVisitedPlaces(profileData.profile.displayVisitedPlaces);
+      } catch (err) {
+        console.error('(GeneralUserProfile) Failed to fetch user data: ', err);
+      }
+    };
 
-        // If favouriteRestaurants exist, fetch full restaurant objects by IDs
-        const restaurantIds = profileData.profile.favouriteRestaurants;
-        if (restaurantIds?.length > 0) {
-          const res = await fetch('/api/restaurants/by-ids', {
+    if (generalUserId) fetchData();
+  }, [generalUserId, showTextEditor]);
+
+  // THEN: Load data ONLY when the tab is selected
+  useEffect(() => {
+    if (!generalUserId || !selectedTab) return;
+
+    const fetchTabData = async () => {
+      try {
+        // TAB 1 -- REVIEWS
+        if (selectedTab === profileTabs[1]) {
+          const res = await fetch(`/api/user-reviews/${generalUserId}`);
+          if (res.ok) {
+            const reviews = await res.json();
+            setMyReviews(reviews);
+          } else {
+            console.error('Failed to fetch reviews');
+          }
+          return;
+        }
+
+        // TAB 3 -- FAVOURITE RESTAURANT
+        if (selectedTab === profileTabs[3]) {
+          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+          if (!profileRes.ok) {
+            console.error('Failed to fetch profile');
+            return;
+          }
+
+          const profileData = await profileRes.json();
+          setUserProfile(profileData.profile);
+
+          const restaurantIds = profileData.profile?.favouriteRestaurants;
+          if (!Array.isArray(restaurantIds) || restaurantIds.length === 0) {
+            setFavouritedRestaurants([]);
+            return;
+          }
+
+          const res = await fetch(`/api/restaurants/by-ids`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ids: restaurantIds }),
           });
 
-          // Parse and store the full restaurant documents
-          const data = await res.json();
-          setFavouritedRestaurants(data.restaurants);
-        }
-      } catch (err) {
-        // Catch any unexpected errors in the fetch chain
-        console.error('Failed to fetch user profile or blog posts:', err);
-      }
-    };
-
-    // Ensure we have a valid generalUserId before starting fetch
-    if (generalUserId) fetchData();
-  }, [generalUserId, showTextEditor]);
-
-  useEffect(() => {
-    const fetchUserReviews = async () => {
-      try {
-        const res = await fetch(`/api/user-reviews/${generalUserId}`);
-
-        if (!res.ok) {
-          console.log('Failed to fetch reviews');
+          if (res.ok) {
+            const data = await res.json();
+            // Might use setTimeout to delay the UI update later,
+            // so the user can immediately favourite it again if they mistakenly unfavourited it.
+            // setTimeout(() => {
+            setFavouritedRestaurants(data.restaurants);
+            // }, 1000);
+          }
           return;
         }
 
-        const reviews = await res.json();
-        setMyReviews(reviews);
+        // TAB 4 -- FAVOURITE BLOG POSTS
+        if (selectedTab === profileTabs[4]) {
+          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+          if (!profileRes.ok) {
+            console.error('Failed to fetch profile');
+            return;
+          }
+
+          const profileData = await profileRes.json();
+          setUserProfile(profileData.profile);
+
+          const blogIds = profileData.profile?.favouriteBlogs;
+          if (!Array.isArray(blogIds) || blogIds.length === 0) {
+            setFavouritedBlogs([]);
+            return;
+          }
+
+          const postsRes = await fetch(`/api/blog-posts/by-ids`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: blogIds }),
+          });
+
+          if (postsRes.ok) {
+            const postsData = await postsRes.json();
+            // setTimeout(() => {
+            setFavouritedBlogs(postsData);
+            // }, 1000);
+          }
+          return;
+        }
+
+        // TAB 5 -- FOLLOWERS
+        if (selectedTab === profileTabs[5]) {
+          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+          if (!profileRes.ok) {
+            console.error('Failed to fetch profile');
+            return;
+          }
+
+          const profileData = await profileRes.json();
+          setUserProfile(profileData.profile);
+
+          const followerIds = profileData.profile?.followers;
+          if (!Array.isArray(followerIds) || followerIds.length === 0) {
+            setFollowers([]);
+            return;
+          }
+
+          const followerRes = await fetch(`/api/generals/get-profiles-by-dbIds`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: followerIds }),
+          });
+
+          if (followerRes.ok) {
+            const followersData = await followerRes.json();
+            // setTimeout(() => {
+            setFollowers(followersData.users);
+            // }, 1000); // Delay UI update
+          }
+          return;
+        }
+
+        // TAB 6 -- FOLLOWINGS
+        if (selectedTab === profileTabs[6]) {
+          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+          if (!profileRes.ok) {
+            console.error('Failed to fetch profile');
+            return;
+          }
+
+          const profileData = await profileRes.json();
+          setUserProfile(profileData.profile);
+
+          const followingIds = profileData.profile?.followings;
+          if (!Array.isArray(followingIds) || followingIds.length === 0) {
+            setFollowings([]);
+            return;
+          }
+
+          const followingsRes = await fetch(`/api/generals/get-profiles-by-dbIds`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: followingIds }),
+          });
+
+          if (followingsRes.ok) {
+            const followingsData = await followingsRes.json();
+            // setTimeout(() => {
+            setFollowings(followingsData.users);
+            // }, 1000); // Delay UI update
+          }
+          return;
+        }
       } catch (err) {
-        console.error('Failed to fetch user reviews:', err);
+        console.error(`Failed to fetch data for tab: ${selectedTab}`, err);
       }
     };
-    // Fetch user review only when the user selects the "Reviews" tab
-    if (selectedTab === profileTabs[1] && generalUserId) {
-      fetchUserReviews();
-    }
+
+    fetchTabData();
   }, [selectedTab, generalUserId]);
 
   // breakpoints for internal reviews and expanded review side panel
@@ -131,6 +263,49 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   if (!userProfile) return <div>Loading profile...</div>;
 
+  // HANDLE DELETE: Blog Post
+  const handleDeleteSelectedBlogPost = async () => {
+    if (selectedBlogPosts.length === 0) return;
+    const res = await fetch('/api/blog-posts/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: selectedBlogPosts, userId: generalUserId }),
+    });
+
+    if (res.ok) {
+      const updatedPosts = myBlogPosts.filter(post => !selectedBlogPosts.includes(post._id));
+      setMyBlogPosts(updatedPosts);
+      setSelectedBlogPosts([]);
+    }
+  };
+
+  const handleDeleteAllBlogPost = async () => {
+    const allIds = myBlogPosts.map(post => post._id);
+    const res = await fetch('/api/blog-posts/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: allIds, userId: generalUserId }),
+    });
+
+    if (res.ok) {
+      setMyBlogPosts([]);
+      setSelectedBlogPosts([]);
+    }
+  };
+
+  const handleDeleteSingle = async blogId => {
+    const res = await fetch('/api/blog-posts/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: [blogId], userId: generalUserId }),
+    });
+
+    if (res.ok) {
+      setMyBlogPosts(prev => prev.filter(post => post._id !== blogId));
+      setSelectedBlogPosts(prev => prev.filter(id => id !== blogId));
+    }
+  };
+
   return (
     <MainBaseContainer>
       <GeneralUserBanner
@@ -140,26 +315,52 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         isOwner={isOwner}
         editMode={editMode}
         setEditMode={setEditMode}
+        handleDeleteSelectedBlogPost={handleDeleteSelectedBlogPost}
+        handleDeleteAllBlogPost={handleDeleteAllBlogPost}
       />
       <div className="main-side-padding w-full py-8">
         {/**** Tab menu and contents - START ****/}
         {!showTextEditor && (
           <>
-            <ProfileTabBar tabs={profileTabs} onTabChange={setSelectedTab} />
+            {isOwner ? (
+              <ProfileTabBar tabs={profileTabs} onTabChange={setSelectedTab} />
+            ) : (
+              <ProfileTabBar tabs={filteredTabs} onTabChange={setSelectedTab} />
+            )}
             {/* Blog Posts */}
             {selectedTab === profileTabs[0] && (
               <GridCustomCols numOfCols={4}>
-                {myBlogPosts.map((post, i) => (
-                  <BlogPostCard
-                    key={post._id || i}
-                    blogPostData={post}
-                    writtenByOwner={isOwner}
-                    isFavourited={false}
-                    isEditModeOn={editMode}
-                    setShowTextEditor={setShowTextEditor}
-                    setEditBlogPost={setEditBlogPost}
-                  />
-                ))}
+                {myBlogPosts.map((post, i) => {
+                  // Check if this blog post's ID is currently in the list of selected posts
+                  const isSelected = selectedBlogPosts.includes(post._id);
+                  // Toggle selection on checkbox click
+                  const toggleSelect = () => {
+                    setSelectedBlogPosts(prev =>
+                      // If this post is already selected, remove it from the list
+                      prev.includes(post._id)
+                        ? prev.filter(id => id !== post._id)
+                        : // If it's not selected yet, add it to the list
+                          [...prev, post._id]
+                    );
+                  };
+
+                  return (
+                    <BlogPostCard
+                      key={post._id || i}
+                      blogPostData={post}
+                      writtenByOwner={isOwner}
+                      setShowTextEditor={setShowTextEditor}
+                      setEditBlogPost={() => {
+                        setEditBlogPost(true);
+                        setEditBlogPostData(post);
+                      }}
+                      isEditModeOn={editMode}
+                      isSelected={isSelected}
+                      onSelect={toggleSelect}
+                      onDeleteClick={() => handleDeleteSingle(post._id)}
+                    />
+                  );
+                })}
               </GridCustomCols>
             )}
             {/* Reviews*/}
@@ -175,7 +376,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 </div>
                 {!showInstaReview &&
                   (myReviews?.internalReviews.length === 0 ? (
-                    <div className="col-span-3 text-center text-gray-500">No internal review yet.</div>
+                    <div className="col-span-3 text-center text-gray-500">No internal reviews yet.</div>
                   ) : (
                     /* internal reviews */
                     <div className="flex gap-2">
@@ -226,7 +427,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 {/* Instagram Reviews */}
                 {showInstaReview &&
                   (myReviews?.externalReviews.length === 0 ? (
-                    <div className="col-span-3 text-center text-gray-500">No Instagram review yet.</div>
+                    <div className="col-span-3 text-center text-gray-500">No Instagram reviews yet.</div>
                   ) : (
                     <GridCustomCols numOfCols={4}>
                       {myReviews?.externalReviews.map((review, i) => (
@@ -241,40 +442,66 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               </>
             )}
             {/* Favourite Restaurants */}
-            {selectedTab === profileTabs[3] && (
-              <GridCustomCols numOfCols={6}>
-                {favouritedRestaurants.map(restaurant => (
-                  // isFavourited here will always be true. isFavourited={true}
-                  <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
-                ))}
-              </GridCustomCols>
-            )}
+            {selectedTab === profileTabs[3] &&
+              (favouritedRestaurants.length === 0 ? (
+                <div className="col-span-3 text-center text-gray-500">No favourite restaurants yet.</div>
+              ) : (
+                <GridCustomCols numOfCols={6}>
+                  {favouritedRestaurants.map(restaurant => (
+                    <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
+                  ))}
+                </GridCustomCols>
+              ))}
             {/* Favourite Blog Posts */}
-            {selectedTab === profileTabs[4] && (
-              <GridCustomCols numOfCols={4}>
-                {Array.from({ length: 12 }).map((_, i) => (
+            {selectedTab === profileTabs[4] &&
+              (favouritedBlogs.length === 0 ? (
+                <div className="col-span-3 text-center text-gray-500">No favourite blog posts yet.</div>
+              ) : (
+                <GridCustomCols numOfCols={4}>
+                  {/* {favouritedBlogs.map(blog => (
                   // The "Favourite Blog Posts" should not display posts written by the owner (i.e. isOwner should be false / !isOwner).
                   // However, users may still favourite their own posts — so this logic (false) might be adjusted later.
-                  <BlogPostCard key={i} blogPostData={fakeBlogPost} writtenByOwner={false} isFavourited={true} />
-                ))}
-              </GridCustomCols>
-            )}
+                  <BlogPostCard key={blog._id} blogPostData={blog} userId={userProfile._id} />
+                ))} */}
+                  {favouritedBlogs.map((post, i) => (
+                    <BlogPostCard
+                      key={post._id || i}
+                      blogPostData={post}
+                      writtenByOwner={isOwner}
+                      setShowTextEditor={setShowTextEditor}
+                      // Users should not be able to delete or edit anything in favBlogs tab
+                      // setEditBlogPost={setEditBlogPost}
+                      isEditModeOn={false}
+                      isSelected={false} // no selection needed
+                      onSelect={() => {}} // do nothing on checkbox click
+                      // onDeleteClick={() => {}} // Do NOT show delete functionality in this tab.
+                    />
+                  ))}
+                </GridCustomCols>
+              ))}
             {/* My Followers (users who follow owner )*/}
-            {selectedTab === profileTabs[5] && (
-              <GridCustomCols numOfCols={6}>
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <GeneralUserCard key={i} generalUserData={userProfile} isFollowing={false} />
-                ))}{' '}
-              </GridCustomCols>
-            )}
+            {selectedTab === profileTabs[5] &&
+              (followers.length === 0 ? (
+                <div className="col-span-3 text-center text-gray-500">No followers yet.</div>
+              ) : (
+                <GridCustomCols numOfCols={6}>
+                  {followers.map((follower, i) => (
+                    <GeneralUserCard key={follower._id} generalUserData={follower} isFollowing={false} />
+                  ))}
+                </GridCustomCols>
+              ))}
+
             {/* Following (users who are followed by owner )*/}
-            {selectedTab === profileTabs[6] && (
-              <GridCustomCols numOfCols={6}>
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <GeneralUserCard key={i} generalUserData={userProfile} isFollowing={true} />
-                ))}
-              </GridCustomCols>
-            )}
+            {selectedTab === profileTabs[6] &&
+              (followings.length === 0 ? (
+                <div className="col-span-3 text-center text-gray-500">No followings yet.</div>
+              ) : (
+                <GridCustomCols numOfCols={6}>
+                  {followings.map((following, i) => (
+                    <GeneralUserCard key={following._id} generalUserData={following} isFollowing={true} />
+                  ))}
+                </GridCustomCols>
+              ))}
           </>
         )}
         {/**** Tab menu and contents - END ****/}
@@ -285,6 +512,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             setShowTextEditor={setShowTextEditor}
             generalUserId={generalUserId}
             editBlogPost={editBlogPost}
+            blogPostData={editBlogPostData} // ADDED
           />
         )}
       </div>
