@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '../shared/Button';
-import InstagramEmbed from './InstagramEmbed';
+import InstagramEmbedOld from './InstagramEmbedOld';
 
 export default function DeleteInstagramForm({ setShowDeleteInstaModal }) {
   return (
@@ -22,7 +22,7 @@ export default function DeleteInstagramForm({ setShowDeleteInstaModal }) {
         </div>
         <div className="w-full h-full bg-brand-blue-lite  p-4 mt-4 rounded-lg overflow-y-scroll grid grid-cols-4 gap-2 shadow-inner">
           {Array.from({ length: 12 }).map((_, i) => (
-            <InstagramEmbed
+            <InstagramEmbedOld
               key={i}
               postUrl={
                 'https://www.instagram.com/p/CokYC2Jr20p/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA%3D%3D&img_index=1'

@@ -4,5 +4,5 @@ export default function FormattedDate({ yyyymmdd }) {
     month: 'long',
     day: 'numeric',
   });
-  return <h4 className="text-brand-grey mt-4">{fDate}</h4>;
+  return <h4 className="text-brand-grey">{fDate}</h4>;
 }

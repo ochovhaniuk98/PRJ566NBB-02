@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
+import Masonry from 'react-masonry-css';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
@@ -12,8 +14,9 @@ import StarRating from '../shared/StarRating';
 import { fakeBlogPost, fakeReviews, fakeRestaurantData } from '@/app/data/fakeData';
 import AddReviewForm from '../shared/AddReviewForm';
 import { Button } from '../shared/Button';
-import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
+import InstagramEmbedOld from '../restaurantProfile/InstagramEmbedOld';
 import RestaurantCard from '../restaurantProfile/RestaurantCard';
+import ReviewCardExpanded from '../restaurantProfile/ReviewCardExpanded';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
@@ -39,6 +42,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   });
   const [favouritedRestaurants, setFavouritedRestaurants] = useState([]);
   const [showInstaReview, setShowInstaReview] = useState(false);
+  const [selectedReview, setSelectedReview] = useState(null);
 
   /* States below are for MANAGING/EDITING general profile */
   const [editMode, setEditMode] = useState(false); // tracks whether owner wants to manage CONTENT on profile (displays edit/delete panel on each card)
@@ -118,6 +122,13 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     }
   }, [selectedTab, generalUserId]);
 
+  // breakpoints for internal reviews and expanded review side panel
+  const breakpointColumnsObj = useMemo(() => {
+    return selectedReview
+      ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
+      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
+  }, [selectedReview]);
+
   if (!userProfile) return <div>Loading profile...</div>;
 
   return (
@@ -166,6 +177,39 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                   (myReviews?.internalReviews.length === 0 ? (
                     <div className="col-span-3 text-center text-gray-500">No internal review yet.</div>
                   ) : (
+                    /* internal reviews */
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <Masonry
+                          breakpointCols={breakpointColumnsObj}
+                          className="flex gap-2"
+                          columnClassName="space-y-2"
+                        >
+                          {myReviews?.internalReviews.map((review, i) => (
+                            /* internal reviews */
+                            <ReviewCard
+                              key={review._id || i}
+                              review={review}
+                              photos={review.photos}
+                              isOwner={isOwner}
+                              isEditModeOn={editMode}
+                              setEditReviewForm={setEditReviewForm}
+                              onClick={() => setSelectedReview(review)}
+                              isSelected={selectedReview?._id === review._id}
+                            />
+                          ))}
+                        </Masonry>
+                      </div>
+                      {/* Expanded side panel (visible when internal review is selected) */}
+                      {selectedReview && (
+                        <ReviewCardExpanded
+                          selectedReview={selectedReview}
+                          onClose={() => setSelectedReview(null)}
+                          isOwner={isOwner}
+                        />
+                      )}
+                    </div>
+                    /*
                     <GridCustomCols numOfCols={4}>
                       {myReviews?.internalReviews.map((review, i) => (
                         <ReviewCard
@@ -177,7 +221,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                           setEditReviewForm={setEditReviewForm}
                         />
                       ))}
-                    </GridCustomCols>
+                    </GridCustomCols> */
                   ))}
                 {/* Instagram Reviews */}
                 {showInstaReview &&
@@ -186,7 +230,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                   ) : (
                     <GridCustomCols numOfCols={4}>
                       {myReviews?.externalReviews.map((review, i) => (
-                        <InstagramEmbed
+                        <InstagramEmbedOld
                           key={review._id || i}
                           postUrl={review.content?.embedLink}
                           isEditModeOn={editMode}

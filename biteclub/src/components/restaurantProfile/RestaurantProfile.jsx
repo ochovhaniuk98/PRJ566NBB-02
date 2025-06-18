@@ -19,7 +19,7 @@ import GridCustomCols from '../shared/GridCustomCols';
 import BlogPostCard from '../shared/BlogPostCard';
 import { fakeBlogPost } from '@/app/data/fakeData';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
-import InstagramGrid from './InstaTest';
+import MasonryReviewGrid from './MasonryReviewGrid';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
@@ -196,15 +196,21 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
 
         {/* Reviews */}
         {selectedTab === restaurantTabs[0] && (
+          <MasonryReviewGrid
+            reviewList={reviewsData} // internal + external reviews
+            selectedReview={selectedReview}
+            setSelectedReview={setSelectedReview}
+          />
+          /*
           <ReviewsOnGrid3Col
             selectedReview={selectedReview}
             setSelectedReview={setSelectedReview}
-            reviewList={reviewsData} // internal + external reviews
-          />
+            reviewList={reviewsData}
+          /> */
         )}
         {/* Mentioned */}
         {selectedTab === restaurantTabs[1] && (
-          <GridCustomCols numOfCols={4}>
+          <GridCustomCols numOfCols={3}>
             {Array.from({ length: 12 }).map((_, i) => (
               <BlogPostCard key={i} blogPostData={fakeBlogPost} />
             ))}
@@ -212,9 +218,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         )}
         {/* Photos */}
         {selectedTab === restaurantTabs[2] && <PhotoGallery photos={images} />}
-
-        {/* Test Instagram */}
-        {selectedTab === restaurantTabs[4] && <InstagramGrid reviewList={reviewsData} />}
 
         {/* Business Info */}
         {selectedTab === restaurantTabs[5] && <BusinessInfo restaurant={restaurantData} />}

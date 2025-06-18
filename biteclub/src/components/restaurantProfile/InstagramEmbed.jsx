@@ -1,66 +1,60 @@
-'use client';
 import { useEffect, useRef, useState } from 'react';
 import EditModePanel from '../shared/EditModePanel';
 
-export default function InstagramEmbed({
-  postUrl,
-  onHeightChange = () => {},
-  isEditModeOn = false,
-  forEditRestaurant = false,
-}) {
-  const wrapperRef = useRef();
-  const [measuredHeight, setMeasuredHeight] = useState(null); // 🔄 dynamic height
+// instagram embed component
+export default function InstagramEmbed({ url, isEditModeOn = false }) {
+  const ref = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://www.instagram.com/embed.js';
-    script.async = true;
-    document.body.appendChild(script);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
 
-    script.onload = () => {
-      if (window.instgrm?.Embeds?.process) {
-        window.instgrm.Embeds.process();
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
 
-        // Wait for embed to fully render
-        setTimeout(() => {
-          if (wrapperRef.current) {
-            const fullHeight = wrapperRef.current.offsetHeight;
-            setMeasuredHeight(fullHeight); // 🟡 Store height locally
-            if (onHeightChange) onHeightChange(fullHeight); // 🟡 Send to parent
-          }
-        }, 1500);
-      }
-    };
+    return () => observer.disconnect();
+  }, []);
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, [postUrl, onHeightChange]);
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const scriptId = 'instagram-embed-script';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://www.instagram.com/embed.js';
+      script.async = true;
+      document.body.appendChild(script);
+      script.onload = () => window.instgrm?.Embeds?.process();
+    } else {
+      window.instgrm?.Embeds?.process?.();
+    }
+  }, [isVisible]);
 
   return (
-    <div
-      ref={wrapperRef}
-      className={`border rounded-md border-brand-yellow-lite relative ${
-        forEditRestaurant ? '' : 'hover:border-brand-peach'
-      }`}
-      style={{
-        height: measuredHeight ? `${measuredHeight}px` : forEditRestaurant ? '550px' : '630px',
-        gridRow: 'span 2',
-        overflow: 'hidden',
-      }}
-    >
-      <blockquote
-        className="instagram-media iframe"
-        data-instgrm-permalink={postUrl}
-        data-instgrm-version="14"
-        style={{
-          width: '100%',
-          height: '100%',
-        }}
-      />
+    <div ref={ref} className="w-full border rounded-md border-brand-yellow-lite min-h-[420px] relative">
+      {isVisible ? (
+        <blockquote
+          className="instagram-media"
+          data-instgrm-permalink={url}
+          data-instgrm-version="14"
+          data-instgrm-captioned
+          style={{ width: '100%' }}
+        ></blockquote>
+      ) : (
+        <div className="w-full h-[420px] bg-gray-100 animate-pulse rounded-md" />
+      )}
+      {/* show edit/delete panel if user wants to manage profile */}
       {isEditModeOn && <EditModePanel forInstagram={true} />}
     </div>
   );
 }
-/*
- measuredHeight ? `${measuredHeight}px` : */

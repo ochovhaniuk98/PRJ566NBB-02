@@ -1,18 +1,9 @@
-/* https://www.youtube.com/watch?v=bupetqS1SMU
-https://www.youtube.com/watch?v=Jol0vCitur4
-https://www.youtube.com/watch?v=DqGr8YwO52Q
-
-https://www.youtube.com/watch?v=O8ivm7403rk&t=475s
-
-https://www.youtube.com/watch?v=obAB6nSVj1E
-
-https://www.youtube.com/watch?v=6biMWgD6_JY&t=517s
-*/
 @import 'tailwindcss';
-
 /* needed for the rich text editor */
 @import './rich-text-editor-styles/_variables.scss';
 @import './rich-text-editor-styles/_keyframe-animations.scss';
+
+@plugin 'tailwind-scrollbar';
 
 @theme {
   /* fonts */

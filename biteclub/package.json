@@ -60,6 +60,7 @@
     "eslint-config-next": "15.3.2",
     "postcss": "^8.5.3",
     "sass": "^1.89.0",
+    "tailwind-scrollbar": "^4.0.2",
     "tailwindcss": "^4.1.6"
   }
 }

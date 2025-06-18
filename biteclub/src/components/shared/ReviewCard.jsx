@@ -17,14 +17,12 @@ export default function ReviewCard({
   isEditModeOn = false,
   setEditReviewForm = () => {},
 }) {
-  console.log('PHOTOS LENGTH: ', photos[0].url);
+  //console.log('PHOTOS LENGTH: ', photos[0].url);
   return (
     <div
       className={`${
         isSelected ? 'bg-brand-peach-lite' : 'bg-white'
-      } relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2 ${
-        photos?.length > 0 ? 'row-span-2' : 'row-span-1'
-      }`}
+      } relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2`}
       onClick={onClick}
     >
       <div className="p-4">
@@ -40,7 +38,7 @@ export default function ReviewCard({
         <h3>{review.title}</h3>
         {/*TO DO for Cesca: Put word limit in review body preview.
         MISSING DYNAMIC VALUES: author name + pic*/}
-        <p>{review.body}</p>
+        <p>{review.body.length > 600 ? review.body.slice(0, 600) + '…' : review.body}</p>
         {isOwner ? (
           <FormattedDate yyyymmdd={review.date_posted} />
         ) : (
@@ -50,8 +48,14 @@ export default function ReviewCard({
 
       {photos?.length > 0 && (
         <div className="flex-1 flex">
-          <div className="relative w-full overflow-hidden">
-            <Image src={photos[0].url} alt={photos[0].caption} className="object-cover rounded-b-md" fill={true} />
+          <div className="relative w-full aspect-[4/3] overflow-hidden">
+            <Image
+              src={photos[0].url}
+              alt={photos[0].caption}
+              fill
+              className="object-cover rounded-b-md"
+              sizes="(max-width: 768px) 100vw, 33vw"
+            />
           </div>
         </div>
       )}
