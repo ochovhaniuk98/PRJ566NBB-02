@@ -15,9 +15,7 @@ import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetail
 import { useEffect, useState } from 'react';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import AddReviewForm from '../shared/AddReviewForm';
-import GridCustomCols from '../shared/GridCustomCols';
-import BlogPostCard from '../shared/BlogPostCard';
-import { fakeBlogPost } from '@/app/data/fakeData';
+import MentionedTab from './MentionedTab';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
@@ -207,13 +205,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
           />
         )}
         {/* Mentioned */}
-        {selectedTab === restaurantTabs[1] && (
-          <GridCustomCols numOfCols={4}>
-            {Array.from({ length: 12 }).map((_, i) => (
-              <BlogPostCard key={i} blogPostData={fakeBlogPost} />
-            ))}
-          </GridCustomCols>
-        )}
+        {selectedTab === restaurantTabs[1] && <MentionedTab restaurantId={restaurantId} />}
         {/* Photos */}
         {selectedTab === restaurantTabs[2] && <PhotoGallery photos={restaurantImages} isOwner={isOwner} />}
 
