@@ -100,11 +100,13 @@ export default function BlogPostCard({
           {writtenByOwner ? (
             <FormattedDate yyyymmdd={blogPostData.date_posted} />
           ) : (
-            <AuthorDateBlurb
-              authorPic={blogPostData.user_id?.userProfilePicture.url}
-              authorName={blogPostData.user_id?.username}
-              date={blogPostData.date_posted}
-            />
+            blogPostData?.user_id?.userProfilePicture?.url && (
+              <AuthorDateBlurb
+                authorPic={blogPostData.user_id?.userProfilePicture.url}
+                authorName={blogPostData.user_id?.username}
+                date={blogPostData.date_posted}
+              />
+            )
           )}
           <EngagementIconStat
             iconArr={reviewCardIconArr}
