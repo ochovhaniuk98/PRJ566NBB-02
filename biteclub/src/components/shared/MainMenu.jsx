@@ -18,15 +18,19 @@ export default function MainMenu() {
         const supabase = createClient();
         const { data } = await supabase.auth.getUser();
 
-        if (data?.user?.id) {
-
-          const response = await fetch(`/api/get-user-type?authId=${data.user.id}`);
-
-          const { userType } = await response.json();
-          setUserType(userType);
-        } else {
+        if (!data?.user?.id) {
           setUserType(null);
+          setLoading(false);
+          return; // Exit early if no user is logged in
         }
+
+        const response = await fetch(`/api/get-user-type?authId=${data.user.id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch user type');
+        }
+
+        const { userType } = await response.json();
+        setUserType(userType);
       } catch (error) {
         console.error('Error fetching user type:', error);
         setUserType(null);
@@ -37,7 +41,7 @@ export default function MainMenu() {
 
     fetchUserType();
   }, []);
-
+  
   const menuIcons = [faHouseChimney, faUser, faGamepad, faUtensils, faMicroblog, faGear];
   // !!! settings link temporary - will put it inside general user's profile later !!!
   const menuLinks = [
