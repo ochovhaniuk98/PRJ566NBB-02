@@ -85,7 +85,17 @@ export default function AdminPage() {
               <p className="text-sm text-gray-600">User ID: {user?._id}</p>
               <p className="text-sm text-gray-600">Supabase ID: {user?.supabaseId}</p>
               <p className="text-sm text-gray-600">
-                License: <a href={user?.licenseFileUrl}>Download Link</a>
+                License:{' '}
+                {user?.licenseFileUrl ? (
+                  <button
+                    onClick={() => window.open(user.licenseFileUrl, '_blank')}
+                    className="bg-blue-500 text-white px-2 py-1 rounded"
+                  >
+                    Download
+                  </button>
+                ) : (
+                  <span className="text-gray-400">No license available</span>
+                )}
               </p>
               <div className="mt-2">
                 <button

@@ -323,6 +323,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         setEditMode={setEditMode}
         handleDeleteSelectedBlogPost={handleDeleteSelectedBlogPost}
         handleDeleteAllBlogPost={handleDeleteAllBlogPost}
+        blogPostsCount={myBlogPosts.length}
       />
       <div className="main-side-padding w-full py-8">
         {/**** Tab menu and contents - START ****/}
@@ -334,41 +335,44 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               <ProfileTabBar tabs={filteredTabs} onTabChange={setSelectedTab} />
             )}
             {/* Blog Posts */}
-            {selectedTab === profileTabs[0] && (
-              <GridCustomCols numOfCols={3}>
-                {myBlogPosts.map((post, i) => {
-                  // Check if this blog post's ID is currently in the list of selected posts
-                  const isSelected = selectedBlogPosts.includes(post._id);
-                  // Toggle selection on checkbox click
-                  const toggleSelect = () => {
-                    setSelectedBlogPosts(prev =>
-                      // If this post is already selected, remove it from the list
-                      prev.includes(post._id)
-                        ? prev.filter(id => id !== post._id)
-                        : // If it's not selected yet, add it to the list
-                          [...prev, post._id]
-                    );
-                  };
+            {selectedTab === profileTabs[0] &&
+              (!myBlogPosts || myBlogPosts.length === 0 ? (
+                <div className="col-span-3 text-center text-gray-500">No blog posts yet.</div>
+              ) : (
+                <GridCustomCols numOfCols={3}>
+                  {myBlogPosts.map((post, i) => {
+                    // Check if this blog post's ID is currently in the list of selected posts
+                    const isSelected = selectedBlogPosts.includes(post._id);
+                    // Toggle selection on checkbox click
+                    const toggleSelect = () => {
+                      setSelectedBlogPosts(prev =>
+                        // If this post is already selected, remove it from the list
+                        prev.includes(post._id)
+                          ? prev.filter(id => id !== post._id)
+                          : // If it's not selected yet, add it to the list
+                            [...prev, post._id]
+                      );
+                    };
 
-                  return (
-                    <BlogPostCard
-                      key={post._id || i}
-                      blogPostData={post}
-                      writtenByOwner={isOwner}
-                      setShowTextEditor={setShowTextEditor}
-                      setEditBlogPost={() => {
-                        setEditBlogPost(true);
-                        setEditBlogPostData(post);
-                      }}
-                      isEditModeOn={editMode}
-                      isSelected={isSelected}
-                      onSelect={toggleSelect}
-                      onDeleteClick={() => handleDeleteSingle(post._id)}
-                    />
-                  );
-                })}
-              </GridCustomCols>
-            )}
+                    return (
+                      <BlogPostCard
+                        key={post._id || i}
+                        blogPostData={post}
+                        writtenByOwner={isOwner}
+                        setShowTextEditor={setShowTextEditor}
+                        setEditBlogPost={() => {
+                          setEditBlogPost(true);
+                          setEditBlogPostData(post);
+                        }}
+                        isEditModeOn={editMode}
+                        isSelected={isSelected}
+                        onSelect={toggleSelect}
+                        onDeleteClick={() => handleDeleteSingle(post._id)}
+                      />
+                    );
+                  })}
+                </GridCustomCols>
+              ))}
             {/* Reviews*/}
             {selectedTab === profileTabs[1] && (
               <>

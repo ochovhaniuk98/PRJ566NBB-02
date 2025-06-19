@@ -31,6 +31,7 @@ export default function GeneralUserBanner({
   isOwner = false,
   handleDeleteSelectedBlogPost,
   handleDeleteAllBlogPost,
+  blogPostsCount,
 }) {
   const [reviewCount, setReviewCount] = useState(0);
 
@@ -65,7 +66,7 @@ export default function GeneralUserBanner({
       icon: faFeather,
       bgColour: 'white',
       iconColour: 'brand-peach',
-      statNum: generalUserData?.myBlogPosts?.length || 0,
+      statNum: blogPostsCount || 0,
     },
     {
       label: 'Challenges',
