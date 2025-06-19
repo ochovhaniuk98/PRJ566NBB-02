@@ -21,6 +21,7 @@ export default function Settings() {
   const [displayFavouriteRestaurants, setDisplayFavouriteRestaurants] = useState(false);
   const [displayFavouriteBlogPosts, setDisplayFavouriteBlogPosts] = useState(false);
   const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
+  const [feedPersonalization, setFeedPersonalization] = useState(false);
   const [error, setError] = useState(null);
   const supabase = createClient();
 
@@ -43,6 +44,7 @@ export default function Settings() {
         profile.displayFavouriteBlogPosts == undefined ? false : profile.displayFavouriteBlogPosts
       );
       setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.displayVisitedPlaces);
+      setFeedPersonalization(profile.feedPersonalization == undefined ? false : profile.feedPersonalization);
       // setAvatarUrl(profile.avatarUrl || '');
     };
 
@@ -72,6 +74,7 @@ export default function Settings() {
             displayFavouriteRestaurants,
             displayFavouriteBlogPosts,
             displayVisitedPlaces,
+            feedPersonalization,
           }),
         });
 
@@ -188,7 +191,7 @@ export default function Settings() {
                 />
               </div>
 
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-4">
                 <label htmlFor="user-role">
                   <h4>Visited Places</h4>
                 </label>
@@ -197,6 +200,20 @@ export default function Settings() {
                   checked={displayVisitedPlaces}
                   onCheckedChange={checked => {
                     setDisplayVisitedPlaces(checked);
+                  }}
+                />
+              </div>
+
+              <h2 className="mb-4">Feed Personalization</h2>
+              <div className="flex items-center justify-between mb-4">
+                <label htmlFor="user-role">
+                  <h4>AI personalized feed</h4>
+                </label>
+                <Switch
+                  id="user-role"
+                  checked={feedPersonalization}
+                  onCheckedChange={checked => {
+                    setFeedPersonalization(checked);
                   }}
                 />
               </div>
