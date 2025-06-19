@@ -3,7 +3,7 @@ import { InternalReview, ExternalReview } from '@/lib/model/dbSchema';
 import { NextResponse } from 'next/server';
 
 export async function GET(req, { params }) {
-  const { userId } = params;
+  const { userId } = await params;
 
   if (!userId) {
     return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
