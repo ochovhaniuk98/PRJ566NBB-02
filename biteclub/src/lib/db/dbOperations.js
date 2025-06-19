@@ -199,7 +199,7 @@ export async function updateLicenseForBusinessUser(data) {
   await dbConnect();
 
   const user = await BusinessUser.findOneAndUpdate(
-    { supabaseId: data.superbaseId },
+    { supabaseId: data.supabaseId },
     { licenseFileUrl: data.url },
     { new: true } // returns the updated user
   );

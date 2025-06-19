@@ -7,10 +7,9 @@ import { updateLicenseForBusinessUser } from '@/lib/db/dbOperations';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { superbaseId, url } = body;
+    const { supabaseId, url } = body;
 
-    const user = await updateLicenseForBusinessUser({ superbaseId, url });
-    console.log('User', user);
+    const user = await updateLicenseForBusinessUser({ supabaseId, url });
 
     return new Response(JSON.stringify({ message: 'License PDF Updated', user }), {
       status: 200,
