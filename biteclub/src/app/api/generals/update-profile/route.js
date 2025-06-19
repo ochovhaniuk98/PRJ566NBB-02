@@ -12,6 +12,7 @@ export async function POST(req) {
       displayFavouriteRestaurants,
       displayFavouriteBlogPosts,
       displayVisitedPlaces,
+      feedPersonalization
     } = body;
 
     // if (!supabaseId || !username) {
@@ -25,6 +26,7 @@ export async function POST(req) {
       displayFavouriteRestaurants,
       displayFavouriteBlogPosts,
       displayVisitedPlaces,
+      feedPersonalization
     });
 
     if (!updatedUser) {

@@ -22,6 +22,7 @@ const UserSchema = new mongoose.Schema({
   strike: Number,
   numOfPoints: Number,
   pointsResetDate: Date,
+  feedPersonalization: Boolean,
   personalization_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Personalization' },
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // users that following us. (sprint 2) newly added.
   followings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // users that we follow

@@ -249,6 +249,7 @@ export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
     displayFavouriteRestaurants: user.displayFavouriteRestaurants,
     displayFavouriteBlogPosts: user.displayFavouriteBlogPosts,
     displayVisitedPlaces: user.displayVisitedPlaces,
+    feedPersonalization: user.feedPersonalization,
   };
 }
 
