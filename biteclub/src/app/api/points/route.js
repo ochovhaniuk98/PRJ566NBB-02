@@ -1,32 +1,22 @@
 import { NextResponse } from 'next/server';
-import { updateGeneralUsername } from '@/lib/db/dbOperations';
+import { updatePoints } from '@/lib/db/dbOperations';
 
-export async function POST(req) {
+export async function PUT(req) {
   try {
     const body = await req.json();
 
     const {
       supabaseId,
-      username,
-      userBio,
-      displayFavouriteRestaurants,
-      displayFavouriteBlogPosts,
-      displayVisitedPlaces,
-      feedPersonalization
+      numOfPoints
     } = body;
 
     // if (!supabaseId || !username) {
     //   return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     // }
 
-    const updatedUser = await updateGeneralUsername({
+    const updatedUser = await updatePoints({
       supabaseId,
-      username,
-      userBio,
-      displayFavouriteRestaurants,
-      displayFavouriteBlogPosts,
-      displayVisitedPlaces,
-      feedPersonalization
+      numOfPoints
     });
 
     if (!updatedUser) {

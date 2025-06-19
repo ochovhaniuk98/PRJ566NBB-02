@@ -83,6 +83,13 @@ Components created for the following:
   - Restaurant
   - Blog Post
 
+### Personalized Feed
+- Users can enable or disable whether they want to receive an AI personalized field
+- Enabling the options means that they agree with sharing their data for training AI models for recommendations.
+
+### Points system
+- Users can now redeem their points for coupons ranging from $5 to $15.
+
 ## Business User Related
 ### Business Users' Licences Upload
 - A page where business users can upload documents to verify their restaurant ownership. 
