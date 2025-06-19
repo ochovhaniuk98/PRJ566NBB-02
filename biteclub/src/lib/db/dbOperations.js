@@ -231,6 +231,22 @@ export async function updateGeneralUsername(data) {
       displayFavouriteRestaurants: data.displayFavouriteRestaurants,
       displayFavouriteBlogPosts: data.displayFavouriteBlogPosts,
       displayVisitedPlaces: data.displayVisitedPlaces,
+      feedPersonalization: data.feedPersonalization
+    },
+    { new: true } // returns the updated user
+  );
+
+  return user;
+}
+
+// Update the points of a user
+export async function updatePoints(data) {
+  await dbConnect();
+
+  const user = await User.findOneAndUpdate(
+    { supabaseId: data.supabaseId },
+    {
+      numOfPoints: data.numOfPoints
     },
     { new: true } // returns the updated user
   );
@@ -250,6 +266,7 @@ export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
     displayFavouriteBlogPosts: user.displayFavouriteBlogPosts,
     displayVisitedPlaces: user.displayVisitedPlaces,
     feedPersonalization: user.feedPersonalization,
+    numOfPoints: user.numOfPoints
   };
 }
 
