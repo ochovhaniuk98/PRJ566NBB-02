@@ -47,7 +47,7 @@ export default function MainMenu() {
   const menuLinks = [
     '/',
     userType ? `/users/${userType}` : '/login', // if no userType = user have not we redirect user to login page.
-    '#',
+    '/challenges',
     '/restaurants',
     '#',
     '/users/settings',
