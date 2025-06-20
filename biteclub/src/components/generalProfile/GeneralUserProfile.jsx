@@ -396,19 +396,24 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                           className="flex gap-2"
                           columnClassName="space-y-2"
                         >
-                          {myReviews?.internalReviews.map((review, i) => (
-                            /* internal reviews */
-                            <ReviewCard
-                              key={review._id || i}
-                              review={review}
-                              photos={review.photos}
-                              isOwner={isOwner}
-                              isEditModeOn={editMode}
-                              setEditReviewForm={setEditReviewForm}
-                              onClick={() => setSelectedReview(review)}
-                              isSelected={selectedReview?._id === review._id}
-                            />
-                          ))}
+                          {
+                            /* sort reviews by most recently posted */
+                            [...myReviews.internalReviews]
+                              .sort((a, b) => new Date(b.date_posted) - new Date(a.date_posted))
+                              .map((review, i) => (
+                                /* internal reviews */
+                                <ReviewCard
+                                  key={review._id || i}
+                                  review={review}
+                                  photos={review.photos}
+                                  isOwner={isOwner}
+                                  isEditModeOn={editMode}
+                                  setEditReviewForm={setEditReviewForm}
+                                  onClick={() => setSelectedReview(review)}
+                                  isSelected={selectedReview?._id === review._id}
+                                />
+                              ))
+                          }
                         </Masonry>
                       </div>
                       {/* Expanded side panel (visible when internal review is selected) */}
