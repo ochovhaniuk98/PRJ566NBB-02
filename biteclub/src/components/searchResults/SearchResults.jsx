@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Masonry from 'react-masonry-css';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Button } from '@/components/shared/Button';
 import SearchResultsTabBar from '@/components/searchResults/SearchResultsTabBar';
@@ -150,6 +151,13 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     setSelectedTab(searchType);
   }, [searchType]);
 
+  // for blog posts' Masonry grid
+  const breakpointColumnsObj = {
+    default: 3,
+    1024: 2,
+    640: 1,
+  };
+
   return (
     <MainBaseContainer className={'bg-brand-yellow'}>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
@@ -190,11 +198,11 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
           {selectedTab === 1 && fetchCompleted && (
             <>
               <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={postsCount} searchString={searchQuery} />
-              <GridCustomCols numOfCols={3} className="mt-4">
+              <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2 mt-4" columnClassName="space-y-2">
                 {blogPosts.map((post, i) => (
                   <BlogPostCard key={post._id || i} blogPostData={post} />
                 ))}
-              </GridCustomCols>
+              </Masonry>
               {hasMore && (
                 <div className="mt-6 flex justify-center">
                   <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>

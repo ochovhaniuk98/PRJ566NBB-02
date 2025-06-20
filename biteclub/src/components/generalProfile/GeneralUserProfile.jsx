@@ -252,14 +252,14 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     fetchTabData();
   }, [selectedTab, generalUserId]);
 
-  // breakpoints for internal reviews and expanded review side panel
+  // Masonry breakpoints for internal reviews and expanded review side panel
   const breakpointColumnsObj = useMemo(() => {
     return selectedReview
       ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
       : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
   }, [selectedReview]);
 
-  // breakpoints for external reviews (Instagram)
+  // Masonry breakpoints for external reviews (Instagram) and blog posts
   const breakpointColumnsObjInsta = {
     default: 3,
     1024: 3,
@@ -339,7 +339,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (!myBlogPosts || myBlogPosts.length === 0 ? (
                 <div className="col-span-3 text-center text-gray-500">No blog posts yet.</div>
               ) : (
-                <GridCustomCols numOfCols={3}>
+                <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
                   {myBlogPosts.map((post, i) => {
                     // Check if this blog post's ID is currently in the list of selected posts
                     const isSelected = selectedBlogPosts.includes(post._id);
@@ -371,7 +371,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                       />
                     );
                   })}
-                </GridCustomCols>
+                </Masonry>
               ))}
             {/* Reviews*/}
             {selectedTab === profileTabs[1] && (
@@ -465,7 +465,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (favouritedBlogs.length === 0 ? (
                 <div className="col-span-3 text-center text-gray-500">No favourite blog posts yet.</div>
               ) : (
-                <GridCustomCols numOfCols={3}>
+                <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
                   {/* {favouritedBlogs.map(blog => (
                   // The "Favourite Blog Posts" should not display posts written by the owner (i.e. isOwner should be false / !isOwner).
                   // However, users may still favourite their own posts — so this logic (false) might be adjusted later.
@@ -485,7 +485,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                       // onDeleteClick={() => {}} // Do NOT show delete functionality in this tab.
                     />
                   ))}
-                </GridCustomCols>
+                </Masonry>
               ))}
             {/* My Followers (users who follow owner )*/}
             {selectedTab === profileTabs[5] &&
