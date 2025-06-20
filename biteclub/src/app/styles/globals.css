@@ -175,6 +175,10 @@
   .custom-checkmark {
     @apply w-4 h-4 bg-brand-yellow rounded-full;
   }
+
+  .priceTab {
+    @apply font-primary bg-brand-yellow-lite py-1 px-3 rounded-full min-w-18 hover:bg-brand-yellow cursor-pointer;
+  }
 }
 
 /*AUTH CSS (NICOLE ADDED) all tailwind css*/

@@ -162,13 +162,34 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     <MainBaseContainer className={'bg-brand-yellow'}>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
         <div className={'w-full h-full'}>
-          <div className="flex justify-between mb-4">
+          <div className="flex justify-between mb-4 ">
             {/* tabs for selecting search type: restaurants, blog posts or users */}
             <SearchResultsTabBar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
             {selectedTab === 0 && (
-              <Button type="submit" className="w-30" variant="default">
-                Filter
-              </Button>
+              <div className="relative">
+                <Button type="submit" className="w-30" variant="default">
+                  Filter
+                </Button>
+
+                <div className=" bg-brand-yellow-extralite w-md absolute right-0 mt-2 rounded-md p-4 shadow-md z-10">
+                  <h3 className="uppercase">Filters</h3>
+                  <form className="flex flex-col gap-y-4">
+                    <div>
+                      <h4>Price</h4>
+                      <div className="flex gap-x-2 w-full justify-center">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <button type="button" key={i} className="priceTab">
+                            {'$'.repeat(i + 1)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <h4>Rating</h4>
+                    </div>
+                  </form>
+                </div>
+              </div>
             )}
           </div>
           {/* Restaurant Results */}
