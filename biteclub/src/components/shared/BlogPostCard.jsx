@@ -78,7 +78,7 @@ export default function BlogPostCard({
   };
 
   return (
-    <div className="relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2 row-span-2">
+    <div className="relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2">
       <div className="px-4 pt-4">
         <div
           onClick={handleFavouriteBlogPostClick}
@@ -114,19 +114,18 @@ export default function BlogPostCard({
           />
         </div>
       </div>
-
-      <div className="flex-1 flex">
-        <div className="relative w-full overflow-hidden rounded-b-md">
-          {blogPostData.previewImage ? (
+      {blogPostData.previewImage ? (
+        <div className="flex flex-col h-full">
+          <div className="relative w-full overflow-hidden rounded-b-md aspect-3/2 mt-auto">
             <Image
               src={blogPostData.previewImage}
               alt="Preview image"
               fill={true}
               className="rounded-b-md object-cover w-full"
             />
-          ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
       {/* EditModePanel appears when general user selects to "Manage Content";
       General user can select blog post to delete or edit. Editing opens the text editor. */}
       {isEditModeOn && (

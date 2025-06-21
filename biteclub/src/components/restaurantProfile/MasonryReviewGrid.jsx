@@ -18,10 +18,10 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
     return <div className="col-span-3 text-center text-gray-500">No reviews available</div>;
   }
 
-  // Combine and randomize reviews (memoized to prevent re-rendering)
+  // Combine and sort by date posted (memoized to prevent re-rendering)
   const combinedList = useMemo(() => {
     const all = [...reviewList.internalReviews, ...reviewList.externalReviews];
-    return all.sort(() => Math.random() - 0.5);
+    return all.sort((a, b) => new Date(b.date_posted) - new Date(a.date_posted));
   }, [reviewList]);
 
   return (
