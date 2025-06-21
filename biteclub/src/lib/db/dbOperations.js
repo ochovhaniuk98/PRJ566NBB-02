@@ -505,7 +505,9 @@ export async function searchBlogPostsByQuery(query, { page = 1, limit = 20 } = {
   const [posts, totalCount] = await Promise.all([
     BlogPost.find({ title: { $regex: query, $options: 'i' } })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .populate('user_id', 'username userProfilePicture')
+      .lean(),
     BlogPost.countDocuments({ title: { $regex: query, $options: 'i' } }),
   ]);
 

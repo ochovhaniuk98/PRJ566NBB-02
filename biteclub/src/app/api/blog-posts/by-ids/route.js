@@ -7,7 +7,6 @@ import { formatBlogPost } from '@/lib/utils/formatBlogPost';
 // "When you have large number of uuids, you can reach url length limit"
 // See: https://www.reddit.com/r/softwarearchitecture/comments/11kz22e/when_should_we_use_post_over_get_method_to/
 
-
 export async function POST(req) {
   try {
     const { ids } = await req.json();
@@ -15,7 +14,9 @@ export async function POST(req) {
 
     const posts = await BlogPost.find({
       _id: { $in: ids },
-    });
+    })
+      .populate('user_id', 'username userProfilePicture')
+      .lean();
 
     const formattedPostsWithPreview = posts.map(formatBlogPost);
 
@@ -27,4 +28,3 @@ export async function POST(req) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
-
