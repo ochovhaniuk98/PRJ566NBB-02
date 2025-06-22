@@ -27,6 +27,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [usersCount, setUsersCount] = useState(0);
 
   // for filter menu
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [selectedPrice, setSelectedPrice] = useState(2);
   const [ratingRange, setRatingRange] = useState(4);
   const [distanceRange, setDistanceRange] = useState(6);
@@ -173,22 +174,29 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
             <SearchResultsTabBar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
             {selectedTab === 0 && (
               <div className="relative">
-                <Button type="submit" className="w-30" variant="default">
+                <Button
+                  type="submit"
+                  className="w-30"
+                  variant="default"
+                  onClick={() => setShowFilterMenu(prev => !prev)}
+                >
                   Filter
                 </Button>
 
-                <FilterMenu
-                  selectedPrice={selectedPrice}
-                  ratingRange={ratingRange}
-                  distanceRange={distanceRange}
-                  selectedItems={selectedItems}
-                  isOpenNow={isOpenNow}
-                  setSelectedPrice={setSelectedPrice}
-                  setRatingRange={setRatingRange}
-                  setDistanceRange={setDistanceRange}
-                  setSelectedItems={setSelectedItems}
-                  setIsOpenNow={setIsOpenNow}
-                />
+                {showFilterMenu && (
+                  <FilterMenu
+                    selectedPrice={selectedPrice}
+                    ratingRange={ratingRange}
+                    distanceRange={distanceRange}
+                    selectedItems={selectedItems}
+                    isOpenNow={isOpenNow}
+                    setSelectedPrice={setSelectedPrice}
+                    setRatingRange={setRatingRange}
+                    setDistanceRange={setDistanceRange}
+                    setSelectedItems={setSelectedItems}
+                    setIsOpenNow={setIsOpenNow}
+                  />
+                )}
               </div>
             )}
           </div>
