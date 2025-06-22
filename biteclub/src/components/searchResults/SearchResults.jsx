@@ -27,7 +27,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [users, setUsers] = useState([]);
   const [usersCount, setUsersCount] = useState(0);
 
-  const [priceRange, setPriceRange] = useState(2);
+  const [priceRange, setPriceRange] = useState(3);
   const [distanceRange, setDistanceRange] = useState(3);
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -208,7 +208,12 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
                     </div>
                     <div>
                       <h4>Rating</h4>
-                      <Slider value={priceRange} setValue={setPriceRange} forRestaurantRating={true} />
+                      <Slider
+                        index={priceRange}
+                        setIndex={setPriceRange}
+                        forRestaurantRating={true}
+                        reverseDirection={true}
+                      />
                     </div>
                     <CustomCheckboxes
                       title="Featured Cuisines of the Week"
@@ -224,7 +229,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
                     />
                     <div>
                       <h4>Distance</h4>
-                      <Slider value={distanceRange} setValue={setDistanceRange} />
+                      <Slider index={distanceRange} setIndex={setDistanceRange} />
                     </div>
                   </form>
                 </div>
