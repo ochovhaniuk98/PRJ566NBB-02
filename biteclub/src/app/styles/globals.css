@@ -177,7 +177,7 @@
   }
 
   .priceTab {
-    @apply font-primary bg-brand-yellow-lite py-1 px-3 rounded-full min-w-18 hover:bg-brand-yellow cursor-pointer;
+    @apply font-primary py-1 px-3 rounded-full min-w-18 hover:bg-brand-yellow cursor-pointer;
   }
 }
 
