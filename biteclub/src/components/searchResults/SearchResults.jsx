@@ -10,6 +10,7 @@ import BlogPostCard from '@/components/shared/BlogPostCard';
 import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
 import RestaurantCard from '@/components/restaurantProfile/RestaurantCard';
 import SearchResultsNumMessage from '@/components/searchResults/SearchResultsNumMessage';
+import { Slider, CustomCheckboxes } from './Slider';
 
 // shows search results of restaurants, blog posts, and users
 export default function SearchResults({ searchType = 0, searchQuery = '' }) {
@@ -25,6 +26,10 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [postsCount, setPostsCount] = useState(0);
   const [users, setUsers] = useState([]);
   const [usersCount, setUsersCount] = useState(0);
+
+  const [priceRange, setPriceRange] = useState(2);
+  const [distanceRange, setDistanceRange] = useState(3);
+  const [selectedItems, setSelectedItems] = useState([]);
 
   // Fetch restaurant data based on the search query
   const fetchRestaurants = async (reset = false) => {
@@ -158,6 +163,23 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     640: 1,
   };
 
+  const cuisinesOfTheWeekArr = [
+    'Burmese',
+    'Laotian',
+    'Somali',
+    'Uyghur',
+    'Georgian',
+    'Tibetan',
+    'Malagasy',
+    'Armenian',
+    'Sri Lankan',
+    'Ethiopian',
+    'Nepalese',
+    'Guyanese',
+  ];
+
+  const dietaryPreferencesArr = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Halal', 'Kosher', 'Dairy-Free'];
+
   return (
     <MainBaseContainer className={'bg-brand-yellow'}>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
@@ -171,7 +193,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
                   Filter
                 </Button>
 
-                <div className=" bg-brand-yellow-extralite w-md absolute right-0 mt-2 rounded-md p-4 shadow-md z-10">
+                <div className=" bg-brand-yellow-extralite w-md h-fit absolute right-0 mt-2 rounded-md p-4 shadow-md z-10">
                   <h3 className="uppercase">Filters</h3>
                   <form className="flex flex-col gap-y-4">
                     <div>
@@ -186,6 +208,23 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
                     </div>
                     <div>
                       <h4>Rating</h4>
+                      <Slider value={priceRange} setValue={setPriceRange} forRestaurantRating={true} />
+                    </div>
+                    <CustomCheckboxes
+                      title="Featured Cuisines of the Week"
+                      itemLabels={cuisinesOfTheWeekArr}
+                      selectedItems={selectedItems}
+                      setSelectedItems={setSelectedItems}
+                    />
+                    <CustomCheckboxes
+                      title="Dietary Preferences"
+                      itemLabels={dietaryPreferencesArr}
+                      selectedItems={selectedItems}
+                      setSelectedItems={setSelectedItems}
+                    />
+                    <div>
+                      <h4>Distance</h4>
+                      <Slider value={distanceRange} setValue={setDistanceRange} />
                     </div>
                   </form>
                 </div>
