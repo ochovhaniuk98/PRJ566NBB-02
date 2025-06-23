@@ -5,11 +5,11 @@ import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Button } from '@/components/shared/Button';
 import SearchResultsTabBar from '@/components/searchResults/SearchResultsTabBar';
 import GridCustomCols from '@/components/shared/GridCustomCols';
-import { fakeBlogPost, fakeUser, fakeRestaurantData } from '@/app/data/fakeData';
 import BlogPostCard from '@/components/shared/BlogPostCard';
 import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
 import RestaurantCard from '@/components/restaurantProfile/RestaurantCard';
 import SearchResultsNumMessage from '@/components/searchResults/SearchResultsNumMessage';
+import FilterMenu from './FilterMenu';
 
 // shows search results of restaurants, blog posts, and users
 export default function SearchResults({ searchType = 0, searchQuery = '' }) {
@@ -25,6 +25,14 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [postsCount, setPostsCount] = useState(0);
   const [users, setUsers] = useState([]);
   const [usersCount, setUsersCount] = useState(0);
+
+  // for filter menu
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [selectedPrice, setSelectedPrice] = useState(2);
+  const [ratingRange, setRatingRange] = useState(4);
+  const [distanceRange, setDistanceRange] = useState(6);
+  const [selectedItems, setSelectedItems] = useState([]); //for checkboxes
+  const [isOpenNow, setIsOpenNow] = useState(false);
 
   // Fetch restaurant data based on the search query
   const fetchRestaurants = async (reset = false) => {
@@ -157,18 +165,39 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     1024: 2,
     640: 1,
   };
-
   return (
     <MainBaseContainer className={'bg-brand-yellow'}>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
         <div className={'w-full h-full'}>
-          <div className="flex justify-between mb-4">
+          <div className="flex justify-between mb-4 ">
             {/* tabs for selecting search type: restaurants, blog posts or users */}
             <SearchResultsTabBar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
             {selectedTab === 0 && (
-              <Button type="submit" className="w-30" variant="default">
-                Filter
-              </Button>
+              <div className="relative">
+                <Button
+                  type="submit"
+                  className="w-30"
+                  variant="default"
+                  onClick={() => setShowFilterMenu(prev => !prev)}
+                >
+                  Filter
+                </Button>
+
+                {showFilterMenu && (
+                  <FilterMenu
+                    selectedPrice={selectedPrice}
+                    ratingRange={ratingRange}
+                    distanceRange={distanceRange}
+                    selectedItems={selectedItems}
+                    isOpenNow={isOpenNow}
+                    setSelectedPrice={setSelectedPrice}
+                    setRatingRange={setRatingRange}
+                    setDistanceRange={setDistanceRange}
+                    setSelectedItems={setSelectedItems}
+                    setIsOpenNow={setIsOpenNow}
+                  />
+                )}
+              </div>
             )}
           </div>
           {/* Restaurant Results */}
