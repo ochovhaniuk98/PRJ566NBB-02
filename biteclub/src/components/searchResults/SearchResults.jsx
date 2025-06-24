@@ -182,7 +182,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
                 >
                   Filter
                 </Button>
-
+                {/* Filter Menu */}
                 {showFilterMenu && (
                   <FilterMenu
                     selectedPrice={selectedPrice}
