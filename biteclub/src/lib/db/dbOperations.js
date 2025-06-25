@@ -482,16 +482,66 @@ export async function searchRestaurantsByQuery(query) {
   return restaurants;
 }
 
-// Search for a Restaurant (limit 20 searches per page)
-export async function searchRestaurantsBySearchQuery(query, { page = 1, limit = 20 } = {}) {
+// Search and filter for a Restaurant (limit 20 searches per page)
+export async function searchRestaurantsBySearchQuery(
+  query,
+  { page = 1, limit = 20, cuisines = [], dietary = [], rating = 0, price, isOpenNow = false } = {}
+) {
   await dbConnect();
   const skip = (page - 1) * limit;
 
+  const filter = {
+    name: { $regex: query, $options: 'i' },
+  };
+
+  // Filter by rating
+  if (rating) {
+    filter.rating = { $gte: rating };
+  }
+
+  // Filter by price
+  if (price) {
+    filter.priceRange = price;
+  }
+
+  // Filter by cuisines
+  if (cuisines.length > 0) {
+    filter.cuisines = { $in: cuisines };
+  }
+
+  // Filter by dietary options
+  if (dietary.length > 0) {
+    filter.dietaryOptions = { $in: dietary };
+  }
+
+  // Optional: Filter by "Open Now"
+  if (isOpenNow) {
+    const dayName = new Date().toLocaleDateString('en-CA', {
+      weekday: 'long',
+      timeZone: 'America/Toronto',
+    });
+
+    const now = new Date().toLocaleTimeString('en-CA', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Toronto',
+    });
+
+    console.log({ dayName, now });
+
+    filter.BusinessHours = {
+      $elemMatch: {
+        day: dayName,
+        opening: { $lte: now },
+        closing: { $gte: now },
+      },
+    };
+  }
+
   const [restaurants, totalCount] = await Promise.all([
-    Restaurant.find({ name: { $regex: query, $options: 'i' } })
-      .skip(skip)
-      .limit(limit),
-    Restaurant.countDocuments({ name: { $regex: query, $options: 'i' } }),
+    Restaurant.find(filter).skip(skip).limit(limit),
+    Restaurant.countDocuments(filter),
   ]);
 
   return { restaurants, totalCount };
