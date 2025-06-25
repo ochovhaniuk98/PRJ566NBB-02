@@ -12,6 +12,8 @@ export default function FilterMenu({
   setDistanceRange,
   setSelectedItems,
   setIsOpenNow,
+  onApply,
+  onClose, // close the menu after applying
 }) {
   // dynamic array, changes weekly
   const cuisinesOfTheWeekArr = [
@@ -26,7 +28,7 @@ export default function FilterMenu({
     'Sri Lankan',
     'Ethiopian',
     'Nepalese',
-    'Guyanese',
+    'Japanese',
   ];
   const dietaryPreferencesArr = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Halal', 'Kosher', 'Dairy-Free'];
 
@@ -37,12 +39,24 @@ export default function FilterMenu({
     setDistanceRange(6);
     setSelectedItems([]);
     setIsOpenNow(false);
+
+    // ignore filters when re-fetching (search)
+    onApply({ clearFilters: true });
+
+    if (onClose) onClose();
   };
 
   return (
     <div className=" bg-brand-yellow-extralite w-md h-fit absolute right-0 mt-2 rounded-md px-4 pb-4 pt-6 shadow-md z-10">
       <h3 className="uppercase mb-4">Filters</h3>
-      <form className="flex flex-col gap-y-4">
+      <form
+        className="flex flex-col gap-y-4"
+        onSubmit={e => {
+          e.preventDefault(); // prevent page reload
+          onApply(); // call fetch
+          if (onClose) onClose(); // close filter menu
+        }}
+      >
         {/* Price */}
         <div>
           <h4>Price</h4>
