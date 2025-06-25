@@ -229,6 +229,8 @@ const RestaurantSchema = new mongoose.Schema({
   bannerImages: [PhotoSchema],
   images: [PhotoSchema],
   location: String,
+  longitude: Number,
+  latitude: Number,
 });
 
 // Business User Schema
