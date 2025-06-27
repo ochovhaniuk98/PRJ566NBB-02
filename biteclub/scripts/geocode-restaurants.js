@@ -29,8 +29,9 @@ async function geocodeAddress(address) {
 async function main() {
   await dbConnect();
 
+  // now get the restaurants where coordinates were set
   const restaurants = await Restaurant.find({
-    $or: [{ latitude: { $exists: false } }, { longitude: { $exists: false } }],
+    $or: [{ latitude: { $exists: true } }, { longitude: { $exists: true } }],
   });
 
   console.log(`Found ${restaurants.length} restaurants to geocode.`);
@@ -40,8 +41,14 @@ async function main() {
 
     const coords = await geocodeAddress(restaurant.location);
     if (coords) {
-      restaurant.latitude = coords.latitude;
-      restaurant.longitude = coords.longitude;
+      // restaurant.latitude = coords.latitude;
+      // restaurant.longitude = coords.longitude;
+
+      // saves the locationCoords as a valid GeoJSON Point, which is necessary for distance filtering via MongoDB's geospatial queries
+      restaurant.locationCoords = {
+        type: 'Point',
+        coordinates: [coords.longitude, coords.latitude],
+      };
       await restaurant.save();
       console.log(`Updated: ${restaurant.name}`);
     } else {
