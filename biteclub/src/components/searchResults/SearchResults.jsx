@@ -45,7 +45,6 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     async function fetchCuisines() {
       try {
         const res = await fetch('/api/restaurants/cuisines/cuisinesOfTheWeek');
-        console.log('IM here');
         const data = await res.json();
         setCuisinesOfTheWeekArr(data.cuisines);
       } catch (err) {
@@ -69,6 +68,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
 
     // filtering
     if (!clearFilters) {
+      console.log('IM here');
       // price
       if (selectedPrice != null) {
         const priceMap = { 1: '$', 2: '$$', 3: '$$$', 4: '$$$$', 5: '$$$$$' };
@@ -121,8 +121,11 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
         setRestaurants(data.restaurants);
         setRestaurantsCount(data.totalCount);
       } else {
-        // append data to existing list
-        setRestaurants(prev => [...prev, ...data.restaurants]);
+        setRestaurants(prev => {
+          const ids = new Set(prev.map(r => r._id));
+          const newOnes = data.restaurants.filter(r => !ids.has(r._id));
+          return [...prev, ...newOnes];
+        });
       }
 
       // if we've fetched everything, stop loading more
