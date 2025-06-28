@@ -98,8 +98,8 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
         params.append('isOpenNow', 'true');
         console.log(`Open now option chosen`);
       }
-      // distance (6 is default)
-      if (distanceRange && distanceRange != 6) {
+      // distance (10 is default)
+      if (distanceRange && distanceRange != 10) {
         if (!userLocation?.latitude || !userLocation?.longitude) {
           console.warn('Distance selected but user location is unavailable');
         } else {
@@ -324,7 +324,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
                       if (clearFilters) {
                         setSelectedPrice(null);
                         setRatingRange(3);
-                        setDistanceRange(6);
+                        setDistanceRange(10);
                         setSelectedItems([]);
                         setIsOpenNow(false);
                         setClearFilters(true);
