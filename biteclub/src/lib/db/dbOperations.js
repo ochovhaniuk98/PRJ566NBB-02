@@ -482,10 +482,21 @@ export async function searchRestaurantsByQuery(query) {
   return restaurants;
 }
 
-// Search and filter for a Restaurant (limit 20 searches per page)
+// Search and Filter for the Restaurants (limit 20 searches per page)
 export async function searchRestaurantsBySearchQuery(
   query,
-  { page = 1, limit = 20, cuisines = [], dietary = [], rating = 0, price, isOpenNow = false } = {}
+  {
+    page = 1,
+    limit = 20,
+    cuisines = [],
+    dietary = [],
+    rating = 0,
+    price,
+    distance = 0,
+    lat = '',
+    lng = '',
+    isOpenNow = false,
+  } = {}
 ) {
   await dbConnect();
   const skip = (page - 1) * limit;
@@ -514,7 +525,24 @@ export async function searchRestaurantsBySearchQuery(
     filter.dietaryOptions = { $in: dietary };
   }
 
-  // Optional: Filter by "Open Now"
+  // Filter by distance
+  // when distance is 10+, we do want to include all results and do not filter by distance
+  if (!isNaN(lat) && !isNaN(lng) && distance > 0 && distance < 10) {
+    console.log(`Coordinates lng: ${lng} and lat: ${lat} and distance ${distance}`);
+
+    filter.locationCoords = {
+      // finds within a specified geometry
+      $geoWithin: {
+        // specifies a circular area on the earth’s surface
+        $centerSphere: [
+          [parseFloat(lng), parseFloat(lat)], // the center point
+          distance / 6371, // convert from kilometers to radians (distance in km / Earth’s mean radius)
+        ],
+      },
+    };
+  }
+
+  // Filter by "Open Now"
   if (isOpenNow) {
     const dayName = new Date().toLocaleDateString('en-CA', {
       weekday: 'long',

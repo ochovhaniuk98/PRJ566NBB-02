@@ -53,7 +53,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [userLocation, setUserLocation] = useState(null);
 
   // Fetch restaurant data based on the search query
-  const fetchRestaurants = async (reset = false, clearFilters = false) => {
+  const fetchRestaurants = async (reset = false, clearFilters = true) => {
     setFetchCompleted(false);
 
     // search query
@@ -93,6 +93,18 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
         params.append('isOpenNow', 'true');
         console.log(`Open now option chosen`);
       }
+      // distance (6 is default)
+      if (distanceRange && distanceRange != 6) {
+        if (!userLocation?.latitude || !userLocation?.longitude) {
+          console.warn('Distance selected but user location is unavailable');
+        } else {
+          console.log(`Distance range chosen: ${distanceRange}`);
+          params.append('distance', distanceRange);
+          // pass user location coordinates as well
+          params.append('lat', userLocation.latitude);
+          params.append('lng', userLocation.longitude);
+        }
+      }
     }
 
     try {
@@ -110,7 +122,8 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
       }
 
       // if we've fetched everything, stop loading more
-      if ((reset ? data.restaurants.length : restaurants.length + data.restaurants.length) >= data.totalCount) {
+      console.log(`data?.restaurants?.length: ${data?.restaurants?.length}`);
+      if ((reset ? data?.restaurants?.length : restaurants?.length + data?.restaurants?.length) >= data?.totalCount) {
         setHasMore(false);
       } else {
         setHasMore(true);

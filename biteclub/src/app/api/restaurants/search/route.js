@@ -16,6 +16,11 @@ export async function GET(request) {
   const dietary = searchParams.get('dietary')?.split(',') || [];
   const isOpenNow = searchParams.get('isOpenNow') === 'true';
 
+  const distance = parseFloat(searchParams.get('distance') || '0');
+  const lat = searchParams.get('lat') || '';
+  const lng = searchParams.get('lng') || '';
+  console.log('Backend received distance, lat, lng:', distance, lat, lng);
+
   try {
     const { restaurants, totalCount } = await searchRestaurantsBySearchQuery(query, {
       page,
@@ -24,6 +29,9 @@ export async function GET(request) {
       dietary,
       rating,
       price,
+      distance,
+      lat,
+      lng,
       isOpenNow,
     });
 
