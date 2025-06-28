@@ -35,6 +35,8 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [distanceRange, setDistanceRange] = useState(6);
   const [selectedItems, setSelectedItems] = useState([]); //for checkboxes
   const [isOpenNow, setIsOpenNow] = useState(false);
+  // filtering
+  const [clearFilters, setClearFilters] = useState(true);
   // cuisines of the week
   const [cuisinesOfTheWeekArr, setCuisinesOfTheWeekArr] = useState([]);
   // geolocation
@@ -56,7 +58,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   }, []);
 
   // Fetch restaurant data based on the search query
-  const fetchRestaurants = async (reset = false, clearFilters = true) => {
+  const fetchRestaurants = async (reset = false) => {
     setFetchCompleted(false);
 
     // search query
@@ -68,7 +70,6 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
 
     // filtering
     if (!clearFilters) {
-      console.log('IM here');
       // price
       if (selectedPrice != null) {
         const priceMap = { 1: '$', 2: '$$', 3: '$$$', 4: '$$$$', 5: '$$$$$' };
@@ -326,9 +327,11 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
                         setDistanceRange(6);
                         setSelectedItems([]);
                         setIsOpenNow(false);
+                        setClearFilters(true);
                       }
 
-                      fetchRestaurants(true, clearFilters); // pass clearFilters flag to fetch
+                      setClearFilters(false); // clearFilters flag to fetch
+                      fetchRestaurants(true);
                     }}
                     onClose={() => setShowFilterMenu(false)}
                   />
