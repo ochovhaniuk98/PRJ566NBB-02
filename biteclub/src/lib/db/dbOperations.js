@@ -575,6 +575,13 @@ export async function searchRestaurantsBySearchQuery(
   return { restaurants, totalCount };
 }
 
+export async function getAllCuisines() {
+  await dbConnect();
+  const allCuisines = await Restaurant.distinct('cuisines');
+
+  return allCuisines;
+}
+
 // Search for a Posts by Search Query (User Input)
 export async function searchBlogPostsByQuery(query, { page = 1, limit = 20 } = {}) {
   await dbConnect();

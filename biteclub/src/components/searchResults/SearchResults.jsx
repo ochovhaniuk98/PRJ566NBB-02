@@ -10,20 +10,6 @@ import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
 import RestaurantCard from '@/components/restaurantProfile/RestaurantCard';
 import SearchResultsNumMessage from '@/components/searchResults/SearchResultsNumMessage';
 import FilterMenu from './FilterMenu';
-const cuisinesOfTheWeekArr = [
-  'Burmese',
-  'Laotian',
-  'Somali',
-  'Uyghur',
-  'Georgian',
-  'Tibetan',
-  'Malagasy',
-  'Armenian',
-  'Sri Lankan',
-  'Ethiopian',
-  'Nepalese',
-  'Japanese',
-];
 
 const dietaryPreferencesArr = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Halal', 'Kosher', 'Dairy-Free'];
 
@@ -49,8 +35,26 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [distanceRange, setDistanceRange] = useState(6);
   const [selectedItems, setSelectedItems] = useState([]); //for checkboxes
   const [isOpenNow, setIsOpenNow] = useState(false);
+  // cuisines of the week
+  const [cuisinesOfTheWeekArr, setCuisinesOfTheWeekArr] = useState([]);
   // geolocation
   const [userLocation, setUserLocation] = useState(null);
+
+  // get cuisines of the week
+  useEffect(() => {
+    async function fetchCuisines() {
+      try {
+        const res = await fetch('/api/restaurants/cuisines/cuisinesOfTheWeek');
+        console.log('IM here');
+        const data = await res.json();
+        setCuisinesOfTheWeekArr(data.cuisines);
+      } catch (err) {
+        console.error('Failed to load cuisines of the week:', err);
+      }
+    }
+
+    fetchCuisines();
+  }, []);
 
   // Fetch restaurant data based on the search query
   const fetchRestaurants = async (reset = false, clearFilters = true) => {

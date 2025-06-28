@@ -1,5 +1,6 @@
 import { Slider, CustomCheckboxes, OpenNowSwitch } from './FilterOptions';
 import { Button } from '../shared/Button';
+import { useState, useEffect } from 'react';
 
 export default function FilterMenu({
   selectedPrice,
@@ -15,22 +16,24 @@ export default function FilterMenu({
   onApply,
   onClose, // close the menu after applying
 }) {
-  // dynamic array, changes weekly
-  const cuisinesOfTheWeekArr = [
-    'Burmese',
-    'Laotian',
-    'Somali',
-    'Uyghur',
-    'Georgian',
-    'Tibetan',
-    'Malagasy',
-    'Armenian',
-    'Sri Lankan',
-    'Ethiopian',
-    'Nepalese',
-    'Japanese',
-  ];
+  // cuisines of the week, dynamic array, changes weekly
+  const [cuisinesOfTheWeekArr, setCuisinesOfTheWeekArr] = useState([]);
   const dietaryPreferencesArr = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Halal', 'Kosher', 'Dairy-Free'];
+
+  // get cuisines of the week
+  useEffect(() => {
+    async function fetchCuisines() {
+      try {
+        const res = await fetch('/api/restaurants/cuisines/cuisinesOfTheWeek');
+        const data = await res.json();
+        setCuisinesOfTheWeekArr(data.cuisines);
+      } catch (err) {
+        console.error('Failed to load cuisines of the week:', err);
+      }
+    }
+
+    fetchCuisines();
+  }, []);
 
   // Clear All values
   const handleClearAll = () => {
