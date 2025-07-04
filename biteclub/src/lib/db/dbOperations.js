@@ -470,6 +470,37 @@ export async function getBlogPost({ id }) {
   return post;
 }
 
+// get Exploring Blog Posts (popular + new)
+export async function getListOfExploringBlogPosts(page = 1, limit = 20) {
+  await dbConnect();
+  const skip = (page - 1) * (limit / 2);
+
+  const popularFilter = {
+    'likes.count': { $gte: 1 },
+    comments: {
+      $elemMatch: {
+        'likes.count': { $gte: 1 },
+      },
+    },
+  };
+
+  const [popularPosts, newPosts, totalCount] = await Promise.all([
+    BlogPost.find(popularFilter)
+      .skip(skip)
+      .limit(limit / 2),
+    BlogPost.find({})
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limit / 2),
+    BlogPost.countDocuments({}),
+  ]);
+
+  return {
+    posts: [...popularPosts, ...newPosts],
+    totalCount,
+  };
+}
+
 // Search for a Restaurant by Search Query (User Input)
 export async function searchRestaurantsByQuery(query) {
   await dbConnect();
