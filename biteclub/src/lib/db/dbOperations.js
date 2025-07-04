@@ -501,6 +501,44 @@ export async function getListOfExploringBlogPosts(page = 1, limit = 20) {
   };
 }
 
+// get Following Blog Posts (posts posted by people user follows)
+export async function getListOfFollowingBlogPosts(userId, page = 1, limit = 20) {
+  await dbConnect();
+  const skip = (page - 1) * (limit / 2);
+
+  console.log('UserId: ', userId);
+  // get array of users' posts the current user is following
+  const currentUser = await User.findById(userId);
+  console.log('Im here');
+  if (!currentUser) {
+    throw new Error('User not found');
+  }
+
+  const followings = currentUser.followings;
+
+  // when user is not following anyone - return 0 posts
+  if (!followings || followings.length === 0) {
+    return {
+      posts: [],
+      totalCount: 0,
+    };
+  }
+
+  // find blog posts where user_id is in followings[]
+  const [posts, totalCount] = await Promise.all([
+    BlogPost.find({ user_id: { $in: followings } })
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limit),
+    BlogPost.countDocuments({ user_id: { $in: followings } }),
+  ]);
+
+  return {
+    posts,
+    totalCount,
+  };
+}
+
 // Search for a Restaurant by Search Query (User Input)
 export async function searchRestaurantsByQuery(query) {
   await dbConnect();
