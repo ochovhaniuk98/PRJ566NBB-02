@@ -238,14 +238,18 @@ export default function GeneralUserBanner({
       )}
 
       {/* Icon to open Report User Form */}
-      <div
-        className="absolute bottom-3 right-6 flex items-center font-primary text-brand-navy cursor-pointer"
-        onClick={() => setOpenReportForm(true)}
-      >
-        <FontAwesomeIcon icon={faFlag} className={`icon-sm text-brand-navy mr-2`} />
-        <h5>Report User</h5>
-      </div>
-      {openReportForm && <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} />}
+      {!isOwner && (
+        <div
+          className="absolute bottom-3 right-6 flex items-center font-primary text-brand-navy cursor-pointer"
+          onClick={() => setOpenReportForm(true)}
+        >
+          <FontAwesomeIcon icon={faFlag} className={`icon-sm text-brand-navy mr-2`} />
+          <h5>Report User</h5>
+        </div>
+      )}
+      {openReportForm && (
+        <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} reportedUser={generalUserData} />
+      )}
     </div>
   );
 }

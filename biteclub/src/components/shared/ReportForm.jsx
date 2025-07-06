@@ -5,10 +5,10 @@ import { faFlag } from '@fortawesome/free-solid-svg-icons';
 import { fakeUser } from '@/app/data/fakeData';
 import Image from 'next/image';
 
-export default function ReportForm({ onClose, reportType }) {
+export default function ReportForm({ onClose, reportType, contentTitle = '', reportedUser = '' }) {
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex justify-center  z-200 overflow-scroll scrollbar-hide w-full h-full"
+      className="fixed inset-0 bg-black/50 flex justify-center z-50 overflow-scroll scrollbar-hide w-full h-full"
       onClick={e => e.stopPropagation()}
     >
       <div className="relative bg-transparent p-8 w-2xl min-h-fit ">
@@ -21,20 +21,25 @@ export default function ReportForm({ onClose, reportType }) {
             <div>
               <div className="flex font-primary gap-x-2">
                 <div className="font-secondary text-4xl mb-4">
-                  Report {reportType === 'user' ? 'Username' : 'Content'}
+                  Report {reportType === 'user' ? reportedUser.username : 'Content'}
                 </div>
 
                 {reportType === 'user' && (
                   <div className="w-10 h-10 aspect-square bg-brand-green rounded-full relative">
                     <Image
-                      src={fakeUser.userProfilePicture.url}
-                      alt="reported user"
+                      src={reportedUser.userProfilePicture.url}
+                      alt={reportedUser.userProfilePicture.caption}
                       className="object-cover rounded-full"
                       fill={true}
                     />
                   </div>
                 )}
               </div>
+              {reportType !== 'user' && (
+                <p className="mb-4">
+                  You are reporting <span className="font-semibold italic">{contentTitle}</span>.
+                </p>
+              )}
               <Label>Reason for reporting</Label>
               <textarea
                 type="text"

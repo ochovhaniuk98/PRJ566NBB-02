@@ -172,7 +172,9 @@ export default function GeneralUserCard({ generalUserData }) {
       </div>
       {/* </Link> */}
       {/* Report User Form */}
-      {openReportForm && <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} />}
+      {openReportForm && (
+        <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} reportedUser={generalUserData} />
+      )}
     </div>
   );
 }

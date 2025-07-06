@@ -3,12 +3,15 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/auth/client';
 import ReadOnlyEditor from '../tiptap-rich-text-editor/ReadOnlyEditor';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
-import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart, faFlag } from '@fortawesome/free-solid-svg-icons';
+import ReportForm from '../shared/ReportForm';
 
 export default function BlogPost({ id }) {
   const [postContent, setPostContent] = useState(null);
   const [postTitle, setPostTitle] = useState(null);
   const [numOfFavourites, setNumOfFavourites] = useState(0);
+  const [openReportForm, setOpenReportForm] = useState(false); // for reporting post
 
   useEffect(() => {
     if (!id) return;
@@ -37,7 +40,6 @@ export default function BlogPost({ id }) {
 
     fetchAll();
   }, [id]);
-
 
   // When user save blog-post as favourite
   const handleFavouriteBlogPostClick = async () => {
@@ -74,9 +76,24 @@ export default function BlogPost({ id }) {
 
   return (
     <div className="mt-20">
-      <SingleTabWithIcon icon={faHeart} detailText={numOfFavourites ?? 0} onClick={handleFavouriteBlogPostClick} />
+      <div className="flex flex-row gap-x-4">
+        <SingleTabWithIcon icon={faHeart} detailText={numOfFavourites ?? 0} onClick={handleFavouriteBlogPostClick} />
+
+        {/* show Report form when flag icon is clicked */}
+        <div
+          className="font-primary font-semibold text-brand-navy flex items-center gap-x-2 cursor-pointer"
+          onClick={e => {
+            setOpenReportForm(prev => !prev);
+          }}
+        >
+          <FontAwesomeIcon icon={faFlag} className={`icon-lg text-brand-navy`} />
+          Report Content
+        </div>
+      </div>
       {postTitle && <h2 className="simple-editor-content ml-[200px]">{postTitle}</h2>}
       {postContent && <ReadOnlyEditor content={postContent} />}
+      {/* Report Content Form */}
+      {openReportForm && <ReportForm onClose={() => setOpenReportForm(false)} contentTitle={postTitle} />}
     </div>
   );
 }
