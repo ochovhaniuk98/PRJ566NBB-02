@@ -310,6 +310,21 @@ export async function getBlogPostNumOfFavourites(blogId) {
   return count;
 }
 
+// Only deleting external reviews for a single user
+export async function deleteAllExternalReviewsByUser(userId) {
+  try {
+    const result = await ExternalReview.deleteMany({ user_id: userId });
+
+    return {
+      deletedExternal: result.deletedCount,
+    };
+  } catch (error) {
+    throw new Error('Failed to delete external reviews: ' + error.message);
+  }
+}
+
+
+
 // ==================
 // CLOUDINARY RELATED
 // ==================
