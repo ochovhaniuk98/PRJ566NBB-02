@@ -11,6 +11,8 @@ import RestaurantCard from '@/components/restaurantProfile/RestaurantCard';
 import SearchResultsNumMessage from '@/components/searchResults/SearchResultsNumMessage';
 import FilterMenu from './FilterMenu';
 
+const dietaryPreferencesArr = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Halal', 'Kosher', 'Dairy-Free'];
+
 // shows search results of restaurants, blog posts, and users
 export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [selectedTab, setSelectedTab] = useState(searchType); // for selecting search results type (default is restaurants)
@@ -33,12 +35,84 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   const [distanceRange, setDistanceRange] = useState(6);
   const [selectedItems, setSelectedItems] = useState([]); //for checkboxes
   const [isOpenNow, setIsOpenNow] = useState(false);
+  // cuisines of the week
+  const [cuisinesOfTheWeekArr, setCuisinesOfTheWeekArr] = useState([]);
+  // geolocation
+  const [userLocation, setUserLocation] = useState(null);
+
+  // get cuisines of the week
+  useEffect(() => {
+    async function fetchCuisines() {
+      try {
+        const res = await fetch('/api/restaurants/cuisines/cuisinesOfTheWeek');
+        const data = await res.json();
+        setCuisinesOfTheWeekArr(data.cuisines);
+      } catch (err) {
+        console.error('Failed to load cuisines of the week:', err);
+      }
+    }
+
+    fetchCuisines();
+  }, []);
 
   // Fetch restaurant data based on the search query
-  const fetchRestaurants = async (reset = false) => {
+  const fetchRestaurants = async (reset = false, clearFilters = true) => {
     setFetchCompleted(false);
+
+    // search query
+    const params = new URLSearchParams({
+      q: searchQuery,
+      page,
+      limit: 20,
+    });
+
+    // filtering
+    if (!clearFilters) {
+      // price
+      if (selectedPrice != null) {
+        const priceMap = { 1: '$', 2: '$$', 3: '$$$', 4: '$$$$', 5: '$$$$$' };
+        console.log(`Price chosen: ${priceMap[selectedPrice]}`);
+        params.append('price', priceMap[selectedPrice]);
+      }
+      // rating (3 is default)
+      if (ratingRange && ratingRange != 3) {
+        console.log(`Rating range value chosen: ${ratingRange}`);
+        params.append('rating', ratingRange);
+      }
+      // cuisines
+      const cuisines = selectedItems.filter(i => cuisinesOfTheWeekArr.includes(i));
+      if (cuisines.length > 0) {
+        params.append('cuisines', cuisines.join(','));
+        console.log(`Cuisines chosen: ${cuisines.join(',')}`);
+      }
+      // dietary
+      const dietary = selectedItems.filter(i => dietaryPreferencesArr.includes(i));
+      if (dietary.length > 0) {
+        params.append('dietary', dietary.join(','));
+        console.log(`Dietary Options chosen: ${dietary.join(',')}`);
+      }
+      // open now
+      if (isOpenNow) {
+        params.append('isOpenNow', 'true');
+        console.log(`Open now option chosen`);
+      }
+      // distance (10 is default)
+      if (distanceRange && distanceRange != 10) {
+        if (!userLocation?.latitude || !userLocation?.longitude) {
+          console.warn('Distance selected but user location is unavailable');
+        } else {
+          console.log(`Distance range chosen: ${distanceRange}`);
+          params.append('distance', distanceRange);
+          // pass user location coordinates as well
+          params.append('lat', userLocation.latitude);
+          params.append('lng', userLocation.longitude);
+        }
+      }
+    }
+
     try {
-      const res = await fetch(`/api/restaurants/search?q=${searchQuery}&page=${page}&limit=20`);
+      // const res = await fetch(`/api/restaurants/search?q=${searchQuery}&page=${page}&limit=20`);
+      const res = await fetch(`/api/restaurants/search?${params.toString()}`);
       const data = await res.json();
 
       if (reset) {
@@ -46,12 +120,16 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
         setRestaurants(data.restaurants);
         setRestaurantsCount(data.totalCount);
       } else {
-        // append data to existing list
-        setRestaurants(prev => [...prev, ...data.restaurants]);
+        setRestaurants(prev => {
+          const ids = new Set(prev.map(r => r._id));
+          const newOnes = data.restaurants.filter(r => !ids.has(r._id));
+          return [...prev, ...newOnes];
+        });
       }
 
       // if we've fetched everything, stop loading more
-      if ((reset ? data.restaurants.length : restaurants.length + data.restaurants.length) >= data.totalCount) {
+      console.log(`data?.restaurants?.length: ${data?.restaurants?.length}`);
+      if ((reset ? data?.restaurants?.length : restaurants?.length + data?.restaurants?.length) >= data?.totalCount) {
         setHasMore(false);
       } else {
         setHasMore(true);
@@ -63,7 +141,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     }
   };
 
-  // Fetch restaurant data based on the search query
+  // Fetch blog posts data based on the search query
   const fetchBlogPosts = async (reset = false) => {
     setFetchCompleted(false);
     if (reset) {
@@ -134,6 +212,13 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     if (selectedTab === 0 && searchQuery) {
       setPage(1);
       fetchRestaurants(true); // reset = true
+      console.log('Search query got changed');
+      setShowFilterMenu(false);
+      setSelectedPrice(2);
+      setRatingRange(4);
+      setDistanceRange(6);
+      setSelectedItems([]);
+      setIsOpenNow(false);
     } else if (selectedTab === 1 && searchQuery) {
       setPage(1);
       fetchBlogPosts(true); // reset = true
@@ -158,6 +243,48 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     setFetchCompleted(false);
     setSelectedTab(searchType);
   }, [searchType]);
+
+  // get user's geolocation
+  useEffect(() => {
+    const requestGeolocation = async () => {
+      if (!navigator.geolocation || !navigator.permissions) return;
+
+      try {
+        const result = await navigator.permissions.query({ name: 'geolocation' });
+
+        if (result.state === 'granted') {
+          navigator.geolocation.getCurrentPosition(position => {
+            const coords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            };
+            setUserLocation(coords);
+            console.log('Location granted:', coords);
+          });
+        } else if (result.state === 'prompt') {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              const coords = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              };
+              setUserLocation(coords);
+              console.log('User allowed location access:', coords);
+            },
+            error => {
+              console.warn('User denied or error in location:', error.message);
+            }
+          );
+        } else if (result.state === 'denied') {
+          console.log('Location permission denied previously.');
+        }
+      } catch (error) {
+        console.error('Error checking geolocation permissions:', error);
+      }
+    };
+
+    requestGeolocation();
+  }, []);
 
   // for blog posts' Masonry grid
   const breakpointColumnsObj = {
@@ -195,6 +322,20 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
                     setDistanceRange={setDistanceRange}
                     setSelectedItems={setSelectedItems}
                     setIsOpenNow={setIsOpenNow}
+                    onApply={({ clearFilters = false } = {}) => {
+                      setPage(1);
+
+                      // reset filters in state if needed
+                      if (clearFilters) {
+                        setSelectedPrice(null);
+                        setRatingRange(3);
+                        setDistanceRange(10);
+                        setSelectedItems([]);
+                        setIsOpenNow(false);
+                      }
+                      fetchRestaurants(true, clearFilters);
+                    }}
+                    onClose={() => setShowFilterMenu(false)}
                   />
                 )}
               </div>

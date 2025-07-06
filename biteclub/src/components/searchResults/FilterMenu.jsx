@@ -1,5 +1,6 @@
 import { Slider, CustomCheckboxes, OpenNowSwitch } from './FilterOptions';
 import { Button } from '../shared/Button';
+import { useState, useEffect } from 'react';
 
 export default function FilterMenu({
   selectedPrice,
@@ -12,23 +13,27 @@ export default function FilterMenu({
   setDistanceRange,
   setSelectedItems,
   setIsOpenNow,
+  onApply,
+  onClose, // close the menu after applying
 }) {
-  // dynamic array, changes weekly
-  const cuisinesOfTheWeekArr = [
-    'Burmese',
-    'Laotian',
-    'Somali',
-    'Uyghur',
-    'Georgian',
-    'Tibetan',
-    'Malagasy',
-    'Armenian',
-    'Sri Lankan',
-    'Ethiopian',
-    'Nepalese',
-    'Guyanese',
-  ];
+  // cuisines of the week, dynamic array, changes weekly
+  const [cuisinesOfTheWeekArr, setCuisinesOfTheWeekArr] = useState([]);
   const dietaryPreferencesArr = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Halal', 'Kosher', 'Dairy-Free'];
+
+  // get cuisines of the week
+  useEffect(() => {
+    async function fetchCuisines() {
+      try {
+        const res = await fetch('/api/restaurants/cuisines/cuisinesOfTheWeek');
+        const data = await res.json();
+        setCuisinesOfTheWeekArr(data.cuisines);
+      } catch (err) {
+        console.error('Failed to load cuisines of the week:', err);
+      }
+    }
+
+    fetchCuisines();
+  }, []);
 
   // Clear All values
   const handleClearAll = () => {
@@ -37,12 +42,24 @@ export default function FilterMenu({
     setDistanceRange(6);
     setSelectedItems([]);
     setIsOpenNow(false);
+
+    // ignore filters when re-fetching (search)
+    onApply({ clearFilters: true });
+
+    if (onClose) onClose();
   };
 
   return (
     <div className=" bg-brand-yellow-extralite w-md h-fit absolute right-0 mt-2 rounded-md px-4 pb-4 pt-6 shadow-md z-10">
       <h3 className="uppercase mb-4">Filters</h3>
-      <form className="flex flex-col gap-y-4">
+      <form
+        className="flex flex-col gap-y-4"
+        onSubmit={e => {
+          e.preventDefault(); // prevent page reload
+          onApply(); // call fetch
+          if (onClose) onClose(); // close filter menu
+        }}
+      >
         {/* Price */}
         <div>
           <h4>Price</h4>

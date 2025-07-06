@@ -229,7 +229,21 @@ const RestaurantSchema = new mongoose.Schema({
   bannerImages: [PhotoSchema],
   images: [PhotoSchema],
   location: String,
+  longitude: Number,
+  latitude: Number,
+  locationCoords: {
+    // https://www.mongodb.com/docs/manual/reference/geojson/#point
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point',
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+    },
+  },
 });
+RestaurantSchema.index({ locationCoords: '2dsphere' }); // 2dsphere index for locationCoords
 
 // Business User Schema
 const BusinessUserSchema = new mongoose.Schema({
