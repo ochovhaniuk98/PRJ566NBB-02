@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 
+// NOT COMPLETED. DO NOT ADD BACKEND YET!!!!
 export default function CommentSection({
   currentUser,
   comments,
