@@ -575,6 +575,28 @@ export async function searchRestaurantsBySearchQuery(
   return { restaurants, totalCount };
 }
 
+// Get a list of restaurants (popular + new)
+export async function getListOfRestaurants(page = 1, limit = 20) {
+  await dbConnect();
+  const skip = (page - 1) * (limit / 2);
+
+  // get popular restaurants
+  const popularRestaurants = await Restaurant.find({
+    rating: { $gte: 4.5 },
+    numReviews: { $gte: 100 },
+  })
+    .skip(skip)
+    .limit(limit / 2);
+
+  // get new restaurants
+  const newRestaurants = await Restaurant.find({})
+    .sort({ _id: -1 })
+    .skip(skip)
+    .limit(limit / 2);
+
+  return [...popularRestaurants, ...newRestaurants];
+}
+
 export async function getAllCuisines() {
   await dbConnect();
   const allCuisines = await Restaurant.distinct('cuisines');
