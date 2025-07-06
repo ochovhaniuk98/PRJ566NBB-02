@@ -1,0 +1,59 @@
+import { Label } from '../shared/Label';
+import { Button } from '../shared/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFlag } from '@fortawesome/free-solid-svg-icons';
+import { fakeUser } from '@/app/data/fakeData';
+import Image from 'next/image';
+
+export default function ReportForm({ onClose, reportType }) {
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 flex justify-center  z-200 overflow-scroll scrollbar-hide w-full h-full"
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="relative bg-transparent p-8 w-2xl min-h-fit ">
+        <div className="bg-brand-green-lite w-full font-primary rounded-t-lg flex gap-x-2 cursor-pointer p-3 font-semibold">
+          <FontAwesomeIcon icon={faFlag} className={`icon-xl text-white`} />
+          Report {reportType === 'user' ? 'User' : 'Content'}
+        </div>
+        <form className=" w-full min-h-content bg-white rounded-b-lg shadow-md flex flex-col items-center pb-8">
+          <div className="w-full p-6 flex flex-col gap-3">
+            <div>
+              <div className="flex font-primary gap-x-2">
+                <div className="font-secondary text-4xl mb-4">
+                  Report {reportType === 'user' ? 'Username' : 'Content'}
+                </div>
+
+                {reportType === 'user' && (
+                  <div className="w-10 h-10 aspect-square bg-brand-green rounded-full relative">
+                    <Image
+                      src={fakeUser.userProfilePicture.url}
+                      alt="reported user"
+                      className="object-cover rounded-full"
+                      fill={true}
+                    />
+                  </div>
+                )}
+              </div>
+              <Label>Reason for reporting</Label>
+              <textarea
+                type="text"
+                className={'w-full rounded-md p-2 h-50 resize-none font-primary'}
+                placeholder="Write your reason for reporting here..."
+                required
+              />
+            </div>
+          </div>
+          <div className=" flex justify-end gap-2 mt-16">
+            <Button type="submit" className="w-30" variant="default" disabled={false}>
+              Submit
+            </Button>
+            <Button type="button" className="w-30" variant="secondary" disabled={false} onClick={onClose}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
