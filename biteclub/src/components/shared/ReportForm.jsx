@@ -2,7 +2,6 @@ import { Label } from '../shared/Label';
 import { Button } from '../shared/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag } from '@fortawesome/free-solid-svg-icons';
-import { fakeUser } from '@/app/data/fakeData';
 import Image from 'next/image';
 
 export default function ReportForm({ onClose, reportType, contentTitle = '', reportedUser = '' }) {

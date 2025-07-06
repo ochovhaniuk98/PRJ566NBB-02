@@ -83,7 +83,7 @@ export default function ReviewCard({
       {isEditModeOn && <EditModePanel onEditClick={() => setEditReviewForm(true)} />}
 
       {/* show link to open report form */}
-      {showReportFormLink && <ReportContentLink setPopupHovered={setPopupHovered} />}
+      {showReportFormLink && <ReportContentLink setPopupHovered={setPopupHovered} contentTitle={review.title} />}
     </div>
   );
 }

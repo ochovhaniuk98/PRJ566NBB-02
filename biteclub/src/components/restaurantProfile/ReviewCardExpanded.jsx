@@ -3,6 +3,7 @@ import Image from 'next/image';
 import EngagementIconStat from '../shared/EngagementIconStat';
 import StarRating from '../shared/StarRating';
 import AuthorDateBlurb from '../shared/AuthorDateBlurb';
+import ReportForm from '../shared/ReportForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faXmark,
@@ -23,6 +24,7 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
   // for comments in expanded review
   // currentUser, comments, onAddComment, onLike, onDislike
   const comments = [];
+  const [openReportForm, setOpenReportForm] = useState(false);
 
   const handleNext = () => {
     setPhotoIndex(prev => (prev + 1) % selectedReview.photos.length);
@@ -45,7 +47,11 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
             />
           )}
           <div className="text-right">
-            <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy mr-3`} />
+            <FontAwesomeIcon
+              icon={faFlag}
+              className={`icon-md text-brand-navy mr-3 cursor-pointer`}
+              onClick={() => setOpenReportForm(true)}
+            />
             <FontAwesomeIcon icon={faXmark} className={`icon-md text-brand-navy`} onClick={onClose} />
           </div>
         </div>
@@ -90,10 +96,12 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
           <h3>{selectedReview.title}</h3>
           <p>{selectedReview.body}</p>
           <div>
-            <CommentSection currentUser={fakeUser} comments={[fakeComment, fakeComment, fakeComment]} />
+            <CommentSection currentUser={fakeUser} comments={[fakeComment]} />
           </div>
         </div>
       </div>
+      {/* Report form */}
+      {openReportForm && <ReportForm onClose={() => setOpenReportForm(false)} contentTitle={selectedReview.title} />}
     </div>
   );
 }
