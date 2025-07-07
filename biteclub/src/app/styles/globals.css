@@ -55,7 +55,7 @@
   /* text input field */
   input,
   textarea {
-    @apply appearance-none border bg-white border-brand-blue rounded-full px-4 pt-2 mt-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-aqua;
+    @apply appearance-none border bg-white border-brand-blue rounded-md px-4 pt-2 mt-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-aqua;
   }
 
   input {
