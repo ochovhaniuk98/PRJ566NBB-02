@@ -3,6 +3,7 @@ import Image from 'next/image';
 import EngagementIconStat from '../shared/EngagementIconStat';
 import StarRating from '../shared/StarRating';
 import AuthorDateBlurb from '../shared/AuthorDateBlurb';
+import ReportForm from '../shared/ReportForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faXmark,
@@ -15,22 +16,27 @@ import {
 import reviewCardIconArr from '@/app/data/iconData';
 import FormattedDate from '../shared/formattedDate';
 import { ChevronLeft } from 'lucide-react';
+import CommentSection from '../shared/CommentSection';
+import { fakeUser, fakeComment } from '@/app/data/fakeData';
 
 export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = false }) {
   const [photoIndex, setPhotoIndex] = useState(0);
+  // for comments in expanded review
+  // currentUser, comments, onAddComment, onLike, onDislike
+  const comments = [];
+  const [openReportForm, setOpenReportForm] = useState(false);
 
   const handleNext = () => {
     setPhotoIndex(prev => (prev + 1) % selectedReview.photos.length);
   };
-
   const handlePrev = () => {
     setPhotoIndex(prev => (prev === 0 ? selectedReview.photos.length - 1 : prev - 1));
   };
 
   return (
     <div className="w-1/3 hidden lg:block">
-      <div className="sticky top-14 h-[calc(100vh-4.5rem)] overflow-auto scrollbar-none bg-white border border-brand-peach rounded-md shadow-md">
-        <div className="p-4 bg-white w-full flex justify-between">
+      <div className="sticky top-14 h-[calc(100vh-4.5rem)] overflow-auto scrollbar-none bg-white border-2 border-brand-peach rounded-md shadow-md">
+        <div className="p-4  bg-white w-full flex justify-between">
           {isOwner ? (
             <FormattedDate yyyymmdd={selectedReview.date_posted} />
           ) : (
@@ -41,7 +47,11 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
             />
           )}
           <div className="text-right">
-            <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy mr-3`} />
+            <FontAwesomeIcon
+              icon={faFlag}
+              className={`icon-md text-brand-navy mr-3 cursor-pointer`}
+              onClick={() => setOpenReportForm(true)}
+            />
             <FontAwesomeIcon icon={faXmark} className={`icon-md text-brand-navy`} onClick={onClose} />
           </div>
         </div>
@@ -59,17 +69,17 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
             {/* Left Button */}
             <button
               onClick={handlePrev}
-              className="absolute left-2/5 bottom-0 -translate-y-1/2 bg-white  border border-brand-navy rounded-full p-1 w-8 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
+              className="absolute left-4 bottom-3/7 -translate-y-1/2 bg-white/60  border border-white/60 rounded-full p-1 w-6 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
             >
-              <FontAwesomeIcon icon={faChevronLeft} className={`icon-lg text-brand-grey`} />
+              <FontAwesomeIcon icon={faChevronLeft} className={`icon-sm text-brand-grey`} />
             </button>
 
             {/* Right Button */}
             <button
               onClick={handleNext}
-              className="absolute right-2/5 bottom-0 -translate-y-1/2 bg-white  border border-brand-navy rounded-full p-1 w-8 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
+              className="absolute right-4 bottom-3/7 -translate-y-1/2 bg-white  border border-brand-navy rounded-full p-1 w-6 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
             >
-              <FontAwesomeIcon icon={faChevronRight} className={`icon-lg text-brand-grey`} />
+              <FontAwesomeIcon icon={faChevronRight} className={`icon-sm text-brand-grey`} />
             </button>
           </div>
         )}
@@ -85,8 +95,13 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
           </div>
           <h3>{selectedReview.title}</h3>
           <p>{selectedReview.body}</p>
+          <div>
+            <CommentSection currentUser={fakeUser} comments={[fakeComment]} />
+          </div>
         </div>
       </div>
+      {/* Report form */}
+      {openReportForm && <ReportForm onClose={() => setOpenReportForm(false)} contentTitle={selectedReview.title} />}
     </div>
   );
 }

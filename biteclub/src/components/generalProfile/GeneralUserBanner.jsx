@@ -13,11 +13,13 @@ import {
   faGear,
   faXmark,
   faTrashCan,
+  faFlag,
 } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import { Button } from '@/components/shared/Button';
+import ReportForm from '../shared/ReportForm';
 
 /* Description: Shows general user info and allows OWNER to write blog post or manage content by clicking corresponding buttons in component.
     showTextEditor: shows/hides text editor
@@ -34,6 +36,7 @@ export default function GeneralUserBanner({
   blogPostsCount,
 }) {
   const [reviewCount, setReviewCount] = useState(0);
+  const [openReportForm, setOpenReportForm] = useState(false); // for reporting user
 
   useEffect(() => {
     const fetchReviewCount = async () => {
@@ -232,6 +235,20 @@ export default function GeneralUserBanner({
             </>
           )}
         </div>
+      )}
+
+      {/* Icon to open Report User Form */}
+      {!isOwner && (
+        <div
+          className="absolute bottom-3 right-6 flex items-center font-primary text-brand-navy cursor-pointer"
+          onClick={() => setOpenReportForm(true)}
+        >
+          <FontAwesomeIcon icon={faFlag} className={`icon-sm text-brand-navy mr-2`} />
+          <h5>Report User</h5>
+        </div>
+      )}
+      {openReportForm && (
+        <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} reportedUser={generalUserData} />
       )}
     </div>
   );

@@ -456,12 +456,30 @@ export const embedList = [
 ];
 
 export const fakeUser = {
-  username: 'Sarah008',
-  userBio: 'I love food!!',
+  _id: '664abc1234567890fedcba98',
+  supabaseId: 'abc-xyz-123',
+  username: 'sarah_foodie',
+  userBio: 'Always on the hunt for unique eats.',
   userProfilePicture: {
     url: '/img/placeholderImg.jpg',
-    caption: 'Beautifully plated lamb stew',
-    updated_at: new Date('2024-11-01'),
+    alt: 'Sarah profile picture',
+  },
+  userType: 'user',
+  joinedSince: new Date('2025-08-15'),
+};
+
+export const fakeComment = {
+  _id: '6650abc1234567890fedcba9',
+  body: 'This restaurant had amazing Laotian dishes. Highly recommend!',
+  author: [fakeUser],
+  date_posted: new Date('2025-06-20T15:32:00Z'),
+  likes: {
+    count: 2,
+    users: [{ _id: 'userA_id' }, { _id: 'userB_id' }],
+  },
+  dislikes: {
+    count: 1,
+    users: [{ _id: 'userC_id' }],
   },
 };
 

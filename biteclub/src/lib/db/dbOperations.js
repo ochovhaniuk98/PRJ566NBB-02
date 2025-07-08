@@ -231,7 +231,7 @@ export async function updateGeneralUsername(data) {
       displayFavouriteRestaurants: data.displayFavouriteRestaurants,
       displayFavouriteBlogPosts: data.displayFavouriteBlogPosts,
       displayVisitedPlaces: data.displayVisitedPlaces,
-      feedPersonalization: data.feedPersonalization
+      feedPersonalization: data.feedPersonalization,
     },
     { new: true } // returns the updated user
   );
@@ -246,7 +246,7 @@ export async function updatePoints(data) {
   const user = await User.findOneAndUpdate(
     { supabaseId: data.supabaseId },
     {
-      numOfPoints: data.numOfPoints
+      numOfPoints: data.numOfPoints,
     },
     { new: true } // returns the updated user
   );
@@ -266,7 +266,7 @@ export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
     displayFavouriteBlogPosts: user.displayFavouriteBlogPosts,
     displayVisitedPlaces: user.displayVisitedPlaces,
     feedPersonalization: user.feedPersonalization,
-    numOfPoints: user.numOfPoints
+    numOfPoints: user.numOfPoints,
   };
 }
 
@@ -309,6 +309,21 @@ export async function getBlogPostNumOfFavourites(blogId) {
   });
   return count;
 }
+
+// Only deleting external reviews for a single user
+export async function deleteAllExternalReviewsByUser(userId) {
+  try {
+    const result = await ExternalReview.deleteMany({ user_id: userId });
+
+    return {
+      deletedExternal: result.deletedCount,
+    };
+  } catch (error) {
+    throw new Error('Failed to delete external reviews: ' + error.message);
+  }
+}
+
+
 
 // ==================
 // CLOUDINARY RELATED
@@ -470,6 +485,75 @@ export async function getBlogPost({ id }) {
   return post;
 }
 
+// get Exploring Blog Posts (popular + new)
+export async function getListOfExploringBlogPosts(page = 1, limit = 20) {
+  await dbConnect();
+  const skip = (page - 1) * (limit / 2);
+
+  const popularFilter = {
+    'likes.count': { $gte: 1 },
+    comments: {
+      $elemMatch: {
+        'likes.count': { $gte: 1 },
+      },
+    },
+  };
+
+  const [popularPosts, newPosts, totalCount] = await Promise.all([
+    BlogPost.find(popularFilter)
+      .skip(skip)
+      .limit(limit / 2),
+    BlogPost.find({})
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limit / 2),
+    BlogPost.countDocuments({}),
+  ]);
+
+  return {
+    posts: [...popularPosts, ...newPosts],
+    totalCount,
+  };
+}
+
+// get Following Blog Posts (posts posted by people user follows)
+export async function getListOfFollowingBlogPosts(userId, page = 1, limit = 20) {
+  await dbConnect();
+  const skip = (page - 1) * (limit / 2);
+
+  console.log('UserId: ', userId);
+  // get array of users' posts the current user is following
+  const currentUser = await User.findById(userId);
+  console.log('Im here');
+  if (!currentUser) {
+    throw new Error('User not found');
+  }
+
+  const followings = currentUser.followings;
+
+  // when user is not following anyone - return 0 posts
+  if (!followings || followings.length === 0) {
+    return {
+      posts: [],
+      totalCount: 0,
+    };
+  }
+
+  // find blog posts where user_id is in followings[]
+  const [posts, totalCount] = await Promise.all([
+    BlogPost.find({ user_id: { $in: followings } })
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limit),
+    BlogPost.countDocuments({ user_id: { $in: followings } }),
+  ]);
+
+  return {
+    posts,
+    totalCount,
+  };
+}
+
 // Search for a Restaurant by Search Query (User Input)
 export async function searchRestaurantsByQuery(query) {
   await dbConnect();
@@ -482,19 +566,126 @@ export async function searchRestaurantsByQuery(query) {
   return restaurants;
 }
 
-// Search for a Restaurant (limit 20 searches per page)
-export async function searchRestaurantsBySearchQuery(query, { page = 1, limit = 20 } = {}) {
+// Search and Filter for the Restaurants (limit 20 searches per page)
+export async function searchRestaurantsBySearchQuery(
+  query,
+  {
+    page = 1,
+    limit = 20,
+    cuisines = [],
+    dietary = [],
+    rating = 0,
+    price,
+    distance = 0,
+    lat = '',
+    lng = '',
+    isOpenNow = false,
+  } = {}
+) {
   await dbConnect();
   const skip = (page - 1) * limit;
 
+  const filter = {
+    name: { $regex: query, $options: 'i' },
+  };
+
+  // Filter by rating
+  if (rating) {
+    filter.rating = { $gte: rating };
+  }
+
+  // Filter by price
+  if (price) {
+    filter.priceRange = price;
+  }
+
+  // Filter by cuisines
+  if (cuisines.length > 0) {
+    filter.cuisines = { $in: cuisines };
+  }
+
+  // Filter by dietary options
+  if (dietary.length > 0) {
+    filter.dietaryOptions = { $in: dietary };
+  }
+
+  // Filter by distance
+  // when distance is 10+, we do want to include all results and do not filter by distance
+  if (!isNaN(lat) && !isNaN(lng) && distance > 0 && distance < 10) {
+    console.log(`Coordinates lng: ${lng} and lat: ${lat} and distance ${distance}`);
+
+    filter.locationCoords = {
+      // finds within a specified geometry
+      $geoWithin: {
+        // specifies a circular area on the earth’s surface
+        $centerSphere: [
+          [parseFloat(lng), parseFloat(lat)], // the center point
+          distance / 6371, // convert from kilometers to radians (distance in km / Earth’s mean radius)
+        ],
+      },
+    };
+  }
+
+  // Filter by "Open Now"
+  if (isOpenNow) {
+    const dayName = new Date().toLocaleDateString('en-CA', {
+      weekday: 'long',
+      timeZone: 'America/Toronto',
+    });
+
+    const now = new Date().toLocaleTimeString('en-CA', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Toronto',
+    });
+
+    console.log({ dayName, now });
+
+    filter.BusinessHours = {
+      $elemMatch: {
+        day: dayName,
+        opening: { $lte: now },
+        closing: { $gte: now },
+      },
+    };
+  }
+
   const [restaurants, totalCount] = await Promise.all([
-    Restaurant.find({ name: { $regex: query, $options: 'i' } })
-      .skip(skip)
-      .limit(limit),
-    Restaurant.countDocuments({ name: { $regex: query, $options: 'i' } }),
+    Restaurant.find(filter).skip(skip).limit(limit),
+    Restaurant.countDocuments(filter),
   ]);
 
   return { restaurants, totalCount };
+}
+
+// Get a list of restaurants (popular + new)
+export async function getListOfRestaurants(page = 1, limit = 20) {
+  await dbConnect();
+  const skip = (page - 1) * (limit / 2);
+
+  // get popular restaurants
+  const popularRestaurants = await Restaurant.find({
+    rating: { $gte: 4.5 },
+    numReviews: { $gte: 100 },
+  })
+    .skip(skip)
+    .limit(limit / 2);
+
+  // get new restaurants
+  const newRestaurants = await Restaurant.find({})
+    .sort({ _id: -1 })
+    .skip(skip)
+    .limit(limit / 2);
+
+  return [...popularRestaurants, ...newRestaurants];
+}
+
+export async function getAllCuisines() {
+  await dbConnect();
+  const allCuisines = await Restaurant.distinct('cuisines');
+
+  return allCuisines;
 }
 
 // Search for a Posts by Search Query (User Input)
@@ -505,7 +696,9 @@ export async function searchBlogPostsByQuery(query, { page = 1, limit = 20 } = {
   const [posts, totalCount] = await Promise.all([
     BlogPost.find({ title: { $regex: query, $options: 'i' } })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .populate('user_id', 'username userProfilePicture')
+      .lean(),
     BlogPost.countDocuments({ title: { $regex: query, $options: 'i' } }),
   ]);
 

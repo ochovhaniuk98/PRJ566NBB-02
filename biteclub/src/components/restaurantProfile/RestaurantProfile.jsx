@@ -203,12 +203,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
             selectedReview={selectedReview}
             setSelectedReview={setSelectedReview}
           />
-          /*
-          <ReviewsOnGrid3Col
-            selectedReview={selectedReview}
-            setSelectedReview={setSelectedReview}
-            reviewList={reviewsData}
-          /> */
         )}
         {/* Mentioned */}
         {selectedTab === restaurantTabs[1] && <MentionedTab restaurantId={restaurantId} />}

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/auth/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as solidHeart, faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
 import Image from 'next/image';
 import reviewCardIconArr from '@/app/data/iconData';
@@ -11,6 +11,7 @@ import EngagementIconStat from '@/components/shared/EngagementIconStat';
 import FormattedDate from './formattedDate';
 import AuthorDateBlurb from './AuthorDateBlurb';
 import EditModePanel from './EditModePanel';
+import { ReportContentLink } from './ReportContentLink';
 
 // Description: BlogPostCard has multiple states: A post can be available to be edited (EditModePanel will appear),
 // and it can be selected for editing (text editor will appear with prepopulated data of post)
@@ -31,6 +32,11 @@ export default function BlogPostCard({
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
   const [isFavourited, setIsFavourited] = useState(false); // tracks whether post is favourited
   const blogId = blogPostData._id;
+
+  const [showReportFormLink, setShowReportFormLink] = useState(false);
+  const [cardHovered, setCardHovered] = useState(false);
+  const [popupHovered, setPopupHovered] = useState(false);
+  const shouldHighlight = cardHovered && !popupHovered;
 
   // Check if this restaurant is favourited by current user
   useEffect(() => {
@@ -78,8 +84,23 @@ export default function BlogPostCard({
   };
 
   return (
-    <div className="relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2 row-span-2">
-      <div className="px-4 pt-4">
+    <div
+      className={`relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer transition
+    ${shouldHighlight ? 'bg-brand-peach-lite outline-brand-peach outline-2' : 'bg-white'}
+  `}
+      onMouseEnter={() => setCardHovered(true)}
+      onMouseLeave={() => setCardHovered(false)}
+    >
+      <div className="p-4 pt-2">
+        {/* show link to open Report form when ... icon is clicked */}
+        <FontAwesomeIcon
+          icon={faEllipsis}
+          className={`icon-lg text-brand-navy`}
+          onClick={e => {
+            e.stopPropagation();
+            setShowReportFormLink(prev => !prev);
+          }}
+        />
         <div
           onClick={handleFavouriteBlogPostClick}
           onMouseEnter={() => setIsHovered(true)}
@@ -114,19 +135,18 @@ export default function BlogPostCard({
           />
         </div>
       </div>
-
-      <div className="flex-1 flex">
-        <div className="relative w-full overflow-hidden rounded-b-md">
-          {blogPostData.previewImage ? (
+      {blogPostData.previewImage ? (
+        <div className="flex flex-col h-full">
+          <div className="relative w-full overflow-hidden rounded-b-md aspect-3/2 mt-auto">
             <Image
               src={blogPostData.previewImage}
               alt="Preview image"
               fill={true}
               className="rounded-b-md object-cover w-full"
             />
-          ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
       {/* EditModePanel appears when general user selects to "Manage Content";
       General user can select blog post to delete or edit. Editing opens the text editor. */}
       {isEditModeOn && (
@@ -141,6 +161,11 @@ export default function BlogPostCard({
           }}
           onDeleteClick={onDeleteClick} // will be undefined if not passed
         />
+      )}
+
+      {/* show link to open report content form */}
+      {showReportFormLink && (
+        <ReportContentLink setPopupHovered={setPopupHovered} contentTitle={blogPostData.previewTitle} />
       )}
     </div>
   );

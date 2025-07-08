@@ -41,7 +41,7 @@ export default function MainMenu() {
 
     fetchUserType();
   }, []);
-  
+
   const menuIcons = [faHouseChimney, faUser, faGamepad, faUtensils, faMicroblog, faGear];
   // !!! settings link temporary - will put it inside general user's profile later !!!
   const menuLinks = [
@@ -49,7 +49,7 @@ export default function MainMenu() {
     userType ? `/users/${userType}` : '/login', // if no userType = user have not we redirect user to login page.
     '/challenges',
     '/restaurants',
-    '#',
+    '/blog-posts',
     '/users/settings',
   ];
 
