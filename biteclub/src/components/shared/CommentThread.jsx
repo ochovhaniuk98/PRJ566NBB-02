@@ -10,7 +10,7 @@ import { fakeUser } from '@/app/data/fakeData';
 
 // *** Entire comment thread / container ***
 export default function CommentThread() {
-  // all comments
+  // all comments (first comment is fake by default)
   const [comments, setComments] = useState([
     {
       id: 1,
