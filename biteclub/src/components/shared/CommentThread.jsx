@@ -8,85 +8,8 @@ import { fakeUser } from '@/app/data/fakeData';
 
 //////////////// COMMENT THREAD FOR *** BLOG POST *** ONLY! ///////////////
 
-// *** get amount of time since a comment was posted ***
-function formatTimeAgo(datePosted) {
-  const diff = Math.floor((Date.now() - datePosted.getTime()) / 1000);
-  if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
-}
-
-// *** single comment with engagement icons + input field for replying ***
-const Comment = ({ comment, onReply }) => {
-  const [showReplyInput, setShowReplyInput] = useState(false);
-  const [replyContent, setReplyContent] = useState('');
-  const [likes, setLikes] = useState(0);
-  const [dislikes, setDislikes] = useState(0);
-
-  const handleReply = () => {
-    if (replyContent.trim()) {
-      onReply(comment.id, replyContent);
-      setReplyContent('');
-      setShowReplyInput(false);
-    }
-  };
-
-  return (
-    <div className="flex mb-6">
-      <div className="relative w-10 h-10 rounded-full mr-3">
-        <Image src={comment.avatarUrl} alt={comment.author} fill={true} className="rounded-full object-cover w-full" />
-      </div>
-      <div className="flex-1">
-        <div className="text-sm font-semibold">
-          {comment.author} <span className="text-gray-500 text-xs">{formatTimeAgo(comment.timestamp)}</span>
-        </div>
-        <div className="mt-1 mb-2">{comment.content}</div>
-
-        {/* like, dislike, reply */}
-        <div className="flex gap-4 text-gray-500 text-sm">
-          <button onClick={() => setLikes(likes + 1)} className="hover:text-brand-navy cursor-pointer">
-            <FontAwesomeIcon icon={faThumbsUp} className={`icon-md text-brand-navy`} /> {likes}
-          </button>
-          <button onClick={() => setDislikes(dislikes + 1)} className="hover:text-brand-navy cursor-pointer">
-            <FontAwesomeIcon icon={faThumbsDown} className={`icon-md text-brand-navy`} />
-          </button>
-          <button onClick={() => setShowReplyInput(!showReplyInput)} className="hover:text-black cursor-pointer">
-            <FontAwesomeIcon icon={faComment} className={`icon-md text-brand-navy`} /> Reply
-          </button>
-        </div>
-
-        {/* reply input field + button */}
-        {showReplyInput && (
-          <div className="mt-2">
-            <textarea
-              rows={2}
-              placeholder="Write a reply..."
-              value={replyContent}
-              onChange={e => setReplyContent(e.target.value)}
-              className="w-full p-2"
-            />
-            <Button type="submit" variant="secondary" className="w-20 ml-auto" onClick={handleReply}>
-              Reply
-            </Button>
-          </div>
-        )}
-
-        {/* vertical trail of replies */}
-        {comment.replies?.length > 0 && (
-          <div className="mt-4 pl-4 border-l-2 border-brand-peach">
-            {comment.replies.map(reply => (
-              <Comment key={reply.id} comment={reply} onReply={onReply} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
 // *** Entire comment thread / container ***
-const CommentThread = () => {
+export default function CommentThread() {
   // all comments
   const [comments, setComments] = useState([
     {
@@ -185,6 +108,81 @@ const CommentThread = () => {
       </div>
     </div>
   );
+}
+
+// *** single comment with engagement icons + input field for replying ***
+const Comment = ({ comment, onReply }) => {
+  const [showReplyInput, setShowReplyInput] = useState(false);
+  const [replyContent, setReplyContent] = useState('');
+  const [likes, setLikes] = useState(0);
+  const [dislikes, setDislikes] = useState(0);
+
+  const handleReply = () => {
+    if (replyContent.trim()) {
+      onReply(comment.id, replyContent);
+      setReplyContent('');
+      setShowReplyInput(false);
+    }
+  };
+
+  return (
+    <div className="flex mb-6">
+      <div className="relative w-10 h-10 rounded-full mr-3">
+        <Image src={comment.avatarUrl} alt={comment.author} fill={true} className="rounded-full object-cover w-full" />
+      </div>
+      <div className="flex-1">
+        <div className="text-sm font-semibold">
+          {comment.author} <span className="text-gray-500 text-xs">{formatTimeAgo(comment.timestamp)}</span>
+        </div>
+        <div className="mt-1 mb-2">{comment.content}</div>
+
+        {/* like, dislike, reply */}
+        <div className="flex gap-4 text-gray-500 text-sm">
+          <button onClick={() => setLikes(likes + 1)} className="hover:text-brand-navy cursor-pointer">
+            <FontAwesomeIcon icon={faThumbsUp} className={`icon-md text-brand-navy`} /> {likes}
+          </button>
+          <button onClick={() => setDislikes(dislikes + 1)} className="hover:text-brand-navy cursor-pointer">
+            <FontAwesomeIcon icon={faThumbsDown} className={`icon-md text-brand-navy`} />
+          </button>
+          <button onClick={() => setShowReplyInput(!showReplyInput)} className="hover:text-black cursor-pointer">
+            <FontAwesomeIcon icon={faComment} className={`icon-md text-brand-navy`} /> Reply
+          </button>
+        </div>
+
+        {/* reply input field + button */}
+        {showReplyInput && (
+          <div className="mt-2">
+            <textarea
+              rows={2}
+              placeholder="Write a reply..."
+              value={replyContent}
+              onChange={e => setReplyContent(e.target.value)}
+              className="w-full p-2"
+            />
+            <Button type="submit" variant="secondary" className="w-20 ml-auto" onClick={handleReply}>
+              Reply
+            </Button>
+          </div>
+        )}
+
+        {/* vertical trail of replies */}
+        {comment.replies?.length > 0 && (
+          <div className="mt-4 pl-4 border-l-2 border-brand-peach">
+            {comment.replies.map(reply => (
+              <Comment key={reply.id} comment={reply} onReply={onReply} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
-export default CommentThread;
+// *** get amount of time since a comment was posted ***
+function formatTimeAgo(datePosted) {
+  const diff = Math.floor((Date.now() - datePosted.getTime()) / 1000);
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
