@@ -6,6 +6,8 @@ import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg
 import Image from 'next/image';
 import { fakeUser } from '@/app/data/fakeData';
 
+//////////////// COMMENT THREAD FOR *** BLOG POST *** ONLY! ///////////////
+
 // *** get amount of time since a comment was posted ***
 function formatTimeAgo(datePosted) {
   const diff = Math.floor((Date.now() - datePosted.getTime()) / 1000);
