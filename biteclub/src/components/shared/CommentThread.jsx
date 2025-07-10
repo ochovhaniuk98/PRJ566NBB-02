@@ -43,13 +43,13 @@ const Comment = ({ comment, onReply }) => {
 
         {/* like, dislike, reply */}
         <div className="flex gap-4 text-gray-500 text-sm">
-          <button onClick={() => setLikes(likes + 1)} className="hover:text-brand-navy">
+          <button onClick={() => setLikes(likes + 1)} className="hover:text-brand-navy cursor-pointer">
             <FontAwesomeIcon icon={faThumbsUp} className={`icon-md text-brand-navy`} /> {likes}
           </button>
-          <button onClick={() => setDislikes(dislikes + 1)} className="hover:text-brand-navy">
+          <button onClick={() => setDislikes(dislikes + 1)} className="hover:text-brand-navy cursor-pointer">
             <FontAwesomeIcon icon={faThumbsDown} className={`icon-md text-brand-navy`} />
           </button>
-          <button onClick={() => setShowReplyInput(!showReplyInput)} className="hover:text-black">
+          <button onClick={() => setShowReplyInput(!showReplyInput)} className="hover:text-black cursor-pointer">
             <FontAwesomeIcon icon={faComment} className={`icon-md text-brand-navy`} /> Reply
           </button>
         </div>
