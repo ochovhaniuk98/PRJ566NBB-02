@@ -6,6 +6,7 @@ import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faFlag } from '@fortawesome/free-solid-svg-icons';
 import ReportForm from '../shared/ReportForm';
+import CommentThread from '../shared/CommentThread';
 
 export default function BlogPost({ id }) {
   const [postContent, setPostContent] = useState(null);
@@ -75,25 +76,31 @@ export default function BlogPost({ id }) {
   };
 
   return (
-    <div className="mt-20">
-      <div className="flex flex-row gap-x-4">
-        <SingleTabWithIcon icon={faHeart} detailText={numOfFavourites ?? 0} onClick={handleFavouriteBlogPostClick} />
+    <div className="flex w-full">
+      <div className="flex-[3] mt-20">
+        <div className="flex flex-row gap-x-4">
+          <SingleTabWithIcon icon={faHeart} detailText={numOfFavourites ?? 0} onClick={handleFavouriteBlogPostClick} />
 
-        {/* show Report form when flag icon is clicked */}
-        <div
-          className="font-primary font-semibold text-brand-navy flex items-center gap-x-2 cursor-pointer"
-          onClick={e => {
-            setOpenReportForm(prev => !prev);
-          }}
-        >
-          <FontAwesomeIcon icon={faFlag} className={`icon-lg text-brand-navy`} />
-          Report Content
+          {/* show Report form when flag icon is clicked */}
+          <div
+            className="font-primary font-semibold text-brand-navy flex items-center gap-x-2 cursor-pointer"
+            onClick={e => {
+              setOpenReportForm(prev => !prev);
+            }}
+          >
+            <FontAwesomeIcon icon={faFlag} className={`icon-lg text-brand-navy`} />
+            Report Content
+          </div>
         </div>
+        {postTitle && <h2 className="simple-editor-content ml-[200px]">{postTitle}</h2>}
+        {postContent && <ReadOnlyEditor content={postContent} />}
+        {/* Report Content Form */}
+        {openReportForm && <ReportForm onClose={() => setOpenReportForm(false)} contentTitle={postTitle} />}
       </div>
-      {postTitle && <h2 className="simple-editor-content ml-[200px]">{postTitle}</h2>}
-      {postContent && <ReadOnlyEditor content={postContent} />}
-      {/* Report Content Form */}
-      {openReportForm && <ReportForm onClose={() => setOpenReportForm(false)} contentTitle={postTitle} />}
+      {/* comments thread for blog post */}
+      <div className="flex-[1]">
+        <CommentThread />
+      </div>
     </div>
   );
 }
