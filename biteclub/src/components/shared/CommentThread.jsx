@@ -6,6 +6,20 @@ import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg
 import Image from 'next/image';
 import { createClient } from '@/lib/auth/client';
 
+import {
+  faPlus,
+  faMinus,
+  faUsers,
+  faStarHalfStroke,
+  faFeather,
+  faGamepad,
+  faGear,
+  faXmark,
+  faTrashCan,
+  faFlag,
+} from '@fortawesome/free-solid-svg-icons';
+import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
+
 //////////////// COMMENT THREAD FOR *** BLOG POST *** ONLY! ///////////////
 
 // *** Entire comment thread / container ***
@@ -13,6 +27,7 @@ export default function CommentThread({ post }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
   const [user, setUser] = useState(null);
+  const [fetchedPostUser, setFetchedPostUser] = useState(false);
 
   // comments
   const [comments, setComments] = useState([]);
@@ -41,6 +56,8 @@ export default function CommentThread({ post }) {
         const userData = await res.json();
 
         setUser(userData);
+        console.log('userData: ', userData);
+        setFetchedPostUser(true);
       } catch (error) {
         console.error('Failed to fetch user MongoDB id:', error);
       }
@@ -225,6 +242,19 @@ export default function CommentThread({ post }) {
     setDislikes(data.comment.dislikes.count);
   };
 
+  // handle delete
+  const onDelete = async comment => {
+    const res = await fetch(`/api/blog-posts/comments/delete-comment?commentId=${comment._id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      console.error('Failed to delete comment');
+      return;
+    }
+    // update the list of comments/replies
+    await fetchComments();
+  };
+
   return (
     <div className="fixed top-20 right-0 w-4/12 h-10/12 p-4 border border-brand-peach bg-white flex flex-col shadow-lg rounded-tl-lg rounded-bl-lg font-primary">
       <h3 className="text-lg font-bold mb-4">Comments ({commentsCount})</h3>
@@ -232,8 +262,17 @@ export default function CommentThread({ post }) {
       {/* scrollable comments area */}
       <div className="flex-1 overflow-y-auto pr-1 pb-28 scrollbar-hide">
         {fetchedComments &&
+          fetchedPostUser &&
           comments.map(comment => (
-            <Comment key={comment._id} comment={comment} onReply={addReply} onLike={onLike} onDislike={onDislike} />
+            <Comment
+              key={comment._id}
+              comment={comment}
+              userId={user._id}
+              onReply={addReply}
+              onLike={onLike}
+              onDislike={onDislike}
+              onDelete={onDelete}
+            />
           ))}
       </div>
 
@@ -255,13 +294,15 @@ export default function CommentThread({ post }) {
 }
 
 // *** single comment with engagement icons + input field for replying ***
-const Comment = ({ comment, onReply, onLike, onDislike }) => {
+const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [showReplyBtn, setShowReplyBtn] = useState(false);
   const [replyContent, setReplyContent] = useState('');
 
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
+
+  const [isOwner, setIsOwner] = useState(false);
 
   // allow only one level nested comments
   useEffect(() => {
@@ -272,6 +313,11 @@ const Comment = ({ comment, onReply, onLike, onDislike }) => {
     }
     setLikes(comment?.likes?.count || 0);
     setDislikes(comment?.dislikes?.count || 0);
+
+    // set isOwner
+    if (comment.user == userId) {
+      setIsOwner(true);
+    }
   }, []);
 
   const handleReply = () => {
@@ -313,6 +359,16 @@ const Comment = ({ comment, onReply, onLike, onDislike }) => {
                 <FontAwesomeIcon icon={faComment} className={`icon-md text-brand-navy`} /> Reply
               </button>
             )}
+            {isOwner && (
+              <SingleTabWithIcon
+                icon={faTrashCan}
+                detailText="X"
+                bgColour="bg-white"
+                textColour="text-brand-red"
+                borderColour="border-brand-red"
+                onClick={() => onDelete(comment)}
+              />
+            )}
           </div>
 
           {/* reply input field + button */}
@@ -334,7 +390,15 @@ const Comment = ({ comment, onReply, onLike, onDislike }) => {
           <div className="mt-4 pl-4 border-l-2 border-brand-peach">
             {comment?.replies &&
               comment.replies.map(reply => (
-                <Comment key={reply._id} comment={reply} onReply={onReply} onLike={onLike} onDislike={onDislike} />
+                <Comment
+                  key={reply._id}
+                  comment={reply}
+                  userId={userId}
+                  onReply={onReply}
+                  onLike={onLike}
+                  onDislike={onDislike}
+                  onDelete={onDelete}
+                />
               ))}
           </div>
         </div>

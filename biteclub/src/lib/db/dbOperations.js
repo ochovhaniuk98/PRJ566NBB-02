@@ -770,6 +770,8 @@ export async function createPostComment({
   user,
 }) {
   try {
+    await dbConnect();
+
     const comment = new CommentPost({
       blogPost_id: blogPostId,
       parent_id,
@@ -791,6 +793,7 @@ export async function createPostComment({
 // Get Post Comments By Post Id
 export async function getPostCommentsByPostId({ postId }) {
   try {
+    await dbConnect();
     const comments = await CommentPost.find({
       blogPost_id: postId,
     }).sort({ date_posted: 1 }); // sort in ascending order
@@ -805,6 +808,7 @@ export async function getPostCommentsByPostId({ postId }) {
 // Add Likes/Dislikes to a Post Comment/Reply
 export async function addLikeOrDislikeToComment({ commentId, like = false, dislike = false, userId }) {
   try {
+    await dbConnect();
     const comment = await CommentPost.findById(commentId);
     if (!comment) return null;
 
@@ -838,5 +842,22 @@ export async function addLikeOrDislikeToComment({ commentId, like = false, disli
   } catch (err) {
     console.error('Error adding like/dislike:', err);
     throw err;
+  }
+}
+
+// Delete Comment
+export async function deletePostComment({ commentId }) {
+  try {
+    await dbConnect();
+    const deletedComment = await CommentPost.findByIdAndDelete(commentId);
+
+    if (!deletedComment) {
+      throw new Error(`Comment with ID ${commentId} not found`);
+    }
+
+    return { success: true, message: 'Comment deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    throw error;
   }
 }
