@@ -5,6 +5,7 @@ import {
   User,
   Photo,
   Comment,
+  CommentPost,
   InstagramPost,
   BlogPost,
   InternalReview,
@@ -322,8 +323,6 @@ export async function deleteAllExternalReviewsByUser(userId) {
     throw new Error('Failed to delete external reviews: ' + error.message);
   }
 }
-
-
 
 // ==================
 // CLOUDINARY RELATED
@@ -756,5 +755,33 @@ export async function approveBusinessUser(userId) {
   } catch (error) {
     console.error('Error approving business user:', error);
     throw new Error('Failed to approve business user');
+  }
+}
+
+// Post Comments
+// author (MongoDB user _id)
+export async function createPostComment({
+  blogPostId,
+  parent_id = null,
+  avatarURL,
+  content,
+  author,
+  date_posted = Date.now(),
+}) {
+  try {
+    const comment = new CommentPost({
+      blogPost_id: blogPostId,
+      parent_id,
+      avatarURL,
+      content,
+      author,
+      date_posted,
+    });
+
+    const savedComment = await comment.save();
+    return savedComment;
+  } catch (error) {
+    console.error('Error creating comment:', error);
+    throw error;
   }
 }
