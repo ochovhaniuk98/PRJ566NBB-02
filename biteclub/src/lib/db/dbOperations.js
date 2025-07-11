@@ -801,3 +801,42 @@ export async function getPostCommentsByPostId({ postId }) {
     throw err;
   }
 }
+
+// Add Likes/Dislikes to a Post Comment/Reply
+export async function addLikeOrDislikeToComment({ commentId, like = false, dislike = false, userId }) {
+  try {
+    const comment = await CommentPost.findById(commentId);
+    if (!comment) return null;
+
+    const alreadyLiked = comment.likes.users.includes(userId);
+    const alreadyDisliked = comment.dislikes.users.includes(userId);
+
+    if (like && !alreadyLiked) {
+      // remove dislike if it exists
+      if (alreadyDisliked) {
+        comment.dislikes.users.pull(userId);
+        comment.dislikes.count -= 1;
+      }
+
+      comment.likes.users.push(userId);
+      comment.likes.count += 1;
+    }
+
+    if (dislike && !alreadyDisliked) {
+      // remove like if it exists
+      if (alreadyLiked) {
+        comment.likes.users.pull(userId);
+        comment.likes.count -= 1;
+      }
+
+      comment.dislikes.users.push(userId);
+      comment.dislikes.count += 1;
+    }
+
+    await comment.save();
+    return comment;
+  } catch (err) {
+    console.error('Error adding like/dislike:', err);
+    throw err;
+  }
+}

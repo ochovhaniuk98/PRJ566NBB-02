@@ -178,31 +178,51 @@ export default function CommentThread({ post }) {
         console.error('Error posting reply:', err);
       }
     }
+  };
 
-    // const insertReply = items =>
-    //   items.map(item => {
-    //     if (item.id === parentId) {
-    //       return {
-    //         ...item,
-    //         replies: [
-    //           ...item.replies,
-    //           {
-    //             id: Date.now(),
-    //             author: 'ProfileOwnerName',
-    //             avatarURL: 'https://i.pravatar.cc/150?img=10',
-    //             content: replyText,
-    //             timestamp: new Date(),
-    //             replies: [],
-    //           },
-    //         ],
-    //       };
-    //     } else if (item.replies?.length > 0) {
-    //       return { ...item, replies: insertReply(item.replies) };
-    //     }
-    //     return item;
-    //   });
+  // handle likes
+  // // only one like allowed
+  const onLike = async (setLikes, comment) => {
+    const res = await fetch('/api/blog-posts/comments/add-like-dislike', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        commentId: comment._id,
+        like: true,
+        dislike: false,
+        userId: user._id,
+      }),
+    });
+    if (!res.ok) throw new Error(`Could not add like to a comment ${res.status}`);
 
-    // setComments(insertReply(comments));
+    const data = await res.json();
+
+    setLikes(data.comment.likes.count);
+  };
+
+  // handle dislikes
+  // // only one dislike allowed
+  const onDislike = async (setDislikes, comment, setLikes) => {
+    const res = await fetch('/api/blog-posts/comments/add-like-dislike', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        commentId: comment._id,
+        like: false,
+        dislike: true,
+        userId: user._id,
+      }),
+    });
+    if (!res.ok) throw new Error(`Could not add dislike to a comment ${res.status}`);
+
+    const data = await res.json();
+
+    setLikes(data.comment.likes.count);
+    setDislikes(data.comment.dislikes.count);
   };
 
   return (
@@ -211,7 +231,10 @@ export default function CommentThread({ post }) {
 
       {/* scrollable comments area */}
       <div className="flex-1 overflow-y-auto pr-1 pb-28 scrollbar-hide">
-        {fetchedComments && comments.map(comment => <Comment key={comment._id} comment={comment} onReply={addReply} />)}
+        {fetchedComments &&
+          comments.map(comment => (
+            <Comment key={comment._id} comment={comment} onReply={addReply} onLike={onLike} onDislike={onDislike} />
+          ))}
       </div>
 
       {/* main textarea input + "post" button */}
@@ -232,7 +255,7 @@ export default function CommentThread({ post }) {
 }
 
 // *** single comment with engagement icons + input field for replying ***
-const Comment = ({ comment, onReply }) => {
+const Comment = ({ comment, onReply, onLike, onDislike }) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [showReplyBtn, setShowReplyBtn] = useState(false);
   const [replyContent, setReplyContent] = useState('');
@@ -247,6 +270,8 @@ const Comment = ({ comment, onReply }) => {
     } else {
       setShowReplyBtn(false);
     }
+    setLikes(comment?.likes?.count || 0);
+    setDislikes(comment?.dislikes?.count || 0);
   }, []);
 
   const handleReply = () => {
@@ -274,10 +299,13 @@ const Comment = ({ comment, onReply }) => {
 
           {/* like, dislike, reply */}
           <div className="flex gap-4 text-gray-500 text-sm">
-            <button onClick={() => setLikes(likes + 1)} className="hover:text-brand-navy cursor-pointer">
+            <button onClick={() => onLike(setLikes, comment)} className="hover:text-brand-navy cursor-pointer">
               <FontAwesomeIcon icon={faThumbsUp} className={`icon-md text-brand-navy`} /> {likes}
             </button>
-            <button onClick={() => setDislikes(dislikes + 1)} className="hover:text-brand-navy cursor-pointer">
+            <button
+              onClick={() => onDislike(setDislikes, comment, setLikes)}
+              className="hover:text-brand-navy cursor-pointer"
+            >
               <FontAwesomeIcon icon={faThumbsDown} className={`icon-md text-brand-navy`} />
             </button>
             {showReplyBtn && (
@@ -305,7 +333,9 @@ const Comment = ({ comment, onReply }) => {
           {/* vertical trail of replies */}
           <div className="mt-4 pl-4 border-l-2 border-brand-peach">
             {comment?.replies &&
-              comment.replies.map(reply => <Comment key={reply._id} comment={reply} onReply={onReply} />)}
+              comment.replies.map(reply => (
+                <Comment key={reply._id} comment={reply} onReply={onReply} onLike={onLike} onDislike={onDislike} />
+              ))}
           </div>
         </div>
       </div>
