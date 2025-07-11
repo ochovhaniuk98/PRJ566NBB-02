@@ -61,8 +61,9 @@ const CommentPostSchema = new mongoose.Schema({
   parent_id: { type: mongoose.Schema.Types.ObjectId, ref: 'CommentPost', default: null },
   avatarURL: String,
   content: String,
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  author: { type: String, required: true },
   date_posted: { type: Date, default: Date.now },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   likes: {
     count: { type: Number, default: 0 },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

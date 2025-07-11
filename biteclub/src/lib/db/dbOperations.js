@@ -767,6 +767,7 @@ export async function createPostComment({
   content,
   author,
   date_posted = Date.now(),
+  user,
 }) {
   try {
     const comment = new CommentPost({
@@ -776,6 +777,7 @@ export async function createPostComment({
       content,
       author,
       date_posted,
+      user,
     });
 
     const savedComment = await comment.save();
@@ -783,5 +785,19 @@ export async function createPostComment({
   } catch (error) {
     console.error('Error creating comment:', error);
     throw error;
+  }
+}
+
+// Get Post Comments By Post Id
+export async function getPostCommentsByPostId({ postId }) {
+  try {
+    const comments = await CommentPost.find({
+      blogPost_id: postId,
+    }).sort({ date_posted: 1 }); // sort in ascending order
+
+    return comments;
+  } catch (err) {
+    console.error('Error getting post comments by post id:', err);
+    throw err;
   }
 }

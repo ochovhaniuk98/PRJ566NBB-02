@@ -13,9 +13,10 @@ export async function POST(request) {
       content, // required
       author, // required (MongoDB user _id)
       date_posted = Date.now(),
+      user,
     } = body;
 
-    if (!blogPostId || !content || !author) {
+    if (!blogPostId || !content || !user) {
       return new Response(JSON.stringify({ error: 'Missing blogPostId, content, or author' }), {
         status: 400,
       });
@@ -28,6 +29,7 @@ export async function POST(request) {
       content,
       author,
       date_posted,
+      user,
     });
 
     return new Response(JSON.stringify({ message: 'Comment created', comment: result }), {
