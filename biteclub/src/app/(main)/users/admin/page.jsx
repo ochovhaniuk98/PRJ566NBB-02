@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
 
 export default function AdminPage() {
-  const panelTabs = ['Business Verification', 'Content Reports'];
+  const panelTabs = ['Business Verification', 'Contents Moderation'];
 
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(panelTabs[0]);
@@ -90,38 +90,46 @@ export default function AdminPage() {
         <ProfileTabBar tabs={panelTabs} onTabChange={setSelectedTab} />
         {selectedTab === panelTabs[0] && (
           <>
-            <h1>Business Users Awaiting Verification</h1>
+            <h1 className="mb-6">Business Users Awaiting Verification</h1>
             {unverifiedBusinessUsers && unverifiedBusinessUsers.length > 0 ? (
               unverifiedBusinessUsers.map(user => (
-                <div key={user._id} className="mb-4 mt-4">
-                  <div className="border p-4 rounded shadow">
+                <div key={user._id} className="mb-4">
+                  <div className="flex flex-col border border-brand-peach p-4 rounded shadow gap-3">
                     <h2 className="text-lg font-bold">{user.restaurantId?.name}</h2>
-                    <p className="text-sm text-gray-600">Location: {user.restaurantId?.location}</p>
-                    <p className="text-sm text-gray-600">User ID: {user._id}</p>
-                    <p className="text-sm text-gray-600">Supabase ID: {user.supabaseId}</p>
-                    <p className="text-sm text-gray-600">
-                      License:{' '}
-                      {user.licenseFileUrl ? (
-                        <button
-                          onClick={() => window.open(user.licenseFileUrl, '_blank')}
-                          className="bg-blue-500 text-white px-2 py-1 rounded"
-                        >
-                          Download
-                        </button>
-                      ) : (
-                        <span className="text-gray-400">No license available</span>
-                      )}
-                    </p>
+                    <div className="grid grid-cols-[120px_1fr] text-gray-600 gap-y-1">
+                      <span>Location</span>
+                      <span>: {user.restaurantId?.location}</span>
+
+                      <span>User ID</span>
+                      <span>: {user._id}</span>
+
+                      <span>Supabase ID</span>
+                      <span>: {user.supabaseId}</span>
+
+                      <span>License</span>
+                      <span>
+                        {user.licenseFileUrl ? (
+                          <button
+                            onClick={() => window.open(user.licenseFileUrl, '_blank')}
+                            className="text-gray-600 cursor-pointer underline hover:text-blue-600"
+                          >
+                            Download
+                          </button>
+                        ) : (
+                          <span className="text-gray-400">No license available</span>
+                        )}
+                      </span>
+                    </div>
                     <div className="mt-2">
                       <button
                         onClick={() => handleApprove(user._id)}
-                        className="bg-green-500 text-white px-4 py-2 mr-2 rounded"
+                        className="bg-green-600 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-500"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => handleReject(user.supabaseId)}
-                        className="bg-red-500 text-white px-4 py-2 rounded"
+                        className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-400"
                       >
                         Reject
                       </button>
@@ -140,7 +148,7 @@ export default function AdminPage() {
         {/* Content Reports */}
         {selectedTab === panelTabs[1] && (
           <>
-            <h1>Content Reports</h1>
+            <h1 className="mb-6">Contents Moderation</h1>
           </>
         )}
       </div>
