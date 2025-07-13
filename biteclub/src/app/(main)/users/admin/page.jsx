@@ -250,7 +250,7 @@ export default function AdminPage() {
                     <div className="grid grid-cols-[120px_1fr] text-gray-600 gap-y-1">
                       <span>Reported User</span>
                       <span>
-                        : <strong>{report.reportedUserId?.username}</strong> ({report.reportedUserId?._id})
+                        : <strong>{report.reportedUserId?.username}</strong> ({report.reportedUserId?._id}) - <strong>Strikes: {report.reportedUserId?.strike?? 0}</strong>
                       </span>
 
                       <span>Reporter</span>
