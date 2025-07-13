@@ -40,63 +40,64 @@ export default function AdminPage() {
     fetchData();
   }, [router]);
 */
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (selectedTab === 'Business Verification') {
-          try {
-            const data = await getBusinessUsersAwaitingVerification();
-            setUnverifiedBusinessUsers(data);
-          } catch (err) {
-            console.error('(Admin) Failed to fetch restaurant ID:', err);
-          }
+
+  const fetchData = async () => {
+    try {
+      if (selectedTab === 'Business Verification') {
+        try {
+          const data = await getBusinessUsersAwaitingVerification();
+          setUnverifiedBusinessUsers(data);
+        } catch (err) {
+          console.error('(Admin) Failed to fetch restaurant ID:', err);
         }
-
-        if (selectedTab === 'Contents Moderation') {
-          try {
-            const res = await fetch('/api/reports');
-            if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-            const json = await res.json();
-
-            const grouped = {
-              userReports: [],
-              reviewReports: [],
-              blogPostReports: [],
-              commentReports: [],
-            };
-
-            for (const report of json.reports || []) {
-              switch (report.contentType) {
-                case 'user':
-                  grouped.userReports.push(report);
-                  break;
-                case 'review':
-                  grouped.reviewReports.push(report);
-                  break;
-                case 'blogpost':
-                  grouped.blogPostReports.push(report);
-                  break;
-                case 'comment':
-                  grouped.commentReports.push(report);
-                  break;
-                default:
-                  console.warn('(Admin) Unknown report type', report);
-                  break;
-              }
-            }
-
-            setContentReports(grouped);
-          } catch (err) {
-            console.error('[FETCH_REPORTS_FAILED]', err);
-          }
-        }
-      } finally {
-        setLoading(false);
       }
-    };
 
+      if (selectedTab === 'Contents Moderation') {
+        try {
+          const res = await fetch('/api/reports');
+          if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+          const json = await res.json();
+
+          const grouped = {
+            userReports: [],
+            reviewReports: [],
+            blogPostReports: [],
+            commentReports: [],
+          };
+
+          for (const report of json.reports || []) {
+            switch (report.contentType) {
+              case 'user':
+                grouped.userReports.push(report);
+                break;
+              case 'review':
+                grouped.reviewReports.push(report);
+                break;
+              case 'blogpost':
+                grouped.blogPostReports.push(report);
+                break;
+              case 'comment':
+                grouped.commentReports.push(report);
+                break;
+              default:
+                console.warn('(Admin) Unknown report type', report);
+                break;
+            }
+          }
+
+          setContentReports(grouped);
+        } catch (err) {
+          console.error('[FETCH_REPORTS_FAILED]', err);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
-  }, [selectedTab]);
+  }, [selectedTab]); // , router
 
   if (loading)
     return (
@@ -147,11 +148,14 @@ export default function AdminPage() {
         <ProfileTabBar tabs={panelTabs} onTabChange={setSelectedTab} />
         {selectedTab === panelTabs[0] && (
           <>
-            <h1 className="mb-6">Business Users Awaiting Verification</h1>
+            <div className="flex justify-between items-center mb-6">
+              <span className="font-secondary text-5xl">Business Users Awaiting Verification</span>
+              <Button onClick={fetchData}>Refresh</Button>
+            </div>
             {unverifiedBusinessUsers && unverifiedBusinessUsers.length > 0 ? (
               unverifiedBusinessUsers.map(user => (
                 <div key={user._id} className="mb-4">
-                  <div className="flex flex-col border border-brand-peach p-4 rounded hover:shadow gap-3">
+                  <div className="flex flex-col border border-brand-aqua p-4 rounded gap-3 hover:shadow hover:bg-teal-50">
                     <h2 className="text-lg font-bold">{user.restaurantId?.name}</h2>
                     <div className="grid grid-cols-[120px_1fr] text-gray-600 gap-y-1">
                       <span>Location</span>
@@ -205,7 +209,10 @@ export default function AdminPage() {
         {/* Content Reports */}
         {selectedTab === panelTabs[1] && (
           <>
-            <h1 className="mb-6">Contents Moderation</h1>
+            <div className="flex justify-between items-center mb-6">
+              <span className="font-secondary text-5xl">Contents Moderation</span>
+              <Button onClick={fetchData}>Refresh</Button>
+            </div>
             <div className="flex gap-x-2 mb-4">
               <Button onClick={() => setSelectedReportType('user')} type="button" className="w-30" variant={'roundTab'}>
                 Users
@@ -237,16 +244,34 @@ export default function AdminPage() {
             </div>
             {selectedReportType === 'user' &&
               contentReports.userReports.map(report => (
-                <div key={report._id} className="border p-4 rounded mb-2">
-                  <p>
-                    <strong>Reason:</strong> {report.reason}
-                  </p>
-                  <p>
-                    <strong>Reported User:</strong> {report.reportedUserId?.username}
-                  </p>
-                  <p>
-                    <strong>Status:</strong> {report.status}
-                  </p>
+                <div key={report._id} className="mb-4">
+                  <div className="flex flex-col border border-red-300 p-4 rounded gap-3 hover:shadow hover:bg-red-50">
+                    {/* <h2 className="text-lg font-bold">{user.restaurantId?.name}</h2> */}
+                    <div className="grid grid-cols-[120px_1fr] text-gray-600 gap-y-1">
+                      <span>Reason</span>
+                      <span>: {report.reason}</span>
+
+                      <span>Reported User</span>
+                      <span>: {report.reportedUserId?.username}</span>
+
+                      <span>Status</span>
+                      <span>: {report.status}</span>
+                    </div>
+                    <div className="mt-2">
+                      <button
+                        onClick={() => {}}
+                        className="bg-green-400 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-600"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => {}}
+                        className="bg-red-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
 
@@ -256,7 +281,6 @@ export default function AdminPage() {
                   <p>
                     <strong>Reason:</strong> {report.reason}
                   </p>
-                  {/* Add any review-specific info here */}
                 </div>
               ))}
 
@@ -266,7 +290,6 @@ export default function AdminPage() {
                   <p>
                     <strong>Reason:</strong> {report.reason}
                   </p>
-                  {/* Add any blogpost-specific info here */}
                 </div>
               ))}
 
@@ -276,7 +299,6 @@ export default function AdminPage() {
                   <p>
                     <strong>Reason:</strong> {report.reason}
                   </p>
-                  {/* Add any comment-specific info here */}
                 </div>
               ))}
           </>
