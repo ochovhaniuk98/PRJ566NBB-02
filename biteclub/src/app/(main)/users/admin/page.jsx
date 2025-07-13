@@ -12,6 +12,7 @@ export default function AdminPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(panelTabs[0]);
+  const [selectedReportType, setSelectedReportType] = useState('user'); // default to 'user'
 
   const [unverifiedBusinessUsers, setUnverifiedBusinessUsers] = useState([]);
   const [contentReports, setContentReports] = useState({
@@ -21,10 +22,11 @@ export default function AdminPage() {
     commentReports: [],
   });
 
+  /*
   useEffect(() => {
-    if (!selectedTab) return;
     const fetchData = async () => {
       try {
+
         const data = await getBusinessUsersAwaitingVerification();
         console.log('Business users awaiting verification:', data);
         setUnverifiedBusinessUsers(data);
@@ -37,7 +39,64 @@ export default function AdminPage() {
 
     fetchData();
   }, [router]);
+*/
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (selectedTab === 'Business Verification') {
+          try {
+            const data = await getBusinessUsersAwaitingVerification();
+            setUnverifiedBusinessUsers(data);
+          } catch (err) {
+            console.error('(Admin) Failed to fetch restaurant ID:', err);
+          }
+        }
 
+        if (selectedTab === 'Contents Moderation') {
+          try {
+            const res = await fetch('/api/reports');
+            if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+            const json = await res.json();
+
+            const grouped = {
+              userReports: [],
+              reviewReports: [],
+              blogPostReports: [],
+              commentReports: [],
+            };
+
+            for (const report of json.reports || []) {
+              switch (report.contentType) {
+                case 'user':
+                  grouped.userReports.push(report);
+                  break;
+                case 'review':
+                  grouped.reviewReports.push(report);
+                  break;
+                case 'blogpost':
+                  grouped.blogPostReports.push(report);
+                  break;
+                case 'comment':
+                  grouped.commentReports.push(report);
+                  break;
+                default:
+                  console.warn('(Admin) Unknown report type', report);
+                  break;
+              }
+            }
+
+            setContentReports(grouped);
+          } catch (err) {
+            console.error('[FETCH_REPORTS_FAILED]', err);
+          }
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedTab]);
 
   if (loading)
     return (
@@ -148,19 +207,78 @@ export default function AdminPage() {
           <>
             <h1 className="mb-6">Contents Moderation</h1>
             <div className="flex gap-x-2 mb-4">
-              <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
+              <Button onClick={() => setSelectedReportType('user')} type="button" className="w-30" variant={'roundTab'}>
                 Users
               </Button>
-              <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
+              <Button
+                onClick={() => setSelectedReportType('review')}
+                type="button"
+                className="w-30"
+                variant={'roundTab'}
+              >
                 Reviews
               </Button>
-              <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
+              <Button
+                onClick={() => setSelectedReportType('blogpost')}
+                type="button"
+                className="w-30"
+                variant={'roundTab'}
+              >
                 Blog Posts
               </Button>
-              <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
+              <Button
+                onClick={() => setSelectedReportType('comment')}
+                type="button"
+                className="w-30"
+                variant={'roundTab'}
+              >
                 Comments
               </Button>
             </div>
+            {selectedReportType === 'user' &&
+              contentReports.userReports.map(report => (
+                <div key={report._id} className="border p-4 rounded mb-2">
+                  <p>
+                    <strong>Reason:</strong> {report.reason}
+                  </p>
+                  <p>
+                    <strong>Reported User:</strong> {report.reportedUserId?.username}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {report.status}
+                  </p>
+                </div>
+              ))}
+
+            {selectedReportType === 'review' &&
+              contentReports.reviewReports.map(report => (
+                <div key={report._id} className="border p-4 rounded mb-2">
+                  <p>
+                    <strong>Reason:</strong> {report.reason}
+                  </p>
+                  {/* Add any review-specific info here */}
+                </div>
+              ))}
+
+            {selectedReportType === 'blogpost' &&
+              contentReports.blogPostReports.map(report => (
+                <div key={report._id} className="border p-4 rounded mb-2">
+                  <p>
+                    <strong>Reason:</strong> {report.reason}
+                  </p>
+                  {/* Add any blogpost-specific info here */}
+                </div>
+              ))}
+
+            {selectedReportType === 'comment' &&
+              contentReports.commentReports.map(report => (
+                <div key={report._id} className="border p-4 rounded mb-2">
+                  <p>
+                    <strong>Reason:</strong> {report.reason}
+                  </p>
+                  {/* Add any comment-specific info here */}
+                </div>
+              ))}
           </>
         )}
       </div>
