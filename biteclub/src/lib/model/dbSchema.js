@@ -272,6 +272,38 @@ const PersonalizationSchema = new mongoose.Schema({
   openToDiversity: mongoose.Schema.Types.Int32,
 });
 
+const ReportSchema = new mongoose.Schema({
+  contentType: {
+    type: String,
+    enum: ['review', 'comment', 'blogpost', 'user'],
+  },
+  reporterType: {
+    type: String,
+    required: true,
+    enum: ['User', 'BusinessUser'],
+  },
+  reporterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    refPath: 'reporterType',
+  },
+  reason: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  resolvedAt: Date,
+});
+
 // Export models
 export const User = mongoose.models?.User || mongoose.model('User', UserSchema);
 export const Photo = mongoose.models?.Photo || mongoose.model('Photo', PhotoSchema);
@@ -304,3 +336,4 @@ export const TestCloudinaryImage =
   mongoose.models?.TestCloudinaryImage || mongoose.model('TestCloudinaryImage', TestCloudinaryImageSchema);
 export const Personalization =
   mongoose.models?.Personalization || mongoose.model('Personalization', PersonalizationSchema);
+export const Report = mongoose.models?.Report || mongoose.model('Report', ReportSchema);
