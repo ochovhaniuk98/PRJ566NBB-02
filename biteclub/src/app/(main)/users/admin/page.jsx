@@ -3,17 +3,26 @@
 import { getBusinessUsersAwaitingVerification, approveBusinessUser } from '@/lib/db/dbOperations';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/shared/Button';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
 
 export default function AdminPage() {
   const panelTabs = ['Business Verification', 'Contents Moderation'];
 
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(panelTabs[0]);
+
   const [unverifiedBusinessUsers, setUnverifiedBusinessUsers] = useState([]);
-  const router = useRouter();
+  const [contentReports, setContentReports] = useState({
+    userReports: [],
+    reviewReports: [],
+    blogPostReports: [],
+    commentReports: [],
+  });
 
   useEffect(() => {
+    if (!selectedTab) return;
     const fetchData = async () => {
       try {
         const data = await getBusinessUsersAwaitingVerification();
@@ -36,19 +45,7 @@ export default function AdminPage() {
       </div>
     );
 
-  /*
-  if (!unverifiedBusinessUsers || unverifiedBusinessUsers.length === 0) {
-    return (
-      <>
-        <div className="mb-8 p-16">
-          <p>No business users found awaiting verification.</p>
-        </div>
-      </>
-    );
-  }
-  */
-
-  const handleApprove = async userId => {
+  const handleBusinessVerificationApprove = async userId => {
     try {
       const success = await approveBusinessUser(userId);
       if (!success) {
@@ -64,7 +61,7 @@ export default function AdminPage() {
     }
   };
 
-  const handleReject = async supabaseId => {
+  const handleBusinessVerificationReject = async supabaseId => {
     try {
       const res = await fetch('/delete-user', {
         method: 'POST',
@@ -122,14 +119,14 @@ export default function AdminPage() {
                     </div>
                     <div className="mt-2">
                       <button
-                        onClick={() => handleApprove(user._id)}
-                        className="bg-green-600 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-500"
+                        onClick={() => handleBusinessVerificationApprove(user._id)}
+                        className="bg-green-400 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-600"
                       >
                         Approve
                       </button>
                       <button
-                        onClick={() => handleReject(user.supabaseId)}
-                        className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-400"
+                        onClick={() => handleBusinessVerificationReject(user.supabaseId)}
+                        className="bg-red-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500"
                       >
                         Reject
                       </button>
@@ -149,6 +146,23 @@ export default function AdminPage() {
         {selectedTab === panelTabs[1] && (
           <>
             <h1 className="mb-6">Contents Moderation</h1>
+            <div className="flex gap-x-2 mb-4">
+              <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
+                All
+              </Button>
+              <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
+                Users
+              </Button>
+              <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
+                Reviews
+              </Button>
+              <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
+                Blog Posts
+              </Button>
+              <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
+                Comments
+              </Button>
+            </div>
           </>
         )}
       </div>

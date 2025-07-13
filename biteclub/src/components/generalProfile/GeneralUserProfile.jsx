@@ -115,6 +115,13 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           return;
         }
 
+        // TAB 2 -- VISITED
+        /*
+        if (selectedTab === profileTabs[2]) {
+          return;
+        }
+        */
+
         // TAB 3 -- FAVOURITE RESTAURANT
         if (selectedTab === profileTabs[3]) {
           const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
