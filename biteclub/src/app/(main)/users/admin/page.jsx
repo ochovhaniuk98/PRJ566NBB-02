@@ -21,26 +21,16 @@ export default function AdminPage() {
     reviewReports: [],
     blogPostReports: [],
     commentReports: [],
+    resolvedReports: [],
   });
 
-  /*
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-
-        const data = await getBusinessUsersAwaitingVerification();
-        console.log('Business users awaiting verification:', data);
-        setUnverifiedBusinessUsers(data);
-      } catch (err) {
-        console.error('Failed to fetch restaurant ID:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [router]);
-*/
+  const reportListMap = {
+    user: contentReports.userReports,
+    review: contentReports.reviewReports,
+    blogpost: contentReports.blogPostReports,
+    comment: contentReports.commentReports,
+    resolved: contentReports.resolvedReports,
+  };
 
   const fetchData = async () => {
     try {
@@ -64,9 +54,17 @@ export default function AdminPage() {
             reviewReports: [],
             blogPostReports: [],
             commentReports: [],
+            resolvedReports: [],
           };
 
           for (const report of json.reports || []) {
+            // First: check if it's resolved
+            if (report.status === 'approved' || report.status === 'rejected') {
+              grouped.resolvedReports.push(report);
+              continue; // skip adding to the content-type-specific lists
+            }
+
+             // Only add to content-specific reports if still pending
             switch (report.contentType) {
               case 'user':
                 grouped.userReports.push(report);
@@ -242,18 +240,32 @@ export default function AdminPage() {
               >
                 Comments
               </Button>
+
+              <Button
+                onClick={() => setSelectedReportType('resolved')}
+                type="button"
+                className="w-30 !bg-lime-200 hover:!bg-brand-aqua-lite"
+                variant={'roundTab'}
+              >
+                Resolved
+              </Button>
             </div>
-            {selectedReportType === 'user' &&
-              contentReports.userReports.map(report => <ContentModerationCard key={report._id} report={report} />)}
-
-            {selectedReportType === 'review' &&
-              contentReports.reviewReports.map(report => <ContentModerationCard key={report._id} report={report} />)}
-
-            {selectedReportType === 'blogpost' &&
-              contentReports.blogPostReports.map(report => <ContentModerationCard key={report._id} report={report} />)}
-
-            {selectedReportType === 'comment' &&
-              contentReports.commentReports.map(report => <ContentModerationCard key={report._id} report={report} />)}
+            {reportListMap[selectedReportType]?.map(report => (
+              <ContentModerationCard
+                key={report._id}
+                report={report}
+                onResolve={id => {
+                  // Remove the resolved report from the list
+                  setContentReports(prev => {
+                    const updated = { ...prev };
+                    updated[selectedReportType + 'Reports'] = updated[selectedReportType + 'Reports'].filter(
+                      r => r._id !== id
+                    ); // selectedReportType + 'Reports' => ['userReports']
+                    return updated;
+                  });
+                }}
+              />
+            ))}
           </>
         )}
       </div>
