@@ -146,6 +146,7 @@ export default function BusinessSetupForm() {
               onChange={e => setRestaurantQuery(e.target.value)}
               className={`w-full ${results.length > 0 && 'm-0 mt-2 rounded-b-none rounded-t-md'}`}
               placeholder="e.g. Pomegranate or College Street"
+              required
             />
 
             {/* --- Autocomplete Result Dropdown --- */}
@@ -244,7 +245,7 @@ export default function BusinessSetupForm() {
           </Button>
 
           {formError && (
-            <p className="text-sm text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2">{formError}</p>
+            <p className="text-sm text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2 mt-4">{formError}</p>
           )}
 
           {/* --- Sign Out Link --- */}
