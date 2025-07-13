@@ -248,11 +248,31 @@ export default function AdminPage() {
                   <div className="flex flex-col border border-red-300 p-4 rounded gap-3 hover:shadow hover:bg-red-50">
                     {/* <h2 className="text-lg font-bold">{user.restaurantId?.name}</h2> */}
                     <div className="grid grid-cols-[120px_1fr] text-gray-600 gap-y-1">
+                      <span>Reported User</span>
+                      <span>
+                        : <strong>{report.reportedUserId?.username}</strong> ({report.reportedUserId?._id})
+                      </span>
+
+                      <span>Reporter</span>
+                      <span>
+                        : {report.reporterId?.username} ({report.reporterId?._id})
+                      </span>
+
                       <span>Reason</span>
                       <span>: {report.reason}</span>
 
-                      <span>Reported User</span>
-                      <span>: {report.reportedUserId?.username}</span>
+                      <span>Report Time</span>
+                      <span>
+                        :{' '}
+                        {new Date(report.createdAt).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: '2-digit',
+                          hour12: true,
+                        })}
+                      </span>
 
                       <span>Status</span>
                       <span>: {report.status}</span>

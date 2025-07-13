@@ -10,10 +10,10 @@ export default function ReportForm({ onClose, reportType, contentTitle = '', rep
     e.preventDefault();
     // ref: dbSchema.js -- ReportSchema
     const testReportData = {
-      contentType: 'user', // TODO: ['review', 'comment', 'blogpost', 'user'], NOT THE SAME AS reportType (User / Content)
-      reportedUserId: '6831e63095febed29f204df5', // TODO: CHECK HOW TO DO SO.
+      contentType: 'user', // TODO: ['review', 'comment', 'blogpost', 'user'], NOT THE SAME AS reportType (User / Content). Need to receive it with the parameter, where does it come from.
+      reportedUserId: '6852bb8f5f6e83284b2eda97', // TODO: CHECK HOW TO DO SO.
       reporterType: 'User', // ['User', 'BusinessUser'],
-      reporterId: '6831e63095febed29f204df5', // logged-in user's ID
+      reporterId: '684b90b687f7b607b363bf4d', // logged-in user's ID
       reason: ' THIS USER IS POSTING SPAM...', // from the textarea
     };
 
