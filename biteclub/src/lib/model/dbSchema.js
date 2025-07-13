@@ -277,6 +277,10 @@ const ReportSchema = new mongoose.Schema({
     type: String,
     enum: ['review', 'comment', 'blogpost', 'user'],
   },
+  reportedUserId: {
+    type: mongoose.Schema.Types.ObjectId, ref: 'User',
+    required: true,
+  },
   reporterType: {
     type: String,
     required: true,

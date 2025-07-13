@@ -38,6 +38,7 @@ export default function AdminPage() {
     fetchData();
   }, [router]);
 
+
   if (loading)
     return (
       <div className="mb-8 p-16">
@@ -91,7 +92,7 @@ export default function AdminPage() {
             {unverifiedBusinessUsers && unverifiedBusinessUsers.length > 0 ? (
               unverifiedBusinessUsers.map(user => (
                 <div key={user._id} className="mb-4">
-                  <div className="flex flex-col border border-brand-peach p-4 rounded shadow gap-3">
+                  <div className="flex flex-col border border-brand-peach p-4 rounded hover:shadow gap-3">
                     <h2 className="text-lg font-bold">{user.restaurantId?.name}</h2>
                     <div className="grid grid-cols-[120px_1fr] text-gray-600 gap-y-1">
                       <span>Location</span>
@@ -147,9 +148,6 @@ export default function AdminPage() {
           <>
             <h1 className="mb-6">Contents Moderation</h1>
             <div className="flex gap-x-2 mb-4">
-              <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
-                All
-              </Button>
               <Button onClick={() => {}} type="button" className="w-30" variant={'roundTab'}>
                 Users
               </Button>

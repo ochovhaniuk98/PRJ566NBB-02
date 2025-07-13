@@ -5,6 +5,35 @@ import { faFlag } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 
 export default function ReportForm({ onClose, reportType, contentTitle = '', reportedUser = '' }) {
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    // ref: dbSchema.js -- ReportSchema
+    const testReportData = {
+      contentType: 'user', // TODO: ['review', 'comment', 'blogpost', 'user'], NOT THE SAME AS reportType (User / Content)
+      reportedUserId: '6831e63095febed29f204df5', // TODO: CHECK HOW TO DO SO.
+      reporterType: 'User', // ['User', 'BusinessUser'],
+      reporterId: '6831e63095febed29f204df5', // logged-in user's ID
+      reason: ' THIS USER IS POSTING SPAM...', // from the textarea
+    };
+
+    try {
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(testReportData), // REPLACE WITH THE CORRECT ONE
+      });
+
+      if (!res.ok) throw new Error('Failed to submit report.');
+
+      alert('Report submitted successfully');
+      onClose(); // close the modal
+    } catch (err) {
+      console.error(err);
+      alert('Something went wrong. Please try again.');
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black/50 flex justify-center z-50 overflow-scroll scrollbar-hide w-full h-full"
@@ -48,8 +77,8 @@ export default function ReportForm({ onClose, reportType, contentTitle = '', rep
               />
             </div>
           </div>
-          <div className=" flex justify-end gap-2 mt-16">
-            <Button type="submit" className="w-30" variant="default" disabled={false}>
+          <div className="flex justify-end gap-2 mt-16">
+            <Button type="submit" className="w-30" variant="default" disabled={false} onClick={handleSubmit}>
               Submit
             </Button>
             <Button type="button" className="w-30" variant="secondary" disabled={false} onClick={onClose}>
