@@ -5,8 +5,8 @@ import { Report, User } from '@/lib/model/dbSchema';
 export async function PATCH(req, { params }) {
   try {
     await dbConnect();
-    const { params } = await context;
-    const reportId = params.id;
+    const { id } = await params
+    const reportId = id;
 
     const body = await req.json();
     const { status, resolvedAt, incrementStrike } = body;

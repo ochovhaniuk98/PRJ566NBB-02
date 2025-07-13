@@ -43,8 +43,8 @@ export default function ContentModerationCard({ report, onResolve }) {
       onResolve?.(report._id); // update UI in parent (AdminPanel page)
       alert('Report Rejected');
     } catch (error) {
-      console.error('Approval failed', error);
-      alert('Failed to approve');
+      console.error('Reject failed', error);
+      alert('Failed to reject');
     } finally {
       setLoading(false);
     }

@@ -8,20 +8,32 @@ export default function ReportForm({ onClose, reportType, contentTitle = '', rep
 
   const handleSubmit = async e => {
     e.preventDefault();
+    
     // ref: dbSchema.js -- ReportSchema
-    const testReportData = {
-      contentType: 'user', // TODO: ['review', 'comment', 'blogpost', 'user'], NOT THE SAME AS reportType (User / Content). Need to receive it with the parameter, where does it come from.
-      reportedUserId: '6852bb8f5f6e83284b2eda97', // TODO: CHECK HOW TO DO SO.
-      reporterType: 'User', // ['User', 'BusinessUser'],
-      reporterId: '684b90b687f7b607b363bf4d', // logged-in user's ID
-      reason: ' THIS USER IS POSTING SPAM...', // from the textarea
+    // /*
+      const demoData = {
+        contentType: 'user',                        // ['review', 'comment', 'blogpost', 'user'], 
+                                                    // [!] Notice: This is not the same as reportType (User / Content). 
+        reportedUserId: '6852bb8f5f6e83284b2eda97', // reported user's mongoID
+        reporterType: 'User',                       // ['User', 'BusinessUser'],
+        reporterId: '684b90b687f7b607b363bf4d',     // logged-in user's mongoID
+        reason: ' THIS USER IS POSTING SPAM...',    // from the textarea
+      };
+    // */
+    const reportData = {
+      contentType: 'user',
+      reportedUserId: '6852bb8f5f6e83284b2eda97',
+      reporterType: 'User',
+      reporterId: '684b90b687f7b607b363bf4d',
+      reason: ' THIS USER IS POSTING SPAM...',
     };
+
 
     try {
       const res = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(testReportData), // REPLACE WITH THE CORRECT ONE
+        body: JSON.stringify(demoData), // try with demoData
       });
 
       if (!res.ok) throw new Error('Failed to submit report.');
