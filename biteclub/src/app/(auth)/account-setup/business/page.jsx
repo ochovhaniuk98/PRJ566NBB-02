@@ -215,7 +215,7 @@ export default function BusinessSetupForm() {
                       </Label>
                       <button
                         onClick={() => open()}
-                        className="border-1 border-brand-peach bg-brand-peach p-2 px-6 my-6 ml-auto font-primary font-medium shadow-sm text-sm text-brand-navy text-center rounded-md cursor-pointer"
+                        className="border-1 border-brand-peach bg-brand-peach p-2 px-6 my-6 font-primary font-medium shadow-sm text-sm text-brand-navy text-center rounded-md cursor-pointer"
                       >
                         <FontAwesomeIcon icon={faCloudArrowUp} className={`icon-lg text-brand-navy mr-2`} />
                         Upload Business License
