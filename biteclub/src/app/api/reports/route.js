@@ -18,7 +18,7 @@ export async function POST(req) {
       reportedUserId,
       reporterType,
       reporterId,
-      status: 'pending',
+      status: 'Pending',
     });
 
     if (existing) {

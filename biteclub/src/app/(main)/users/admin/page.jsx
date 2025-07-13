@@ -59,7 +59,7 @@ export default function AdminPage() {
 
           for (const report of json.reports || []) {
             // First: check if it's resolved
-            if (report.status === 'approved' || report.status === 'rejected') {
+            if (report.status === 'Approved' || report.status === 'Rejected') {
               grouped.resolvedReports.push(report);
               continue; // skip adding to the content-type-specific lists
             }
@@ -244,7 +244,7 @@ export default function AdminPage() {
               <Button
                 onClick={() => setSelectedReportType('resolved')}
                 type="button"
-                className="w-30 !bg-lime-200 hover:!bg-brand-aqua-lite"
+                className="w-30 !bg-brand-yellow-lite hover:!bg-amber-100 hover:!border-amber-200"
                 variant={'roundTab'}
               >
                 Resolved

@@ -11,7 +11,7 @@ export default function ContentModerationCard({ report, onResolve }) {
         method: 'PATCH', // 'PUT', [! we update only specific fields]
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          status: 'approved',
+          status: 'Approved',
           resolvedAt: new Date(),
           incrementStrike: true,
         }),
@@ -34,7 +34,7 @@ export default function ContentModerationCard({ report, onResolve }) {
         method: 'PATCH', // 'PUT', [! we update only specific fields]
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          status: 'rejected',
+          status: 'Rejected',
           resolvedAt: new Date(),
           incrementStrike: false,
         }),
@@ -55,9 +55,9 @@ export default function ContentModerationCard({ report, onResolve }) {
       <div
         className={[
           'flex flex-col border p-4 rounded gap-3 hover:shadow transition-all',
-          report.status === 'pending'
-            ? 'border-neutral-300 hover:border-red-300 hover:bg-red-50'
-            : 'border-neutral-300 hover:border-lime-300 hover:bg-lime-50',
+          report.status === 'Pending'
+            ? 'border-neutral-300 hover:border-teal-300 hover:bg-teal-50'
+            : 'border-neutral-300 hover:border-amber-200 hover:bg-brand-yellow-extralite',
         ].join(' ')}
       >
         {/* 
@@ -115,21 +115,25 @@ export default function ContentModerationCard({ report, onResolve }) {
 
           <span>Status</span>
           <span>: {report.status}</span>
-          <span>Resolved Time</span>
-          <span>
-            :{' '}
-            {new Date(report.resolvedAt)?.toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: true,
-            })}
-          </span>
+          {(report.status === 'Approved' || report.status === 'Rejected') && (
+            <>
+              <span>Resolved Time</span>
+              <span>
+                :{' '}
+                {new Date(report.resolvedAt)?.toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
+              </span>
+            </>
+          )}
         </div>
 
-        {report.status === 'pending' && (
+        {report.status === 'Pending' && (
           <div className="mt-2">
             <button
               onClick={handleApprove}
