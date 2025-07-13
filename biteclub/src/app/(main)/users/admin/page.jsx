@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/shared/Button';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
+import ContentModerationCard from '@/components/adminPanel/ContentModerationCard';
 
 export default function AdminPage() {
   const panelTabs = ['Business Verification', 'Contents Moderation'];
@@ -243,84 +244,16 @@ export default function AdminPage() {
               </Button>
             </div>
             {selectedReportType === 'user' &&
-              contentReports.userReports.map(report => (
-                <div key={report._id} className="mb-4">
-                  <div className="flex flex-col border border-red-300 p-4 rounded gap-3 hover:shadow hover:bg-red-50">
-                    {/* <h2 className="text-lg font-bold">{user.restaurantId?.name}</h2> */}
-                    <div className="grid grid-cols-[120px_1fr] text-gray-600 gap-y-1">
-                      <span>Reported User</span>
-                      <span>
-                        : <strong>{report.reportedUserId?.username}</strong> ({report.reportedUserId?._id}) - <strong>Strikes: {report.reportedUserId?.strike?? 0}</strong>
-                      </span>
-
-                      <span>Reporter</span>
-                      <span>
-                        : {report.reporterId?.username} ({report.reporterId?._id})
-                      </span>
-
-                      <span>Reason</span>
-                      <span>: {report.reason}</span>
-
-                      <span>Report Time</span>
-                      <span>
-                        :{' '}
-                        {new Date(report.createdAt).toLocaleString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: 'numeric',
-                          minute: '2-digit',
-                          hour12: true,
-                        })}
-                      </span>
-
-                      <span>Status</span>
-                      <span>: {report.status}</span>
-                    </div>
-                    <div className="mt-2">
-                      <button
-                        onClick={() => {}}
-                        className="bg-green-400 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-600"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => {}}
-                        className="bg-red-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              contentReports.userReports.map(report => <ContentModerationCard key={report._id} report={report} />)}
 
             {selectedReportType === 'review' &&
-              contentReports.reviewReports.map(report => (
-                <div key={report._id} className="border p-4 rounded mb-2">
-                  <p>
-                    <strong>Reason:</strong> {report.reason}
-                  </p>
-                </div>
-              ))}
+              contentReports.reviewReports.map(report => <ContentModerationCard key={report._id} report={report} />)}
 
             {selectedReportType === 'blogpost' &&
-              contentReports.blogPostReports.map(report => (
-                <div key={report._id} className="border p-4 rounded mb-2">
-                  <p>
-                    <strong>Reason:</strong> {report.reason}
-                  </p>
-                </div>
-              ))}
+              contentReports.blogPostReports.map(report => <ContentModerationCard key={report._id} report={report} />)}
 
             {selectedReportType === 'comment' &&
-              contentReports.commentReports.map(report => (
-                <div key={report._id} className="border p-4 rounded mb-2">
-                  <p>
-                    <strong>Reason:</strong> {report.reason}
-                  </p>
-                </div>
-              ))}
+              contentReports.commentReports.map(report => <ContentModerationCard key={report._id} report={report} />)}
           </>
         )}
       </div>

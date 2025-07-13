@@ -16,6 +16,7 @@ export async function POST(req) {
     const existing = await Report.findOne({
       contentType,
       reportedUserId,
+      reporterType,
       reporterId,
       status: 'pending',
     });
