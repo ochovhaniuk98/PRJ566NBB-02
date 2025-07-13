@@ -267,7 +267,12 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     0: 1,
   };
 
-  if (!userProfile) return <div>Loading profile...</div>;
+  if (!userProfile)
+    return (
+      <div className="mb-8 p-16">
+        <p>Loading...</p>
+      </div>
+    );
 
   // HANDLE DELETE: Blog Post
   const handleDeleteSelectedBlogPost = async () => {

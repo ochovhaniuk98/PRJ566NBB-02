@@ -151,7 +151,11 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   };
 
   if (!restaurantData || !reviewsData) {
-    return <p>isLoading...</p>;
+    return (
+      <div className="mb-8 p-16">
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;

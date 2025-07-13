@@ -26,7 +26,12 @@ export default function AdminPage() {
     fetchData();
   }, [router]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="mb-8 p-16">
+        <p>Loading...</p>
+      </div>
+    );
   if (!unverifiedBusinessUsers || unverifiedBusinessUsers.length === 0) {
     return (
       <>
