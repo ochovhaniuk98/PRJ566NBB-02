@@ -61,7 +61,11 @@ export default function ReviewCard({
         {isOwner ? (
           <FormattedDate yyyymmdd={review.date_posted} />
         ) : (
-          <AuthorDateBlurb authorPic={review.user_pic?.url} authorName={review.user_id} date={review.date_posted} />
+          <AuthorDateBlurb
+            authorPic={review.user_id?.userProfilePicture?.url}
+            authorName={review.user_id?.username}
+            date={review.date_posted}
+          />
         )}
       </div>
 
