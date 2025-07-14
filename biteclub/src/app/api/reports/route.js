@@ -7,14 +7,22 @@ export async function POST(req) {
     await dbConnect();
 
     const body = await req.json();
-    const { contentType, reportedUserId, reporterType, reporterId, reason } = body;
+    const { contentType, contentId, reportedUserId, reporterType, reporterId, reason } = body;
 
-    if (!contentType || !reportedUserId || !reporterType || !reporterId || !reason) {
+    if (
+      !contentType ||
+      (!contentId && contentType !== 'User') || // only required if not 'User'
+      !reportedUserId ||
+      !reporterType ||
+      !reporterId ||
+      !reason
+    ) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
     const existing = await Report.findOne({
       contentType,
+      ...(contentType !== 'User' && { contentId }), // only add contentId when needed
       reportedUserId,
       reporterType,
       reporterId,
@@ -32,6 +40,7 @@ export async function POST(req) {
 
     const report = await Report.create({
       contentType,
+      contentId,
       reportedUserId,
       reporterType,
       reporterId,
@@ -81,5 +90,3 @@ With populate('reporterId'):
   reason: 'Inappropriate comment'
 }
 */
-
-

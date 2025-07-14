@@ -275,10 +275,26 @@ const PersonalizationSchema = new mongoose.Schema({
 const ReportSchema = new mongoose.Schema({
   contentType: {
     type: String,
-    enum: ['review', 'comment', 'blogpost', 'user'],
+    enum: ['InternalReview', 'ExternalReview', 'Comment', 'BlogPost', 'User'],
   },
-  reportedUserId: {
-    type: mongoose.Schema.Types.ObjectId, ref: 'User',
+  contentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: 'contentType',
+    validate: {
+      validator: function (v) {
+        // If contentType is NOT 'user', then contentId is required
+        if (this.contentType !== 'User') {
+          return v != null;
+        }
+        // Otherwise, if it's 'user', contentId should be null or undefined
+        return true;
+      },
+      message: 'contentId is required for content (non-user) reports',
+    },
+  },
+  reportedUserId: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   reporterType: {
@@ -306,6 +322,14 @@ const ReportSchema = new mongoose.Schema({
     default: Date.now,
   },
   resolvedAt: Date,
+});
+
+// Auto-nullify contentId when contentType === 'User'
+ReportSchema.pre('validate', function (next) {
+  if (this.contentType === 'User') {
+    this.contentId = undefined; // Removes the field entirely from MongoDB
+  }
+  next();
 });
 
 // Export models

@@ -35,6 +35,9 @@ export async function PATCH(req, { params }) {
       }
     }
 
+    // ***[TODO?]***: (Not required in Sprint 3)
+    // IF APPROVED, REMOVE THE REPORTED CONTENT FROM DB (or add a status for the content e.g. status: reported)
+
     return NextResponse.json({ message: 'Report updated', report });
   } catch (error) {
     console.error('[REPORT_PATCH_ERROR]', error);
