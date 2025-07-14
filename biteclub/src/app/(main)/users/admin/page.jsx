@@ -2,7 +2,7 @@
 
 import { getBusinessUsersAwaitingVerification, approveBusinessUser } from '@/lib/db/dbOperations';
 import { useState, useEffect } from 'react';
-// import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/shared/Button';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
 import ContentModerationCard from '@/components/adminPanel/ContentModerationCard';
@@ -10,7 +10,7 @@ import ContentModerationCard from '@/components/adminPanel/ContentModerationCard
 export default function AdminPage() {
   const panelTabs = ['Business Verification', 'Contents Moderation'];
 
-  // const router = useRouter();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(panelTabs[0]);
   const [selectedReportType, setSelectedReportType] = useState('user'); // default to 'user'
@@ -88,7 +88,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchData();
-  }, [selectedTab]); // , router
+  }, [selectedTab, router]);
 
   if (loading)
     return (
