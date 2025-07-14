@@ -9,6 +9,7 @@ import ReportForm from '../shared/ReportForm';
 import CommentThread from '../shared/CommentThread';
 
 export default function BlogPost({ id }) {
+  const [blogPost, setBlogPost] = useState(null);
   const [postContent, setPostContent] = useState(null);
   const [postTitle, setPostTitle] = useState(null);
   const [numOfFavourites, setNumOfFavourites] = useState(0);
@@ -34,6 +35,7 @@ export default function BlogPost({ id }) {
         setPostContent(postData?.body || null);
         setPostTitle(postData?.title || null);
         setNumOfFavourites(favouritesData.numOfFavourites);
+        setBlogPost(postData);
       } catch (error) {
         console.error('Error fetching blog post or favourites:', error);
       }
@@ -99,7 +101,7 @@ export default function BlogPost({ id }) {
       </div>
       {/* comments thread for blog post */}
       <div className="flex-[1]">
-        <CommentThread />
+        <CommentThread post={blogPost} />
       </div>
     </div>
   );

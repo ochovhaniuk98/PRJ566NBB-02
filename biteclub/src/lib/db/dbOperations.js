@@ -5,6 +5,7 @@ import {
   User,
   Photo,
   Comment,
+  CommentPost,
   InstagramPost,
   BlogPost,
   InternalReview,
@@ -322,8 +323,6 @@ export async function deleteAllExternalReviewsByUser(userId) {
     throw new Error('Failed to delete external reviews: ' + error.message);
   }
 }
-
-
 
 // ==================
 // CLOUDINARY RELATED
@@ -756,5 +755,109 @@ export async function approveBusinessUser(userId) {
   } catch (error) {
     console.error('Error approving business user:', error);
     throw new Error('Failed to approve business user');
+  }
+}
+
+// Post Comments
+// author (MongoDB user _id)
+export async function createPostComment({
+  blogPostId,
+  parent_id = null,
+  avatarURL,
+  content,
+  author,
+  date_posted = Date.now(),
+  user,
+}) {
+  try {
+    await dbConnect();
+
+    const comment = new CommentPost({
+      blogPost_id: blogPostId,
+      parent_id,
+      avatarURL,
+      content,
+      author,
+      date_posted,
+      user,
+    });
+
+    const savedComment = await comment.save();
+    return savedComment;
+  } catch (error) {
+    console.error('Error creating comment:', error);
+    throw error;
+  }
+}
+
+// Get Post Comments By Post Id
+export async function getPostCommentsByPostId({ postId }) {
+  try {
+    await dbConnect();
+    const comments = await CommentPost.find({
+      blogPost_id: postId,
+    }).sort({ date_posted: 1 }); // sort in ascending order
+
+    return comments;
+  } catch (err) {
+    console.error('Error getting post comments by post id:', err);
+    throw err;
+  }
+}
+
+// Add Likes/Dislikes to a Post Comment/Reply
+export async function addLikeOrDislikeToComment({ commentId, like = false, dislike = false, userId }) {
+  try {
+    await dbConnect();
+    const comment = await CommentPost.findById(commentId);
+    if (!comment) return null;
+
+    const alreadyLiked = comment.likes.users.includes(userId);
+    const alreadyDisliked = comment.dislikes.users.includes(userId);
+
+    if (like && !alreadyLiked) {
+      // remove dislike if it exists
+      if (alreadyDisliked) {
+        comment.dislikes.users.pull(userId);
+        comment.dislikes.count -= 1;
+      }
+
+      comment.likes.users.push(userId);
+      comment.likes.count += 1;
+    }
+
+    if (dislike && !alreadyDisliked) {
+      // remove like if it exists
+      if (alreadyLiked) {
+        comment.likes.users.pull(userId);
+        comment.likes.count -= 1;
+      }
+
+      comment.dislikes.users.push(userId);
+      comment.dislikes.count += 1;
+    }
+
+    await comment.save();
+    return comment;
+  } catch (err) {
+    console.error('Error adding like/dislike:', err);
+    throw err;
+  }
+}
+
+// Delete Comment
+export async function deletePostComment({ commentId }) {
+  try {
+    await dbConnect();
+    const deletedComment = await CommentPost.findByIdAndDelete(commentId);
+
+    if (!deletedComment) {
+      throw new Error(`Comment with ID ${commentId} not found`);
+    }
+
+    return { success: true, message: 'Comment deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    throw error;
   }
 }

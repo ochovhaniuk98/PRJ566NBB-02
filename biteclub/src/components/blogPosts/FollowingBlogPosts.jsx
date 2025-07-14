@@ -75,31 +75,6 @@ export default function FollowingBlogPosts() {
     }
   };
 
-  // get user mongoDB id
-  //   const fetchUserId = async () => {
-  //     try {
-  //       const supabase = createClient();
-
-  //       const { data, error: authError } = await supabase.auth.getUser();
-
-  //       if (authError || !data.user) {
-  //         throw new Error('User not authenticated');
-  //       }
-
-  //       const user = data.user;
-  //       const id = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
-  //       console.log(`(userDashboard) MONGOID: `, id);
-
-  //       if (!id) {
-  //         throw new Error('MongoDB ID not found');
-  //       }
-
-  //       setUserMongoId(id);
-  //     } catch (error) {
-  //       console.error('Failed to fetch user mongoDb id:', error);
-  //     }
-  //   };
-
   // page = 1
   useEffect(() => {
     if (userMongoId) {
