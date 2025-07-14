@@ -43,7 +43,12 @@ export default function GeneralUserDashboard() {
     fetchData();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="mb-8 p-16">
+        <p>Loading...</p>
+      </div>
+    );
   if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
 
   return <GeneralUserProfile isOwner={true} generalUserId={userMongoId} />;

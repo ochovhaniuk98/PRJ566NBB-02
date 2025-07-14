@@ -291,6 +291,66 @@ const PersonalizationSchema = new mongoose.Schema({
   openToDiversity: mongoose.Schema.Types.Int32,
 });
 
+const ReportSchema = new mongoose.Schema({
+  contentType: {
+    type: String,
+    enum: ['InternalReview', 'ExternalReview', 'Comment', 'BlogPost', 'User'],
+  },
+  contentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: 'contentType',
+    validate: {
+      validator: function (v) {
+        // If contentType is NOT 'user', then contentId is required
+        if (this.contentType !== 'User') {
+          return v != null;
+        }
+        // Otherwise, if it's 'user', contentId should be null or undefined
+        return true;
+      },
+      message: 'contentId is required for content (non-user) reports',
+    },
+  },
+  reportedUserId: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  reporterType: {
+    type: String,
+    required: true,
+    enum: ['User', 'BusinessUser'],
+  },
+  reporterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    refPath: 'reporterType',
+  },
+  reason: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  status: {
+    type: String,
+    enum: ['Pending', 'Approved', 'Rejected'],
+    default: 'Pending',
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  resolvedAt: Date,
+});
+
+// Auto-nullify contentId when contentType === 'User'
+ReportSchema.pre('validate', function (next) {
+  if (this.contentType === 'User') {
+    this.contentId = undefined; // Removes the field entirely from MongoDB
+  }
+  next();
+});
+
 // Export models
 export const User = mongoose.models?.User || mongoose.model('User', UserSchema);
 export const Photo = mongoose.models?.Photo || mongoose.model('Photo', PhotoSchema);
@@ -324,3 +384,4 @@ export const TestCloudinaryImage =
   mongoose.models?.TestCloudinaryImage || mongoose.model('TestCloudinaryImage', TestCloudinaryImageSchema);
 export const Personalization =
   mongoose.models?.Personalization || mongoose.model('Personalization', PersonalizationSchema);
+export const Report = mongoose.models?.Report || mongoose.model('Report', ReportSchema);

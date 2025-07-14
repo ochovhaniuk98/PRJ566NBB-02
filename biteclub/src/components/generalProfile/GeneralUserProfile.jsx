@@ -131,6 +131,13 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           return;
         }
 
+        // TAB 2 -- VISITED
+        /*
+        if (selectedTab === profileTabs[2]) {
+          return;
+        }
+        */
+
         // TAB 3 -- FAVOURITE RESTAURANT
         if (selectedTab === profileTabs[3]) {
           const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
@@ -283,7 +290,12 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     0: 1,
   };
 
-  if (!userProfile) return <div>Loading profile...</div>;
+  if (!userProfile)
+    return (
+      <div className="mb-8 p-16">
+        <p>Loading...</p>
+      </div>
+    );
 
   // HANDLE DELETE: Blog Post
   const handleDeleteSelectedBlogPost = async () => {

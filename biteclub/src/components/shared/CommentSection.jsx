@@ -30,7 +30,7 @@ export default function CommentSection({
   };
 
   return (
-    <div className="w-full mt-4 py-4 border-t border-brand-peach ">
+    <div className="w-full mt-4 py-4 border-t border-brand-peach">
       <h3 className="text-lg font-semibold mb-4 uppercase">Comments ({comments.length})</h3>
 
       <ul className="space-y-2">

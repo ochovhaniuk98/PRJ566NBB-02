@@ -49,7 +49,12 @@ export default function BusinessUserRestaurantPage() {
     fetchData();
   }, [router]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="mb-8 p-16">
+        <p>Loading...</p>
+      </div>
+    );
 
   return <RestaurantProfile isOwner={true} restaurantId={restaurantId} />;
 }

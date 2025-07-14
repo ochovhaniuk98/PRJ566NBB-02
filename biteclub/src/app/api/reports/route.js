@@ -1,0 +1,126 @@
+import { NextResponse } from 'next/server';
+import dbConnect from '@/lib/db/dbConnect';
+import { Report } from '@/lib/model/dbSchema';
+
+export async function POST(req) {
+  try {
+    await dbConnect();
+
+    const body = await req.json();
+    const { contentType, contentId, reportedUserId, reporterType, reporterId, reason } = body;
+
+    if (
+      !contentType ||
+      (!contentId && contentType !== 'User') || // only required if not 'User'
+      !reportedUserId ||
+      !reporterType ||
+      !reporterId ||
+      !reason
+    ) {
+      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+    }
+
+    const existing = await Report.findOne({
+      contentType,
+      ...(contentType !== 'User' && { contentId }), // only add contentId when needed
+      reportedUserId,
+      reporterType,
+      reporterId,
+      status: 'Pending',
+    });
+
+    if (existing) {
+      return NextResponse.json({ message: 'You have already reported this user/content.' }, { status: 409 });
+    }
+
+    const trimmedReason = reason?.trim();
+    if (!trimmedReason) {
+      return NextResponse.json({ message: 'Reason cannot be empty' }, { status: 400 });
+    }
+
+    const report = await Report.create({
+      contentType,
+      contentId,
+      reportedUserId,
+      reporterType,
+      reporterId,
+      reason: trimmedReason,
+    });
+
+    return NextResponse.json({ message: 'Report submitted', report }, { status: 201 });
+  } catch (error) {
+    console.error('[REPORT_POST_ERROR]: ', error);
+    return NextResponse.json({ message: 'Server error' }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    await dbConnect();
+
+    // Base populate
+    const reports = await Report.find()
+      .sort({ createdAt: -1 })
+      .populate(['reporterId', 'reportedUserId', 'contentId']);
+
+    // Conditional nested populate
+    const populatedReports = await Promise.all(
+      reports.map(async (report) => {
+        // BusinessUser: populate reporterId.restaurantId
+        if (
+          report.reporterType === 'BusinessUser' &&
+          report.reporterId?.restaurantId
+        ) {
+          await report.populate({
+            path: 'reporterId.restaurantId',
+            model: 'Restaurant',
+          });
+        }
+
+        // Review: populate contentId.restaurantId
+        if (
+          report.contentType === 'Review' &&
+          report.contentId?.restaurantId
+        ) {
+          await report.populate({
+            path: 'contentId.restaurantId',
+            model: 'Restaurant',
+          });
+        }
+
+        return report;
+      })
+    );
+
+    return NextResponse.json({ reports: populatedReports });
+  } catch (error) {
+    console.error('[REPORT_GET_ERROR]', error);
+    return NextResponse.json({ message: 'Server error' }, { status: 500 });
+  }
+}
+
+/*
+NOTES:
+.populate('reporterId') gives access to the full user or business user who made the report
+If a report's contentType is 'User', contentId will be undefined, and populate('contentId') will safely skip.
+
+
+Without populate:
+{
+  reporterId: '64fa76bc9d3a7e9230dfcbee',
+  reporterType: 'User',
+  reason: 'Inappropriate comment'
+}
+
+With populate('reporterId'):
+{
+  reporterType: 'User',
+  reporterId: {
+    _id: '64fa76bc9d3a7e9230dfcbee',
+    username: 'cooluser123',
+    email: 'cool@example.com',
+    profilePic: '...'
+  },
+  reason: 'Inappropriate comment'
+}
+*/

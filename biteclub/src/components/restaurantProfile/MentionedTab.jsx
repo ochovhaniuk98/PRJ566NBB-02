@@ -27,7 +27,12 @@ export default function MentionedTab({ restaurantId }) {
     fetchBlogPosts();
   }, [restaurantId]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="mb-8 p-16">
+        <p>Loading...</p>
+      </div>
+    );
   if (error) return <div className="text-red-500">{error}</div>;
   if (!blogPosts || blogPosts.length === 0) return <div>No mentions found.</div>;
 

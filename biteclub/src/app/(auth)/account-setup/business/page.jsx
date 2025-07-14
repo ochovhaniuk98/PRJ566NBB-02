@@ -146,6 +146,7 @@ export default function BusinessSetupForm() {
               onChange={e => setRestaurantQuery(e.target.value)}
               className={`w-full ${results.length > 0 && 'm-0 mt-2 rounded-b-none rounded-t-md'}`}
               placeholder="e.g. Pomegranate or College Street"
+              required
             />
 
             {/* --- Autocomplete Result Dropdown --- */}
@@ -215,7 +216,7 @@ export default function BusinessSetupForm() {
                       </Label>
                       <button
                         onClick={() => open()}
-                        className="border-1 border-brand-peach bg-brand-peach p-2 px-6 my-6 ml-auto font-primary font-medium shadow-sm text-sm text-brand-navy text-center rounded-md cursor-pointer"
+                        className="border-1 border-brand-peach bg-brand-peach p-2 px-6 my-6 font-primary font-medium shadow-sm text-sm text-brand-navy text-center rounded-md cursor-pointer"
                       >
                         <FontAwesomeIcon icon={faCloudArrowUp} className={`icon-lg text-brand-navy mr-2`} />
                         Upload Business License
@@ -244,7 +245,7 @@ export default function BusinessSetupForm() {
           </Button>
 
           {formError && (
-            <p className="text-sm text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2">{formError}</p>
+            <p className="text-sm text-red-600 bg-red-100 border border-red-300 rounded px-3 py-2 mt-4">{formError}</p>
           )}
 
           {/* --- Sign Out Link --- */}
