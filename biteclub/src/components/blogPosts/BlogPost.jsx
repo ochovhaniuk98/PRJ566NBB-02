@@ -13,7 +13,12 @@ export default function BlogPost({ id }) {
   const [postContent, setPostContent] = useState(null);
   const [postTitle, setPostTitle] = useState(null);
   const [numOfFavourites, setNumOfFavourites] = useState(0);
-  const [openReportForm, setOpenReportForm] = useState(false); // for reporting post
+
+  // for reporting a post
+  const [openReportForm, setOpenReportForm] = useState(false);
+  const [reportedUser, setReportedUser] = useState(null);
+  // const [reportedUserId, setReportedUserId] = useState('');
+  const [reporter, setReporter] = useState(null);
 
   useEffect(() => {
     if (!id) return;
@@ -36,6 +41,9 @@ export default function BlogPost({ id }) {
         setPostTitle(postData?.title || null);
         setNumOfFavourites(favouritesData.numOfFavourites);
         setBlogPost(postData);
+
+        // for reporting a post
+        fetchReportedUser(postData.user_id);
       } catch (error) {
         console.error('Error fetching blog post or favourites:', error);
       }
@@ -77,6 +85,45 @@ export default function BlogPost({ id }) {
     }
   };
 
+  // for reporting a post
+  // get reported user object
+  const fetchReportedUser = async id => {
+    try {
+      if (id) {
+        const res = await fetch(`/api/users/get-general-user-by-MgId?id=${id}`);
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const reportedUser = await res.json();
+
+        setReportedUser(reportedUser);
+        console.log('reportedUser', reportedUser);
+      }
+    } catch (error) {
+      console.error('Failed to fetch reported User:', error);
+    }
+  };
+
+  useEffect(() => {
+    // get reporter object
+    const fetchReporter = async () => {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase.auth.getUser();
+        if (!data?.user) throw new Error('No Supabase user');
+        const supabaseId = data.user.id;
+
+        const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const reporter = await res.json();
+
+        setReporter(reporter);
+      } catch (error) {
+        console.error('Failed to fetch reporter:', error);
+      }
+    };
+
+    fetchReporter();
+  }, []);
+
   return (
     <div className="flex w-full">
       <div className="flex-[3] mt-20">
@@ -97,7 +144,16 @@ export default function BlogPost({ id }) {
         {postTitle && <h2 className="simple-editor-content ml-[200px]">{postTitle}</h2>}
         {postContent && <ReadOnlyEditor content={postContent} />}
         {/* Report Content Form */}
-        {openReportForm && <ReportForm onClose={() => setOpenReportForm(false)} contentTitle={postTitle} />}
+        {openReportForm && (
+          <ReportForm
+            onClose={() => setOpenReportForm(false)}
+            contentTitle={postTitle}
+            contentType="BlogPost"
+            contentId={blogPost._id}
+            reportedUser={reportedUser}
+            reporter={reporter}
+          />
+        )}
       </div>
       {/* comments thread for blog post */}
       <div className="flex-[1]">
