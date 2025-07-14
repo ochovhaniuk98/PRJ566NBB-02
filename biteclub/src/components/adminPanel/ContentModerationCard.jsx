@@ -1,6 +1,60 @@
 'use client';
 import { useState } from 'react';
 
+function ContentModerationTag({ contentType, status }) {
+  const contentTagMap = {
+    InternalReview: {
+      label: 'Internal Review',
+      className: 'bg-amber-200 text-black',
+    },
+    ExternalReview: {
+      label: 'External Review',
+      className: 'bg-green-200 text-black',
+    },
+    BlogPost: {
+      label: 'Blog Post',
+      className: 'bg-blue-200 text-black',
+    },
+    Comment: {
+      label: 'Comment',
+      className: 'bg-purple-200 text-black',
+    },
+    User: {
+      label: 'User Profile',
+      className: 'bg-pink-200 text-black',
+    },
+  };
+
+  const statusTagMap = {
+    Approved: {
+      label: 'Approved',
+      className: 'bg-green-100 text-green-800 border border-green-300',
+    },
+    Rejected: {
+      label: 'Rejected',
+      className: 'bg-red-100 text-red-800 border border-red-300',
+    },
+    Pending: {
+      label: 'Pending',
+      className: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
+    },
+  };
+
+  const contentTag = contentTagMap[contentType];
+  const statusTag = statusTagMap[status];
+
+  return (
+    <div className="flex gap-2 items-center">
+      {contentTag && (
+        <div className={`inline-block px-2 py-1 text-sm rounded ${contentTag.className}`}>{contentTag.label}</div>
+      )}
+      {statusTag && (
+        <div className={`inline-block px-2 py-1 text-sm rounded ${statusTag.className}`}>{statusTag.label}</div>
+      )}
+    </div>
+  );
+}
+
 export default function ContentModerationCard({ report, onResolve }) {
   const [loading, setLoading] = useState(false);
 
@@ -8,7 +62,7 @@ export default function ContentModerationCard({ report, onResolve }) {
     setLoading(true);
     try {
       const res = await fetch(`/api/reports/${report._id}`, {
-        method: 'PATCH', // 'PUT', [! we update only specific fields]
+        method: 'PATCH', // 'PUT', [!] we update only specific fields
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status: 'Approved',
@@ -31,7 +85,7 @@ export default function ContentModerationCard({ report, onResolve }) {
     setLoading(true);
     try {
       const res = await fetch(`/api/reports/${report._id}`, {
-        method: 'PATCH', // 'PUT', [! we update only specific fields]
+        method: 'PATCH', // 'PUT', [!] we update only specific fields
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status: 'Rejected',
@@ -66,6 +120,7 @@ export default function ContentModerationCard({ report, onResolve }) {
             - 1fr   : the second column takes up the remaining space (flexible, like a stretchable unit). 
         */}
         <div className="grid grid-cols-[120px_1fr] text-gray-600 gap-y-1">
+          {/* REPORTED USER */}
           <span className="col-span-2">
             <strong>Reported User </strong>
           </span>
@@ -80,6 +135,7 @@ export default function ContentModerationCard({ report, onResolve }) {
 
           <hr className="col-span-2 border-neutral-300 my-2" />
 
+          {/* REPORTER */}
           <span className="col-span-2">
             <strong>Reporter</strong>
           </span>
@@ -94,9 +150,18 @@ export default function ContentModerationCard({ report, onResolve }) {
 
           <hr className="col-span-2 border-gray-300 my-2" />
 
+          {/* REPORT DETAILS */}
           <span className="col-span-2">
             <strong>Report Details</strong>
           </span>
+          {report.contentId && (
+            <>
+              <span>Content</span>
+              {/* Fall back to ._id if title is not present */}
+              <span>: {report.contentId?.title || report.contentId?._id}</span>
+            </>
+          )}
+
           <span>Reason</span>
           <span>: {report.reason}</span>
 
@@ -113,8 +178,8 @@ export default function ContentModerationCard({ report, onResolve }) {
             })}
           </span>
 
-          <span>Status</span>
-          <span>: {report.status}</span>
+          <span>Tag</span>
+          <ContentModerationTag contentType={report.contentType} status={report.status} />
           {(report.status === 'Approved' || report.status === 'Rejected') && (
             <>
               <span>Resolved Time</span>
@@ -134,17 +199,17 @@ export default function ContentModerationCard({ report, onResolve }) {
         </div>
 
         {report.status === 'Pending' && (
-          <div className="mt-2">
+          <div className="mt-4">
             <button
               onClick={handleApprove}
-              className="bg-green-400 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-600"
+              className="w-30 bg-green-400 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-600"
               disabled={loading}
             >
               Approve
             </button>
             <button
               onClick={handleReject}
-              className="bg-red-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500"
+              className="w-30 bg-red-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500"
               disabled={loading}
             >
               Reject

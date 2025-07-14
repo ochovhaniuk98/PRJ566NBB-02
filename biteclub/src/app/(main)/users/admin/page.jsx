@@ -18,17 +18,13 @@ export default function AdminPage() {
   const [unverifiedBusinessUsers, setUnverifiedBusinessUsers] = useState([]);
   const [contentReports, setContentReports] = useState({
     userReports: [],
-    reviewReports: [],
-    blogPostReports: [],
-    commentReports: [],
+    contentReports: [],
     resolvedReports: [],
   });
 
   const reportListMap = {
     user: contentReports.userReports,
-    review: contentReports.reviewReports,
-    blogpost: contentReports.blogPostReports,
-    comment: contentReports.commentReports,
+    content: contentReports.contentReports,
     resolved: contentReports.resolvedReports,
   };
 
@@ -51,9 +47,7 @@ export default function AdminPage() {
 
           const grouped = {
             userReports: [],
-            reviewReports: [],
-            blogPostReports: [],
-            commentReports: [],
+            contentReports: [],
             resolvedReports: [],
           };
 
@@ -72,13 +66,9 @@ export default function AdminPage() {
               // Both Internal and External reviews will go to reviewReports
               case 'InternalReview':
               case 'ExternalReview':
-                grouped.reviewReports.push(report);
-                break;
               case 'BlogPost':
-                grouped.blogPostReports.push(report);
-                break;
               case 'Comment':
-                grouped.commentReports.push(report);
+                grouped.contentReports.push(report);
                 break;
               default:
                 console.warn('(Admin) Unknown report type', report);
@@ -182,16 +172,16 @@ export default function AdminPage() {
                         )}
                       </span>
                     </div>
-                    <div className="mt-2">
+                    <div className="mt-4">
                       <button
                         onClick={() => handleBusinessVerificationApprove(user._id)}
-                        className="bg-green-400 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-600"
+                        className="w-30 bg-green-400 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-600"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => handleBusinessVerificationReject(user.supabaseId)}
-                        className="bg-red-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500"
+                        className="w-30 bg-red-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500"
                       >
                         Reject
                       </button>
@@ -219,28 +209,12 @@ export default function AdminPage() {
                 Users
               </Button>
               <Button
-                onClick={() => setSelectedReportType('review')}
+                onClick={() => setSelectedReportType('content')}
                 type="button"
                 className="w-30"
                 variant={'roundTab'}
               >
-                Reviews
-              </Button>
-              <Button
-                onClick={() => setSelectedReportType('blogpost')}
-                type="button"
-                className="w-30"
-                variant={'roundTab'}
-              >
-                Blog Posts
-              </Button>
-              <Button
-                onClick={() => setSelectedReportType('comment')}
-                type="button"
-                className="w-30"
-                variant={'roundTab'}
-              >
-                Comments
+                Contents
               </Button>
 
               <Button

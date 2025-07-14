@@ -58,7 +58,7 @@ export async function GET() {
   try {
     await dbConnect();
 
-    const reports = await Report.find().sort({ createdAt: -1 }).populate('reporterId').populate('reportedUserId');
+    const reports = await Report.find().sort({ createdAt: -1 }).populate('reporterId').populate('reportedUserId').populate('contentId');
 
     return NextResponse.json({ reports });
   } catch (error) {
@@ -70,6 +70,8 @@ export async function GET() {
 /*
 NOTES:
 .populate('reporterId') gives access to the full user or business user who made the report
+If a report's contentType is 'User', contentId will be undefined, and populate('contentId') will safely skip.
+
 
 Without populate:
 {
