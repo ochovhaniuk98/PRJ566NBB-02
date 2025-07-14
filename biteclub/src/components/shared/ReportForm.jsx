@@ -40,6 +40,16 @@ export default function ReportForm({ onClose, reportType, contentTitle = '', rep
       reporterId: '6852bb8f5f6e83284b2eda97',
       reason: ' THIS USER IS POSTING CRAZY THINGS...',
     };
+
+    // DEMO: Reported by a Business User
+    const demoReporterBusinessData = {
+      contentType: 'InternalReview',
+      contentId: '6851d1c41104eb24a4cd6c72',
+      reportedUserId: '68377e090be4711cfe59c72a',
+      reporterType: 'BusinessUser',
+      reporterId: '68548967aec05d6c03193b3c', // [!] Business User Id not restaurant Id
+      reason: '... I am the Business User and I don\'t find this   related to my restaurant... ',
+    };
     // =================================================================================================
 
     const reportData = {
@@ -55,7 +65,7 @@ export default function ReportForm({ onClose, reportType, contentTitle = '', rep
       const res = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(demoUserData), // try with demoData
+        body: JSON.stringify(demoReporterBusinessData), // try with demoData
       });
 
       if (!res.ok) throw new Error('Failed to submit report.');

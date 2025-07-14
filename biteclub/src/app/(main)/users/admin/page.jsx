@@ -163,12 +163,12 @@ export default function AdminPage() {
                         {user.licenseFileUrl ? (
                           <button
                             onClick={() => window.open(user.licenseFileUrl, '_blank')}
-                            className="text-gray-600 cursor-pointer underline hover:text-blue-600"
+                            className="text-neutral-600 cursor-pointer underline hover:text-blue-600"
                           >
                             Download
                           </button>
                         ) : (
-                          <span className="text-gray-400">No license available</span>
+                          <span className="text-neutral-900">No license available</span>
                         )}
                       </span>
                     </div>

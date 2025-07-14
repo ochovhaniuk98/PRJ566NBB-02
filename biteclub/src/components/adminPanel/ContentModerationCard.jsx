@@ -127,7 +127,16 @@ export default function ContentModerationCard({ report, onResolve }) {
 
           <span>Name</span>
           <span>
-            : {report.reportedUserId?.username} ({report.reportedUserId?._id})
+            : {report.reportedUserId?.username} ({' '}
+            <a
+              href={`/generals/${report.reportedUserId?._id}`}
+              className="text-neutral-600 cursor-pointer underline hover:text-blue-600"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {report.reportedUserId?._id}
+            </a>{' '}
+            )
           </span>
 
           <span>Strikes</span>
@@ -142,7 +151,22 @@ export default function ContentModerationCard({ report, onResolve }) {
 
           <span>Name</span>
           <span>
-            : {report.reporterId?.username} ({report.reporterId?._id})
+            :{' '}
+            {report.reporterType === 'BusinessUser'
+              ? report.reporterId?.restaurantId?.name
+              : report.reporterId?.username}{' '}
+            ({' '}
+            <a
+              href={`/${report.reporterType === 'BusinessUser' ? 'restaurants' : 'generals'}/${
+                report.reporterType === 'BusinessUser' ? report.reporterId?.restaurantId._id : report.reporterId?._id
+              }`}
+              className="text-neutral-600 cursor-pointer underline hover:text-blue-600"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {report.reporterId?._id}
+            </a>{' '}
+            )
           </span>
 
           <span>User Type</span>
@@ -153,29 +177,6 @@ export default function ContentModerationCard({ report, onResolve }) {
           {/* REPORT DETAILS */}
           <span className="col-span-2">
             <strong>Report Details</strong>
-          </span>
-          {report.contentId && (
-            <>
-              <span>Content</span>
-              {/* Fall back to ._id if title is not present */}
-              <span>: {report.contentId?.title || report.contentId?._id}</span>
-            </>
-          )}
-
-          <span>Reason</span>
-          <span>: {report.reason}</span>
-
-          <span>Report Time</span>
-          <span>
-            :{' '}
-            {new Date(report.createdAt)?.toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: true,
-            })}
           </span>
 
           <span>Tag</span>
@@ -196,6 +197,54 @@ export default function ContentModerationCard({ report, onResolve }) {
               </span>
             </>
           )}
+          {report.contentId && (
+            <>
+              <span>Content</span>
+              {/* Fall back to ._id if title is not present */}
+
+              <span>
+                :{' '}
+                {/* 
+                [TODO: ADJUST PATH]
+                  Comment → /comments/[id]    (NOT, WE DO NOT HAVE ANY COMMENT OBJECT YET)
+                  BlogPost → /blog-posts/[id] (THIS WORKS)
+                  Review → /restaurants/[restaurantId]/reviews/[reviewId] (NOT EVEN SURE HOW TO GET TO REVIEW)
+                */}
+                <a
+                  href={
+                    report.contentType === 'Comment' // NOT SURE
+                      ? `/comments/${report.contentId?._id}`
+                      : report.contentType === 'BlogPost' // This OK
+                      ? `/blog-posts/${report.contentId?._id}`
+                      : report.contentType === 'InternalReview' || report.contentType === 'ExternalReview' // NOW REDIRECT TO RESTAURANT PROFILE INSTEAD.
+                      ? `/restaurants/${report.contentId?.restaurant_id}`
+                      : '#'
+                  }
+                  className="text-neutral-600 cursor-pointer underline hover:text-blue-600"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {report.contentId?.title || report.contentId?._id}
+                </a>
+              </span>
+            </>
+          )}
+
+          <span>Reason</span>
+          <span>: {report.reason}</span>
+
+          <span>Report Time</span>
+          <span>
+            :{' '}
+            {new Date(report.createdAt)?.toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+            })}
+          </span>
         </div>
 
         {report.status === 'Pending' && (

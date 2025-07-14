@@ -58,9 +58,41 @@ export async function GET() {
   try {
     await dbConnect();
 
-    const reports = await Report.find().sort({ createdAt: -1 }).populate('reporterId').populate('reportedUserId').populate('contentId');
+    // Base populate
+    const reports = await Report.find()
+      .sort({ createdAt: -1 })
+      .populate(['reporterId', 'reportedUserId', 'contentId']);
 
-    return NextResponse.json({ reports });
+    // Conditional nested populate
+    const populatedReports = await Promise.all(
+      reports.map(async (report) => {
+        // BusinessUser: populate reporterId.restaurantId
+        if (
+          report.reporterType === 'BusinessUser' &&
+          report.reporterId?.restaurantId
+        ) {
+          await report.populate({
+            path: 'reporterId.restaurantId',
+            model: 'Restaurant',
+          });
+        }
+
+        // Review: populate contentId.restaurantId
+        if (
+          report.contentType === 'Review' &&
+          report.contentId?.restaurantId
+        ) {
+          await report.populate({
+            path: 'contentId.restaurantId',
+            model: 'Restaurant',
+          });
+        }
+
+        return report;
+      })
+    );
+
+    return NextResponse.json({ reports: populatedReports });
   } catch (error) {
     console.error('[REPORT_GET_ERROR]', error);
     return NextResponse.json({ message: 'Server error' }, { status: 500 });
