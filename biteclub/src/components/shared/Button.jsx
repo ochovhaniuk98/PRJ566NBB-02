@@ -22,6 +22,8 @@ const buttonVariants = cva(
           'bg-brand-blue-lite rounded-full border border-brand-blue-lite hover:bg-brand-aqua-lite hover:border-brand-aqua',
         roundTabActive:
           'bg-brand-aqua-lite rounded-full border border-brand-aqua hover:bg-brand-aqua-lite hover:border-brand-aqua',
+        resolvedTab: 'bg-brand-yellow-lite rounded-full border border-amber-200 hover:bg-amber-100 hover:border-amber-200',
+        resolvedTabActive: 'bg-amber-100 rounded-full border border-amber-300 ',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

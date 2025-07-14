@@ -205,14 +205,20 @@ export default function AdminPage() {
               <Button onClick={fetchData}>Refresh</Button>
             </div>
             <div className="flex gap-x-2 mb-4">
-              <Button onClick={() => setSelectedReportType('user')} type="button" className="w-30" variant={'roundTab'}>
+              <Button
+                onClick={() => setSelectedReportType('user')}
+                type="button"
+                className="w-30"
+                variant={selectedReportType === 'user' ? 'roundTabActive' : 'roundTab'}
+              >
                 Users
               </Button>
+
               <Button
                 onClick={() => setSelectedReportType('content')}
                 type="button"
                 className="w-30"
-                variant={'roundTab'}
+                variant={selectedReportType === 'content' ? 'roundTabActive' : 'roundTab'}
               >
                 Contents
               </Button>
@@ -220,28 +226,32 @@ export default function AdminPage() {
               <Button
                 onClick={() => setSelectedReportType('resolved')}
                 type="button"
-                className="w-30 !bg-brand-yellow-lite hover:!bg-amber-100 hover:!border-amber-200"
-                variant={'roundTab'}
+                className="w-30"
+                variant={selectedReportType === 'resolved' ? 'resolvedTabActive' : 'resolvedTab'}
               >
                 Resolved
               </Button>
             </div>
-            {reportListMap[selectedReportType]?.map(report => (
-              <ContentModerationCard
-                key={report._id}
-                report={report}
-                onResolve={id => {
-                  // Remove the resolved report from the list
-                  setContentReports(prev => {
-                    const updated = { ...prev };
-                    updated[selectedReportType + 'Reports'] = updated[selectedReportType + 'Reports'].filter(
-                      r => r._id !== id
-                    ); // selectedReportType + 'Reports' => ['userReports']
-                    return updated;
-                  });
-                }}
-              />
-            ))}
+
+            {reportListMap[selectedReportType]?.length > 0 ? (
+              reportListMap[selectedReportType].map(report => (
+                <ContentModerationCard
+                  key={report._id}
+                  report={report}
+                  onResolve={id => {
+                    setContentReports(prev => {
+                      const updated = { ...prev };
+                      updated[selectedReportType + 'Reports'] = updated[selectedReportType + 'Reports'].filter(
+                        r => r._id !== id
+                      );
+                      return updated;
+                    });
+                  }}
+                />
+              ))
+            ) : (
+              <p className="text-neutral-800 mt-6">No reports found for this category.</p>
+            )}
           </>
         )}
       </div>
