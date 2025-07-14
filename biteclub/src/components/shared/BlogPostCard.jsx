@@ -131,7 +131,7 @@ export default function BlogPostCard({
           )}
           <EngagementIconStat
             iconArr={reviewCardIconArr}
-            statNumArr={[blogPostData.likes.count, blogPostData.comments.length]}
+            statNumArr={[blogPostData.likes.count, blogPostData?.comments?.length]}
           />
         </div>
       </div>
