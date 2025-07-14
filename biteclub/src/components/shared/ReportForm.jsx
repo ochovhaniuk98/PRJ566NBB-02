@@ -1,71 +1,108 @@
+import { useEffect, useState } from 'react';
 import { Label } from '../shared/Label';
 import { Button } from '../shared/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 
-export default function ReportForm({ onClose, reportType, contentTitle = '', reportedUser = '' }) {
+export default function ReportForm({
+  // For report form display
+  onClose,
+  reportType,
+  contentTitle = '',
+  // For sending data to admin panel
+  contentType = '', // [REQUIRED / NOT NULL]
+  contentId = '', // [NULLABLE] Only if the reported contentType is a User
+  reportedUser = '', // [REQUIRED / NOT NULL] User OBJECT (not just Id) -- The one who got reported
+  reporter = '', // [REQUIRED / NOT NULL] User OBJECT (not just Id) -- The one who send out report
+}) {
+  // ==========================================| DEMO DATA |==========================================
+  // ref: dbSchema.js -- ReportSchema
+  // DEMO: Reporting a Content
+  const demoContentData = {
+    // [Note] NOT the reportType i.e. 'User' or 'Content'
+    // One of: ['InternalReview', 'ExternalReview', 'Comment', 'BlogPost', 'User']
+    contentType: 'BlogPost',
+
+    // If reporting content is not a user, contentId (Mongoose ObjectId) must be provided
+    contentId: '684c2ef7dd04f407d876b971',
+
+    // Author or owner of the reported content
+    // Even though this could be derived from the content, we store it explicitly for easier querying and population
+    reportedUserId: '684b90b687f7b607b363bf4d',
+
+    // 'User' or 'BusinessUser'
+    reporterType: 'User',
+
+    // The Mongoose ObjectId of user who send out this report
+    reporterId: '6852bb8f5f6e83284b2eda97',
+
+    // reason from form textarea input
+    reason: 'THIS USER IS POSTING SPAM...',
+  };
+
+  // DEMO: Reporting a User
+  const demoUserData = {
+    contentType: 'User',
+    reportedUserId: '684b90b687f7b607b363bf4d',
+    reporterType: 'User',
+    reporterId: '6852bb8f5f6e83284b2eda97',
+    reason: ' THIS USER IS POSTING CRAZY THINGS...',
+  };
+
+  // DEMO: Reported by a Business User
+  const demoReporterBusinessData = {
+    contentType: 'InternalReview',
+    contentId: '6851d1c41104eb24a4cd6c72',
+    reportedUserId: '68377e090be4711cfe59c72a',
+    reporterType: 'BusinessUser',
+    reporterId: '68548967aec05d6c03193b3c', // [!] Business User Id not restaurant Id
+    reason: "... I am the Business User and I don't find this   related to my restaurant... ",
+  };
+  // =================================================================================================
+
+  const [reason, setReason] = useState('');
+
+  // console.log('reporter:', reporter);
+  // console.log('reportedUser:', reportedUser);
+
   const handleSubmit = async e => {
     e.preventDefault();
 
-    // ==========================================| DEMO DATA |==========================================
-    // ref: dbSchema.js -- ReportSchema
-    // DEMO: Reporting a Content
-    const demoContentData = {
-      // [Note] contentType refers to the actual Mongoose model (not the general reportType like 'User' or 'Content')
-      contentType: 'BlogPost', // One of: ['InternalReview', 'ExternalReview', 'Comment', 'BlogPost', 'User']
+    if (!reporter || !reportedUser) {
+      alert('Something is wrong with the user data.');
+      return;
+    }
 
-      // If reporting content (not a user), contentId must be provided — this is the ObjectId of the item being reported
-      contentId: '684c2ef7dd04f407d876b971',
+    let reporterType;
 
-      // reportedUserId refers to the author or owner of the content (e.g. the user who wrote the blog post)
-      // Even though this could be derived from the content, we store it explicitly for easier querying and population
-      reportedUserId: '684b90b687f7b607b363bf4d',
-
-      // reporterType specifies whether the reporter is a normal user or business user
-      reporterType: 'User', // 'User' or 'BusinessUser'
-
-      // reporterId is the ObjectId of the logged-in user making the report
-      reporterId: '6852bb8f5f6e83284b2eda97',
-
-      // reason is the user's explanation for reporting (captured from a textarea input)
-      reason: 'THIS USER IS POSTING SPAM...',
-    };
-
-    // DEMO: Reporting a User
-    const demoUserData = {
-      contentType: 'User',
-      reportedUserId: '684b90b687f7b607b363bf4d',
-      reporterType: 'User',
-      reporterId: '6852bb8f5f6e83284b2eda97',
-      reason: ' THIS USER IS POSTING CRAZY THINGS...',
-    };
-
-    // DEMO: Reported by a Business User
-    const demoReporterBusinessData = {
-      contentType: 'InternalReview',
-      contentId: '6851d1c41104eb24a4cd6c72',
-      reportedUserId: '68377e090be4711cfe59c72a',
-      reporterType: 'BusinessUser',
-      reporterId: '68548967aec05d6c03193b3c', // [!] Business User Id not restaurant Id
-      reason: '... I am the Business User and I don\'t find this   related to my restaurant... ',
-    };
-    // =================================================================================================
+    if (reporter.userType === 'general') {
+      reporterType = 'User';
+    } else if (reporter.userType === 'business') {
+      reporterType = 'BusinessUser';
+    }
 
     const reportData = {
-      contentType: 'user',
-      contentId: '',
-      reportedUserId: '6852bb8f5f6e83284b2eda97',
-      reporterType: 'User',
-      reporterId: '684b90b687f7b607b363bf4d',
-      reason: ' THIS USER IS POSTING SPAM...',
+      contentType: contentType,
+      contentId: contentId,
+      reportedUserId: reportedUser._id,
+      reporterId: reporter._id,
+      reporterType: reporterType,
+      reason: reason.trim(),
     };
+
+    // console.log('Content Type:', reportData.contentType);
+    // console.log('Content ID:', reportData.contentId);
+    // console.log('Reported User ID:', reportData.reportedUserId);
+    // console.log('Reporter ID:', reportData.reporterId);
+    // console.log('Reporter Type:', reportData.reporterType);
+    // console.log('Reason:', reportData.reason);
 
     try {
       const res = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(demoReporterBusinessData), // try with demoData
+        body: JSON.stringify(reportData), // try with demoData
       });
 
       if (!res.ok) throw new Error('Failed to submit report.');
@@ -118,6 +155,8 @@ export default function ReportForm({ onClose, reportType, contentTitle = '', rep
                 className={'w-full rounded-md p-2 h-50 resize-none font-primary'}
                 placeholder="Write your reason for reporting here..."
                 required
+                value={reason}
+                onChange={e => setReason(e.target.value)}
               />
             </div>
           </div>
