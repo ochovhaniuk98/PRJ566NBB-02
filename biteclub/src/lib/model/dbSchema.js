@@ -55,6 +55,25 @@ const CommentSchema = new mongoose.Schema({
   },
 });
 
+// used only by blog post schema
+const CommentPostSchema = new mongoose.Schema({
+  blogPost_id: { type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost', required: true },
+  parent_id: { type: mongoose.Schema.Types.ObjectId, ref: 'CommentPost', default: null },
+  avatarURL: String,
+  content: String,
+  author: { type: String, required: true },
+  date_posted: { type: Date, default: Date.now },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  likes: {
+    count: { type: Number, default: 0 },
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  },
+  dislikes: {
+    count: { type: Number, default: 0 },
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  },
+});
+
 // Instagram post subdocument
 const InstagramPostSchema = new mongoose.Schema({
   embedLink: String,
@@ -78,7 +97,7 @@ const BlogPostSchema = new mongoose.Schema({
     count: Number,
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
-  comments: [CommentSchema],
+  // comments: [CommentPostSchema], // comments will be stored separately in CommentPost collection
   Instagram_posts: [InstagramPostSchema], // no longer needed, it's part of post body
   photos: [PhotoSchema], // no longer needed, it's part of post body
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
@@ -336,6 +355,7 @@ ReportSchema.pre('validate', function (next) {
 export const User = mongoose.models?.User || mongoose.model('User', UserSchema);
 export const Photo = mongoose.models?.Photo || mongoose.model('Photo', PhotoSchema);
 export const Comment = mongoose.models?.Comment || mongoose.model('Comment', CommentSchema);
+export const CommentPost = mongoose.models?.CommentPost || mongoose.model('CommentPost', CommentPostSchema);
 export const InstagramPost = mongoose.models?.InstagramPost || mongoose.model('InstagramPost', InstagramPostSchema);
 export const BlogPost = mongoose.models?.BlogPost || mongoose.model('BlogPost', BlogPostSchema);
 export const InternalReview = mongoose.models?.InternalReview || mongoose.model('InternalReview', InternalReviewSchema);
