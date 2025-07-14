@@ -108,6 +108,22 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           const res = await fetch(`/api/user-reviews/${generalUserId}`);
           if (res.ok) {
             const reviews = await res.json();
+            // add user data to each review
+            reviews.internalReviews = reviews.internalReviews.map(review => ({
+              ...review,
+              user_id: {
+                _id: userProfile?._id,
+                username: userProfile?.username,
+                userProfilePicture: userProfile?.userProfilePicture,
+              },
+            }));
+            reviews.externalReviews = reviews.externalReviews.map(review => ({
+              ...review,
+              user_id: {
+                _id: userProfile?._id,
+                username: userProfile?.username,
+              },
+            }));
             setMyReviews(reviews);
           } else {
             console.error('Failed to fetch reviews');

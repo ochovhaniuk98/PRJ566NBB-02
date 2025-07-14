@@ -41,8 +41,8 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
             <FormattedDate yyyymmdd={selectedReview.date_posted} />
           ) : (
             <AuthorDateBlurb
-              authorPic={selectedReview.user_pic?.url}
-              authorName={selectedReview.user_id}
+              authorPic={selectedReview.user_id?.userProfilePicture?.url}
+              authorName={selectedReview.user_id?.username}
               date={selectedReview.date_posted}
             />
           )}

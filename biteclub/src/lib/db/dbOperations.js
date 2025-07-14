@@ -52,24 +52,13 @@ export async function getRestaurantById(id) {
 export async function getRestaurantReviews(id) {
   await dbConnect();
 
-  let reviews = await InternalReview.find({ restaurant_id: id });
-  let externalReviews = await ExternalReview.find({ restaurant_id: id });
-
-  // Wait for all user data to be fetched and attached
-  const updatedReviews = await Promise.all(
-    reviews.map(async review => {
-      const user = await User.findOne({ _id: review.user_id });
-      if (user) {
-        review = review.toObject();
-        review.user_id = user.username;
-        review.user_pic = user.userProfilePicture;
-      }
-      return review;
-    })
-  );
+  const [reviews, externalReviews] = await Promise.all([
+    InternalReview.find({ restaurant_id: id }).populate('user_id', '_id username userProfilePicture').lean(),
+    ExternalReview.find({ restaurant_id: id }).populate('user_id', '_id username').lean(),
+  ]);
 
   return {
-    internalReviews: updatedReviews,
+    internalReviews: reviews,
     externalReviews: externalReviews,
   };
 }
