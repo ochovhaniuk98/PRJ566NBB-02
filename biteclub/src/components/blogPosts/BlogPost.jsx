@@ -17,7 +17,6 @@ export default function BlogPost({ id }) {
   // for reporting a post
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
-  // const [reportedUserId, setReportedUserId] = useState('');
   const [reporter, setReporter] = useState(null);
 
   useEffect(() => {
