@@ -294,7 +294,7 @@ const PersonalizationSchema = new mongoose.Schema({
 const ReportSchema = new mongoose.Schema({
   contentType: {
     type: String,
-    enum: ['InternalReview', 'ExternalReview', 'Comment', 'BlogPost', 'User'],
+    enum: ['InternalReview', 'ExternalReview', 'CommentPost', 'BlogPost', 'User'],
   },
   contentId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -311,7 +311,7 @@ const ReportSchema = new mongoose.Schema({
       message: 'contentId is required for content (non-user) reports',
     },
   },
-  reportedUserId: { 
+  reportedUserId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,

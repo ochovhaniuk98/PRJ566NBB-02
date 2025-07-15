@@ -67,7 +67,7 @@ export default function AdminPage() {
               case 'InternalReview':
               case 'ExternalReview':
               case 'BlogPost':
-              case 'Comment':
+              case 'CommentPost':
                 grouped.contentReports.push(report);
                 break;
               default:
