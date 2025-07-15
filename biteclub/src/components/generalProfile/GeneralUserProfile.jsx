@@ -365,7 +365,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Blog Posts */}
             {selectedTab === profileTabs[0] &&
               (!myBlogPosts || myBlogPosts.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500">No blog posts yet.</div>
+                <div className="col-span-3 text-center">
+                  <p>No blog posts yet.</p>
+                </div>
               ) : (
                 <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
                   {myBlogPosts.map((post, i) => {
@@ -414,7 +416,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 </div>
                 {!showInstaReview &&
                   (myReviews?.internalReviews.length === 0 ? (
-                    <div className="col-span-3 text-center text-gray-500">No internal reviews yet.</div>
+                    <div className="col-span-3 text-center">
+                      <p>No internal reviews yet.</p>
+                    </div>
                   ) : (
                     /* internal reviews */
                     <div className="flex gap-2">
@@ -470,7 +474,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 {/* Instagram Reviews */}
                 {showInstaReview &&
                   (myReviews?.externalReviews.length === 0 ? (
-                    <div className="col-span-3 text-center text-gray-500">No Instagram reviews yet.</div>
+                    <div className="col-span-3 text-center">
+                      <p>No Instagram reviews yet.</p>
+                    </div>
                   ) : (
                     <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
                       {myReviews?.externalReviews.map((review, i) => (
@@ -485,7 +491,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Favourite Restaurants */}
             {selectedTab === profileTabs[3] &&
               (favouritedRestaurants.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500">No favourite restaurants yet.</div>
+                <div className="col-span-3 text-center">
+                  <p>No favourite restaurants yet.</p>
+                </div>
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {favouritedRestaurants.map(restaurant => (
@@ -496,7 +504,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Favourite Blog Posts */}
             {selectedTab === profileTabs[4] &&
               (favouritedBlogs.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500">No favourite blog posts yet.</div>
+                <div className="col-span-3 text-center">
+                  <p>No favourite blog posts yet.</p>
+                </div>
               ) : (
                 <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
                   {/* {favouritedBlogs.map(blog => (
@@ -523,7 +533,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* My Followers (users who follow owner )*/}
             {selectedTab === profileTabs[5] &&
               (followers.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500">No followers yet.</div>
+                <div className="col-span-3 text-center">
+                  <p>No followers yet.</p>
+                </div>
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {followers.map((follower, i) => (
@@ -535,7 +547,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Following (users who are followed by owner )*/}
             {selectedTab === profileTabs[6] &&
               (followings.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500">No followings yet.</div>
+                <div className="col-span-3 text-center">
+                  <p>No followings yet.</p>
+                </div>
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {followings.map((following, i) => (
