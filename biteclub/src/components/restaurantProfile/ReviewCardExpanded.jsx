@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/auth/client';
 import Image from 'next/image';
 import EngagementIconStat from '../shared/EngagementIconStat';
 import StarRating from '../shared/StarRating';
@@ -20,6 +21,42 @@ import CommentSection from '../shared/CommentSection';
 import { fakeUser, fakeComment } from '@/app/data/fakeData';
 
 export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = false }) {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [reportedUser, setReportedUser] = useState(null);
+
+  
+  console.log('selectedReview.user_id', selectedReview.user_id);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data?.user) {
+          console.error('Failed to get current user from Supabase:', error);
+          return;
+        }
+        console.log('data.user', data.user);
+        setCurrentUser(data.user);
+
+        // Fetch reported user (review author)
+        const res = await fetch(`/api/generals/get-profile-by-dbId?dbId=${selectedReview.user_id}`);
+        if (!res.ok) {
+          console.error('Failed to fetch reported user:', res.status);
+          return;
+        }
+        const { profile } = await res.json();
+        setReportedUser(profile);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+      }
+    };
+
+    if (selectedReview?.user_id) {
+      fetchUsers();
+    }
+  }, [selectedReview.user_id]);
+
+
   const [photoIndex, setPhotoIndex] = useState(0);
   // for comments in expanded review
   // currentUser, comments, onAddComment, onLike, onDislike
@@ -41,8 +78,8 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
             <FormattedDate yyyymmdd={selectedReview.date_posted} />
           ) : (
             <AuthorDateBlurb
-              authorPic={selectedReview.user_id?.userProfilePicture?.url}
-              authorName={selectedReview.user_id?.username}
+              authorPic={selectedReview.user_pic?.url}
+              authorName={selectedReview.user_id}
               date={selectedReview.date_posted}
             />
           )}
@@ -101,7 +138,17 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
         </div>
       </div>
       {/* Report form */}
-      {openReportForm && <ReportForm onClose={() => setOpenReportForm(false)} contentTitle={selectedReview.title} />}
+      {openReportForm && (
+        <ReportForm
+          onClose={() => setOpenReportForm(false)}
+          reportType="Content"
+          contentTitle={selectedReview.title}
+          contentType="InternalReview"
+          contentId={selectedReview._id}
+          reportedUser={reportedUser}
+          reporter={currentUser}
+        />
+      )}
     </div>
   );
 }
