@@ -206,17 +206,17 @@ export default function ContentModerationCard({ report, onResolve }) {
                 :{' '}
                 {/* 
                 [TODO: ADJUST PATH]
-                  CommentPost → /blog-posts/comments/[id]    (NOT, WE DO NOT HAVE ANY COMMENT OBJECT YET)
-                  BlogPost → /blog-posts/[id] (THIS WORKS)
-                  Review → /restaurants/[restaurantId]/reviews/[reviewId] (NOT EVEN SURE HOW TO GET TO REVIEW)
+                  CommentPost → /blog-posts/comments/[id]                   (Done)
+                  BlogPost → /blog-posts/[id]                               (Done)
+                  Review → /restaurants/[restaurantId]/reviews/[reviewId]   (Not sure of how to get to a specific review)
                 */}
                 <a
                   href={
-                    report.contentType === 'CommentPost' // NOT SURE
+                    report.contentType === 'CommentPost' 
                       ? `/blog-posts/comments/${report.contentId?._id}`
-                      : report.contentType === 'BlogPost' // This OK
+                      : report.contentType === 'BlogPost' 
                       ? `/blog-posts/${report.contentId?._id}`
-                      : report.contentType === 'InternalReview' || report.contentType === 'ExternalReview' // NOW REDIRECT TO RESTAURANT PROFILE INSTEAD.
+                      : report.contentType === 'InternalReview' || report.contentType === 'ExternalReview' // [!] REDIRECT TO RESTAURANT PROFILE INSTEAD.
                       ? `/restaurants/${report.contentId?.restaurant_id}`
                       : '#'
                   }
