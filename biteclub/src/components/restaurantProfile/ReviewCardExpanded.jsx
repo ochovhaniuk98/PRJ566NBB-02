@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/auth/client';
 import Image from 'next/image';
 import EngagementIconStat from '../shared/EngagementIconStat';
 import StarRating from '../shared/StarRating';
@@ -20,6 +21,80 @@ import CommentSection from '../shared/CommentSection';
 import { fakeUser, fakeComment } from '@/app/data/fakeData';
 
 export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = false }) {
+  const [currentUserType, setCurrentUserType] = useState(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState(null);
+  const [authorProfile, setAuthorProfile] = useState(null);
+  const authorId = selectedReview.user_id?._id;
+
+  // Fetch current user and their profile
+  useEffect(() => {
+    const fetchCurrentUserData = async () => {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data?.user) {
+          console.error('Failed to get current user:', error);
+          return;
+        }
+        const authId = data.user.id;
+
+        // Get user type
+        const userTypeRes = await fetch(`/api/get-user-type?authId=${authId}`);
+        if (!userTypeRes.ok) {
+          console.error('Failed to fetch user type');
+          return;
+        }
+
+        const { userType } = await userTypeRes.json();
+        setCurrentUserType(userType);
+
+        // Get profile based on type
+        let currentUserRes;
+        if (userType == 'general') {
+          currentUserRes = await fetch(`/api/generals/get-profile-by-authId?authId=${authId}`);
+        } else if (userType == 'business') {
+          currentUserRes = await fetch(`/api/business-user/get-profile-by-authId?authId=${authId}`);
+        } else {
+          console.warn('Unknown user type:', userType);
+          return;
+        }
+
+        if (!currentUserRes.ok) {
+          console.error('Failed to fetch current profile:', currentUserRes.status);
+          return;
+        }
+        const { profile } = await currentUserRes.json(); // { profile } matching what the API call returned
+        setCurrentUserProfile(profile);
+      } catch (err) {
+        console.error('Error in fetchCurrentUserData:', err);
+      }
+    };
+
+    fetchCurrentUserData();
+  }, []);
+
+  // Fetch review author
+  useEffect(() => {
+    const fetchAuthorProfile = async () => {
+      try {
+        if (!authorId) return;
+
+        const authorRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${authorId}`);
+        if (!authorRes.ok) {
+          console.error('Failed to fetch author profile:', authorRes.status);
+          return;
+        }
+
+        const { profile } = await authorRes.json(); // { profile } matching what the API call returned
+        setAuthorProfile(profile);
+      } catch (err) {
+        console.error('Error in fetchAuthorProfile:', err);
+      }
+    };
+
+    fetchAuthorProfile();
+  }, [authorId]);
+
   const [photoIndex, setPhotoIndex] = useState(0);
   // for comments in expanded review
   // currentUser, comments, onAddComment, onLike, onDislike
@@ -98,10 +173,23 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
           <div>
             <CommentSection currentUser={fakeUser} comments={[fakeComment]} />
           </div>
+          <p>{currentUserType}</p>
+          <p>{currentUserProfile ? `current id ${currentUserProfile._id}` : 'no current user profile'}</p>
+          <p>{authorProfile ? `author id ${authorProfile._id}` : 'no author profile'}</p>
         </div>
       </div>
       {/* Report form */}
-      {openReportForm && <ReportForm onClose={() => setOpenReportForm(false)} contentTitle={selectedReview.title} />}
+      {openReportForm && (
+        <ReportForm
+          onClose={() => setOpenReportForm(false)}
+          reportType="Content"
+          contentTitle={selectedReview.title}
+          contentType="InternalReview"
+          contentId={selectedReview._id}
+          reportedUser={authorProfile}
+          reporter={currentUserProfile}
+        />
+      )}
     </div>
   );
 }

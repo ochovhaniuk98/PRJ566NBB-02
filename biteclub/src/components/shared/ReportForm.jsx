@@ -16,6 +16,7 @@ export default function ReportForm({
   reportedUser = '', // [REQUIRED / NOT NULL] User OBJECT (not just Id) -- The one who got reported
   reporter = '', // [REQUIRED / NOT NULL] User OBJECT (not just Id) -- The one who send out report
 }) {
+  /*
   // ==========================================| DEMO DATA |==========================================
   // ref: dbSchema.js -- ReportSchema
   // DEMO: Reporting a Content
@@ -60,11 +61,9 @@ export default function ReportForm({
     reason: "... I am the Business User and I don't find this   related to my restaurant... ",
   };
   // =================================================================================================
-
+  */
+ 
   const [reason, setReason] = useState('');
-
-  // console.log('reporter:', reporter);
-  // console.log('reportedUser:', reportedUser);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -90,13 +89,6 @@ export default function ReportForm({
       reporterType: reporterType,
       reason: reason.trim(),
     };
-
-    // console.log('Content Type:', reportData.contentType);
-    // console.log('Content ID:', reportData.contentId);
-    // console.log('Reported User ID:', reportData.reportedUserId);
-    // console.log('Reporter ID:', reportData.reporterId);
-    // console.log('Reporter Type:', reportData.reporterType);
-    // console.log('Reason:', reportData.reason);
 
     try {
       const res = await fetch('/api/reports', {
