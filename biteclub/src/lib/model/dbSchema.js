@@ -112,6 +112,7 @@ const InternalReviewSchema = new mongoose.Schema({
   title: String,
   rating: Number,
   date_posted: Date,
+  date_updated: Date,
   comments: [CommentSchema],
   photos: [PhotoSchema],
   likes: {

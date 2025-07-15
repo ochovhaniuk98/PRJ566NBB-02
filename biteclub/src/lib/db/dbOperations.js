@@ -176,6 +176,23 @@ export async function addInternalReview(data) {
   return JSON.parse(JSON.stringify(savedReview));
 }
 
+export async function updateInternalReview(data) {
+  await dbConnect();
+  const { reviewId, userId, title, body, rating, photos } = data;
+  const updated = await InternalReview.findOneAndUpdate(
+    { _id: reviewId, user_id: userId },
+    {
+      title,
+      body,
+      rating,
+      photos: photos || [],
+      date_updated: new Date(),
+    },
+    { new: true }
+  );
+  return updated ? JSON.parse(JSON.stringify(updated)) : null;
+}
+
 export async function getBusinessUserRestaurantId({ supabaseId }) {
   await dbConnect();
   const user = await BusinessUser.findOne({ supabaseId });
