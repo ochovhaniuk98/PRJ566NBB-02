@@ -59,6 +59,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
   const [editBlogPostData, setEditBlogPostData] = useState(null);
 
+  const [selectedInternalReviews, setSelectedInternalReviews] = useState([]);
+  const [selectedExternalReviews, setSelectedExternalReviews] = useState([]);
+
   const [selectedBlogPosts, setSelectedBlogPosts] = useState([]);
 
   const filteredTabs = profileTabs.filter((tab, index) => {
@@ -68,6 +71,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     return true;
   });
 
+  // =============
+  // DATA FETCHING
+  // =============
   // TAB 0 -- BLOG POSTS
   useEffect(() => {
     const fetchData = async () => {
@@ -297,8 +303,13 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       </div>
     );
 
-  // HANDLE DELETE: Blog Post
-  const handleDeleteSelectedBlogPost = async () => {
+  // =====================================
+  // HANDLE DELETE: BLOG POSTS AND REVIEWS
+  // =====================================
+
+  // DELETE BLOG POSTS
+  // -----------------
+  const handleDeleteSelectedBlogPosts = async () => {
     if (selectedBlogPosts.length === 0) return;
     const res = await fetch('/api/blog-posts/delete-multiple', {
       method: 'POST',
@@ -313,7 +324,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     }
   };
 
-  const handleDeleteAllBlogPost = async () => {
+  const handleDeleteAllBlogPosts = async () => {
     const allIds = myBlogPosts.map(post => post._id);
     const res = await fetch('/api/blog-posts/delete-multiple', {
       method: 'POST',
@@ -327,7 +338,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     }
   };
 
-  const handleDeleteSingle = async blogId => {
+  const handleDeleteSingleBlogPost = async blogId => {
     const res = await fetch('/api/blog-posts/delete-multiple', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -340,6 +351,80 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     }
   };
 
+  // DELETE REVIEWS -- INTERNAL AND EXTERNAL
+  // ---------------------------------------
+  const handleDeleteSelectedReviews = async () => {
+    if (selectedInternalReviews.length === 0 && selectedExternalReviews.length === 0) return;
+
+    const res = await fetch('/api/user-reviews/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: generalUserId,
+        internalReviewIds: selectedInternalReviews,
+        externalReviewIds: selectedExternalReviews,
+      }),
+    });
+
+    if (res.ok) {
+      setMyReviews(prev => ({
+        internalReviews: prev.internalReviews.filter(review => !selectedInternalReviews.includes(review._id)),
+        externalReviews: prev.externalReviews.filter(review => !selectedExternalReviews.includes(review._id)),
+      }));
+      setSelectedInternalReviews([]);
+      setSelectedExternalReviews([]);
+    }
+  };
+
+  const handleDeleteAllReviews = async () => {
+    const allInternalIds = myReviews.internalReviews.map(review => review._id);
+    const allExternalIds = myReviews.externalReviews.map(review => review._id);
+
+    const res = await fetch('/api/user-reviews/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: generalUserId,
+        internalReviewIds: allInternalIds,
+        externalReviewIds: allExternalIds,
+      }),
+    });
+
+    if (res.ok) {
+      setMyReviews({ internalReviews: [], externalReviews: [] });
+      setSelectedInternalReviews([]);
+      setSelectedExternalReviews([]);
+    }
+  };
+
+  const handleDeleteSingleReview = async (reviewId, type = 'internal') => {
+    const body = {
+      userId: generalUserId,
+      internalReviewIds: type === 'internal' ? [reviewId] : [],
+      externalReviewIds: type === 'external' ? [reviewId] : [],
+    };
+
+    const res = await fetch('/api/user-reviews/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (res.ok) {
+      setMyReviews(prev => ({
+        internalReviews:
+          type === 'internal' ? prev.internalReviews.filter(r => r._id !== reviewId) : prev.internalReviews,
+        externalReviews:
+          type === 'external' ? prev.externalReviews.filter(r => r._id !== reviewId) : prev.externalReviews,
+      }));
+      if (type === 'internal') {
+        setSelectedInternalReviews(prev => prev.filter(id => id !== reviewId));
+      } else {
+        setSelectedExternalReviews(prev => prev.filter(id => id !== reviewId));
+      }
+    }
+  };
+
   return (
     <MainBaseContainer>
       <GeneralUserBanner
@@ -347,11 +432,18 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         setShowTextEditor={setShowTextEditor}
         generalUserData={userProfile}
         isOwner={isOwner}
-        editMode={editMode}
+        // editMode={editMode}
+        editMode={
+          editMode && (selectedTab === profileTabs[0] || selectedTab === profileTabs[1]) // Show only when it is Blog Posts or Reviews tab
+        }
         setEditMode={setEditMode}
-        handleDeleteSelectedBlogPost={handleDeleteSelectedBlogPost}
-        handleDeleteAllBlogPost={handleDeleteAllBlogPost}
+        selectedTab={selectedTab}
+        handleDeleteSelectedBlogPosts={handleDeleteSelectedBlogPosts}
+        handleDeleteAllBlogPosts={handleDeleteAllBlogPosts}
         blogPostsCount={myBlogPosts.length}
+        handleDeleteSelectedReviews={handleDeleteSelectedReviews}
+        handleDeleteAllReviews={handleDeleteAllReviews}
+        // reviewCount={myReviews.internalReviews.length + myReviews.externalReviews.length}
       />
       <div className="main-side-padding w-full py-8">
         {/**** Tab menu and contents - START ****/}
@@ -397,7 +489,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                         isEditModeOn={editMode}
                         isSelected={isSelected}
                         onSelect={toggleSelect}
-                        onDeleteClick={() => handleDeleteSingle(post._id)}
+                        onDeleteClick={() => handleDeleteSingleBlogPost(post._id)}
                       />
                     );
                   })}
@@ -439,10 +531,18 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                                   review={review}
                                   photos={review.photos}
                                   isOwner={isOwner}
-                                  isEditModeOn={editMode}
                                   setEditReviewForm={setEditReviewForm}
                                   onClick={() => setSelectedReview(review)}
-                                  isSelected={selectedReview?._id === review._id}
+                                  isEditModeOn={editMode && selectedTab === profileTabs[1]}
+                                  isSelected={selectedInternalReviews.includes(review._id)}
+                                  onSelect={() => {
+                                    setSelectedInternalReviews(prev =>
+                                      prev.includes(review._id)
+                                        ? prev.filter(id => id !== review._id)
+                                        : [...prev, review._id]
+                                    );
+                                  }}
+                                  onDeleteClick={() => handleDeleteSingleReview(review._id, 'internal')}
                                 />
                               ))
                           }
@@ -481,7 +581,18 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                     <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
                       {myReviews?.externalReviews.map((review, i) => (
                         <div key={review._id || i} className="mb-4 break-inside-avoid">
-                          <InstagramEmbed key={review._id} url={review.content?.embedLink} isEditModeOn={editMode} />
+                          <InstagramEmbed
+                            key={review._id}
+                            url={review.content?.embedLink}
+                            isEditModeOn={editMode}
+                            isSelected={selectedExternalReviews.includes(review._id)}
+                            onSelect={() => {
+                              setSelectedExternalReviews(prev =>
+                                prev.includes(review._id) ? prev.filter(id => id !== review._id) : [...prev, review._id]
+                              );
+                            }}
+                            onDeleteClick={() => handleDeleteSingleReview(review._id, 'external')}
+                          />
                         </div>
                       ))}
                     </Masonry>

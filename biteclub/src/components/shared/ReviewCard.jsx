@@ -21,6 +21,8 @@ export default function ReviewCard({
   isOwner = false,
   isEditModeOn = false,
   setEditReviewForm = () => {},
+  onSelect = () => {},
+  onDeleteClick = () => {},
 }) {
   const [showReportFormLink, setShowReportFormLink] = useState(false);
   const [cardHovered, setCardHovered] = useState(false);
@@ -84,7 +86,15 @@ export default function ReviewCard({
       )}
       {/* panel appears when general user selects to "Manage Content";
        General user can select review to delete or edit. Editing opens "Add Review" form but enabled for editing.  */}
-      {isEditModeOn && <EditModePanel onEditClick={() => setEditReviewForm(true)} />}
+      {/* {isEditModeOn && <EditModePanel onEditClick={() => setEditReviewForm(true)} />} */}
+      {isEditModeOn && (
+        <EditModePanel
+          isSelected={isSelected}
+          onSelect={onSelect}
+          onEditClick={() => setEditReviewForm(true)}
+          onDeleteClick={onDeleteClick}
+        />
+      )}
 
       {/* show link to open report form */}
       {showReportFormLink && <ReportContentLink setPopupHovered={setPopupHovered} contentTitle={review.title} />}
