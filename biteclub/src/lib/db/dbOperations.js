@@ -210,7 +210,7 @@ export async function getBusinessUserProfileBySupabaseId({ supabaseId }) {
   await dbConnect();
   const user = await BusinessUser.findOne({ supabaseId });
   if (!user) return null;
-   return user; // Returns entire User document
+  return user; // Returns entire User document
 }
 
 export async function getBusinessUserProfileByMongoId(mongoId) {
@@ -498,12 +498,14 @@ export async function getListOfExploringBlogPosts(page = 1, limit = 20) {
   const skip = (page - 1) * (limit / 2);
 
   const popularFilter = {
-    'likes.count': { $gte: 1 },
-    comments: {
-      $elemMatch: {
-        'likes.count': { $gte: 1 },
+    $or: [
+      { 'likes.count': { $gte: 1 } },
+      {
+        $expr: {
+          $gte: [{ $size: { $ifNull: ['$comments', []] } }, 1],
+        },
       },
-    },
+    ],
   };
 
   const [popularPosts, newPosts, totalCount] = await Promise.all([
@@ -791,6 +793,10 @@ export async function createPostComment({
     });
 
     const savedComment = await comment.save();
+
+    // update blog post comments
+    await BlogPost.findByIdAndUpdate(blogPostId, { $push: { comments: savedComment._id } }, { new: true });
+
     return savedComment;
   } catch (error) {
     console.error('Error creating comment:', error);
@@ -862,6 +868,9 @@ export async function deletePostComment({ commentId }) {
     if (!deletedComment) {
       throw new Error(`Comment with ID ${commentId} not found`);
     }
+
+    // Remove the reference from the blog post's comments array
+    await BlogPost.findByIdAndUpdate(deletedComment.blogPost_id, { $pull: { comments: commentId } });
 
     return { success: true, message: 'Comment deleted successfully' };
   } catch (error) {

@@ -97,7 +97,7 @@ const BlogPostSchema = new mongoose.Schema({
     count: Number,
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
-  // comments: [CommentPostSchema], // comments will be stored separately in CommentPost collection
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CommentPost' }], // comments will be stored separately in CommentPost collection
   Instagram_posts: [InstagramPostSchema], // no longer needed, it's part of post body
   photos: [PhotoSchema], // no longer needed, it's part of post body
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
