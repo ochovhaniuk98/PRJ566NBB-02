@@ -21,41 +21,79 @@ import CommentSection from '../shared/CommentSection';
 import { fakeUser, fakeComment } from '@/app/data/fakeData';
 
 export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = false }) {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [reportedUser, setReportedUser] = useState(null);
+  const [currentUserType, setCurrentUserType] = useState(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState(null);
+  const [authorProfile, setAuthorProfile] = useState(null);
+  const authorId = selectedReview.user_id?._id;
 
-  
-  console.log('selectedReview.user_id', selectedReview.user_id);
+  // Fetch current user and their profile
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchCurrentUserData = async () => {
       try {
         const supabase = createClient();
         const { data, error } = await supabase.auth.getUser();
         if (error || !data?.user) {
-          console.error('Failed to get current user from Supabase:', error);
+          console.error('Failed to get current user:', error);
           return;
         }
-        console.log('data.user', data.user);
-        setCurrentUser(data.user);
+        const authId = data.user.id;
 
-        // Fetch reported user (review author)
-        const res = await fetch(`/api/generals/get-profile-by-dbId?dbId=${selectedReview.user_id}`);
-        if (!res.ok) {
-          console.error('Failed to fetch reported user:', res.status);
+        // Get user type
+        const userTypeRes = await fetch(`/api/get-user-type?authId=${authId}`);
+        if (!userTypeRes.ok) {
+          console.error('Failed to fetch user type');
           return;
         }
-        const { profile } = await res.json();
-        setReportedUser(profile);
+
+        const { userType } = await userTypeRes.json();
+        setCurrentUserType(userType);
+
+        // Get profile based on type
+        let currentUserRes;
+        if (userType == 'general') {
+          currentUserRes = await fetch(`/api/generals/get-profile-by-authId?authId=${authId}`);
+        } else if (userType == 'business') {
+          currentUserRes = await fetch(`/api/business-user/get-profile-by-authId?authId=${authId}`);
+        } else {
+          console.warn('Unknown user type:', userType);
+          return;
+        }
+
+        if (!currentUserRes.ok) {
+          console.error('Failed to fetch current profile:', currentUserRes.status);
+          return;
+        }
+        const { profile } = await currentUserRes.json(); // { profile } matching what the API call returned
+        setCurrentUserProfile(profile);
       } catch (err) {
-        console.error('Error fetching users:', err);
+        console.error('Error in fetchCurrentUserData:', err);
       }
     };
 
-    if (selectedReview?.user_id) {
-      fetchUsers();
-    }
-  }, [selectedReview.user_id]);
+    fetchCurrentUserData();
+  }, []);
 
+  // Fetch review author
+  useEffect(() => {
+    const fetchAuthorProfile = async () => {
+      try {
+        if (!authorId) return;
+
+        const authorRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${authorId}`);
+        if (!authorRes.ok) {
+          console.error('Failed to fetch author profile:', authorRes.status);
+          return;
+        }
+
+        const { profile } = await authorRes.json(); // { profile } matching what the API call returned
+        setAuthorProfile(profile);
+      } catch (err) {
+        console.error('Error in fetchAuthorProfile:', err);
+      }
+    };
+
+    fetchAuthorProfile();
+  }, [authorId]);
 
   const [photoIndex, setPhotoIndex] = useState(0);
   // for comments in expanded review
@@ -78,8 +116,8 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
             <FormattedDate yyyymmdd={selectedReview.date_posted} />
           ) : (
             <AuthorDateBlurb
-              authorPic={selectedReview.user_pic?.url}
-              authorName={selectedReview.user_id}
+              authorPic={selectedReview.user_id?.userProfilePicture?.url}
+              authorName={selectedReview.user_id?.username}
               date={selectedReview.date_posted}
             />
           )}
@@ -145,8 +183,8 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
           contentTitle={selectedReview.title}
           contentType="InternalReview"
           contentId={selectedReview._id}
-          reportedUser={reportedUser}
-          reporter={currentUser}
+          reportedUser={authorProfile}
+          reporter={currentUserProfile}
         />
       )}
     </div>
