@@ -443,7 +443,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         blogPostsCount={myBlogPosts.length}
         handleDeleteSelectedReviews={handleDeleteSelectedReviews}
         handleDeleteAllReviews={handleDeleteAllReviews}
-        // reviewCount={myReviews.internalReviews.length + myReviews.externalReviews.length}
       />
       <div className="main-side-padding w-full py-8">
         {/**** Tab menu and contents - START ****/}
@@ -557,19 +556,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                         />
                       )}
                     </div>
-                    /*
-                    <GridCustomCols numOfCols={4}>
-                      {myReviews?.internalReviews.map((review, i) => (
-                        <ReviewCard
-                          key={review._id || i}
-                          review={review}
-                          photos={review.photos}
-                          isOwner={isOwner}
-                          isEditModeOn={editMode}
-                          setEditReviewForm={setEditReviewForm}
-                        />
-                      ))}
-                    </GridCustomCols> */
                   ))}
                 {/* Instagram Reviews */}
                 {showInstaReview &&

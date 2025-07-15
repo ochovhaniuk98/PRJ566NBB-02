@@ -86,7 +86,6 @@ export default function ReviewCard({
       )}
       {/* panel appears when general user selects to "Manage Content";
        General user can select review to delete or edit. Editing opens "Add Review" form but enabled for editing.  */}
-      {/* {isEditModeOn && <EditModePanel onEditClick={() => setEditReviewForm(true)} />} */}
       {isEditModeOn && (
         <EditModePanel
           isSelected={isSelected}

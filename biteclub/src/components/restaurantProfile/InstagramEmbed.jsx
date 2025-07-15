@@ -61,8 +61,6 @@ export default function InstagramEmbed({
         <div className="w-full h-[420px] bg-gray-100 animate-pulse rounded-md" />
       )}
       {/* show edit/delete panel if user wants to manage profile */}
-      {/* {isEditModeOn && <EditModePanel forInstagram={true} />} */}
-
       {isEditModeOn && (
         <EditModePanel forInstagram={true} isSelected={isSelected} onSelect={onSelect} onDeleteClick={onDeleteClick} />
       )}
