@@ -16,6 +16,7 @@ export default function ReportForm({
   reportedUser = '', // [REQUIRED / NOT NULL] User OBJECT (not just Id) -- The one who got reported
   reporter = '', // [REQUIRED / NOT NULL] User OBJECT (not just Id) -- The one who send out report
 }) {
+  /*
   // ==========================================| DEMO DATA |==========================================
   // ref: dbSchema.js -- ReportSchema
   // DEMO: Reporting a Content
@@ -60,7 +61,8 @@ export default function ReportForm({
     reason: "... I am the Business User and I don't find this   related to my restaurant... ",
   };
   // =================================================================================================
-
+  */
+ 
   const [reason, setReason] = useState('');
 
   const handleSubmit = async e => {
