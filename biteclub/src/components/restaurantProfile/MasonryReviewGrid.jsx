@@ -7,7 +7,7 @@ import ReviewCardExpanded from './ReviewCardExpanded';
 export default function MasonryReviewGrid({ selectedReview, setSelectedReview, reviewList }) {
   // breakpoints for when an internal review is selected and the expanded panel appears
   const breakpointColumnsObj = useMemo(() => {
-    const isInternal = selectedReview?.photos?.length > 0;
+    const isInternal = selectedReview && !selectedReview?.content?.embedLink;
     return isInternal
       ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
       : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
@@ -30,7 +30,7 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
       <div className="flex-1">
         <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
           {combinedList.map(review =>
-            review.photos?.length > 0 ? (
+            !review.content?.embedLink ? (
               /* internal reviews */
               <ReviewCard
                 key={review._id}
@@ -48,7 +48,7 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
       </div>
 
       {/* Expanded side panel (visible when internal review is selected) */}
-      {selectedReview?.photos?.length > 0 && (
+      {selectedReview && !selectedReview?.content?.embedLink && (
         <ReviewCardExpanded selectedReview={selectedReview} onClose={() => setSelectedReview(null)} />
       )}
     </div>

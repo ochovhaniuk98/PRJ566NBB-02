@@ -164,7 +164,7 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
             <div>
               <EngagementIconStat
                 iconArr={reviewCardIconArr}
-                statNumArr={[selectedReview.likes?.count, selectedReview.comments?.length]}
+                statNumArr={[selectedReview?.likes?.count, selectedReview?.comments?.length]}
               />
             </div>
           </div>
