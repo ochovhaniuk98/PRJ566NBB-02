@@ -853,7 +853,7 @@ export async function addLikeOrDislikeToComment({ commentId, like = false, disli
   }
 }
 
-// Delete Comment
+// Delete BP Comment
 export async function deletePostComment({ commentId }) {
   try {
     await dbConnect();
@@ -864,6 +864,23 @@ export async function deletePostComment({ commentId }) {
     }
 
     return { success: true, message: 'Comment deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    throw error;
+  }
+}
+
+// Get BP Comment
+export async function getPostComment({ commentId }) {
+  try {
+    await dbConnect();
+    const comment = await CommentPost.findById(commentId);
+
+    if (!comment) {
+      throw new Error(`Comment with ID ${commentId} not found`);
+    }
+
+    return comment;
   } catch (error) {
     console.error('Error deleting comment:', error);
     throw error;

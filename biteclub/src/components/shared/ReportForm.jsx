@@ -21,7 +21,7 @@ export default function ReportForm({
   // DEMO: Reporting a Content
   const demoContentData = {
     // [Note] NOT the reportType i.e. 'User' or 'Content'
-    // One of: ['InternalReview', 'ExternalReview', 'Comment', 'BlogPost', 'User']
+    // One of: ['InternalReview', 'ExternalReview', 'CommentPost', 'BlogPost', 'User']
     contentType: 'BlogPost',
 
     // If reporting content is not a user, contentId (Mongoose ObjectId) must be provided

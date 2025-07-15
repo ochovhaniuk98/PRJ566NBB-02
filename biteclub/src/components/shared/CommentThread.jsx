@@ -6,19 +6,9 @@ import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg
 import Image from 'next/image';
 import { createClient } from '@/lib/auth/client';
 
-import {
-  faPlus,
-  faMinus,
-  faUsers,
-  faStarHalfStroke,
-  faFeather,
-  faGamepad,
-  faGear,
-  faXmark,
-  faTrashCan,
-  faFlag,
-} from '@fortawesome/free-solid-svg-icons';
+import { faTrashCan, faFlag } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
+import ReportForm from '../shared/ReportForm';
 
 //////////////// COMMENT THREAD FOR *** BLOG POST *** ONLY! ///////////////
 
@@ -304,6 +294,11 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
 
   const [isOwner, setIsOwner] = useState(false);
 
+  // for reporting a post
+  const [openReportForm, setOpenReportForm] = useState(false);
+  const [reportedUser, setReportedUser] = useState(null);
+  const [reporter, setReporter] = useState(null);
+
   // allow only one level nested comments
   useEffect(() => {
     if (comment?.parent_id === null) {
@@ -314,10 +309,15 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
     setLikes(comment?.likes?.count || 0);
     setDislikes(comment?.dislikes?.count || 0);
 
+    console.log('Comment: ', comment);
+
     // set isOwner
     if (comment.user == userId) {
       setIsOwner(true);
     }
+
+    // for reporting a comment
+    fetchReportedUser(userId);
   }, []);
 
   const handleReply = () => {
@@ -325,6 +325,45 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
       onReply(comment._id, replyContent, setReplyContent);
     }
   };
+
+  // for reporting a post
+  // get reported user object
+  const fetchReportedUser = async id => {
+    try {
+      if (id) {
+        const res = await fetch(`/api/users/get-general-user-by-MgId?id=${id}`);
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const reportedUser = await res.json();
+
+        setReportedUser(reportedUser);
+        console.log('reportedUser', reportedUser);
+      }
+    } catch (error) {
+      console.error('Failed to fetch reported User:', error);
+    }
+  };
+
+  useEffect(() => {
+    // get reporter object
+    const fetchReporter = async () => {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase.auth.getUser();
+        if (!data?.user) throw new Error('No Supabase user');
+        const supabaseId = data.user.id;
+
+        const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const reporter = await res.json();
+
+        setReporter(reporter);
+      } catch (error) {
+        console.error('Failed to fetch reporter:', error);
+      }
+    };
+
+    fetchReporter();
+  }, []);
 
   return (
     <>
@@ -354,6 +393,28 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
             >
               <FontAwesomeIcon icon={faThumbsDown} className={`icon-md text-brand-navy`} />
             </button>
+
+            {/* show Report form when flag icon is clicked */}
+            <div
+              className="text-brand-navy flex items-center gap-x-2 cursor-pointer"
+              onClick={e => {
+                setOpenReportForm(prev => !prev);
+              }}
+            >
+              <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy mr-3 cursor-pointer`} />
+            </div>
+
+            {openReportForm && (
+              <ReportForm
+                onClose={() => setOpenReportForm(false)}
+                contentTitle={comment.content}
+                contentType="CommentPost"
+                contentId={comment._id}
+                reportedUser={reportedUser}
+                reporter={reporter}
+              />
+            )}
+
             {showReplyBtn && (
               <button onClick={() => setShowReplyInput(!showReplyInput)} className="hover:text-black cursor-pointer">
                 <FontAwesomeIcon icon={faComment} className={`icon-md text-brand-navy`} /> Reply

@@ -15,8 +15,8 @@ function ContentModerationTag({ contentType, status }) {
       label: 'Blog Post',
       className: 'bg-blue-200 text-black',
     },
-    Comment: {
-      label: 'Comment',
+    CommentPost: {
+      label: 'CommentPost',
       className: 'bg-purple-200 text-black',
     },
     User: {
@@ -206,14 +206,14 @@ export default function ContentModerationCard({ report, onResolve }) {
                 :{' '}
                 {/* 
                 [TODO: ADJUST PATH]
-                  Comment → /comments/[id]    (NOT, WE DO NOT HAVE ANY COMMENT OBJECT YET)
+                  CommentPost → /blog-posts/comments/[id]    (NOT, WE DO NOT HAVE ANY COMMENT OBJECT YET)
                   BlogPost → /blog-posts/[id] (THIS WORKS)
                   Review → /restaurants/[restaurantId]/reviews/[reviewId] (NOT EVEN SURE HOW TO GET TO REVIEW)
                 */}
                 <a
                   href={
-                    report.contentType === 'Comment' // NOT SURE
-                      ? `/comments/${report.contentId?._id}`
+                    report.contentType === 'CommentPost' // NOT SURE
+                      ? `/blog-posts/comments/${report.contentId?._id}`
                       : report.contentType === 'BlogPost' // This OK
                       ? `/blog-posts/${report.contentId?._id}`
                       : report.contentType === 'InternalReview' || report.contentType === 'ExternalReview' // NOW REDIRECT TO RESTAURANT PROFILE INSTEAD.
