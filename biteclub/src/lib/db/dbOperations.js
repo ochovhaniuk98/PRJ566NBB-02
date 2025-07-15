@@ -260,11 +260,13 @@ export async function updatePoints(data) {
   return user;
 }
 
-// Get general user's username and bio (for Account-setUp Page, Setting page)
+// Get the whole general user profile
 export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
   await dbConnect();
   const user = await User.findOne({ supabaseId });
   if (!user) return null;
+  return user; // return the whole user object instead
+  /*
   return {
     username: user.username,
     userBio: user.userBio,
@@ -274,6 +276,7 @@ export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
     feedPersonalization: user.feedPersonalization,
     numOfPoints: user.numOfPoints,
   };
+  */
 }
 
 // Return the whole user profile (for User Dashboard, and Public)

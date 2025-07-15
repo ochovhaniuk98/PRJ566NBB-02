@@ -173,6 +173,9 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
           <div>
             <CommentSection currentUser={fakeUser} comments={[fakeComment]} />
           </div>
+          <p>{currentUserType}</p>
+          <p>{currentUserProfile ? `current id ${currentUserProfile._id}` : 'no current user profile'}</p>
+          <p>{authorProfile ? `author id ${authorProfile._id}` : 'no author profile'}</p>
         </div>
       </div>
       {/* Report form */}
