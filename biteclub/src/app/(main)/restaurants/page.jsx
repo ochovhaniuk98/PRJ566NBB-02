@@ -4,9 +4,11 @@ import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Button } from '@/components/shared/Button';
 import { useState, useEffect, useRef } from 'react';
+import { createClient } from '@/lib/auth/client';
 
 export default function RestaurantResults() {
   const [restaurants, setRestaurants] = useState([]);
+  const [personalizedRecommendations, setPersonalizedRecommendations] = useState([])
   const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(1);
   const [fetchCompleted, setFetchCompleted] = useState(false);
@@ -18,12 +20,28 @@ export default function RestaurantResults() {
     setFetchCompleted(false);
 
     try {
+      const supabase = createClient()
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (!error) {
+        const personalizedRecommendationsRes = await fetch(`${process.env.NEXT_PUBLIC_RECOMMENDER_URL}/recommend`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ "supabaseId": user.id })
+        });
+        const data = await personalizedRecommendationsRes.json();
+        setPersonalizedRecommendations(data.recommendations);
+        console.log(data.recommendations)
+      }
+
       const res = await fetch(`/api/restaurants/list?page=${page}&limit=20`);
       const data = await res.json();
 
       if (reset) {
         setPage(1);
         setRestaurants(data.restaurants);
+        console.log(data.restaurants[0])
       } else {
         // append data to existing list
         setRestaurants(prev => {
@@ -73,24 +91,44 @@ export default function RestaurantResults() {
   return (
     <MainBaseContainer className={'bg-brand-yellow'}>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
-        <div className={'w-full h-full'}>
-          {fetchCompleted && (
-            <>
-              {/* Restaurant List */}
-              <GridCustomCols numOfCols={5} className="mt-4">
-                {restaurants.map((restaurant, i) => (
-                  <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
-                ))}
-              </GridCustomCols>
-              {hasMore && (
-                <div className="mt-6 flex justify-center">
-                  <Button type="button" onClick={loadMore}>
-                    Load More
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
+        {personalizedRecommendations.length > 0 && <div>
+          <h2>
+            For you
+          </h2>
+          <div className={'w-full h-full'}>
+            {fetchCompleted && (
+              <>
+                <GridCustomCols numOfCols={5} className="mt-4">
+                  {personalizedRecommendations.map((restaurant, i) => (
+                    <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
+                  ))}
+                </GridCustomCols>
+              </>
+            )}
+          </div>
+        </div>}
+
+        <div>
+          <h2>Other Restaurants</h2>
+          <div className={'w-full h-full'}>
+            {fetchCompleted && (
+              <>
+                {/* Restaurant List */}
+                <GridCustomCols numOfCols={5} className="mt-4">
+                  {restaurants.map((restaurant, i) => (
+                    <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
+                  ))}
+                </GridCustomCols>
+                {hasMore && (
+                  <div className="mt-6 flex justify-center">
+                    <Button type="button" onClick={loadMore}>
+                      Load More
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </MainBaseContainer>
