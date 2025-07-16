@@ -29,11 +29,16 @@ export default function GeneralUserBanner({
   setShowTextEditor,
   editMode = false,
   setEditMode,
+  selectedTab,
   generalUserData,
   isOwner = false,
-  handleDeleteSelectedBlogPost,
-  handleDeleteAllBlogPost,
+  handleDeleteSelectedBlogPosts,
+  handleDeleteAllBlogPosts,
+  handleDeleteSelectedReviews,
+  handleDeleteAllReviews,
   blogPostsCount,
+  setShowModal,
+  setDeleteAllTarget,
 }) {
   const [reviewCount, setReviewCount] = useState(0);
   const [openReportForm, setOpenReportForm] = useState(false); // for reporting user
@@ -62,7 +67,7 @@ export default function GeneralUserBanner({
       bgColour: 'white',
       iconColour: 'brand-yellow',
       // statNum: generalUserData?.myReviews?.length || 0,
-      statNum: reviewCount,
+      statNum: reviewCount || 0,
     },
     {
       label: 'Blog Posts',
@@ -215,7 +220,14 @@ export default function GeneralUserBanner({
                 bgColour="bg-white"
                 textColour="text-brand-red"
                 borderColour="border-brand-red"
-                onClick={handleDeleteSelectedBlogPost}
+                // onClick={handleDeleteSelectedBlogPosts}
+                onClick={() => {
+                  if (selectedTab === 'Reviews') {
+                    handleDeleteSelectedReviews?.();
+                  } else if (selectedTab === 'Blog Posts') {
+                    handleDeleteSelectedBlogPosts?.();
+                  }
+                }}
               />
               {/* delete All */}
               <SingleTabWithIcon
@@ -223,7 +235,15 @@ export default function GeneralUserBanner({
                 detailText="DELETE ALL"
                 bgColour="bg-brand-red"
                 textColour="text-white"
-                onClick={handleDeleteAllBlogPost}
+                onClick={() => {
+                  if (selectedTab === 'Reviews') {
+                    setDeleteAllTarget('reviews');
+                    setShowModal(true); // confirmation modal
+                  } else if (selectedTab === 'Blog Posts') {
+                    setDeleteAllTarget('blogPosts');
+                    setShowModal(true); // confirmation modal
+                  }
+                }}
               />
               {/* cancel content management */}
               <SingleTabWithIcon

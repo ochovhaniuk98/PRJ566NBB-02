@@ -112,6 +112,7 @@ const InternalReviewSchema = new mongoose.Schema({
   title: String,
   rating: Number,
   date_posted: Date,
+  date_updated: Date,
   comments: [CommentSchema],
   photos: [PhotoSchema],
   likes: {
@@ -131,6 +132,7 @@ const ExternalReviewSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
   content: InstagramPostSchema,
+  date_posted: { type: Date, default: Date.now },
 });
 
 // Credit Card
