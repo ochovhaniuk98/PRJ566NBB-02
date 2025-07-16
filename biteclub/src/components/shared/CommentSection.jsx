@@ -80,7 +80,7 @@ function Comment({ comment, currentUser, onLike, onDislike }) {
       <div>
         <div className="flex justify-between items-center mb-1">
           <div className="font-semibold font-primary text-sm">{comment.author[0]?.username}</div>
-          <div className="text-xs text-brand-grey">{new Date(date_posted).toLocaleString()}</div>
+          <div className="text-xs text-brand-grey">{formatTimeAgo(new Date(date_posted).toLocaleString())}</div>
         </div>
         <p className="mb-2">{body}</p>
         <div className="flex gap-4 text-xs text-black font-primary mt-4">
@@ -100,4 +100,14 @@ function Comment({ comment, currentUser, onLike, onDislike }) {
       </div>
     </li>
   );
+}
+
+// *** get amount of time since a comment was posted ***
+function formatTimeAgo(datePosted) {
+  const date = new Date(datePosted);
+  const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
 }
