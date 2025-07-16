@@ -37,7 +37,8 @@ export default function GeneralUserBanner({
   handleDeleteSelectedReviews,
   handleDeleteAllReviews,
   blogPostsCount,
-  // reviewCount,
+  setShowModal,
+  setDeleteAllTarget,
 }) {
   const [reviewCount, setReviewCount] = useState(0);
   const [openReportForm, setOpenReportForm] = useState(false); // for reporting user
@@ -234,12 +235,13 @@ export default function GeneralUserBanner({
                 detailText="DELETE ALL"
                 bgColour="bg-brand-red"
                 textColour="text-white"
-                // onClick={handleDeleteAllBlogPosts}
                 onClick={() => {
                   if (selectedTab === 'Reviews') {
-                    handleDeleteAllReviews?.();
+                    setDeleteAllTarget('reviews');
+                    setShowModal(true); // confirmation modal
                   } else if (selectedTab === 'Blog Posts') {
-                    handleDeleteAllBlogPosts?.();
+                    setDeleteAllTarget('blogPosts');
+                    setShowModal(true); // confirmation modal
                   }
                 }}
               />

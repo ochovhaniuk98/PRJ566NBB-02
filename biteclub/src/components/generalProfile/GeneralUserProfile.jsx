@@ -54,17 +54,21 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   /* States below are for MANAGING/EDITING general profile */
   const [editMode, setEditMode] = useState(false); // tracks whether owner wants to manage CONTENT on profile (displays edit/delete panel on each card)
-  const [editReviewForm, setEditReviewForm] = useState(false); // for opening/closing form to edit a SPECIFIC REVIEW
-  const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
-  const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
-  const [editBlogPostData, setEditBlogPostData] = useState(null);
-  const [editReviewData, setEditReviewData] = useState(null); 
-  const [triggerReviewRefresh, setTriggerReviewRefresh] = useState(false); // help with update the review tabs after Adding or Editing a review
-
   const [selectedInternalReviews, setSelectedInternalReviews] = useState([]);
   const [selectedExternalReviews, setSelectedExternalReviews] = useState([]);
+  const [editReviewForm, setEditReviewForm] = useState(false); // for opening/closing form to edit a SPECIFIC REVIEW
+  const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
+  const [editReviewData, setEditReviewData] = useState(null);
+  const [triggerReviewRefresh, setTriggerReviewRefresh] = useState(false); // help with update the review tabs after Adding or Editing a review
 
   const [selectedBlogPosts, setSelectedBlogPosts] = useState([]);
+  const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
+  const [editBlogPostData, setEditBlogPostData] = useState(null);
+
+  // ASK FOR CONFIRMATION: If user would like to use "DELETE ALL" for Blog Posts or Reviews
+  const [showModal, setShowModal] = useState(false);
+  const [deleteAllTarget, setDeleteAllTarget] = useState(''); // 'reviews' or 'blogPosts'
+  const [confirmationText, setConfirmationText] = useState('');
 
   const filteredTabs = profileTabs.filter((tab, index) => {
     if (index === 2 && !displayVisitedPlaces) return false; // Tab 2 - visited places
@@ -445,6 +449,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         blogPostsCount={myBlogPosts.length}
         handleDeleteSelectedReviews={handleDeleteSelectedReviews}
         handleDeleteAllReviews={handleDeleteAllReviews}
+        setShowModal={setShowModal}
+        setDeleteAllTarget={setDeleteAllTarget}
       />
       <div className="main-side-padding w-full py-8">
         {/**** Tab menu and contents - START ****/}
@@ -686,7 +692,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           }}
           editReviewMode={true}
           reviewData={editReviewData}
-          onReviewSaved={() => setTriggerReviewRefresh(prev => !prev)} 
+          onReviewSaved={() => setTriggerReviewRefresh(prev => !prev)}
         >
           {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
           Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
@@ -697,6 +703,49 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           />
           {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
         </AddReviewForm>
+      )}
+
+      {/* ASK FOR CONFIRMATION: If user would like to use "DELETE ALL" */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
+            <h2 className="text-lg font-bold mb-2">Confirm Content Deletion</h2>
+            <p className="mb-4 text-sm text-gray-700">
+              Are you sure you want to delete{' '}
+              <strong>all {deleteAllTarget === 'reviews' ? 'reviews (Both BiteClub and Instagram)' : 'blog posts'}</strong>? This action is
+              <strong> irreversible</strong>. Please type <code>DELETE</code> to confirm.
+            </p>
+
+            <input
+              type="text"
+              className="w-full border px-3 py-2 mb-4"
+              value={confirmationText}
+              onChange={e => setConfirmationText(e.target.value)}
+              placeholder="Type DELETE"
+            />
+
+            <div className="flex justify-end space-x-2">
+              <Button variant="secondary" onClick={() => setShowModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                disabled={confirmationText !== 'DELETE'}
+                onClick={() => {
+                  if (deleteAllTarget === 'reviews') {
+                    handleDeleteAllReviews();
+                  } else if (deleteAllTarget === 'blogPosts') {
+                    handleDeleteAllBlogPosts();
+                  }
+                  setShowModal(false);
+                  setConfirmationText('');
+                }}
+              >
+                Confirm Delete
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </MainBaseContainer>
   );
