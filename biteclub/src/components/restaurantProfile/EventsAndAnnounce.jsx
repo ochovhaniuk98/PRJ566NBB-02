@@ -19,9 +19,17 @@ export default function EventsAndAnnounce() {
     setShowForm(false);
   };
 
-  const addAnnouncement = announcementText => {
-    setAnnouncements(prev => [...prev, announcementText]);
+  const addAnnouncement = announcement => {
+    setAnnouncements(prev => [...prev, announcement]);
     setShowForm(false);
+  };
+
+  const handleDeleteAnnouncement = index => {
+    setAnnouncements(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDeleteEvent = index => {
+    setEvents(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -45,7 +53,13 @@ export default function EventsAndAnnounce() {
           {/* Event Cards */}
           <div className="flex flex-col gap-4">
             {events.map((event, idx) => (
-              <EventCard key={idx} {...event} />
+              <EventCard
+                key={idx}
+                name={event.name}
+                date={event.date}
+                description={event.description}
+                onDelete={() => handleDeleteEvent(idx)}
+              />
             ))}
           </div>
         </div>
@@ -66,12 +80,13 @@ export default function EventsAndAnnounce() {
           </div>
           {/* Announcement Cards */}
           <div className="flex flex-col gap-4">
-            {announcements.map((text, idx) => (
-              <div key={idx} className="border border-brand-yellow-lite rounded-md p-4 bg-white shadow-sm relative">
-                <h3>{text}</h3>
-                <p>{text}</p>
-                <FontAwesomeIcon icon={faCircleXmark} className="text-2xl text-brand-navy absolute bottom-2 right-2" />
-              </div>
+            {announcements.map((announcement, idx) => (
+              <AnnouncementCard
+                key={idx}
+                title={announcement.title}
+                text={announcement.text}
+                onDelete={() => handleDeleteAnnouncement(idx)}
+              />
             ))}
           </div>
         </div>
@@ -203,13 +218,20 @@ function AddEventForm({ onAddEvent, onCancel }) {
 
 // add announcement form
 function AddAnnouncementForm({ onAddAnnouncement, onCancel }) {
-  const [announcement, setAnnouncement] = useState('');
+  const [formData, setFormData] = useState({
+    title: '',
+    text: '',
+  });
+
+  const handleChange = e => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (announcement.trim()) {
-      onAddAnnouncement(announcement.trim());
-      setAnnouncement('');
+    if (formData.title.trim() && formData.text.trim()) {
+      onAddAnnouncement(formData);
+      setFormData({ title: '', text: '' });
     }
   };
 
@@ -222,12 +244,23 @@ function AddAnnouncementForm({ onAddAnnouncement, onCancel }) {
         <div className="font-secondary text-4xl mb-4">Make Announcement</div>
 
         <div>
+          <Label>Title</Label>
+          <Input
+            name="title"
+            placeholder="Holiday Hours"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full"
+          />
+        </div>
+
+        <div>
           <Label>Announcement</Label>
           <textarea
-            name="announcement"
-            placeholder="Write your announcement here"
-            value={announcement}
-            onChange={e => setAnnouncement(e.target.value)}
+            name="text"
+            placeholder="We will be closed on New Year's Day."
+            value={formData.text}
+            onChange={handleChange}
             className="w-full border rounded p-2"
             rows={3}
             required
@@ -248,7 +281,8 @@ function AddAnnouncementForm({ onAddAnnouncement, onCancel }) {
 }
 
 // card for added events
-function EventCard({ name, date, description, isOwner = false }) {
+// to IRISH: CHANGE ISOWNER TO FALSE WHEN YOU'RE DONE
+function EventCard({ name, date, description, onDelete, isOwner = true }) {
   return (
     <div className="border rounded-md border-brand-yellow-lite p-4 flex bg-white shadow-sm relative">
       <div className="h-30 aspect-square bg-white flex items-center justify-center text-white font-bold">
@@ -260,7 +294,29 @@ function EventCard({ name, date, description, isOwner = false }) {
         <p>{description}</p>
       </div>
       {isOwner && (
-        <FontAwesomeIcon icon={faCircleXmark} className="text-2xl text-brand-navy absolute bottom-2 right-2" />
+        <FontAwesomeIcon
+          icon={faCircleXmark}
+          onClick={onDelete}
+          className="text-2xl text-brand-navy absolute bottom-2 right-2 cursor-pointer"
+        />
+      )}
+    </div>
+  );
+}
+
+// card for added announcements
+// to IRISH: CHANGE ISOWNER TO FALSE WHEN YOU'RE DONE
+function AnnouncementCard({ title, text, onDelete, isOwner = true }) {
+  return (
+    <div className="border border-brand-yellow-lite rounded-md p-4 bg-white shadow-sm relative">
+      <h3 className="font-semibold">{title}</h3>
+      <p>{text}</p>
+      {isOwner && (
+        <FontAwesomeIcon
+          icon={faCircleXmark}
+          onClick={onDelete}
+          className="text-2xl text-brand-navy absolute bottom-2 right-2 cursor-pointer"
+        />
       )}
     </div>
   );
