@@ -20,8 +20,44 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
 
   // Combine and sort by date posted (memoized to prevent re-rendering)
   const combinedList = useMemo(() => {
-    const all = [...reviewList.internalReviews, ...reviewList.externalReviews];
-    return all.sort((a, b) => new Date(b.date_posted) - new Date(a.date_posted));
+    const internals = reviewList.internalReviews ?? [];
+    const externals = reviewList.externalReviews ?? [];
+
+    const engagementScores = internals.map(r => {
+      const likes = r.likes?.count ?? 0;
+      const dislikes = r.dislikes?.count ?? 0;
+      return likes - dislikes;
+    });
+
+    const recencyScores = internals.map(r => new Date(r.date_posted).getTime());
+
+    const normalize = arr => {
+      const min = Math.min(...arr);
+      const max = Math.max(...arr);
+      if (min === max) return arr.map(() => 0.5);
+      return arr.map(x => (x - min) / (max - min));
+    };
+
+    const normEngagement = normalize(engagementScores);
+    const normRecency = normalize(recencyScores);
+
+    const scoredInternals = internals
+      .map((review, i) => ({
+        review,
+        score: 0.45 * normEngagement[i] + 0.55 * normRecency[i],
+      }))
+      .sort((a, b) => b.score - a.score)
+      .map(({ review }) => review);
+
+    const sortedExternals = [...externals].sort((a, b) => new Date(b.date_posted) - new Date(a.date_posted));
+
+    const combined = [...scoredInternals];
+    sortedExternals.forEach(ext => {
+      const insertAt = Math.floor(Math.random() * (combined.length + 1));
+      combined.splice(insertAt, 0, ext);
+    });
+
+    return combined;
   }, [reviewList]);
 
   return (
