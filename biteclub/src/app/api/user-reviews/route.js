@@ -3,9 +3,9 @@ import { addInternalReview } from '@/lib/db/dbOperations';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { userId, restuarantId, review } = body;
+    const { userId, restaurantId, review } = body;
 
-    if (!userId || !restuarantId || !review) {
+    if (!userId || !restaurantId || !review) {
       return new Response(JSON.stringify({ error: 'User ID and review content are required' }), { status: 400 });
     }
 

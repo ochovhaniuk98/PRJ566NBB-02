@@ -5,6 +5,7 @@ import {
   User,
   Photo,
   Comment,
+  CommentPost,
   InstagramPost,
   BlogPost,
   InternalReview,
@@ -51,24 +52,13 @@ export async function getRestaurantById(id) {
 export async function getRestaurantReviews(id) {
   await dbConnect();
 
-  let reviews = await InternalReview.find({ restaurant_id: id });
-  let externalReviews = await ExternalReview.find({ restaurant_id: id });
-
-  // Wait for all user data to be fetched and attached
-  const updatedReviews = await Promise.all(
-    reviews.map(async review => {
-      const user = await User.findOne({ _id: review.user_id });
-      if (user) {
-        review = review.toObject();
-        review.user_id = user.username;
-        review.user_pic = user.userProfilePicture;
-      }
-      return review;
-    })
-  );
+  const [reviews, externalReviews] = await Promise.all([
+    InternalReview.find({ restaurant_id: id }).populate('user_id', '_id username userProfilePicture').lean(),
+    ExternalReview.find({ restaurant_id: id }).populate('user_id', '_id username').lean(),
+  ]);
 
   return {
-    internalReviews: updatedReviews,
+    internalReviews: reviews,
     externalReviews: externalReviews,
   };
 }
@@ -186,6 +176,76 @@ export async function addInternalReview(data) {
   return JSON.parse(JSON.stringify(savedReview));
 }
 
+export async function updateInternalReview(data) {
+  await dbConnect();
+  const { reviewId, userId, title, body, rating, photos } = data;
+  const updated = await InternalReview.findOneAndUpdate(
+    { _id: reviewId, user_id: userId },
+    {
+      title,
+      body,
+      rating,
+      photos: photos || [],
+      date_updated: new Date(),
+    },
+    { new: true }
+  );
+  return updated ? JSON.parse(JSON.stringify(updated)) : null;
+}
+
+export async function updateReviewEngagement(reviewId, userId, like = false, dislike = false) {
+  try {
+    await dbConnect();
+
+    const review = await InternalReview.findById(reviewId);
+    if (!review) {
+      throw new Error('Review not found');
+    }
+
+    const alreadyLiked = review.likes.users.includes(userId);
+    const alreadyDisliked = review.dislikes.users.includes(userId);
+
+    if (like) {
+      if (alreadyLiked) {
+        // Toggle off like
+        review.likes.users.pull(userId);
+        review.likes.count = Math.max(0, review.likes.count - 1);
+      } else {
+        // Remove dislike if any
+        if (alreadyDisliked) {
+          review.dislikes.users.pull(userId);
+          review.dislikes.count = Math.max(0, review.dislikes.count - 1);
+        }
+        // Add like
+        review.likes.users.push(userId);
+        review.likes.count += 1;
+      }
+    } else if (dislike) {
+      if (alreadyDisliked) {
+        // Toggle off dislike
+        review.dislikes.users.pull(userId);
+        review.dislikes.count = Math.max(0, review.dislikes.count - 1);
+      } else {
+        // Remove like if any
+        if (alreadyLiked) {
+          review.likes.users.pull(userId);
+          review.likes.count = Math.max(0, review.likes.count - 1);
+        }
+        // Add dislike
+        review.dislikes.users.push(userId);
+        review.dislikes.count += 1;
+      }
+    }
+
+    await review.save();
+
+    return JSON.parse(JSON.stringify(review));
+  } catch (err) {
+    console.error('Error adding like/dislike:', err);
+    throw err;
+  }
+}
+
 export async function getBusinessUserRestaurantId({ supabaseId }) {
   await dbConnect();
   const user = await BusinessUser.findOne({ supabaseId });
@@ -199,7 +259,7 @@ export async function updateLicenseForBusinessUser(data) {
   await dbConnect();
 
   const user = await BusinessUser.findOneAndUpdate(
-    { supabaseId: data.superbaseId },
+    { supabaseId: data.supabaseId },
     { licenseFileUrl: data.url },
     { new: true } // returns the updated user
   );
@@ -213,6 +273,22 @@ export async function getBusinessUserVerificationStatus({ supabaseId }) {
   const user = await BusinessUser.findOne({ supabaseId }, 'verificationStatus');
   if (!user) return null;
   return user.verificationStatus;
+}
+
+// Get business user profile
+export async function getBusinessUserProfileBySupabaseId({ supabaseId }) {
+  await dbConnect();
+  const user = await BusinessUser.findOne({ supabaseId });
+  if (!user) return null;
+  return user; // Returns entire User document
+}
+
+export async function getBusinessUserProfileByMongoId(mongoId) {
+  await dbConnect();
+  // const user = await User.findOne({ _id: mongoId });
+  const user = await BusinessUser.findById(mongoId); // Use findById for _id
+  if (!user) return null;
+  return user; // Returns entire User document
 }
 
 // =================
@@ -231,7 +307,7 @@ export async function updateGeneralUsername(data) {
       displayFavouriteRestaurants: data.displayFavouriteRestaurants,
       displayFavouriteBlogPosts: data.displayFavouriteBlogPosts,
       displayVisitedPlaces: data.displayVisitedPlaces,
-      feedPersonalization: data.feedPersonalization
+      feedPersonalization: data.feedPersonalization,
     },
     { new: true } // returns the updated user
   );
@@ -246,7 +322,7 @@ export async function updatePoints(data) {
   const user = await User.findOneAndUpdate(
     { supabaseId: data.supabaseId },
     {
-      numOfPoints: data.numOfPoints
+      numOfPoints: data.numOfPoints,
     },
     { new: true } // returns the updated user
   );
@@ -254,11 +330,13 @@ export async function updatePoints(data) {
   return user;
 }
 
-// Get general user's username and bio (for Account-setUp Page, Setting page)
+// Get the whole general user profile
 export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
   await dbConnect();
   const user = await User.findOne({ supabaseId });
   if (!user) return null;
+  return user; // return the whole user object instead
+  /*
   return {
     username: user.username,
     userBio: user.userBio,
@@ -266,8 +344,9 @@ export async function getGeneralUserProfileBySupabaseId({ supabaseId }) {
     displayFavouriteBlogPosts: user.displayFavouriteBlogPosts,
     displayVisitedPlaces: user.displayVisitedPlaces,
     feedPersonalization: user.feedPersonalization,
-    numOfPoints: user.numOfPoints
+    numOfPoints: user.numOfPoints,
   };
+  */
 }
 
 // Return the whole user profile (for User Dashboard, and Public)
@@ -308,6 +387,19 @@ export async function getBlogPostNumOfFavourites(blogId) {
     favouriteBlogs: { $in: [blogId] },
   });
   return count;
+}
+
+// Only deleting external reviews for a single user
+export async function deleteAllExternalReviewsByUser(userId) {
+  try {
+    const result = await ExternalReview.deleteMany({ user_id: userId });
+
+    return {
+      deletedExternal: result.deletedCount,
+    };
+  } catch (error) {
+    throw new Error('Failed to delete external reviews: ' + error.message);
+  }
 }
 
 // ==================
@@ -470,6 +562,77 @@ export async function getBlogPost({ id }) {
   return post;
 }
 
+// get Exploring Blog Posts (popular + new)
+export async function getListOfExploringBlogPosts(page = 1, limit = 20) {
+  await dbConnect();
+  const skip = (page - 1) * (limit / 2);
+
+  const popularFilter = {
+    $or: [
+      { 'likes.count': { $gte: 1 } },
+      {
+        $expr: {
+          $gte: [{ $size: { $ifNull: ['$comments', []] } }, 1],
+        },
+      },
+    ],
+  };
+
+  const [popularPosts, newPosts, totalCount] = await Promise.all([
+    BlogPost.find(popularFilter)
+      .skip(skip)
+      .limit(limit / 2),
+    BlogPost.find({})
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limit / 2),
+    BlogPost.countDocuments({}),
+  ]);
+
+  return {
+    posts: [...popularPosts, ...newPosts],
+    totalCount,
+  };
+}
+
+// get Following Blog Posts (posts posted by people user follows)
+export async function getListOfFollowingBlogPosts(userId, page = 1, limit = 20) {
+  await dbConnect();
+  const skip = (page - 1) * (limit / 2);
+
+  console.log('UserId: ', userId);
+  // get array of users' posts the current user is following
+  const currentUser = await User.findById(userId);
+  console.log('Im here');
+  if (!currentUser) {
+    throw new Error('User not found');
+  }
+
+  const followings = currentUser.followings;
+
+  // when user is not following anyone - return 0 posts
+  if (!followings || followings.length === 0) {
+    return {
+      posts: [],
+      totalCount: 0,
+    };
+  }
+
+  // find blog posts where user_id is in followings[]
+  const [posts, totalCount] = await Promise.all([
+    BlogPost.find({ user_id: { $in: followings } })
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limit),
+    BlogPost.countDocuments({ user_id: { $in: followings } }),
+  ]);
+
+  return {
+    posts,
+    totalCount,
+  };
+}
+
 // Search for a Restaurant by Search Query (User Input)
 export async function searchRestaurantsByQuery(query) {
   await dbConnect();
@@ -482,19 +645,126 @@ export async function searchRestaurantsByQuery(query) {
   return restaurants;
 }
 
-// Search for a Restaurant (limit 20 searches per page)
-export async function searchRestaurantsBySearchQuery(query, { page = 1, limit = 20 } = {}) {
+// Search and Filter for the Restaurants (limit 20 searches per page)
+export async function searchRestaurantsBySearchQuery(
+  query,
+  {
+    page = 1,
+    limit = 20,
+    cuisines = [],
+    dietary = [],
+    rating = 0,
+    price,
+    distance = 0,
+    lat = '',
+    lng = '',
+    isOpenNow = false,
+  } = {}
+) {
   await dbConnect();
   const skip = (page - 1) * limit;
 
+  const filter = {
+    name: { $regex: query, $options: 'i' },
+  };
+
+  // Filter by rating
+  if (rating) {
+    filter.rating = { $gte: rating };
+  }
+
+  // Filter by price
+  if (price) {
+    filter.priceRange = price;
+  }
+
+  // Filter by cuisines
+  if (cuisines.length > 0) {
+    filter.cuisines = { $in: cuisines };
+  }
+
+  // Filter by dietary options
+  if (dietary.length > 0) {
+    filter.dietaryOptions = { $in: dietary };
+  }
+
+  // Filter by distance
+  // when distance is 10+, we do want to include all results and do not filter by distance
+  if (!isNaN(lat) && !isNaN(lng) && distance > 0 && distance < 10) {
+    console.log(`Coordinates lng: ${lng} and lat: ${lat} and distance ${distance}`);
+
+    filter.locationCoords = {
+      // finds within a specified geometry
+      $geoWithin: {
+        // specifies a circular area on the earth’s surface
+        $centerSphere: [
+          [parseFloat(lng), parseFloat(lat)], // the center point
+          distance / 6371, // convert from kilometers to radians (distance in km / Earth’s mean radius)
+        ],
+      },
+    };
+  }
+
+  // Filter by "Open Now"
+  if (isOpenNow) {
+    const dayName = new Date().toLocaleDateString('en-CA', {
+      weekday: 'long',
+      timeZone: 'America/Toronto',
+    });
+
+    const now = new Date().toLocaleTimeString('en-CA', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Toronto',
+    });
+
+    console.log({ dayName, now });
+
+    filter.BusinessHours = {
+      $elemMatch: {
+        day: dayName,
+        opening: { $lte: now },
+        closing: { $gte: now },
+      },
+    };
+  }
+
   const [restaurants, totalCount] = await Promise.all([
-    Restaurant.find({ name: { $regex: query, $options: 'i' } })
-      .skip(skip)
-      .limit(limit),
-    Restaurant.countDocuments({ name: { $regex: query, $options: 'i' } }),
+    Restaurant.find(filter).skip(skip).limit(limit),
+    Restaurant.countDocuments(filter),
   ]);
 
   return { restaurants, totalCount };
+}
+
+// Get a list of restaurants (popular + new)
+export async function getListOfRestaurants(page = 1, limit = 20) {
+  await dbConnect();
+  const skip = (page - 1) * (limit / 2);
+
+  // get popular restaurants
+  const popularRestaurants = await Restaurant.find({
+    rating: { $gte: 4.5 },
+    numReviews: { $gte: 100 },
+  })
+    .skip(skip)
+    .limit(limit / 2);
+
+  // get new restaurants
+  const newRestaurants = await Restaurant.find({})
+    .sort({ _id: -1 })
+    .skip(skip)
+    .limit(limit / 2);
+
+  return [...popularRestaurants, ...newRestaurants];
+}
+
+export async function getAllCuisines() {
+  await dbConnect();
+  const allCuisines = await Restaurant.distinct('cuisines');
+
+  return allCuisines;
 }
 
 // Search for a Posts by Search Query (User Input)
@@ -505,7 +775,9 @@ export async function searchBlogPostsByQuery(query, { page = 1, limit = 20 } = {
   const [posts, totalCount] = await Promise.all([
     BlogPost.find({ title: { $regex: query, $options: 'i' } })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .populate('user_id', 'username userProfilePicture')
+      .lean(),
     BlogPost.countDocuments({ title: { $regex: query, $options: 'i' } }),
   ]);
 
@@ -563,5 +835,133 @@ export async function approveBusinessUser(userId) {
   } catch (error) {
     console.error('Error approving business user:', error);
     throw new Error('Failed to approve business user');
+  }
+}
+
+// Post Comments
+// author (MongoDB user _id)
+export async function createPostComment({
+  blogPostId,
+  parent_id = null,
+  avatarURL,
+  content,
+  author,
+  date_posted = Date.now(),
+  user,
+}) {
+  try {
+    await dbConnect();
+
+    const comment = new CommentPost({
+      blogPost_id: blogPostId,
+      parent_id,
+      avatarURL,
+      content,
+      author,
+      date_posted,
+      user,
+    });
+
+    const savedComment = await comment.save();
+
+    // update blog post comments
+    await BlogPost.findByIdAndUpdate(blogPostId, { $push: { comments: savedComment._id } }, { new: true });
+
+    return savedComment;
+  } catch (error) {
+    console.error('Error creating comment:', error);
+    throw error;
+  }
+}
+
+// Get Post Comments By Post Id
+export async function getPostCommentsByPostId({ postId }) {
+  try {
+    await dbConnect();
+    const comments = await CommentPost.find({
+      blogPost_id: postId,
+    }).sort({ date_posted: 1 }); // sort in ascending order
+
+    return comments;
+  } catch (err) {
+    console.error('Error getting post comments by post id:', err);
+    throw err;
+  }
+}
+
+// Add Likes/Dislikes to a Post Comment/Reply
+export async function addLikeOrDislikeToComment({ commentId, like = false, dislike = false, userId }) {
+  try {
+    await dbConnect();
+    const comment = await CommentPost.findById(commentId);
+    if (!comment) return null;
+
+    const alreadyLiked = comment.likes.users.includes(userId);
+    const alreadyDisliked = comment.dislikes.users.includes(userId);
+
+    if (like && !alreadyLiked) {
+      // remove dislike if it exists
+      if (alreadyDisliked) {
+        comment.dislikes.users.pull(userId);
+        comment.dislikes.count -= 1;
+      }
+
+      comment.likes.users.push(userId);
+      comment.likes.count += 1;
+    }
+
+    if (dislike && !alreadyDisliked) {
+      // remove like if it exists
+      if (alreadyLiked) {
+        comment.likes.users.pull(userId);
+        comment.likes.count -= 1;
+      }
+
+      comment.dislikes.users.push(userId);
+      comment.dislikes.count += 1;
+    }
+
+    await comment.save();
+    return comment;
+  } catch (err) {
+    console.error('Error adding like/dislike:', err);
+    throw err;
+  }
+}
+
+// Delete BP Comment
+export async function deletePostComment({ commentId }) {
+  try {
+    await dbConnect();
+    const deletedComment = await CommentPost.findByIdAndDelete(commentId);
+
+    if (!deletedComment) {
+      throw new Error(`Comment with ID ${commentId} not found`);
+    }
+
+    // Remove the reference from the blog post's comments array
+    await BlogPost.findByIdAndUpdate(deletedComment.blogPost_id, { $pull: { comments: commentId } });
+
+    return { success: true, message: 'Comment deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    throw error;
+  }
+}
+
+// Get BP Comment
+export async function getPostComment({ commentId }) {
+  try {
+    await dbConnect();
+    const comment = await CommentPost.findById(commentId);
+
+    if (!comment) {
+      throw new Error(`Comment with ID ${commentId} not found`);
+    }
+
+    return comment;
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    throw error;
   }
 }

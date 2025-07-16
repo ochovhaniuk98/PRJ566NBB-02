@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import StarRating from '@/components/shared/StarRating';
 import Image from 'next/image';
 import AuthorDateBlurb from './AuthorDateBlurb';
@@ -5,33 +6,58 @@ import reviewCardIconArr from '@/app/data/iconData';
 import EngagementIconStat from './EngagementIconStat';
 import FormattedDate from './formattedDate';
 import EditModePanel from './EditModePanel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsis, faFlag } from '@fortawesome/free-solid-svg-icons';
+import { ReportContentLink } from './ReportContentLink';
+// faEllipsisVertical
 
 /* "AddReviewForm" has two modes: Adding NEW reviews, and EDITING existing reviews.
     The parameter "editReviewMode" is false by default, but TRUE when user wants to edit review.*/
 export default function ReviewCard({
   review,
+  reviewEngagementStats,
+  onLike,
+  onDislike,
   photos,
   onClick,
   isSelected,
   isOwner = false,
   isEditModeOn = false,
   setEditReviewForm = () => {},
+  onSelect = () => {},
+  onDeleteClick = () => {},
 }) {
-  //console.log('PHOTOS LENGTH: ', photos[0].url);
+  const [showReportFormLink, setShowReportFormLink] = useState(false);
+  const [cardHovered, setCardHovered] = useState(false);
+  const [popupHovered, setPopupHovered] = useState(false);
+  const shouldHighlight = cardHovered && !popupHovered;
+
   return (
     <div
-      className={`${
-        isSelected ? 'bg-brand-peach-lite' : 'bg-white'
-      } relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer hover:bg-brand-peach-lite hover:outline-brand-peach hover:outline-2`}
+      className={`relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer transition 
+    ${shouldHighlight ? 'bg-brand-peach-lite outline-brand-peach outline-2' : 'bg-white'}`}
       onClick={onClick}
+      onMouseEnter={() => setCardHovered(true)}
+      onMouseLeave={() => setCardHovered(false)}
     >
-      <div className="p-4">
+      <div className="p-4 pt-2">
+        {/* show link to open Report form when ... icon is clicked */}
+        <FontAwesomeIcon
+          icon={faEllipsis}
+          className={`icon-lg text-brand-navy invisible`} // temporarily made elipsis for reporting invisible
+          onClick={e => {
+            e.stopPropagation();
+            setShowReportFormLink(prev => !prev);
+          }}
+        />
         <div className="flex justify-between">
           <StarRating colour={'text-brand-green'} iconSize={'icon-lg'} ratingNum={review.rating} />
           <div>
             <EngagementIconStat
               iconArr={reviewCardIconArr}
-              statNumArr={[review.likes?.count, review.comments?.length]}
+              statNumArr={[reviewEngagementStats?.likes || 0, reviewEngagementStats?.comments || 0]}
+              handlers={[onLike, () => {}, onDislike]}
+              states={[reviewEngagementStats?.userLiked, false, reviewEngagementStats?.userDisliked]}
             />
           </div>
         </div>
@@ -42,7 +68,11 @@ export default function ReviewCard({
         {isOwner ? (
           <FormattedDate yyyymmdd={review.date_posted} />
         ) : (
-          <AuthorDateBlurb authorPic={review.user_pic?.url} authorName={review.user_id} date={review.date_posted} />
+          <AuthorDateBlurb
+            authorPic={review.user_id?.userProfilePicture?.url}
+            authorName={review.user_id?.username}
+            date={review.date_posted}
+          />
         )}
       </div>
 
@@ -61,7 +91,17 @@ export default function ReviewCard({
       )}
       {/* panel appears when general user selects to "Manage Content";
        General user can select review to delete or edit. Editing opens "Add Review" form but enabled for editing.  */}
-      {isEditModeOn && <EditModePanel onEditClick={() => setEditReviewForm(true)} />}
+      {isEditModeOn && (
+        <EditModePanel
+          isSelected={isSelected}
+          onSelect={onSelect}
+          onEditClick={() => setEditReviewForm(true)}
+          onDeleteClick={onDeleteClick}
+        />
+      )}
+
+      {/* show link to open report form */}
+      {showReportFormLink && <ReportContentLink setPopupHovered={setPopupHovered} contentTitle={review.title} />}
     </div>
   );
 }

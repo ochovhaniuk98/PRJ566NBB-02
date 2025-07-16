@@ -36,7 +36,7 @@ export default function ImageBanner({ restaurantId, images, setImages, isOwner =
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-0 relative">
+      <div className="grid grid-cols-4 gap-0 relative w-full border-b border-brand-grey-lite">
         {gridImages.map((img, i) => (
           <img key={i} src={img?.url} alt={img?.caption} className="w-full h-80 object-cover" />
         ))}

@@ -13,11 +13,13 @@ import {
   faGear,
   faXmark,
   faTrashCan,
+  faFlag,
 } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import { Button } from '@/components/shared/Button';
+import ReportForm from '../shared/ReportForm';
 
 /* Description: Shows general user info and allows OWNER to write blog post or manage content by clicking corresponding buttons in component.
     showTextEditor: shows/hides text editor
@@ -27,12 +29,19 @@ export default function GeneralUserBanner({
   setShowTextEditor,
   editMode = false,
   setEditMode,
+  selectedTab,
   generalUserData,
   isOwner = false,
-  handleDeleteSelectedBlogPost,
-  handleDeleteAllBlogPost,
+  handleDeleteSelectedBlogPosts,
+  handleDeleteAllBlogPosts,
+  handleDeleteSelectedReviews,
+  handleDeleteAllReviews,
+  blogPostsCount,
+  setShowModal,
+  setDeleteAllTarget,
 }) {
   const [reviewCount, setReviewCount] = useState(0);
+  const [openReportForm, setOpenReportForm] = useState(false); // for reporting user
 
   useEffect(() => {
     const fetchReviewCount = async () => {
@@ -58,14 +67,14 @@ export default function GeneralUserBanner({
       bgColour: 'white',
       iconColour: 'brand-yellow',
       // statNum: generalUserData?.myReviews?.length || 0,
-      statNum: reviewCount,
+      statNum: reviewCount || 0,
     },
     {
       label: 'Blog Posts',
       icon: faFeather,
       bgColour: 'white',
       iconColour: 'brand-peach',
-      statNum: generalUserData?.myBlogPosts?.length || 0,
+      statNum: blogPostsCount || 0,
     },
     {
       label: 'Challenges',
@@ -211,7 +220,14 @@ export default function GeneralUserBanner({
                 bgColour="bg-white"
                 textColour="text-brand-red"
                 borderColour="border-brand-red"
-                onClick={handleDeleteSelectedBlogPost}
+                // onClick={handleDeleteSelectedBlogPosts}
+                onClick={() => {
+                  if (selectedTab === 'Reviews') {
+                    handleDeleteSelectedReviews?.();
+                  } else if (selectedTab === 'Blog Posts') {
+                    handleDeleteSelectedBlogPosts?.();
+                  }
+                }}
               />
               {/* delete All */}
               <SingleTabWithIcon
@@ -219,7 +235,15 @@ export default function GeneralUserBanner({
                 detailText="DELETE ALL"
                 bgColour="bg-brand-red"
                 textColour="text-white"
-                onClick={handleDeleteAllBlogPost}
+                onClick={() => {
+                  if (selectedTab === 'Reviews') {
+                    setDeleteAllTarget('reviews');
+                    setShowModal(true); // confirmation modal
+                  } else if (selectedTab === 'Blog Posts') {
+                    setDeleteAllTarget('blogPosts');
+                    setShowModal(true); // confirmation modal
+                  }
+                }}
               />
               {/* cancel content management */}
               <SingleTabWithIcon
@@ -231,6 +255,20 @@ export default function GeneralUserBanner({
             </>
           )}
         </div>
+      )}
+
+      {/* Icon to open Report User Form */}
+      {!isOwner && (
+        <div
+          className="absolute bottom-3 right-6 flex items-center font-primary text-brand-navy cursor-pointer"
+          onClick={() => setOpenReportForm(true)}
+        >
+          <FontAwesomeIcon icon={faFlag} className={`icon-sm text-brand-navy mr-2`} />
+          <h5>Report User</h5>
+        </div>
+      )}
+      {openReportForm && (
+        <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} contentType='User' reportedUser={generalUserData} />
       )}
     </div>
   );

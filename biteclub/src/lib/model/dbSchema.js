@@ -55,6 +55,25 @@ const CommentSchema = new mongoose.Schema({
   },
 });
 
+// used only by blog post schema
+const CommentPostSchema = new mongoose.Schema({
+  blogPost_id: { type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost', required: true },
+  parent_id: { type: mongoose.Schema.Types.ObjectId, ref: 'CommentPost', default: null },
+  avatarURL: String,
+  content: String,
+  author: { type: String, required: true },
+  date_posted: { type: Date, default: Date.now },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  likes: {
+    count: { type: Number, default: 0 },
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  },
+  dislikes: {
+    count: { type: Number, default: 0 },
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  },
+});
+
 // Instagram post subdocument
 const InstagramPostSchema = new mongoose.Schema({
   embedLink: String,
@@ -78,7 +97,7 @@ const BlogPostSchema = new mongoose.Schema({
     count: Number,
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
-  comments: [CommentSchema],
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CommentPost' }], // comments will be stored separately in CommentPost collection
   Instagram_posts: [InstagramPostSchema], // no longer needed, it's part of post body
   photos: [PhotoSchema], // no longer needed, it's part of post body
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
@@ -93,15 +112,20 @@ const InternalReviewSchema = new mongoose.Schema({
   title: String,
   rating: Number,
   date_posted: Date,
+  date_updated: Date,
   comments: [CommentSchema],
   photos: [PhotoSchema],
+  user_type: {
+    type: String,
+    enum: ['User', 'BusinessUser'],
+  },
   likes: {
     count: Number,
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    users: [{ type: mongoose.Schema.Types.ObjectId, refPath: 'user_type' }],
   },
   dislikes: {
     count: Number,
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    users: [{ type: mongoose.Schema.Types.ObjectId, refPath: 'user_type' }],
   },
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
@@ -112,6 +136,7 @@ const ExternalReviewSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
   content: InstagramPostSchema,
+  date_posted: { type: Date, default: Date.now },
 });
 
 // Credit Card
@@ -229,7 +254,21 @@ const RestaurantSchema = new mongoose.Schema({
   bannerImages: [PhotoSchema],
   images: [PhotoSchema],
   location: String,
+  longitude: Number,
+  latitude: Number,
+  locationCoords: {
+    // https://www.mongodb.com/docs/manual/reference/geojson/#point
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point',
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+    },
+  },
 });
+RestaurantSchema.index({ locationCoords: '2dsphere' }); // 2dsphere index for locationCoords
 
 // Business User Schema
 const BusinessUserSchema = new mongoose.Schema({
@@ -258,10 +297,71 @@ const PersonalizationSchema = new mongoose.Schema({
   openToDiversity: mongoose.Schema.Types.Int32,
 });
 
+const ReportSchema = new mongoose.Schema({
+  contentType: {
+    type: String,
+    enum: ['InternalReview', 'ExternalReview', 'CommentPost', 'BlogPost', 'User'],
+  },
+  contentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: 'contentType',
+    validate: {
+      validator: function (v) {
+        // If contentType is NOT 'user', then contentId is required
+        if (this.contentType !== 'User') {
+          return v != null;
+        }
+        // Otherwise, if it's 'user', contentId should be null or undefined
+        return true;
+      },
+      message: 'contentId is required for content (non-user) reports',
+    },
+  },
+  reportedUserId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  reporterType: {
+    type: String,
+    required: true,
+    enum: ['User', 'BusinessUser'],
+  },
+  reporterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    refPath: 'reporterType',
+  },
+  reason: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  status: {
+    type: String,
+    enum: ['Pending', 'Approved', 'Rejected', 'ApprovedAndBanned'],
+    default: 'Pending',
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  resolvedAt: Date,
+});
+
+// Auto-nullify contentId when contentType === 'User'
+ReportSchema.pre('validate', function (next) {
+  if (this.contentType === 'User') {
+    this.contentId = undefined; // Removes the field entirely from MongoDB
+  }
+  next();
+});
+
 // Export models
 export const User = mongoose.models?.User || mongoose.model('User', UserSchema);
 export const Photo = mongoose.models?.Photo || mongoose.model('Photo', PhotoSchema);
 export const Comment = mongoose.models?.Comment || mongoose.model('Comment', CommentSchema);
+export const CommentPost = mongoose.models?.CommentPost || mongoose.model('CommentPost', CommentPostSchema);
 export const InstagramPost = mongoose.models?.InstagramPost || mongoose.model('InstagramPost', InstagramPostSchema);
 export const BlogPost = mongoose.models?.BlogPost || mongoose.model('BlogPost', BlogPostSchema);
 export const InternalReview = mongoose.models?.InternalReview || mongoose.model('InternalReview', InternalReviewSchema);
@@ -290,3 +390,4 @@ export const TestCloudinaryImage =
   mongoose.models?.TestCloudinaryImage || mongoose.model('TestCloudinaryImage', TestCloudinaryImageSchema);
 export const Personalization =
   mongoose.models?.Personalization || mongoose.model('Personalization', PersonalizationSchema);
+export const Report = mongoose.models?.Report || mongoose.model('Report', ReportSchema);

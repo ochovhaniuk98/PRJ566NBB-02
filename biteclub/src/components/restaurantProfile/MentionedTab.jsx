@@ -1,6 +1,6 @@
 import { getBlogsMentioningRestaurant } from '@/lib/db/dbOperations';
 import React, { useState, useEffect } from 'react';
-import GridCustomCols from '../shared/GridCustomCols';
+import Masonry from 'react-masonry-css';
 import BlogPostCard from '../shared/BlogPostCard';
 
 export default function MentionedTab({ restaurantId }) {
@@ -27,15 +27,27 @@ export default function MentionedTab({ restaurantId }) {
     fetchBlogPosts();
   }, [restaurantId]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="mb-8 p-16">
+        <p>Loading...</p>
+      </div>
+    );
   if (error) return <div className="text-red-500">{error}</div>;
   if (!blogPosts || blogPosts.length === 0) return <div>No mentions found.</div>;
 
+  // for blog posts' Masonry grid
+  const breakpointColumnsObj = {
+    default: 3,
+    1024: 2,
+    640: 1,
+  };
+
   return (
-    <GridCustomCols numOfCols={4}>
+    <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
       {blogPosts.map(post => (
         <BlogPostCard key={post._id} blogPostData={post} />
       ))}
-    </GridCustomCols>
+    </Masonry>
   );
 }

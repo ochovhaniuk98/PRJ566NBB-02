@@ -17,9 +17,10 @@ import AddReviewForm from '../shared/AddReviewForm';
 import MentionedTab from './MentionedTab';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 import MasonryReviewGrid from './MasonryReviewGrid';
+import EventsAndAnnounce from './EventsAndAnnounce';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
-  const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Menu', 'Announcements', 'Business Info'];
+  const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
@@ -151,7 +152,11 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   };
 
   if (!restaurantData || !reviewsData) {
-    return <p>isLoading...</p>;
+    return (
+      <div className="mb-8 p-16">
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
@@ -203,20 +208,15 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
             selectedReview={selectedReview}
             setSelectedReview={setSelectedReview}
           />
-          /*
-          <ReviewsOnGrid3Col
-            selectedReview={selectedReview}
-            setSelectedReview={setSelectedReview}
-            reviewList={reviewsData}
-          /> */
         )}
         {/* Mentioned */}
         {selectedTab === restaurantTabs[1] && <MentionedTab restaurantId={restaurantId} />}
         {/* Photos */}
         {selectedTab === restaurantTabs[2] && <PhotoGallery photos={restaurantImages} isOwner={isOwner} />}
-
+        {/* Events and Announcements */}
+        {selectedTab === restaurantTabs[3] && <EventsAndAnnounce />}
         {/* Business Info */}
-        {selectedTab === restaurantTabs[5] && <BusinessInfo restaurant={restaurantData} />}
+        {selectedTab === restaurantTabs[restaurantTabs.length - 1] && <BusinessInfo restaurant={restaurantData} />}
       </div>
       {showInstagramPopup && (
         <AddInstagramEmbed restaurantId={restaurantId} userId={userId} onClose={() => setShowInstagramPopup(false)} />

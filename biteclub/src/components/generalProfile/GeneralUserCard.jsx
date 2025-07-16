@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/auth/client';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
+import { Button } from '../shared/Button';
+import ReportForm from '../shared/ReportForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
@@ -30,6 +32,7 @@ export default function GeneralUserCard({ generalUserData }) {
     { icon: faFeather, bgColour: 'white', iconColour: 'brand-peach' },
     { icon: faGamepad, bgColour: 'white', iconColour: 'brand-green' },
   ];
+  const [openReportForm, setOpenReportForm] = useState(false);
 
   const [isOwner, setIsOwner] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -132,6 +135,7 @@ export default function GeneralUserCard({ generalUserData }) {
                 setPopupHovered={setPopupHovered}
                 isFollowing={isFollowing}
                 handleFollowClick={handleFollowClick}
+                setOpenReportForm={setOpenReportForm}
               />
             )}
           </div>
@@ -167,6 +171,10 @@ export default function GeneralUserCard({ generalUserData }) {
         </div>
       </div>
       {/* </Link> */}
+      {/* Report User Form */}
+      {openReportForm && (
+        <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} contentType='User' reportedUser={generalUserData} />
+      )}
     </div>
   );
 }
@@ -184,9 +192,12 @@ function IconStat({ iconStyles }) {
   );
 }
 
-function MorePopup({ isFollowing = false, setPopupHovered, handleFollowClick }) {
+function MorePopup({ isFollowing = false, setPopupHovered, handleFollowClick, setOpenReportForm }) {
   return (
-    <div className="bg-white border border-brand-yellow-lite rounded-md w-50 shadow-md absolute z-10 right-4 -top-0">
+    <div
+      className="bg-white border border-brand-yellow-lite rounded-md w-50 shadow-md absolute z-10 right-4 -top-0"
+      onClick={e => e.stopPropagation()}
+    >
       <ul>
         {isFollowing && (
           <li
@@ -204,6 +215,7 @@ function MorePopup({ isFollowing = false, setPopupHovered, handleFollowClick }) 
           className="hover:bg-brand-peach-lite py-3 px-4"
           onMouseEnter={() => setPopupHovered(true)}
           onMouseLeave={() => setPopupHovered(false)}
+          onClick={() => setOpenReportForm(true)}
         >
           <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy mr-2`} />
           Report User

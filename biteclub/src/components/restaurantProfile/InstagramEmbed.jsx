@@ -1,8 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import EditModePanel from '../shared/EditModePanel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsis, faFlag } from '@fortawesome/free-solid-svg-icons';
+import { ReportContentLink } from '../shared/ReportContentLink';
 
 // instagram embed component
-export default function InstagramEmbed({ url, isEditModeOn = false, forEditRestaurant = false }) {
+export default function InstagramEmbed({
+  url,
+  isEditModeOn = false,
+  forEditRestaurant = false,
+  isSelected = false,
+  onSelect = () => {},
+  onDeleteClick = () => {},
+}) {
+  const [showReportFormLink, setShowReportFormLink] = useState(false);
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -42,6 +53,16 @@ export default function InstagramEmbed({ url, isEditModeOn = false, forEditResta
 
   return (
     <div ref={ref} className="w-full border rounded-md border-brand-yellow-lite min-h-[420px] relative">
+      {/* Report Content flag */}
+      <div className="min-w-30 min-h-12 absolute top-0 right-2 flex items-start bg-white font-primary font-semibold text-brand-navy p-2 cursor-pointer text-sm">
+        <FontAwesomeIcon
+          icon={faEllipsis}
+          className={`icon-lg text-brand-navy ml-auto`}
+          onClick={e => {
+            setShowReportFormLink(prev => !prev);
+          }}
+        />
+      </div>
       {isVisible ? (
         <blockquote
           className="instagram-media"
@@ -54,7 +75,11 @@ export default function InstagramEmbed({ url, isEditModeOn = false, forEditResta
         <div className="w-full h-[420px] bg-gray-100 animate-pulse rounded-md" />
       )}
       {/* show edit/delete panel if user wants to manage profile */}
-      {isEditModeOn && <EditModePanel forInstagram={true} />}
+      {isEditModeOn && (
+        <EditModePanel forInstagram={true} isSelected={isSelected} onSelect={onSelect} onDeleteClick={onDeleteClick} />
+      )}
+      {/* link to report content form */}
+      {showReportFormLink && <ReportContentLink contentTitle={'an Instagram post'} alignToRight={true} />}
     </div>
   );
 }
