@@ -193,6 +193,59 @@ export async function updateInternalReview(data) {
   return updated ? JSON.parse(JSON.stringify(updated)) : null;
 }
 
+export async function updateReviewEngagement(reviewId, userId, like = false, dislike = false) {
+  try {
+    await dbConnect();
+
+    const review = await InternalReview.findById(reviewId);
+    if (!review) {
+      throw new Error('Review not found');
+    }
+
+    const alreadyLiked = review.likes.users.includes(userId);
+    const alreadyDisliked = review.dislikes.users.includes(userId);
+
+    if (like) {
+      if (alreadyLiked) {
+        // Toggle off like
+        review.likes.users.pull(userId);
+        review.likes.count = Math.max(0, review.likes.count - 1);
+      } else {
+        // Remove dislike if any
+        if (alreadyDisliked) {
+          review.dislikes.users.pull(userId);
+          review.dislikes.count = Math.max(0, review.dislikes.count - 1);
+        }
+        // Add like
+        review.likes.users.push(userId);
+        review.likes.count += 1;
+      }
+    } else if (dislike) {
+      if (alreadyDisliked) {
+        // Toggle off dislike
+        review.dislikes.users.pull(userId);
+        review.dislikes.count = Math.max(0, review.dislikes.count - 1);
+      } else {
+        // Remove like if any
+        if (alreadyLiked) {
+          review.likes.users.pull(userId);
+          review.likes.count = Math.max(0, review.likes.count - 1);
+        }
+        // Add dislike
+        review.dislikes.users.push(userId);
+        review.dislikes.count += 1;
+      }
+    }
+
+    await review.save();
+
+    return JSON.parse(JSON.stringify(review));
+  } catch (err) {
+    console.error('Error adding like/dislike:', err);
+    throw err;
+  }
+}
+
 export async function getBusinessUserRestaurantId({ supabaseId }) {
   await dbConnect();
   const user = await BusinessUser.findOne({ supabaseId });
