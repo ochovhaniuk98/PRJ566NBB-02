@@ -297,7 +297,7 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
   // for reporting a post
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
-  const [reporter, setReporter] = useState(null);
+  // const [reporter, setReporter] = useState(null);
 
   // allow only one level nested comments
   useEffect(() => {
@@ -343,27 +343,6 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
     }
   };
 
-  useEffect(() => {
-    // get reporter object
-    const fetchReporter = async () => {
-      try {
-        const supabase = createClient();
-        const { data } = await supabase.auth.getUser();
-        if (!data?.user) throw new Error('No Supabase user');
-        const supabaseId = data.user.id;
-
-        const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        const reporter = await res.json();
-
-        setReporter(reporter);
-      } catch (error) {
-        console.error('Failed to fetch reporter:', error);
-      }
-    };
-
-    fetchReporter();
-  }, []);
 
   return (
     <>
@@ -411,7 +390,7 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
                 contentType="CommentPost"
                 contentId={comment._id}
                 reportedUser={reportedUser}
-                reporter={reporter}
+                // reporter={reporter}
               />
             )}
 

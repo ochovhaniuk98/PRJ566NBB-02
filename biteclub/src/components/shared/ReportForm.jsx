@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/auth/client';
 import { Label } from '../shared/Label';
 import { Button } from '../shared/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,7 +15,6 @@ export default function ReportForm({
   contentType = '', // [REQUIRED / NOT NULL]
   contentId = '', // [NULLABLE] Only if the reported contentType is a User
   reportedUser = '', // [REQUIRED / NOT NULL] User OBJECT (not just Id) -- The one who got reported
-  reporter = '', // [REQUIRED / NOT NULL] User OBJECT (not just Id) -- The one who send out report
 }) {
   /*
   // ==========================================| DEMO DATA |==========================================
@@ -62,8 +62,57 @@ export default function ReportForm({
   };
   // =================================================================================================
   */
- 
+
   const [reason, setReason] = useState('');
+  const [reporterUserType, setReporterUserType] = useState(null);
+  const [reporter, setReporter] = useState(null);
+
+  // Fetch current user and their profile
+  useEffect(() => {
+    const fetchReporterData = async () => {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data?.user) {
+          console.error('Failed to get current user:', error);
+          return;
+        }
+        const authId = data.user.id;
+
+        // Get user type
+        const reporterUserTypeRes = await fetch(`/api/get-user-type?authId=${authId}`);
+        if (!reporterUserTypeRes.ok) {
+          console.error('Failed to fetch user type');
+          return;
+        }
+
+        const { userType } = await reporterUserTypeRes.json();
+        setReporterUserType(userType);
+
+        // Get profile based on type
+        let reporterRes;
+        if (userType == 'general') {
+          reporterRes = await fetch(`/api/generals/get-profile-by-authId?authId=${authId}`);
+        } else if (userType == 'business') {
+          reporterRes = await fetch(`/api/business-user/get-profile-by-authId?authId=${authId}`);
+        } else {
+          console.warn('Unknown user type:', userType);
+          return;
+        }
+
+        if (!reporterRes.ok) {
+          console.error('Failed to fetch current profile:', reporterRes.status);
+          return;
+        }
+        const { profile } = await reporterRes.json(); // { profile } matching what the API call returned
+        setReporter(profile);
+      } catch (err) {
+        console.error('Error in fetchReporterData:', err);
+      }
+    };
+
+    fetchReporterData();
+  }, []);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -73,11 +122,16 @@ export default function ReportForm({
       return;
     }
 
-    let reporterType;
+    if (reportedUser._id === reporter._id) {
+      alert('You cannot report yourself!');
+      return;
+    }
 
-    if (reporter.userType === 'general') {
+    // renaming userType
+    let reporterType;
+    if (reporterUserType === 'general') {
       reporterType = 'User';
-    } else if (reporter.userType === 'business') {
+    } else if (reporterUserType === 'business') {
       reporterType = 'BusinessUser';
     }
 

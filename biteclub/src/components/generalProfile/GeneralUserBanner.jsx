@@ -268,7 +268,7 @@ export default function GeneralUserBanner({
         </div>
       )}
       {openReportForm && (
-        <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} reportedUser={generalUserData} />
+        <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} contentType='User' reportedUser={generalUserData} />
       )}
     </div>
   );
