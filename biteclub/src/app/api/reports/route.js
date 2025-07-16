@@ -59,18 +59,13 @@ export async function GET() {
     await dbConnect();
 
     // Base populate
-    const reports = await Report.find()
-      .sort({ createdAt: -1 })
-      .populate(['reporterId', 'reportedUserId', 'contentId']);
+    const reports = await Report.find().sort({ createdAt: -1 }).populate(['reporterId', 'reportedUserId', 'contentId']);
 
     // Conditional nested populate
     const populatedReports = await Promise.all(
-      reports.map(async (report) => {
+      reports.map(async report => {
         // BusinessUser: populate reporterId.restaurantId
-        if (
-          report.reporterType === 'BusinessUser' &&
-          report.reporterId?.restaurantId
-        ) {
+        if (report.reporterType === 'BusinessUser' && report.reporterId?.restaurantId) {
           await report.populate({
             path: 'reporterId.restaurantId',
             model: 'Restaurant',
@@ -78,16 +73,20 @@ export async function GET() {
         }
 
         // Review: populate contentId.restaurantId
-        if (
-          report.contentType === 'Review' &&
-          report.contentId?.restaurantId
-        ) {
+        if (report.contentType === 'Review' && report.contentId?.restaurantId) {
           await report.populate({
             path: 'contentId.restaurantId',
             model: 'Restaurant',
           });
         }
 
+        // ExternalReview: populate contentId.restaurant_id
+        if (report.contentType === 'ExternalReview' && report.contentId?.restaurant_id) {
+          await report.populate({
+            path: 'contentId.restaurant_id',
+            model: 'Restaurant',
+          });
+        }
         return report;
       })
     );

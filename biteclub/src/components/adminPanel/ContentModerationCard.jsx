@@ -165,10 +165,10 @@ export default function ContentModerationCard({ report, onResolve }) {
             - 120px : the first column will always be 120 pixels wide (fixed width).
             - 1fr   : the second column takes up the remaining space (flexible, like a stretchable unit). 
         */}
-        <div className="grid grid-cols-[120px_1fr] text-gray-600 gap-y-1">
+        <div className="grid grid-cols-[200px_1fr] text-gray-600 gap-y-1">
           {/* REPORTED USER */}
           <span className="col-span-2">
-            <strong>Reported User </strong>
+            <strong>Reported User</strong>
           </span>
 
           <span>Name</span>
@@ -247,8 +247,10 @@ export default function ContentModerationCard({ report, onResolve }) {
                       ? `/blog-posts/comments/${report.contentId?._id}`
                       : report.contentType === 'BlogPost'
                       ? `/blog-posts/${report.contentId?._id}`
-                      : report.contentType === 'InternalReview' || report.contentType === 'ExternalReview' // [!] REDIRECT TO RESTAURANT PROFILE INSTEAD.
-                      ? `/restaurants/${report.contentId?.restaurant_id}`
+                      : report.contentType === 'InternalReview'
+                      ? `/restaurants/${report.contentId?.restaurant_id}` // redirect to the restaurant page only (cannot open the specific review)
+                      : report.contentType === 'ExternalReview'
+                      ? report.contentId?.content?.embedLink || '#' // redirect to IG post
                       : '#'
                   }
                   className="text-neutral-600 cursor-pointer underline hover:text-blue-600"
@@ -256,6 +258,31 @@ export default function ContentModerationCard({ report, onResolve }) {
                   rel="noopener noreferrer"
                 >
                   {report.contentId?.title || report.contentId?._id}
+                </a>
+              </span>
+            </>
+          )}
+
+          {report.contentType === 'ExternalReview' && (
+            <>
+              <span>Affected Restaurant</span>
+              {/* Fall back to ._id if title is not present */}
+
+              <span>
+                :{' '}
+                {/* 
+                [TODO: ADJUST PATH]
+                  CommentPost → /blog-posts/comments/[id]                   (Done)
+                  BlogPost → /blog-posts/[id]                               (Done)
+                  Review → /restaurants/[restaurantId]/reviews/[reviewId]   (Not sure of how to get to a specific review)
+                */}
+                <a
+                  href={`/restaurants/${report.contentId?.restaurant_id}` || '#'}
+                  className="text-neutral-600 cursor-pointer underline hover:text-blue-600"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {report.contentId?.restaurant_id?.name || report.contentId?.restaurant_id}
                 </a>
               </span>
             </>
