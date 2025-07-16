@@ -5,8 +5,14 @@ import { faEllipsis, faFlag } from '@fortawesome/free-solid-svg-icons';
 import { ReportContentLink } from '../shared/ReportContentLink';
 
 // instagram embed component
-export default function InstagramEmbed({ url, isEditModeOn = false, forEditRestaurant = false }) {
-  const [showReportFormLink, setShowReportFormLink] = useState(false);
+export default function InstagramEmbed({
+  url,
+  isEditModeOn = false,
+  forEditRestaurant = false,
+  isSelected = false,
+  onSelect = () => {},
+  onDeleteClick = () => {},
+}) {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -68,9 +74,9 @@ export default function InstagramEmbed({ url, isEditModeOn = false, forEditResta
         <div className="w-full h-[420px] bg-gray-100 animate-pulse rounded-md" />
       )}
       {/* show edit/delete panel if user wants to manage profile */}
-      {isEditModeOn && <EditModePanel forInstagram={true} />}
-      {/* link to report content form */}
-      {showReportFormLink && <ReportContentLink contentTitle={'an Instagram post'} alignToRight={true} />}
+      {isEditModeOn && (
+        <EditModePanel forInstagram={true} isSelected={isSelected} onSelect={onSelect} onDeleteClick={onDeleteClick} />
+      )}
     </div>
   );
 }

@@ -15,12 +15,17 @@ import { ReportContentLink } from './ReportContentLink';
     The parameter "editReviewMode" is false by default, but TRUE when user wants to edit review.*/
 export default function ReviewCard({
   review,
+  reviewEngagementStats,
+  onLike,
+  onDislike,
   photos,
   onClick,
   isSelected,
   isOwner = false,
   isEditModeOn = false,
   setEditReviewForm = () => {},
+  onSelect = () => {},
+  onDeleteClick = () => {},
 }) {
   const [showReportFormLink, setShowReportFormLink] = useState(false);
   const [cardHovered, setCardHovered] = useState(false);
@@ -50,7 +55,9 @@ export default function ReviewCard({
           <div>
             <EngagementIconStat
               iconArr={reviewCardIconArr}
-              statNumArr={[review.likes?.count, review.comments?.length]}
+              statNumArr={[reviewEngagementStats?.likes || 0, reviewEngagementStats?.comments || 0]}
+              handlers={[onLike, () => {}, onDislike]}
+              states={[reviewEngagementStats?.userLiked, false, reviewEngagementStats?.userDisliked]}
             />
           </div>
         </div>
@@ -84,7 +91,14 @@ export default function ReviewCard({
       )}
       {/* panel appears when general user selects to "Manage Content";
        General user can select review to delete or edit. Editing opens "Add Review" form but enabled for editing.  */}
-      {isEditModeOn && <EditModePanel onEditClick={() => setEditReviewForm(true)} />}
+      {isEditModeOn && (
+        <EditModePanel
+          isSelected={isSelected}
+          onSelect={onSelect}
+          onEditClick={() => setEditReviewForm(true)}
+          onDeleteClick={onDeleteClick}
+        />
+      )}
 
       {/* show link to open report form */}
       {showReportFormLink && <ReportContentLink setPopupHovered={setPopupHovered} contentTitle={review.title} />}

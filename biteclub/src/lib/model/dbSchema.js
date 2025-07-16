@@ -112,15 +112,20 @@ const InternalReviewSchema = new mongoose.Schema({
   title: String,
   rating: Number,
   date_posted: Date,
+  date_updated: Date,
   comments: [CommentSchema],
   photos: [PhotoSchema],
+  user_type: {
+    type: String,
+    enum: ['User', 'BusinessUser'],
+  },
   likes: {
     count: Number,
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    users: [{ type: mongoose.Schema.Types.ObjectId, refPath: 'user_type' }],
   },
   dislikes: {
     count: Number,
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    users: [{ type: mongoose.Schema.Types.ObjectId, refPath: 'user_type' }],
   },
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
@@ -131,6 +136,7 @@ const ExternalReviewSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
   content: InstagramPostSchema,
+  date_posted: { type: Date, default: Date.now },
 });
 
 // Credit Card
@@ -333,7 +339,7 @@ const ReportSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Approved', 'Rejected'],
+    enum: ['Pending', 'Approved', 'Rejected', 'ApprovedAndBanned'],
     default: 'Pending',
   },
   createdAt: {

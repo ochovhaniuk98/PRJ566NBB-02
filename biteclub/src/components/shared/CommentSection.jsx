@@ -72,7 +72,7 @@ function Comment({ comment, currentUser, onLike, onDislike }) {
       <div className="relative h-10 aspect-square rounded-full border border-brand-grey-lite bg-white">
         <Image
           src={comment.author[0]?.userProfilePicture.url}
-          alt={comment.author[0]?.userProfilePicture.caption}
+          alt={comment.author[0]?.userProfilePicture.caption || ''}
           fill={true}
           className="rounded-full object-cover w-full"
         />

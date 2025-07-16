@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
 import Image from 'next/image';
 import EngagementIconStat from '../shared/EngagementIconStat';
 import StarRating from '../shared/StarRating';
@@ -20,58 +20,16 @@ import { ChevronLeft } from 'lucide-react';
 import CommentSection from '../shared/CommentSection';
 import { fakeUser, fakeComment } from '@/app/data/fakeData';
 
-export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = false }) {
-  const [currentUserType, setCurrentUserType] = useState(null);
-  const [currentUserProfile, setCurrentUserProfile] = useState(null);
+export default function ReviewCardExpanded({
+  selectedReview,
+  reviewEngagementStats,
+  onLike,
+  onDislike,
+  onClose,
+  isOwner = false,
+}) {
   const [authorProfile, setAuthorProfile] = useState(null);
   const authorId = selectedReview.user_id?._id;
-
-  // Fetch current user and their profile
-  useEffect(() => {
-    const fetchCurrentUserData = async () => {
-      try {
-        const supabase = createClient();
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data?.user) {
-          console.error('Failed to get current user:', error);
-          return;
-        }
-        const authId = data.user.id;
-
-        // Get user type
-        const userTypeRes = await fetch(`/api/get-user-type?authId=${authId}`);
-        if (!userTypeRes.ok) {
-          console.error('Failed to fetch user type');
-          return;
-        }
-
-        const { userType } = await userTypeRes.json();
-        setCurrentUserType(userType);
-
-        // Get profile based on type
-        let currentUserRes;
-        if (userType == 'general') {
-          currentUserRes = await fetch(`/api/generals/get-profile-by-authId?authId=${authId}`);
-        } else if (userType == 'business') {
-          currentUserRes = await fetch(`/api/business-user/get-profile-by-authId?authId=${authId}`);
-        } else {
-          console.warn('Unknown user type:', userType);
-          return;
-        }
-
-        if (!currentUserRes.ok) {
-          console.error('Failed to fetch current profile:', currentUserRes.status);
-          return;
-        }
-        const { profile } = await currentUserRes.json(); // { profile } matching what the API call returned
-        setCurrentUserProfile(profile);
-      } catch (err) {
-        console.error('Error in fetchCurrentUserData:', err);
-      }
-    };
-
-    fetchCurrentUserData();
-  }, []);
 
   // Fetch review author
   useEffect(() => {
@@ -164,7 +122,9 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
             <div>
               <EngagementIconStat
                 iconArr={reviewCardIconArr}
-                statNumArr={[selectedReview?.likes?.count, selectedReview?.comments?.length]}
+                statNumArr={[reviewEngagementStats?.likes || 0, reviewEngagementStats?.comments || 0]}
+                handlers={[onLike, () => {}, onDislike]}
+                states={[reviewEngagementStats?.userLiked, false, reviewEngagementStats?.userDisliked]}
               />
             </div>
           </div>
@@ -173,9 +133,6 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
           <div>
             <CommentSection currentUser={fakeUser} comments={[fakeComment]} />
           </div>
-          <p>{currentUserType}</p>
-          <p>{currentUserProfile ? `current id ${currentUserProfile._id}` : 'no current user profile'}</p>
-          <p>{authorProfile ? `author id ${authorProfile._id}` : 'no author profile'}</p>
         </div>
       </div>
       {/* Report form */}
@@ -187,7 +144,6 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
           contentType="InternalReview"
           contentId={selectedReview._id}
           reportedUser={authorProfile}
-          reporter={currentUserProfile}
         />
       )}
     </div>

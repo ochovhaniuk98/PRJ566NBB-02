@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenClip } from '@fortawesome/free-solid-svg-icons';
 import { faInstagram } from '@fortawesome/free-brands-svg-icons';
@@ -8,13 +8,23 @@ import { Button } from '@/components/shared/Button';
 import ReviewImageUpload from './ReviewImageUpload';
 import { useSubmitExternalReview } from '@/hooks/use-submit-external-review';
 import StarRating from './StarRating';
-import { addInternalReview } from '@/lib/db/dbOperations';
+import { addInternalReview, updateInternalReview } from '@/lib/db/dbOperations';
 
 // Has 2 modes: ADDING a NEW review (along with embed instagram link option) and EDITING an existing one.
 // editReviewMode: Tracks whether this form should display a review to be edited, or just empty fields (for writing new review + instagram link)
-export default function AddReviewForm({ restaurantId, userId, onCancel, children, editReviewMode = false }) {
+export default function AddReviewForm({
+  restaurantId = null,
+  userId = null,
+  onCancel,
+  children,
+  editReviewMode = false,
+  reviewData = null,
+  onReviewSaved = () => {}, // for rerendering the data after add or edit
+}) {
   const [showPhotoPlaceholder, setShowPhotoPlaceholder] = useState(true);
   const [showInstagramForm, setShowInstagramForm] = useState(false);
+
+  console.log(userId);
 
   const {
     embedLink,
@@ -31,25 +41,72 @@ export default function AddReviewForm({ restaurantId, userId, onCancel, children
   const [reviewContent, setReviewContent] = useState('');
   const [reviewImages, setReviewImages] = useState([]);
 
+  // Duplicated here (original in StarRating.jsx)
+  // [TODO] should be refractor later. For now it's a quick fix so that the message will show on UI.
+  const reviewRatingMessages = [
+    'I regret everything.',
+    'Ehh, at least I tried it.',
+    'It was fine, nothing special.',
+    'Good, met all my expectations!',
+    'Chef’s kiss 👨‍🍳💋',
+  ];
+
+  useEffect(() => {
+    if (editReviewMode && reviewData) {
+      setReviewTitle(reviewData.title || '');
+      setReviewContent(reviewData.body || '');
+      setReviewRating({
+        value: reviewData.rating || 0,
+        message: reviewData.rating > 0 ? reviewRatingMessages[reviewData.rating - 1] : '',
+      });
+
+      setReviewImages(reviewData.photos || []);
+    }
+  }, [editReviewMode, reviewData]);
+
   const handleInternalSubmit = async e => {
     e.preventDefault();
 
-    const reviewData = {
-      body: reviewContent,
-      title: reviewTitle,
-      rating: reviewRating.value,
-      photos: reviewImages,
-      userId: userId,
-      restaurantId: restaurantId,
-    };
+    // const res = await addInternalReview(reviewData);
 
-    const res = await addInternalReview(reviewData);
-    if (res) {
-      console.log('Internal review added successfully:', res);
+    if (editReviewMode && reviewData?._id) {
+      // update review
+      const res = await updateInternalReview({
+        reviewId: reviewData._id,
+        body: reviewContent,
+        title: reviewTitle,
+        rating: reviewRating.value,
+        photos: reviewImages,
+        userId: reviewData.user_id,
+        restaurantId: reviewData.restaurant_id,
+      });
+
+      if (res) {
+        console.log('Internal review updated');
+        onReviewSaved();
+        onCancel();
+      } else {
+        setInternalReviewError('Failed to update review.');
+      }
     } else {
-      setInternalReviewError('Failed to add internal review. Please try again.');
+      // if not edit mode and no reviewData => create new review
+      const res = await addInternalReview({
+        body: reviewContent,
+        title: reviewTitle,
+        rating: reviewRating.value,
+        photos: reviewImages,
+        userId,
+        restaurantId,
+      });
+
+      if (res) {
+        console.log('Internal review added successfully:', res);
+        onReviewSaved();
+        onCancel();
+      } else {
+        setInternalReviewError('Failed to add internal review. Please try again.');
+      }
     }
-    onCancel(); // Close the form after submission
   };
 
   return (
@@ -96,6 +153,7 @@ export default function AddReviewForm({ restaurantId, userId, onCancel, children
                     <StarRating
                       iconSize="text-4xl cursor-pointer"
                       interactive={true}
+                      ratingNum={reviewRating.value}
                       onChange={(val, msg) => setReviewRating({ value: val, message: msg })}
                     />
                     {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
