@@ -8,7 +8,8 @@ import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
 
 // MAIN CONTAINER
-export default function EventsAndAnnounce() {
+// to IRISH: CHANGE ISOWNER TO FALSE WHEN YOU'RE DONE
+export default function EventsAndAnnounce({ isOwner = true }) {
   const [events, setEvents] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -40,14 +41,16 @@ export default function EventsAndAnnounce() {
           <div className="flex mb-3 justify-between">
             <h2 className="text-xl font-semibold mb-2">Events</h2>
             {/* add event icon */}
-            <FontAwesomeIcon
-              icon={faCirclePlus}
-              className="text-3xl text-brand-navy mr-2 cursor-pointer"
-              onClick={() => {
-                setShowForm(true);
-                setMode('event');
-              }}
-            />
+            {isOwner && (
+              <FontAwesomeIcon
+                icon={faCirclePlus}
+                className="text-3xl text-brand-navy mr-2 cursor-pointer"
+                onClick={() => {
+                  setShowForm(true);
+                  setMode('event');
+                }}
+              />
+            )}
           </div>
 
           {/* Event Cards */}
@@ -59,6 +62,7 @@ export default function EventsAndAnnounce() {
                 date={event.date}
                 description={event.description}
                 onDelete={() => handleDeleteEvent(idx)}
+                isOwner={isOwner}
               />
             ))}
           </div>
@@ -69,14 +73,16 @@ export default function EventsAndAnnounce() {
           <div className="flex mb-3 justify-between">
             <h2 className="text-xl font-semibold mb-2">Announcements</h2>
             {/* make announchment icon */}
-            <FontAwesomeIcon
-              icon={faCirclePlus}
-              className="text-3xl text-brand-navy mr-2 cursor-pointer"
-              onClick={() => {
-                setShowForm(true);
-                setMode('announcement');
-              }}
-            />
+            {isOwner && (
+              <FontAwesomeIcon
+                icon={faCirclePlus}
+                className="text-3xl text-brand-navy mr-2 cursor-pointer"
+                onClick={() => {
+                  setShowForm(true);
+                  setMode('announcement');
+                }}
+              />
+            )}
           </div>
           {/* Announcement Cards */}
           <div className="flex flex-col gap-4">
@@ -86,6 +92,7 @@ export default function EventsAndAnnounce() {
                 title={announcement.title}
                 text={announcement.text}
                 onDelete={() => handleDeleteAnnouncement(idx)}
+                isOwner={isOwner}
               />
             ))}
           </div>
@@ -281,8 +288,7 @@ function AddAnnouncementForm({ onAddAnnouncement, onCancel }) {
 }
 
 // card for added events
-// to IRISH: CHANGE ISOWNER TO FALSE WHEN YOU'RE DONE
-function EventCard({ name, date, description, onDelete, isOwner = true }) {
+function EventCard({ name, date, description, onDelete, isOwner = false }) {
   return (
     <div className="border rounded-md border-brand-yellow-lite p-4 flex bg-white shadow-sm relative">
       <div className="h-30 aspect-square bg-white flex items-center justify-center text-white font-bold">
@@ -305,8 +311,7 @@ function EventCard({ name, date, description, onDelete, isOwner = true }) {
 }
 
 // card for added announcements
-// to IRISH: CHANGE ISOWNER TO FALSE WHEN YOU'RE DONE
-function AnnouncementCard({ title, text, onDelete, isOwner = true }) {
+function AnnouncementCard({ title, text, onDelete, isOwner = false }) {
   return (
     <div className="border border-brand-yellow-lite rounded-md p-4 bg-white shadow-sm relative">
       <h3 className="font-semibold">{title}</h3>
