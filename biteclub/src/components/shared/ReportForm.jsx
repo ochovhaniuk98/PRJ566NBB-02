@@ -16,8 +16,6 @@ export default function ReportForm({
   contentId = '', // [NULLABLE] Only if the reported contentType is a User
   reportedUser = '', // [REQUIRED / NOT NULL] User OBJECT (not just Id) -- The one who got reported
 }) {
-
-
   /*
   // ==========================================| DEMO DATA |==========================================
   // ref: dbSchema.js -- ReportSchema
@@ -64,7 +62,7 @@ export default function ReportForm({
   };
   // =================================================================================================
   */
- 
+
   const [reason, setReason] = useState('');
   const [reporterUserType, setReporterUserType] = useState(null);
   const [reporter, setReporter] = useState(null);
@@ -121,6 +119,11 @@ export default function ReportForm({
 
     if (!reporter || !reportedUser) {
       alert('Something is wrong with the user data.');
+      return;
+    }
+
+    if (reportedUser._id === reporter._id) {
+      alert('You cannot report yourself!');
       return;
     }
 

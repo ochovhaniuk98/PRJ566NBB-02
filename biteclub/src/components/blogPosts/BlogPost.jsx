@@ -17,7 +17,7 @@ export default function BlogPost({ id }) {
   // for reporting a post
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
-  
+
   useEffect(() => {
     if (!id) return;
 
@@ -128,7 +128,6 @@ export default function BlogPost({ id }) {
             contentType="BlogPost"
             contentId={blogPost._id}
             reportedUser={reportedUser}
-           // reporter={reporter}
           />
         )}
       </div>
