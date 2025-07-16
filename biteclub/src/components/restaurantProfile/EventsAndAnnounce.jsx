@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import GridCustomCols from '../shared/GridCustomCols';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faBullhorn, faCirclePlus, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faBullhorn, faCirclePlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
@@ -295,9 +295,9 @@ function EventCard({ name, date, description, onDelete, isOwner = true }) {
       </div>
       {isOwner && (
         <FontAwesomeIcon
-          icon={faCircleXmark}
+          icon={faTrashAlt}
           onClick={onDelete}
-          className="text-2xl text-brand-navy absolute bottom-2 right-2 cursor-pointer"
+          className="text-2xl text-brand-red absolute top-2 right-2 cursor-pointer"
         />
       )}
     </div>
@@ -313,9 +313,9 @@ function AnnouncementCard({ title, text, onDelete, isOwner = true }) {
       <p>{text}</p>
       {isOwner && (
         <FontAwesomeIcon
-          icon={faCircleXmark}
+          icon={faTrashAlt}
           onClick={onDelete}
-          className="text-2xl text-brand-navy absolute bottom-2 right-2 cursor-pointer"
+          className="text-2xl text-brand-red absolute top-2 right-2 cursor-pointer"
         />
       )}
     </div>
