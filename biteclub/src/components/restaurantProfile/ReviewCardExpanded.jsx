@@ -20,10 +20,16 @@ import { ChevronLeft } from 'lucide-react';
 import CommentSection from '../shared/CommentSection';
 import { fakeUser, fakeComment } from '@/app/data/fakeData';
 
-export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = false }) {
+export default function ReviewCardExpanded({
+  selectedReview,
+  reviewEngagementStats,
+  onLike,
+  onDislike,
+  onClose,
+  isOwner = false,
+}) {
   const [authorProfile, setAuthorProfile] = useState(null);
   const authorId = selectedReview.user_id?._id;
-
 
   // Fetch review author
   useEffect(() => {
@@ -116,7 +122,9 @@ export default function ReviewCardExpanded({ selectedReview, onClose, isOwner = 
             <div>
               <EngagementIconStat
                 iconArr={reviewCardIconArr}
-                statNumArr={[selectedReview?.likes?.count, selectedReview?.comments?.length]}
+                statNumArr={[reviewEngagementStats?.likes || 0, reviewEngagementStats?.comments || 0]}
+                handlers={[onLike, () => {}, onDislike]}
+                states={[reviewEngagementStats?.userLiked, false, reviewEngagementStats?.userDisliked]}
               />
             </div>
           </div>
