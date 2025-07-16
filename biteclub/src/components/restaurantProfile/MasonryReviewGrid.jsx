@@ -75,7 +75,7 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
       const userType = data.user.user_metadata?.user_type;
       let mongoUser;
       if (userType === 'business') {
-        mongoUser = await await fetch(`/api/business-user/get-profile-by-authId?authId=${data.user.id}`);
+        mongoUser = await fetch(`/api/business-user/get-profile-by-authId?authId=${data.user.id}`);
       } else {
         mongoUser = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
       }
