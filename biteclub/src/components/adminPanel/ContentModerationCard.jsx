@@ -40,7 +40,7 @@ function ContentModerationTag({ contentType, status }) {
     },
     ApprovedAndBanned: {
       label: 'Approved and Banned',
-        className: 'bg-gray-800 text-gray-100 border border-gray-700',
+      className: 'bg-gray-800 text-gray-100 border border-gray-700',
     },
   };
 
@@ -108,48 +108,47 @@ export default function ContentModerationCard({ report, onResolve }) {
     }
   };
 
-const handleApproveAndBanUser = async () => {
-  setLoading(true);
-  try {
-    // Step 1: Approve the report
-    const approveRes = await fetch(`/api/reports/${report._id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        status: 'ApprovedAndBanned',
-        resolvedAt: new Date(),
-        incrementStrike: true,
-      }),
-    });
+  const handleApproveAndBanUser = async () => {
+    setLoading(true);
+    try {
+      // Step 1: Approve the report
+      const approveRes = await fetch(`/api/reports/${report._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'ApprovedAndBanned',
+          resolvedAt: new Date(),
+          incrementStrike: true,
+        }),
+      });
 
-    if (!approveRes.ok) {
-      throw new Error(`Report update failed: ${approveRes.status}`);
+      if (!approveRes.ok) {
+        throw new Error(`Report update failed: ${approveRes.status}`);
+      }
+
+      // Step 2: Ban the user
+      const banRes = await fetch(`/api/admin-user/ban-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          banUserId: report.reportedUserId?.supabaseId,
+          numStrikes: report.reportedUserId?.strike,
+        }),
+      });
+
+      if (!banRes.ok) {
+        throw new Error(`Ban user failed: ${banRes.status}`);
+      }
+
+      onResolve?.(report._id);
+      alert('Approved and Banned User');
+    } catch (error) {
+      console.error('Approval and ban user failed', error);
+      alert('Failed to approve and ban user');
+    } finally {
+      setLoading(false);
     }
-
-    // Step 2: Ban the user
-    const banRes = await fetch(`/api/admin-user/ban-user`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        banUserId: report.reportedUserId?.supabaseId,
-        numStrikes: report.reportedUserId?.strike,
-      }),
-    });
-
-    if (!banRes.ok) {
-      throw new Error(`Ban user failed: ${banRes.status}`);
-    }
-
-    onResolve?.(report._id);
-    alert('Approved and Banned User');
-  } catch (error) {
-    console.error('Approval and ban user failed', error);
-    alert('Failed to approve and ban user');
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="mb-4">
@@ -228,22 +227,7 @@ const handleApproveAndBanUser = async () => {
 
           <span>Tag</span>
           <ContentModerationTag contentType={report.contentType} status={report.status} />
-          {(report.status === 'Approved' || report.status === 'Rejected') && (
-            <>
-              <span>Resolved Time</span>
-              <span>
-                :{' '}
-                {new Date(report.resolvedAt)?.toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: '2-digit',
-                  hour12: true,
-                })}
-              </span>
-            </>
-          )}
+
           {report.contentId && (
             <>
               <span>Content</span>
@@ -292,6 +276,23 @@ const handleApproveAndBanUser = async () => {
               hour12: true,
             })}
           </span>
+
+          {report.status !== 'Pending' && (
+            <>
+              <span>Resolved Time</span>
+              <span>
+                :{' '}
+                {new Date(report.resolvedAt)?.toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
+              </span>
+            </>
+          )}
         </div>
 
         {report.status === 'Pending' && (
