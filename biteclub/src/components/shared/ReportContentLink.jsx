@@ -8,8 +8,8 @@ export function ReportContentLink({ setPopupHovered = () => {}, contentTitle, al
 
   return (
     <div
-      className={`bg-white border border-brand-yellow-lite rounded-md w-50 shadow-md absolute z-[1000] ${
-        alignToRight ? 'right-3 top-9' : 'left-3 top-6'
+      className={`bg-white border border-brand-yellow-lite rounded-md w-50 shadow-md absolute z-[1000] top-6 ${
+        alignToRight ? 'right-3' : 'left-3'
       }`}
       onClick={e => e.stopPropagation()}
       onMouseEnter={() => setPopupHovered(true)}

@@ -47,7 +47,7 @@ export default function InstagramEmbed({ url, isEditModeOn = false, forEditResta
   return (
     <div ref={ref} className="w-full border rounded-md border-brand-yellow-lite min-h-[420px] relative">
       {/* Report Content flag */}
-      <div className="min-w-30 absolute top-2 right-2 flex items-center bg-white font-primary font-semibold text-brand-navy p-2 cursor-pointer text-sm">
+      <div className="min-w-30 min-h-12 absolute top-0 right-2 flex items-start bg-white font-primary font-semibold text-brand-navy p-2 cursor-pointer text-sm">
         <FontAwesomeIcon
           icon={faEllipsis}
           className={`icon-lg text-brand-navy ml-auto`}

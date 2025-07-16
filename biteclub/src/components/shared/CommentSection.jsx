@@ -94,7 +94,7 @@ function Comment({ comment, currentUser, onLike, onDislike }) {
             onClick={() => onDislike(comment._id)}
             className={`hover:text-red-500 ${hasDisliked ? 'text-red-500 font-semibold' : ''}`}
           >
-            <FontAwesomeIcon icon={faThumbsDown} className={`icon-md text-brand-navy`} /> {dislikes.count}
+            <FontAwesomeIcon icon={faThumbsDown} className={`icon-md text-brand-navy`} />
           </button>
         </div>
       </div>
