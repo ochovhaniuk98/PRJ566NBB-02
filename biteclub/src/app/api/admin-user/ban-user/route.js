@@ -37,7 +37,7 @@ export async function POST(req) {
     // Operation 2: update user metadata (ban_status)
     banOperations.push(
       supabaseAdmin.auth.admin.updateUserById(banUserId, 
-       { ban_duration: '168h' } // 
+       { ban_duration: '168h' } // ban user for 7 days
       ).then(({ error }) => {
         if (error) throw new Error('Failed to update user ban status: ' + error.message)
       })

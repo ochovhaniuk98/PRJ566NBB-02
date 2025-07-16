@@ -11,7 +11,7 @@ export async function PATCH(req, { params }) {
     const body = await req.json();
     const { status, resolvedAt, incrementStrike } = body;
 
-    if (!['Approved', 'Rejected'].includes(status)) {
+    if (!['Approved', 'Rejected', 'ApprovedAndBanned'].includes(status)) {
       return NextResponse.json({ message: 'Invalid status' }, { status: 400 });
     }
 
@@ -41,6 +41,6 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ message: 'Report updated', report });
   } catch (error) {
     console.error('[REPORT_PATCH_ERROR]', error);
-    return NextResponse.json({ message: 'Server error' }, { status: 500 });
+    return NextResponse.json({ message: '(reports PATCH) Server error' }, { status: 500 });
   }
 }

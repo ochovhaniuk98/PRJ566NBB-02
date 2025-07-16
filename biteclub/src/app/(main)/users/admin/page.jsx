@@ -54,7 +54,7 @@ export default function AdminPage() {
 
           for (const report of json.reports || []) {
             // First: check if it's resolved
-            if (report.status === 'Approved' || report.status === 'Rejected') {
+            if (report.status === 'Approved' || report.status === 'Rejected' || report.status === 'ApprovedAndBanned') {
               grouped.resolvedReports.push(report);
               continue; // skip adding to the content-type-specific lists
             }

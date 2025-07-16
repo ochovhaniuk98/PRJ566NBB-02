@@ -335,7 +335,7 @@ const ReportSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Approved', 'Rejected'],
+    enum: ['Pending', 'Approved', 'Rejected', 'ApprovedAndBanned'],
     default: 'Pending',
   },
   createdAt: {

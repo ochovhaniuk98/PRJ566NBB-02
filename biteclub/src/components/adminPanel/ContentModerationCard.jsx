@@ -38,6 +38,10 @@ function ContentModerationTag({ contentType, status }) {
       label: 'Pending',
       className: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
     },
+    ApprovedAndBanned: {
+      label: 'Approved and Banned',
+        className: 'bg-gray-800 text-gray-100 border border-gray-700',
+    },
   };
 
   const contentTag = contentTagMap[contentType];
@@ -104,27 +108,48 @@ export default function ContentModerationCard({ report, onResolve }) {
     }
   };
 
-  const handleApproveAndBanUser = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/admin-user/ban-user`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          banUserId: report.reportedUserId?.supabaseId,
-          numStrikes: report.reportedUserId?.strike,
-        }),
-      });
-      if (!res.ok) throw new Error(`(Content Moderation) Error: ${res.status}`);
-      onResolve?.(report._id); // update UI in parent (AdminPanel page)
-      alert('Approved and Banned User');
-    } catch (error) {
-      console.error('Approval and ban user failed', error);
-      alert('Failed to approve and ban user');
-    } finally {
-      setLoading(false);
+const handleApproveAndBanUser = async () => {
+  setLoading(true);
+  try {
+    // Step 1: Approve the report
+    const approveRes = await fetch(`/api/reports/${report._id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        status: 'ApprovedAndBanned',
+        resolvedAt: new Date(),
+        incrementStrike: true,
+      }),
+    });
+
+    if (!approveRes.ok) {
+      throw new Error(`Report update failed: ${approveRes.status}`);
     }
-  };
+
+    // Step 2: Ban the user
+    const banRes = await fetch(`/api/admin-user/ban-user`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        banUserId: report.reportedUserId?.supabaseId,
+        numStrikes: report.reportedUserId?.strike,
+      }),
+    });
+
+    if (!banRes.ok) {
+      throw new Error(`Ban user failed: ${banRes.status}`);
+    }
+
+    onResolve?.(report._id);
+    alert('Approved and Banned User');
+  } catch (error) {
+    console.error('Approval and ban user failed', error);
+    alert('Failed to approve and ban user');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="mb-4">
