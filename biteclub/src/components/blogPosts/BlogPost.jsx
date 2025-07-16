@@ -17,8 +17,7 @@ export default function BlogPost({ id }) {
   // for reporting a post
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
-  const [reporter, setReporter] = useState(null);
-
+  
   useEffect(() => {
     if (!id) return;
 
@@ -101,27 +100,6 @@ export default function BlogPost({ id }) {
     }
   };
 
-  useEffect(() => {
-    // get reporter object
-    const fetchReporter = async () => {
-      try {
-        const supabase = createClient();
-        const { data } = await supabase.auth.getUser();
-        if (!data?.user) throw new Error('No Supabase user');
-        const supabaseId = data.user.id;
-
-        const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        const reporter = await res.json();
-
-        setReporter(reporter);
-      } catch (error) {
-        console.error('Failed to fetch reporter:', error);
-      }
-    };
-
-    fetchReporter();
-  }, []);
 
   return (
     <div className="flex w-full">
@@ -150,7 +128,7 @@ export default function BlogPost({ id }) {
             contentType="BlogPost"
             contentId={blogPost._id}
             reportedUser={reportedUser}
-            reporter={reporter}
+           // reporter={reporter}
           />
         )}
       </div>
