@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import GridCustomCols from '../shared/GridCustomCols';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faBullhorn, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faBullhorn, faCirclePlus, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
@@ -67,9 +67,10 @@ export default function EventsAndAnnounce() {
           {/* Announcement Cards */}
           <div className="flex flex-col gap-4">
             {announcements.map((text, idx) => (
-              <div key={idx} className="border border-brand-yellow-lite rounded-md p-4 bg-white shadow-sm">
+              <div key={idx} className="border border-brand-yellow-lite rounded-md p-4 bg-white shadow-sm relative">
                 <h3>{text}</h3>
                 <p>{text}</p>
+                <FontAwesomeIcon icon={faCircleXmark} className="text-2xl text-brand-navy absolute bottom-2 right-2" />
               </div>
             ))}
           </div>
@@ -133,7 +134,6 @@ function AddEventForm({ onAddEvent, onCancel }) {
   const [formData, setFormData] = useState({
     name: '',
     date: '',
-    price: '',
     description: '',
   });
 
@@ -175,10 +175,6 @@ function AddEventForm({ onAddEvent, onCancel }) {
             onChange={handleChange}
             className="w-full"
           />
-        </div>
-        <div>
-          <Label>Price</Label>
-          <Input name="price" placeholder="Price" value={formData.price} onChange={handleChange} className="w-full" />
         </div>
         <div>
           <Label>Description</Label>
@@ -252,18 +248,20 @@ function AddAnnouncementForm({ onAddAnnouncement, onCancel }) {
 }
 
 // card for added events
-function EventCard({ name, date, price, description }) {
+function EventCard({ name, date, description, isOwner = false }) {
   return (
-    <div className="border rounded-md border-brand-yellow-lite p-4 flex bg-white shadow-sm">
-      <div className="h-42 aspect-square bg-white flex items-center justify-center text-white font-bold">
-        <FontAwesomeIcon icon={faCalendarAlt} className="text-9xl text-brand-green" />
+    <div className="border rounded-md border-brand-yellow-lite p-4 flex bg-white shadow-sm relative">
+      <div className="h-30 aspect-square bg-white flex items-center justify-center text-white font-bold">
+        <FontAwesomeIcon icon={faCalendarAlt} className="text-7xl text-brand-green" />
       </div>
       <div className="flex flex-col gap-y-1 ml-4">
         <h3 className="capitalize">{name}</h3>
         <h4>{date}</h4>
-        <h5>{price}</h5>
         <p>{description}</p>
       </div>
+      {isOwner && (
+        <FontAwesomeIcon icon={faCircleXmark} className="text-2xl text-brand-navy absolute bottom-2 right-2" />
+      )}
     </div>
   );
 }
