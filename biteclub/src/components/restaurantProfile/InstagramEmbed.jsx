@@ -2,7 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import EditModePanel from '../shared/EditModePanel';
 
 // instagram embed component
-export default function InstagramEmbed({ url, isEditModeOn = false, forEditRestaurant = false }) {
+export default function InstagramEmbed({
+  url,
+  isEditModeOn = false,
+  forEditRestaurant = false,
+  isSelected = false,
+  onSelect = () => {},
+  onDeleteClick = () => {},
+}) {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -54,7 +61,9 @@ export default function InstagramEmbed({ url, isEditModeOn = false, forEditResta
         <div className="w-full h-[420px] bg-gray-100 animate-pulse rounded-md" />
       )}
       {/* show edit/delete panel if user wants to manage profile */}
-      {isEditModeOn && <EditModePanel forInstagram={true} />}
+      {isEditModeOn && (
+        <EditModePanel forInstagram={true} isSelected={isSelected} onSelect={onSelect} onDeleteClick={onDeleteClick} />
+      )}
     </div>
   );
 }

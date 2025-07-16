@@ -54,12 +54,21 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   /* States below are for MANAGING/EDITING general profile */
   const [editMode, setEditMode] = useState(false); // tracks whether owner wants to manage CONTENT on profile (displays edit/delete panel on each card)
+  const [selectedInternalReviews, setSelectedInternalReviews] = useState([]);
+  const [selectedExternalReviews, setSelectedExternalReviews] = useState([]);
   const [editReviewForm, setEditReviewForm] = useState(false); // for opening/closing form to edit a SPECIFIC REVIEW
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
+  const [editReviewData, setEditReviewData] = useState(null);
+  const [triggerReviewRefresh, setTriggerReviewRefresh] = useState(false); // help with update the review tabs after Adding or Editing a review
+
+  const [selectedBlogPosts, setSelectedBlogPosts] = useState([]);
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
   const [editBlogPostData, setEditBlogPostData] = useState(null);
 
-  const [selectedBlogPosts, setSelectedBlogPosts] = useState([]);
+  // ASK FOR CONFIRMATION: If user would like to use "DELETE ALL" for Blog Posts or Reviews
+  const [showModal, setShowModal] = useState(false);
+  const [deleteAllTarget, setDeleteAllTarget] = useState(''); // 'reviews' or 'blogPosts'
+  const [confirmationText, setConfirmationText] = useState('');
 
   const filteredTabs = profileTabs.filter((tab, index) => {
     if (index === 2 && !displayVisitedPlaces) return false; // Tab 2 - visited places
@@ -68,6 +77,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     return true;
   });
 
+  // =============
+  // DATA FETCHING
+  // =============
   // TAB 0 -- BLOG POSTS
   useEffect(() => {
     const fetchData = async () => {
@@ -273,7 +285,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     };
 
     fetchTabData();
-  }, [selectedTab, generalUserId]);
+  }, [selectedTab, generalUserId, triggerReviewRefresh]);
 
   // Masonry breakpoints for internal reviews and expanded review side panel
   const breakpointColumnsObj = useMemo(() => {
@@ -297,8 +309,13 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       </div>
     );
 
-  // HANDLE DELETE: Blog Post
-  const handleDeleteSelectedBlogPost = async () => {
+  // =====================================
+  // HANDLE DELETE: BLOG POSTS AND REVIEWS
+  // =====================================
+
+  // DELETE BLOG POSTS
+  // -----------------
+  const handleDeleteSelectedBlogPosts = async () => {
     if (selectedBlogPosts.length === 0) return;
     const res = await fetch('/api/blog-posts/delete-multiple', {
       method: 'POST',
@@ -313,7 +330,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     }
   };
 
-  const handleDeleteAllBlogPost = async () => {
+  const handleDeleteAllBlogPosts = async () => {
     const allIds = myBlogPosts.map(post => post._id);
     const res = await fetch('/api/blog-posts/delete-multiple', {
       method: 'POST',
@@ -327,7 +344,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     }
   };
 
-  const handleDeleteSingle = async blogId => {
+  const handleDeleteSingleBlogPost = async blogId => {
     const res = await fetch('/api/blog-posts/delete-multiple', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -340,6 +357,80 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     }
   };
 
+  // DELETE REVIEWS -- INTERNAL AND EXTERNAL
+  // ---------------------------------------
+  const handleDeleteSelectedReviews = async () => {
+    if (selectedInternalReviews.length === 0 && selectedExternalReviews.length === 0) return;
+
+    const res = await fetch('/api/user-reviews/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: generalUserId,
+        internalReviewIds: selectedInternalReviews,
+        externalReviewIds: selectedExternalReviews,
+      }),
+    });
+
+    if (res.ok) {
+      setMyReviews(prev => ({
+        internalReviews: prev.internalReviews.filter(review => !selectedInternalReviews.includes(review._id)),
+        externalReviews: prev.externalReviews.filter(review => !selectedExternalReviews.includes(review._id)),
+      }));
+      setSelectedInternalReviews([]);
+      setSelectedExternalReviews([]);
+    }
+  };
+
+  const handleDeleteAllReviews = async () => {
+    const allInternalIds = myReviews.internalReviews.map(review => review._id);
+    const allExternalIds = myReviews.externalReviews.map(review => review._id);
+
+    const res = await fetch('/api/user-reviews/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: generalUserId,
+        internalReviewIds: allInternalIds,
+        externalReviewIds: allExternalIds,
+      }),
+    });
+
+    if (res.ok) {
+      setMyReviews({ internalReviews: [], externalReviews: [] });
+      setSelectedInternalReviews([]);
+      setSelectedExternalReviews([]);
+    }
+  };
+
+  const handleDeleteSingleReview = async (reviewId, type = 'internal') => {
+    const body = {
+      userId: generalUserId,
+      internalReviewIds: type === 'internal' ? [reviewId] : [],
+      externalReviewIds: type === 'external' ? [reviewId] : [],
+    };
+
+    const res = await fetch('/api/user-reviews/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (res.ok) {
+      setMyReviews(prev => ({
+        internalReviews:
+          type === 'internal' ? prev.internalReviews.filter(r => r._id !== reviewId) : prev.internalReviews,
+        externalReviews:
+          type === 'external' ? prev.externalReviews.filter(r => r._id !== reviewId) : prev.externalReviews,
+      }));
+      if (type === 'internal') {
+        setSelectedInternalReviews(prev => prev.filter(id => id !== reviewId));
+      } else {
+        setSelectedExternalReviews(prev => prev.filter(id => id !== reviewId));
+      }
+    }
+  };
+
   return (
     <MainBaseContainer>
       <GeneralUserBanner
@@ -347,11 +438,19 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         setShowTextEditor={setShowTextEditor}
         generalUserData={userProfile}
         isOwner={isOwner}
-        editMode={editMode}
+        // editMode={editMode}
+        editMode={
+          editMode && (selectedTab === profileTabs[0] || selectedTab === profileTabs[1]) // Show only when it is Blog Posts or Reviews tab
+        }
         setEditMode={setEditMode}
-        handleDeleteSelectedBlogPost={handleDeleteSelectedBlogPost}
-        handleDeleteAllBlogPost={handleDeleteAllBlogPost}
+        selectedTab={selectedTab}
+        handleDeleteSelectedBlogPosts={handleDeleteSelectedBlogPosts}
+        handleDeleteAllBlogPosts={handleDeleteAllBlogPosts}
         blogPostsCount={myBlogPosts.length}
+        handleDeleteSelectedReviews={handleDeleteSelectedReviews}
+        handleDeleteAllReviews={handleDeleteAllReviews}
+        setShowModal={setShowModal}
+        setDeleteAllTarget={setDeleteAllTarget}
       />
       <div className="main-side-padding w-full py-8">
         {/**** Tab menu and contents - START ****/}
@@ -365,7 +464,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Blog Posts */}
             {selectedTab === profileTabs[0] &&
               (!myBlogPosts || myBlogPosts.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500">No blog posts yet.</div>
+                <div className="col-span-3 text-center">
+                  <p>No blog posts yet.</p>
+                </div>
               ) : (
                 <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
                   {myBlogPosts.map((post, i) => {
@@ -395,7 +496,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                         isEditModeOn={editMode}
                         isSelected={isSelected}
                         onSelect={toggleSelect}
-                        onDeleteClick={() => handleDeleteSingle(post._id)}
+                        onDeleteClick={() => handleDeleteSingleBlogPost(post._id)}
                       />
                     );
                   })}
@@ -414,7 +515,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 </div>
                 {!showInstaReview &&
                   (myReviews?.internalReviews.length === 0 ? (
-                    <div className="col-span-3 text-center text-gray-500">No internal reviews yet.</div>
+                    <div className="col-span-3 text-center">
+                      <p>No internal reviews yet.</p>
+                    </div>
                   ) : (
                     /* internal reviews */
                     <div className="flex gap-2">
@@ -435,10 +538,22 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                                   review={review}
                                   photos={review.photos}
                                   isOwner={isOwner}
-                                  isEditModeOn={editMode}
-                                  setEditReviewForm={setEditReviewForm}
+                                  // setEditReviewForm={setEditReviewForm}
+                                  setEditReviewForm={() => {
+                                    setEditReviewForm(true);
+                                    setEditReviewData(review);
+                                  }}
                                   onClick={() => setSelectedReview(review)}
-                                  isSelected={selectedReview?._id === review._id}
+                                  isEditModeOn={editMode && selectedTab === profileTabs[1]}
+                                  isSelected={selectedInternalReviews.includes(review._id)}
+                                  onSelect={() => {
+                                    setSelectedInternalReviews(prev =>
+                                      prev.includes(review._id)
+                                        ? prev.filter(id => id !== review._id)
+                                        : [...prev, review._id]
+                                    );
+                                  }}
+                                  onDeleteClick={() => handleDeleteSingleReview(review._id, 'internal')}
                                 />
                               ))
                           }
@@ -453,29 +568,29 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                         />
                       )}
                     </div>
-                    /*
-                    <GridCustomCols numOfCols={4}>
-                      {myReviews?.internalReviews.map((review, i) => (
-                        <ReviewCard
-                          key={review._id || i}
-                          review={review}
-                          photos={review.photos}
-                          isOwner={isOwner}
-                          isEditModeOn={editMode}
-                          setEditReviewForm={setEditReviewForm}
-                        />
-                      ))}
-                    </GridCustomCols> */
                   ))}
                 {/* Instagram Reviews */}
                 {showInstaReview &&
                   (myReviews?.externalReviews.length === 0 ? (
-                    <div className="col-span-3 text-center text-gray-500">No Instagram reviews yet.</div>
+                    <div className="col-span-3 text-center">
+                      <p>No Instagram reviews yet.</p>
+                    </div>
                   ) : (
                     <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
                       {myReviews?.externalReviews.map((review, i) => (
                         <div key={review._id || i} className="mb-4 break-inside-avoid">
-                          <InstagramEmbed key={review._id} url={review.content?.embedLink} isEditModeOn={editMode} />
+                          <InstagramEmbed
+                            key={review._id}
+                            url={review.content?.embedLink}
+                            isEditModeOn={editMode}
+                            isSelected={selectedExternalReviews.includes(review._id)}
+                            onSelect={() => {
+                              setSelectedExternalReviews(prev =>
+                                prev.includes(review._id) ? prev.filter(id => id !== review._id) : [...prev, review._id]
+                              );
+                            }}
+                            onDeleteClick={() => handleDeleteSingleReview(review._id, 'external')}
+                          />
                         </div>
                       ))}
                     </Masonry>
@@ -485,7 +600,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Favourite Restaurants */}
             {selectedTab === profileTabs[3] &&
               (favouritedRestaurants.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500">No favourite restaurants yet.</div>
+                <div className="col-span-3 text-center">
+                  <p>No favourite restaurants yet.</p>
+                </div>
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {favouritedRestaurants.map(restaurant => (
@@ -496,7 +613,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Favourite Blog Posts */}
             {selectedTab === profileTabs[4] &&
               (favouritedBlogs.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500">No favourite blog posts yet.</div>
+                <div className="col-span-3 text-center">
+                  <p>No favourite blog posts yet.</p>
+                </div>
               ) : (
                 <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
                   {/* {favouritedBlogs.map(blog => (
@@ -523,7 +642,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* My Followers (users who follow owner )*/}
             {selectedTab === profileTabs[5] &&
               (followers.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500">No followers yet.</div>
+                <div className="col-span-3 text-center">
+                  <p>No followers yet.</p>
+                </div>
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {followers.map((follower, i) => (
@@ -535,7 +656,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Following (users who are followed by owner )*/}
             {selectedTab === profileTabs[6] &&
               (followings.length === 0 ? (
-                <div className="col-span-3 text-center text-gray-500">No followings yet.</div>
+                <div className="col-span-3 text-center">
+                  <p>No followings yet.</p>
+                </div>
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {followings.map((following, i) => (
@@ -562,7 +685,15 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       {editReviewForm && (
         /* NOTE: "AddReviewForm" has two modes: Adding NEW reviews, and EDITING existing reviews.
          The paramter "editReviewMode" is false by default, but TRUE when user wants to edit review.*/
-        <AddReviewForm onCancel={() => setEditReviewForm(false)} editReviewMode={true}>
+        <AddReviewForm
+          onCancel={() => {
+            setEditReviewForm(false);
+            setEditReviewData(null);
+          }}
+          editReviewMode={true}
+          reviewData={editReviewData}
+          onReviewSaved={() => setTriggerReviewRefresh(prev => !prev)}
+        >
           {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
           Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
           <StarRating
@@ -572,6 +703,49 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           />
           {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
         </AddReviewForm>
+      )}
+
+      {/* ASK FOR CONFIRMATION: If user would like to use "DELETE ALL" */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
+            <h2 className="text-lg font-bold mb-2">Confirm Content Deletion</h2>
+            <p className="mb-4 text-sm text-gray-700">
+              Are you sure you want to delete{' '}
+              <strong>all {deleteAllTarget === 'reviews' ? 'reviews (Both BiteClub and Instagram)' : 'blog posts'}</strong>? This action is
+              <strong> irreversible</strong>. Please type <code>DELETE</code> to confirm.
+            </p>
+
+            <input
+              type="text"
+              className="w-full border px-3 py-2 mb-4"
+              value={confirmationText}
+              onChange={e => setConfirmationText(e.target.value)}
+              placeholder="Type DELETE"
+            />
+
+            <div className="flex justify-end space-x-2">
+              <Button variant="secondary" onClick={() => setShowModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                disabled={confirmationText !== 'DELETE'}
+                onClick={() => {
+                  if (deleteAllTarget === 'reviews') {
+                    handleDeleteAllReviews();
+                  } else if (deleteAllTarget === 'blogPosts') {
+                    handleDeleteAllBlogPosts();
+                  }
+                  setShowModal(false);
+                  setConfirmationText('');
+                }}
+              >
+                Confirm Delete
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </MainBaseContainer>
   );
