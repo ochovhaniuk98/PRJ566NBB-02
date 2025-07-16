@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import EditModePanel from '../shared/EditModePanel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsis, faFlag } from '@fortawesome/free-solid-svg-icons';
 
 // instagram embed component
 export default function InstagramEmbed({ url, isEditModeOn = false, forEditRestaurant = false }) {
@@ -42,6 +44,14 @@ export default function InstagramEmbed({ url, isEditModeOn = false, forEditResta
 
   return (
     <div ref={ref} className="w-full border rounded-md border-brand-yellow-lite min-h-[420px] relative">
+      {/* Report Content flag */}
+      <div className="absolute top-2 right-2 flex items-center bg-white font-primary font-semibold text-brand-navy p-2 cursor-pointer text-sm">
+        <FontAwesomeIcon
+          icon={faFlag}
+          className={`icon-md text-brand-navy mr-2`} // temporarily made elipsis for reporting invisible
+        />
+        Report Content
+      </div>
       {isVisible ? (
         <blockquote
           className="instagram-media"
