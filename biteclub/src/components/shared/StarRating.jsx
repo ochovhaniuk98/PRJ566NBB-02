@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as solidStar, faStarHalfStroke as halfStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar as emptyStar } from '@fortawesome/free-regular-svg-icons';
@@ -22,6 +22,12 @@ export default function StarRating({
     'Chef’s kiss 👨‍🍳💋',
   ];
 
+  useEffect(() => {
+  if (interactive) {
+    setSelectedRating(ratingNum);
+  }
+}, [ratingNum, interactive]);
+
   const [hoverRating, setHoverRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(ratingNum);
 
@@ -30,6 +36,7 @@ export default function StarRating({
   let roundedRemainder = parseFloat(remainder.toFixed(1));
   const [lowMidValue, highMidValue] = [0.3, 0.7]; // range for half-star icon
 
+  
   const handleClick = index => {
     if (!interactive) return;
     setSelectedRating(index);

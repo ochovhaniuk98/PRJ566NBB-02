@@ -58,6 +58,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
   const [editBlogPostData, setEditBlogPostData] = useState(null);
+  const [editReviewData, setEditReviewData] = useState(null); // ⬅️ Add this
 
   const [selectedInternalReviews, setSelectedInternalReviews] = useState([]);
   const [selectedExternalReviews, setSelectedExternalReviews] = useState([]);
@@ -530,7 +531,11 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                                   review={review}
                                   photos={review.photos}
                                   isOwner={isOwner}
-                                  setEditReviewForm={setEditReviewForm}
+                                  // setEditReviewForm={setEditReviewForm}
+                                  setEditReviewForm={() => {
+                                    setEditReviewForm(true);
+                                    setEditReviewData(review);
+                                  }}
                                   onClick={() => setSelectedReview(review)}
                                   isEditModeOn={editMode && selectedTab === profileTabs[1]}
                                   isSelected={selectedInternalReviews.includes(review._id)}
@@ -673,7 +678,14 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       {editReviewForm && (
         /* NOTE: "AddReviewForm" has two modes: Adding NEW reviews, and EDITING existing reviews.
          The paramter "editReviewMode" is false by default, but TRUE when user wants to edit review.*/
-        <AddReviewForm onCancel={() => setEditReviewForm(false)} editReviewMode={true}>
+        <AddReviewForm
+          onCancel={() => {
+            setEditReviewForm(false);
+            setEditReviewData(null);
+          }}
+          editReviewMode={true}
+          reviewData={editReviewData}
+        >
           {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
           Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
           <StarRating
