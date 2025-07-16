@@ -6,6 +6,8 @@ import { ReportContentLink } from '../shared/ReportContentLink';
 
 // instagram embed component
 export default function InstagramEmbed({
+  contentId,
+  author,
   url,
   isEditModeOn = false,
   forEditRestaurant = false,
@@ -79,7 +81,16 @@ export default function InstagramEmbed({
         <EditModePanel forInstagram={true} isSelected={isSelected} onSelect={onSelect} onDeleteClick={onDeleteClick} />
       )}
       {/* link to report content form */}
-      {showReportFormLink && <ReportContentLink contentTitle={'an Instagram post'} alignToRight={true} />}
+      {showReportFormLink && (
+        <ReportContentLink
+          contentTitle={'an Instagram post'}
+          alignToRight={true}
+          reportType="content"
+          contentType="ExternalReview"
+          contentId={contentId}
+          author={author}
+        />
+      )}
     </div>
   );
 }

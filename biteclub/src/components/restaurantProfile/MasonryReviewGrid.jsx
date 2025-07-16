@@ -160,7 +160,12 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
               />
             ) : (
               /* external reviews */
-              <InstagramEmbed key={review._id} url={review.content?.embedLink} />
+              <InstagramEmbed
+                key={review._id}
+                contentId={review?._id}
+                author={review?.user_id} // This gives the whole user object not just user_id
+                url={review.content?.embedLink}
+              />
             )
           )}
         </Masonry>
