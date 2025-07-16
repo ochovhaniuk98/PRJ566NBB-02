@@ -104,6 +104,28 @@ export default function ContentModerationCard({ report, onResolve }) {
     }
   };
 
+  const handleApproveAndBanUser = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin-user/ban-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          banUserId: report.reportedUserId?.supabaseId,
+          numStrikes: report.reportedUserId?.strike,
+        }),
+      });
+      if (!res.ok) throw new Error(`(Content Moderation) Error: ${res.status}`);
+      onResolve?.(report._id); // update UI in parent (AdminPanel page)
+      alert('Approved and Banned User');
+    } catch (error) {
+      console.error('Approval and ban user failed', error);
+      alert('Failed to approve and ban user');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="mb-4">
       <div
@@ -212,9 +234,9 @@ export default function ContentModerationCard({ report, onResolve }) {
                 */}
                 <a
                   href={
-                    report.contentType === 'CommentPost' 
+                    report.contentType === 'CommentPost'
                       ? `/blog-posts/comments/${report.contentId?._id}`
-                      : report.contentType === 'BlogPost' 
+                      : report.contentType === 'BlogPost'
                       ? `/blog-posts/${report.contentId?._id}`
                       : report.contentType === 'InternalReview' || report.contentType === 'ExternalReview' // [!] REDIRECT TO RESTAURANT PROFILE INSTEAD.
                       ? `/restaurants/${report.contentId?.restaurant_id}`
@@ -249,13 +271,25 @@ export default function ContentModerationCard({ report, onResolve }) {
 
         {report.status === 'Pending' && (
           <div className="mt-4">
-            <button
-              onClick={handleApprove}
-              className="w-30 bg-green-400 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-600"
-              disabled={loading}
-            >
-              Approve
-            </button>
+            {report.reportedUserId?.strike == 4 ? (
+              <button
+                onClick={handleApproveAndBanUser}
+                className="w-auto bg-stone-900 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-red-600"
+                disabled={loading}
+              >
+                {' '}
+                Approve and Ban Reported User
+              </button>
+            ) : (
+              <button
+                onClick={handleApprove}
+                className="w-30 bg-green-400 text-white px-4 py-2 mr-2 rounded cursor-pointer hover:bg-green-600"
+                disabled={loading}
+              >
+                Approve
+              </button>
+            )}
+
             <button
               onClick={handleReject}
               className="w-30 bg-red-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500"

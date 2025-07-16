@@ -8,6 +8,7 @@ import ProfileTabBar from '@/components/shared/ProfileTabBar';
 import ContentModerationCard from '@/components/adminPanel/ContentModerationCard';
 
 export default function AdminPage() {
+
   const panelTabs = ['Business Verification', 'Contents Moderation'];
 
   const router = useRouter();
