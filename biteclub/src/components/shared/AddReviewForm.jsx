@@ -19,6 +19,7 @@ export default function AddReviewForm({
   children,
   editReviewMode = false,
   reviewData = null,
+  onReviewSaved = () => {}, // for rerendering the data after add or edit
 }) {
   const [showPhotoPlaceholder, setShowPhotoPlaceholder] = useState(true);
   const [showInstagramForm, setShowInstagramForm] = useState(false);
@@ -82,6 +83,7 @@ export default function AddReviewForm({
 
       if (res) {
         console.log('Internal review updated');
+        onReviewSaved();
         onCancel();
       } else {
         setInternalReviewError('Failed to update review.');
@@ -99,6 +101,7 @@ export default function AddReviewForm({
 
       if (res) {
         console.log('Internal review added successfully:', res);
+        onReviewSaved();
         onCancel();
       } else {
         setInternalReviewError('Failed to add internal review. Please try again.');

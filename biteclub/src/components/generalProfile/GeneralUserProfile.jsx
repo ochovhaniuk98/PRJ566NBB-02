@@ -58,7 +58,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
   const [editBlogPostData, setEditBlogPostData] = useState(null);
-  const [editReviewData, setEditReviewData] = useState(null); // ⬅️ Add this
+  const [editReviewData, setEditReviewData] = useState(null); 
+  const [triggerReviewRefresh, setTriggerReviewRefresh] = useState(false); // help with update the review tabs after Adding or Editing a review
 
   const [selectedInternalReviews, setSelectedInternalReviews] = useState([]);
   const [selectedExternalReviews, setSelectedExternalReviews] = useState([]);
@@ -280,7 +281,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     };
 
     fetchTabData();
-  }, [selectedTab, generalUserId]);
+  }, [selectedTab, generalUserId, triggerReviewRefresh]);
 
   // Masonry breakpoints for internal reviews and expanded review side panel
   const breakpointColumnsObj = useMemo(() => {
@@ -685,6 +686,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           }}
           editReviewMode={true}
           reviewData={editReviewData}
+          onReviewSaved={() => setTriggerReviewRefresh(prev => !prev)} 
         >
           {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
           Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
