@@ -13,6 +13,7 @@ export default function InstagramEmbed({
   onSelect = () => {},
   onDeleteClick = () => {},
 }) {
+  const [showReportFormLink, setShowReportFormLink] = useState(false);
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -77,6 +78,8 @@ export default function InstagramEmbed({
       {isEditModeOn && (
         <EditModePanel forInstagram={true} isSelected={isSelected} onSelect={onSelect} onDeleteClick={onDeleteClick} />
       )}
+      {/* link to report content form */}
+      {showReportFormLink && <ReportContentLink contentTitle={'an Instagram post'} alignToRight={true} />}
     </div>
   );
 }
