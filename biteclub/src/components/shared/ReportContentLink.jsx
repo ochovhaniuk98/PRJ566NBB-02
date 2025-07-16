@@ -3,12 +3,14 @@ import ReportForm from './ReportForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag } from '@fortawesome/free-solid-svg-icons';
 
-export function ReportContentLink({ setPopupHovered, contentTitle }) {
+export function ReportContentLink({ setPopupHovered = () => {}, contentTitle, alignToRight = false }) {
   const [openReportForm, setOpenReportForm] = useState(false);
 
   return (
     <div
-      className="bg-white border border-brand-yellow-lite rounded-md w-50 shadow-md absolute z-[1000] left-3 top-6"
+      className={`bg-white border border-brand-yellow-lite rounded-md w-50 shadow-md absolute z-[1000] top-6 ${
+        alignToRight ? 'right-3' : 'left-3'
+      }`}
       onClick={e => e.stopPropagation()}
       onMouseEnter={() => setPopupHovered(true)}
       onMouseLeave={() => setPopupHovered(false)}

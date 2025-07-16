@@ -44,7 +44,7 @@ export default function ReviewCard({
         {/* show link to open Report form when ... icon is clicked */}
         <FontAwesomeIcon
           icon={faEllipsis}
-          className={`icon-lg text-brand-navy`}
+          className={`icon-lg text-brand-navy invisible`} // temporarily made elipsis for reporting invisible
           onClick={e => {
             e.stopPropagation();
             setShowReportFormLink(prev => !prev);
