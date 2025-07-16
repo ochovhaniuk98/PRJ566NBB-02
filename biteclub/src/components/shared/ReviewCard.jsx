@@ -15,6 +15,9 @@ import { ReportContentLink } from './ReportContentLink';
     The parameter "editReviewMode" is false by default, but TRUE when user wants to edit review.*/
 export default function ReviewCard({
   review,
+  reviewEngagementStats,
+  onLike,
+  onDislike,
   photos,
   onClick,
   isSelected,
@@ -52,7 +55,9 @@ export default function ReviewCard({
           <div>
             <EngagementIconStat
               iconArr={reviewCardIconArr}
-              statNumArr={[review.likes?.count, review.comments?.length]}
+              statNumArr={[reviewEngagementStats?.likes || 0, reviewEngagementStats?.comments || 0]}
+              handlers={[onLike, () => {}, onDislike]}
+              states={[reviewEngagementStats?.userLiked, false, reviewEngagementStats?.userDisliked]}
             />
           </div>
         </div>

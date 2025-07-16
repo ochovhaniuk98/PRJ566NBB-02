@@ -115,13 +115,17 @@ const InternalReviewSchema = new mongoose.Schema({
   date_updated: Date,
   comments: [CommentSchema],
   photos: [PhotoSchema],
+  user_type: {
+    type: String,
+    enum: ['User', 'BusinessUser'],
+  },
   likes: {
     count: Number,
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    users: [{ type: mongoose.Schema.Types.ObjectId, refPath: 'user_type' }],
   },
   dislikes: {
     count: Number,
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    users: [{ type: mongoose.Schema.Types.ObjectId, refPath: 'user_type' }],
   },
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },

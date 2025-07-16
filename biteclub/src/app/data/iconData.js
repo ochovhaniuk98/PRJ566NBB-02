@@ -5,7 +5,11 @@ import {
   faThumbsUp as faThumbsUpRegular,
   faThumbsDown as faThumbsDownRegular,
 } from '@fortawesome/free-regular-svg-icons';
+import { faThumbsUp as faThumbsUpSolid, faThumbsDown as faThumbsDownSolid } from '@fortawesome/free-solid-svg-icons';
 
-const reviewCardIconArr = [faThumbsUpRegular, faCommentDots, faThumbsDownRegular];
-
+const reviewCardIconArr = [
+  { filled: faThumbsUpSolid, outlined: faThumbsUpRegular }, // Like
+  { filled: faCommentDots, outlined: faCommentDots }, // Comments (no filled variant, just solid)
+  { filled: faThumbsDownSolid, outlined: faThumbsDownRegular }, // Dislike
+];
 export default reviewCardIconArr;
