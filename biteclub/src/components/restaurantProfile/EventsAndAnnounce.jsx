@@ -1,36 +1,78 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import GridCustomCols from '../shared/GridCustomCols';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faBullhorn, faCirclePlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
+import {
+  addAnnouncement,
+  addEvent,
+  deleteAnnouncement,
+  deleteEvent,
+  getAnnouncementsByRestaurantId,
+  getEventsByRestaurantId,
+} from '@/lib/db/dbOperations';
 
 // MAIN CONTAINER
-// to IRISH: CHANGE ISOWNER TO FALSE WHEN YOU'RE DONE
-export default function EventsAndAnnounce({ isOwner = true }) {
+export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
   const [events, setEvents] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [mode, setMode] = useState('event'); // determines what kind of form to show: 'event' or 'announcement'
 
-  const addEvent = event => {
-    setEvents(prev => [...prev, event]);
-    setShowForm(false);
+  useEffect(() => {
+    const fetchEventsAndAnnouncements = async () => {
+      const [eventsData, announcementsData] = await Promise.all([
+        getEventsByRestaurantId(restaurantId),
+        getAnnouncementsByRestaurantId(restaurantId),
+      ]);
+      setEvents(eventsData);
+      setAnnouncements(announcementsData);
+    };
+    fetchEventsAndAnnouncements();
+  }, [restaurantId]);
+
+  const handleAddEvent = async event => {
+    try {
+      const res = await addEvent(restaurantId, {
+        ...event,
+        date: new Date(event.date), // ensure date is a Date object
+      });
+      setEvents(prev => [...prev, res]);
+      setShowForm(false);
+    } catch (error) {
+      console.error('Failed to add event:', error);
+    }
   };
 
-  const addAnnouncement = announcement => {
-    setAnnouncements(prev => [...prev, announcement]);
-    setShowForm(false);
+  const handleAddAnnouncement = async announcement => {
+    try {
+      const res = await addAnnouncement(restaurantId, announcement);
+      setAnnouncements(prev => [...prev, res]);
+      setShowForm(false);
+    } catch (error) {
+      console.error('Failed to add announcement:', error);
+    }
   };
 
-  const handleDeleteAnnouncement = index => {
-    setAnnouncements(prev => prev.filter((_, i) => i !== index));
+  const handleDeleteAnnouncement = async id => {
+    try {
+      await deleteAnnouncement(id);
+      setAnnouncements(prev => prev.filter(announcement => announcement._id !== id));
+    } catch (error) {
+      console.error('Failed to delete announcement:', error);
+    }
   };
 
-  const handleDeleteEvent = index => {
-    setEvents(prev => prev.filter((_, i) => i !== index));
+  const handleDeleteEvent = async id => {
+    try {
+      await deleteEvent(id);
+      setEvents(prev => prev.filter(event => event._id !== id));
+    } catch (error) {
+      console.error('Failed to delete event:', error);
+    }
   };
 
   return (
@@ -55,13 +97,14 @@ export default function EventsAndAnnounce({ isOwner = true }) {
 
           {/* Event Cards */}
           <div className="flex flex-col gap-4">
-            {events.map((event, idx) => (
+            {events.length === 0 && <div className="text-gray-500">No events available</div>}
+            {events.map(event => (
               <EventCard
-                key={idx}
+                key={event._id}
                 name={event.name}
                 date={event.date}
                 description={event.description}
-                onDelete={() => handleDeleteEvent(idx)}
+                onDelete={() => handleDeleteEvent(event._id)}
                 isOwner={isOwner}
               />
             ))}
@@ -86,12 +129,13 @@ export default function EventsAndAnnounce({ isOwner = true }) {
           </div>
           {/* Announcement Cards */}
           <div className="flex flex-col gap-4">
-            {announcements.map((announcement, idx) => (
+            {announcements.length === 0 && <div className="text-gray-500">No announcements available</div>}
+            {announcements.map(announcement => (
               <AnnouncementCard
-                key={idx}
+                key={announcement._id}
                 title={announcement.title}
-                text={announcement.text}
-                onDelete={() => handleDeleteAnnouncement(idx)}
+                text={announcement.details}
+                onDelete={() => handleDeleteAnnouncement(announcement._id)}
                 isOwner={isOwner}
               />
             ))}
@@ -104,8 +148,8 @@ export default function EventsAndAnnounce({ isOwner = true }) {
         <EventAnnounceModal
           mode={mode}
           setMode={setMode}
-          onAddEvent={addEvent}
-          onAddAnnouncement={addAnnouncement}
+          onAddEvent={handleAddEvent}
+          onAddAnnouncement={handleAddAnnouncement}
           onCancel={() => setShowForm(false)}
         />
       )}
@@ -192,6 +236,7 @@ function AddEventForm({ onAddEvent, onCancel }) {
           <Label>Date and Time</Label>
           <Input
             name="date"
+            type="datetime-local"
             placeholder="January 20, 2029 at 6-9PM"
             value={formData.date}
             onChange={handleChange}
@@ -227,7 +272,7 @@ function AddEventForm({ onAddEvent, onCancel }) {
 function AddAnnouncementForm({ onAddAnnouncement, onCancel }) {
   const [formData, setFormData] = useState({
     title: '',
-    text: '',
+    details: '',
   });
 
   const handleChange = e => {
@@ -236,9 +281,9 @@ function AddAnnouncementForm({ onAddAnnouncement, onCancel }) {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (formData.title.trim() && formData.text.trim()) {
+    if (formData.title.trim() && formData.details.trim()) {
       onAddAnnouncement(formData);
-      setFormData({ title: '', text: '' });
+      setFormData({ title: '', details: '' });
     }
   };
 
@@ -264,9 +309,9 @@ function AddAnnouncementForm({ onAddAnnouncement, onCancel }) {
         <div>
           <Label>Announcement</Label>
           <textarea
-            name="text"
+            name="details"
             placeholder="We will be closed on New Year's Day."
-            value={formData.text}
+            value={formData.details}
             onChange={handleChange}
             className="w-full border rounded p-2"
             rows={3}
@@ -296,7 +341,16 @@ function EventCard({ name, date, description, onDelete, isOwner = false }) {
       </div>
       <div className="flex flex-col gap-y-1 ml-4">
         <h3 className="capitalize">{name}</h3>
-        <h4>{date}</h4>
+        <h4>
+          {new Date(date).toLocaleString(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+          })}
+        </h4>
         <p>{description}</p>
       </div>
       {isOwner && (
