@@ -246,6 +246,123 @@ export async function updateReviewEngagement(reviewId, userId, like = false, dis
   }
 }
 
+export async function addCommentToReview(reviewId, commentData, userId) {
+  try {
+    await dbConnect();
+
+    const review = await InternalReview.findById(reviewId);
+    if (!review) throw new Error('Review not found');
+
+    console.log('Adding comment to review:', reviewId, commentData, userId);
+
+    const comment = {
+      content: commentData.content,
+      user_type: commentData.user_type,
+      author_id: commentData.author_id || userId,
+      author_name: commentData.author_name,
+      avatarURL: commentData.avatarURL || null,
+      date_posted: new Date(),
+      likes: { count: 0, users: [] },
+      dislikes: { count: 0, users: [] },
+    };
+
+    review.comments.push(comment);
+
+    await review.save();
+
+    const savedComment = review.comments[review.comments.length - 1];
+
+    return {
+      success: true,
+      comment: JSON.parse(JSON.stringify(savedComment)),
+      updatedCount: review.comments.length,
+    };
+  } catch (err) {
+    console.error('Error in addCommentToReview:', err);
+    throw new Error(err.message || 'Failed to add comment');
+  }
+}
+
+export async function deleteCommentFromReview(reviewId, commentId, userId) {
+  try {
+    await dbConnect();
+
+    const review = await InternalReview.findById(reviewId);
+    if (!review) throw new Error('Review not found');
+
+    const commentIndex = review.comments.findIndex(c => c._id.toString() === commentId.toString());
+    if (commentIndex === -1) throw new Error('Comment not found in review');
+
+    review.comments.splice(commentIndex, 1);
+    await review.save();
+
+    return {
+      success: true,
+      deletedCommentId: commentId,
+      updatedCount: review.comments.length,
+    };
+  } catch (err) {
+    console.error('Error in deleteCommentFromReview:', err);
+    throw new Error(err.message || 'Failed to delete comment');
+  }
+}
+
+export async function updateReviewCommentEngagement(reviewId, userId, like = false, dislike = false, commentId) {
+  try {
+    await dbConnect();
+
+    const review = await InternalReview.findById(reviewId);
+    if (!review) throw new Error('Review not found');
+    if (!review.comments) throw new Error('No comments found in this review');
+
+    const commentIndex = review.comments.findIndex(c => c._id.toString() === commentId.toString());
+    if (commentIndex === -1) throw new Error('Comment not found in review');
+
+    const comment = review.comments[commentIndex];
+    const alreadyLiked = comment.likes.users.includes(userId);
+    const alreadyDisliked = comment.dislikes.users.includes(userId);
+
+    if (like) {
+      if (alreadyLiked) {
+        // Toggle off like
+        comment.likes.users.pull(userId);
+        comment.likes.count = Math.max(0, comment.likes.count - 1);
+      } else {
+        // Remove dislike if any
+        if (alreadyDisliked) {
+          comment.dislikes.users.pull(userId);
+          comment.dislikes.count = Math.max(0, comment.dislikes.count - 1);
+        }
+        // Add like
+        comment.likes.users.push(userId);
+        comment.likes.count += 1;
+      }
+    } else if (dislike) {
+      if (alreadyDisliked) {
+        // Toggle off dislike
+        comment.dislikes.users.pull(userId);
+        comment.dislikes.count = Math.max(0, comment.dislikes.count - 1);
+      } else {
+        // Remove like if any
+        if (alreadyLiked) {
+          comment.likes.users.pull(userId);
+          comment.likes.count = Math.max(0, comment.likes.count - 1);
+        }
+        // Add dislike
+        comment.dislikes.users.push(userId);
+        comment.dislikes.count += 1;
+      }
+    }
+
+    review.comments[commentIndex] = comment;
+    await review.save();
+    return JSON.parse(JSON.stringify(review.comments[commentIndex]));
+  } catch (err) {
+    console.error('Error in updateReviewCommentEngagement:', err);
+    throw new Error(err.message || 'Failed to update comment engagement');
+  }
+}
+
 export async function getBusinessUserRestaurantId({ supabaseId }) {
   await dbConnect();
   const user = await BusinessUser.findOne({ supabaseId });
