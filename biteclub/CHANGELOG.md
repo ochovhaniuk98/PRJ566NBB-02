@@ -129,7 +129,8 @@ Components created for the following:
  - Users can reply to the comments. Only one level of nested comments is allowed.
 
 ### Reporting inappropriate blog post or comment
-- Users can now report a blog post or a comment and moderation team will be reviewing the request.
+- Users can now report Contents (blog posts, comments, Internal reviews, External reviews) and moderation team will be reviewing the request.
+- Users can report another general users.
 
 ### New ML powered features
 - The restaurant list and blog post recommendations are now powered with an ML recommender system
@@ -153,3 +154,8 @@ Components created:
  - Comments section for expanded review
  - Report user/content form
  - Events and Announcements tab section in Restaurant profile (includes forms for creating/deleting events and announcements)
+
+### Admin Panel
+- Admin can view the details of the report
+- Admin can approve, reject, approve and ban a user
+- After 5 strikes, user will be permenantly banned
