@@ -207,6 +207,9 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
             reviewList={reviewsData} // internal + external reviews
             selectedReview={selectedReview}
             setSelectedReview={setSelectedReview}
+            restaurantId={restaurantId}
+            restaurantName={name}
+            isOwner={isOwner}
           />
         )}
         {/* Mentioned */}

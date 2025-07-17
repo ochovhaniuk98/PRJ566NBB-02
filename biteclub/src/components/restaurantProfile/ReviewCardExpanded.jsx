@@ -19,12 +19,17 @@ import FormattedDate from '../shared/formattedDate';
 import { ChevronLeft } from 'lucide-react';
 import CommentSection from '../shared/CommentSection';
 import { fakeUser, fakeComment } from '@/app/data/fakeData';
+import { addCommentToReview, deleteCommentFromReview, updateReviewCommentEngagement } from '@/lib/db/dbOperations';
 
 export default function ReviewCardExpanded({
+  currentUser,
+  restaurantId,
+  restaurantName,
   selectedReview,
   reviewEngagementStats,
   onLike,
   onDislike,
+  updateCommentCount = () => {},
   onClose,
   isOwner = false,
 }) {
@@ -56,7 +61,6 @@ export default function ReviewCardExpanded({
   const [photoIndex, setPhotoIndex] = useState(0);
   // for comments in expanded review
   // currentUser, comments, onAddComment, onLike, onDislike
-  const comments = [];
   const [openReportForm, setOpenReportForm] = useState(false);
 
   const handleNext = () => {
@@ -64,6 +68,119 @@ export default function ReviewCardExpanded({
   };
   const handlePrev = () => {
     setPhotoIndex(prev => (prev === 0 ? selectedReview.photos.length - 1 : prev - 1));
+  };
+
+  const [comments, setComments] = useState(selectedReview.comments || []);
+  const [commentEngagementData, setCommentEngagementData] = useState({});
+
+  useEffect(() => {
+    if (selectedReview) {
+      setComments(selectedReview.comments || []);
+
+      setCommentEngagementData(
+        (selectedReview.comments || []).reduce((acc, comment) => {
+          acc[comment._id] = {
+            likes: { count: comment.likes?.count || 0, users: comment.likes?.users || [] },
+            dislikes: { count: comment.dislikes?.count || 0, users: comment.dislikes?.users || [] },
+            userLiked: isOwner
+              ? comment.likes?.users?.includes(restaurantId) || false
+              : comment.likes?.users?.includes(currentUser._id) || false,
+            userDisliked: isOwner
+              ? comment.dislikes?.users?.includes(restaurantId) || false
+              : comment.dislikes?.users?.includes(currentUser._id) || false,
+          };
+          return acc;
+        }, {})
+      );
+    } else {
+      setComments([]);
+      setCommentEngagementData({});
+    }
+  }, [selectedReview, currentUser?._id, isOwner, restaurantId]);
+
+  const handleAddComment = async (commentData, userId) => {
+    try {
+      console.log('Adding comment:', selectedReview._id, commentData, userId);
+      const { comment: newComment, updatedCount } = await addCommentToReview(selectedReview._id, commentData, userId);
+      console.log('New comment added:', newComment);
+      updateCommentCount(selectedReview._id, updatedCount);
+      setComments(prev => [...prev, newComment]);
+      setCommentEngagementData(prev => ({
+        ...prev,
+        [newComment._id]: {
+          likes: { count: 0, users: [] },
+          dislikes: { count: 0, users: [] },
+          userLiked: false,
+          userDisliked: false,
+        },
+      }));
+      return newComment;
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId, userId) => {
+    try {
+      const { success, deletedCommentId, updatedCount } = await deleteCommentFromReview(
+        selectedReview._id,
+        commentId,
+        userId
+      );
+      if (success) {
+        updateCommentCount(selectedReview._id, updatedCount);
+        setComments(prev => prev.filter(comment => comment._id !== deletedCommentId));
+        setCommentEngagementData(prev => {
+          const newData = { ...prev };
+          delete newData[deletedCommentId];
+          return newData;
+        });
+        console.log('Comment deleted:', deletedCommentId);
+        return { success, deletedCommentId };
+      }
+    } catch (error) {
+      console.error('Failed to delete comment:', error);
+    }
+  };
+
+  const handleCommentLike = async (commentId, userId) => {
+    try {
+      console.log('Liking comment:', selectedReview._id, commentId, userId);
+      const resData = await updateReviewCommentEngagement(selectedReview._id, userId, true, false, commentId);
+      setCommentEngagementData(prev => ({
+        ...prev,
+        [commentId]: {
+          ...prev[commentId],
+          likes: { count: resData.likes.count, users: resData.likes.users },
+          dislikes: { count: resData.dislikes.count, users: resData.dislikes.users },
+          userLiked: resData.likes.users.includes(userId),
+          userDisliked: resData.dislikes.users.includes(userId),
+        },
+      }));
+      console.log('Comment liked:', resData);
+    } catch (error) {
+      console.error('Failed to like comment:', error);
+    }
+  };
+
+  const handleCommentDislike = async (commentId, userId) => {
+    try {
+      console.log('Disliking comment:', selectedReview._id, commentId, userId);
+      const resData = await updateReviewCommentEngagement(selectedReview._id, userId, false, true, commentId);
+      setCommentEngagementData(prev => ({
+        ...prev,
+        [commentId]: {
+          ...prev[commentId],
+          likes: { count: resData.likes.count, users: resData.likes.users },
+          dislikes: { count: resData.dislikes.count, users: resData.dislikes.users },
+          userLiked: resData.likes.users.includes(userId),
+          userDisliked: resData.dislikes.users.includes(userId),
+        },
+      }));
+      console.log('Comment disliked:', resData);
+    } catch (error) {
+      console.error('Failed to dislike comment:', error);
+    }
   };
 
   return (
@@ -131,7 +248,20 @@ export default function ReviewCardExpanded({
           <h3>{selectedReview.title}</h3>
           <p>{selectedReview.body}</p>
           <div>
-            <CommentSection currentUser={fakeUser} comments={[fakeComment]} />
+            <CommentSection
+              currentUser={currentUser}
+              restaurantId={restaurantId}
+              restaurantName={restaurantName}
+              isOwner={isOwner}
+              isAuthor={authorId === (isOwner ? restaurantId : currentUser._id)}
+              comments={comments}
+              commentEngagementData={commentEngagementData}
+              setCommentEngagementData={setCommentEngagementData}
+              onAddComment={handleAddComment}
+              onDeleteComment={handleDeleteComment}
+              onLike={handleCommentLike}
+              onDislike={handleCommentDislike}
+            />
           </div>
         </div>
       </div>
