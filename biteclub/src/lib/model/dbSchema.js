@@ -42,16 +42,42 @@ const UserSchema = new mongoose.Schema({
 // TODO: Review if counts can be removed and be calculated through the users array
 // Comment subdocument
 const CommentSchema = new mongoose.Schema({
-  body: String,
-  author: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  date_posted: Date,
+  content: { type: String, required: true },
+  user_type: {
+    type: String,
+    required: true,
+    enum: ['User', 'Restaurant'],
+  },
+  author_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    refPath: 'user_type',
+  },
+  author_name: { type: String, required: true },
+  avatarURL: {
+    type: String,
+    default: null,
+  },
+  date_posted: { type: Date, default: Date.now },
   likes: {
-    count: Number,
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    count: { type: Number, default: 0 },
+    users: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        refPath: 'user_type',
+      },
+    ],
   },
   dislikes: {
-    count: Number,
-    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    count: { type: Number, default: 0 },
+    users: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        refPath: 'user_type',
+      },
+    ],
   },
 });
 
