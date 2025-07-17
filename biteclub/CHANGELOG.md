@@ -155,7 +155,7 @@ Components created:
  - Report user/content form
  - Events and Announcements tab section in Restaurant profile (includes forms for creating/deleting events and announcements)
 
-### Admin Panel
+### Administration (Admin Panel)
 - Admin can view the details of the report
 - Admin can approve, reject, approve and ban a user
 - After 5 strikes, user will be permenantly banned
