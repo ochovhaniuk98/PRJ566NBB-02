@@ -130,3 +130,6 @@ Components created for the following:
 
 ### Reporting inappropriate blog post or comment
 - Users can now report a blog post or a comment and moderation team will be reviewing the request.
+
+### New ML powered features
+- The restaurant list and blog post recommendations are now powered with an ML recommender system
