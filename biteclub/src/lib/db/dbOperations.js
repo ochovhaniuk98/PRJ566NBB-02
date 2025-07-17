@@ -254,6 +254,88 @@ export async function getBusinessUserRestaurantId({ supabaseId }) {
   return { restaurantId: user.restaurantId ? user.restaurantId.toString() : null }; // safe version
 }
 
+export async function addAnnouncement(restaurantId, data) {
+  try {
+    await dbConnect();
+
+    console.log('Adding announcement for restaurantId:', restaurantId, 'with data:', data);
+    const newAnnouncement = new Announcement({
+      ...data,
+      announcingRestaurant: restaurantId,
+    });
+
+    const savedAnnouncement = await newAnnouncement.save();
+    return JSON.parse(JSON.stringify(savedAnnouncement));
+  } catch (error) {
+    console.error('Error adding announcement:', error);
+    throw error;
+  }
+}
+
+export async function getAnnouncementsByRestaurantId(restaurantId) {
+  try {
+    await dbConnect();
+
+    const announcements = await Announcement.find({ announcingRestaurant: restaurantId }).sort({ date_posted: -1 });
+    return JSON.parse(JSON.stringify(announcements));
+  } catch (error) {
+    console.error('Error fetching announcements:', error);
+    throw error;
+  }
+}
+
+export async function deleteAnnouncement(announcementId) {
+  try {
+    await dbConnect();
+
+    const result = await Announcement.findByIdAndDelete(announcementId);
+    return JSON.parse(JSON.stringify(result));
+  } catch (error) {
+    console.error('Error deleting announcement:', error);
+    throw error;
+  }
+}
+
+export async function addEvent(restaurantId, data) {
+  try {
+    await dbConnect();
+
+    const newEvent = new Event({
+      ...data,
+      organizingRestaurant: restaurantId,
+    });
+
+    const savedEvent = await newEvent.save();
+    return JSON.parse(JSON.stringify(savedEvent));
+  } catch (error) {
+    console.error('Error adding event:', error);
+    throw error;
+  }
+}
+
+export async function getEventsByRestaurantId(restaurantId) {
+  try {
+    await dbConnect();
+
+    const events = await Event.find({ organizingRestaurant: restaurantId }).sort({ date_posted: -1 });
+    return JSON.parse(JSON.stringify(events));
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    throw error;
+  }
+}
+
+export async function deleteEvent(eventId) {
+  try {
+    await dbConnect();
+    const result = await Event.findByIdAndDelete(eventId);
+    return JSON.parse(JSON.stringify(result));
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    throw error;
+  }
+}
+
 // Update license for Business User
 export async function updateLicenseForBusinessUser(data) {
   await dbConnect();
