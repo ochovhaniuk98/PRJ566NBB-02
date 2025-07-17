@@ -217,14 +217,16 @@ const PointSchema = new mongoose.Schema({
 
 // Event
 const EventSchema = new mongoose.Schema({
-  eventName: String,
-  eventDate: Date,
+  name: String,
+  date: Date,
+  description: String,
   organizingRestaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
 });
 
 // Announcement
 const AnnouncementSchema = new mongoose.Schema({
-  announcementDetails: String,
+  title: String,
+  details: String,
   announcingRestaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
 });
 
