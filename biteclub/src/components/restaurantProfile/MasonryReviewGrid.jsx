@@ -14,18 +14,64 @@ export default function MasonryReviewGrid({
   isOwner,
   restaurantName,
 }) {
-  // breakpoints for when an internal review is selected and the expanded panel appears
-  const breakpointColumnsObj = useMemo(() => {
-    const isInternal = selectedReview && !selectedReview?.content?.embedLink;
-    return isInternal
-      ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
-      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
-  }, [selectedReview]);
+  const [user, setUser] = useState(null);
+  const [reportedReviewIds, setReportedReviewIds] = useState([]);
+  const [engagementData, setEngagementData] = useState({});
 
-  // Exit early if no reviews
-  if (!reviewList || (!reviewList?.internalReviews?.length && !reviewList?.externalReviews?.length)) {
-    return <div className="col-span-3 text-center text-gray-500">No reviews available</div>;
-  }
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.auth.getUser();
+      if (!data?.user) {
+        console.error('No user logged in');
+        return;
+      }
+      const userType = data.user.user_metadata?.user_type;
+      let mongoUser;
+      if (userType === 'business') {
+        mongoUser = await fetch(`/api/business-user/get-profile-by-authId?authId=${data.user.id}`);
+      } else {
+        mongoUser = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
+      }
+      if (!mongoUser.ok) {
+        console.error('Failed to fetch user profile:', mongoUser.status);
+        return;
+      }
+      const { profile } = await mongoUser.json();
+
+      setUser(profile);
+      console.log('Fetched user:', profile);
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    const fetchReportedReviews = async () => {
+      const res = await fetch('/api/reports');
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+
+      const json = await res.json();
+
+      const reportedReviews = [];
+
+      for (const report of json.reports || []) {
+        // Only include reports that are pending and are of review types
+        if (
+          report.status === 'Pending' &&
+          (report.contentType === 'InternalReview' || report.contentType === 'ExternalReview')
+        ) {
+          if (report.contentId && report.contentId._id) {
+            reportedReviews.push(report.contentId._id);
+          } else {
+            console.warn('Report missing contentId._id', report);
+          }
+        }
+      }
+
+      setReportedReviewIds(reportedReviews);
+    };
+    fetchReportedReviews();
+  }, []);
 
   // Combine and sort by date posted (memoized to prevent re-rendering)
   const combinedList = useMemo(() => {
@@ -69,40 +115,15 @@ export default function MasonryReviewGrid({
     return combined;
   }, [reviewList]);
 
-  const [user, setUser] = useState(null);
+  const filteredCombinedList = useMemo(() => {
+    if (!combinedList) return [];
+    return combinedList.filter(review => !reportedReviewIds.includes(review._id || review.id));
+  }, [combinedList, reportedReviewIds]);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const supabase = createClient();
-      const { data } = await supabase.auth.getUser();
-      if (!data?.user) {
-        console.error('No user logged in');
-        return;
-      }
-      const userType = data.user.user_metadata?.user_type;
-      let mongoUser;
-      if (userType === 'business') {
-        mongoUser = await fetch(`/api/business-user/get-profile-by-authId?authId=${data.user.id}`);
-      } else {
-        mongoUser = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
-      }
-      if (!mongoUser.ok) {
-        console.error('Failed to fetch user profile:', mongoUser.status);
-        return;
-      }
-      const { profile } = await mongoUser.json();
+    if (!user || !filteredCombinedList.length) return;
 
-      setUser(profile);
-      console.log('Fetched user:', profile);
-    };
-    fetchUser();
-  }, []);
-
-  const [engagementData, setEngagementData] = useState({});
-
-  useEffect(() => {
-    if (!user || !combinedList.length) return;
-    const newEngagementData = combinedList.reduce((acc, review) => {
+    const newEngagementData = filteredCombinedList.reduce((acc, review) => {
       acc[review._id] = {
         likes: review.likes?.count || 0,
         dislikes: review.dislikes?.count || 0,
@@ -113,7 +134,7 @@ export default function MasonryReviewGrid({
       return acc;
     }, {});
     setEngagementData(newEngagementData);
-  }, [user, combinedList]);
+  }, [user, filteredCombinedList]);
 
   const updateEngagementState = (reviewId, resData) => {
     setEngagementData(prev => ({
@@ -161,12 +182,25 @@ export default function MasonryReviewGrid({
     }));
   };
 
+  // breakpoints for when an internal review is selected and the expanded panel appears
+  const breakpointColumnsObj = useMemo(() => {
+    const isInternal = selectedReview && !selectedReview?.content?.embedLink;
+    return isInternal
+      ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
+      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
+  }, [selectedReview]);
+
+  // Exit early if no reviews
+  if (!reviewList || (!reviewList?.internalReviews?.length && !reviewList?.externalReviews?.length)) {
+    return <div className="col-span-3 text-center text-gray-500">No reviews available</div>;
+  }
+
   return (
     <div className="flex gap-2">
       {/* Masonry columns */}
       <div className="flex-1">
         <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
-          {combinedList.map(review =>
+          {filteredCombinedList.map(review =>
             !review.content?.embedLink ? (
               /* internal reviews */
               <ReviewCard
