@@ -151,9 +151,14 @@ export default function ReportForm({
         body: JSON.stringify(reportData), // try with demoData
       });
 
-      if (!res.ok) throw new Error('Failed to submit report.');
+      if (res.status == 409) {
+        alert('You have already reported this content!');
+      } else if (!res.ok) {
+        throw new Error('Failed to submit report.');
+      } else {
+        alert('Report submitted successfully');
+      }
 
-      alert('Report submitted successfully');
       onClose(); // close the modal
     } catch (err) {
       console.error(err);

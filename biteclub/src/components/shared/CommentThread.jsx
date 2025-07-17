@@ -262,6 +262,7 @@ export default function CommentThread({ post }) {
               onLike={onLike}
               onDislike={onDislike}
               onDelete={onDelete}
+              reportedUser={user}
             />
           ))}
       </div>
@@ -315,9 +316,9 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
     if (comment.user == userId) {
       setIsOwner(true);
     }
-
+    console.log('Reporting user id: ', userId);
     // for reporting a comment
-    fetchReportedUser(userId);
+    fetchReportedUser(comment.user);
   }, []);
 
   const handleReply = () => {
@@ -342,7 +343,6 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
       console.error('Failed to fetch reported User:', error);
     }
   };
-
 
   return (
     <>
