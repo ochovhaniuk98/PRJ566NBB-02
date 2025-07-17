@@ -1,204 +1,231 @@
 from __future__ import annotations
 
-import numpy as np
+import random
+from typing import Dict, List, Tuple
+
+from pymongo import MongoClient
+from dotenv import load_dotenv
 import tensorflow as tf
+import numpy as np
+import os
+from bson import ObjectId, json_util
+import pandas as pd
 from flask import Flask, request, jsonify, abort
-from flask_cors import CORS, cross_origin
+from flask_cors import cross_origin
+from blogposts import app
 
-# ----------------------------------------------------------------------
-# 1.  Synthetic “historical” data to pre-train the item embeddings
-# ----------------------------------------------------------------------
-#  15 restaurants,  5 historical users, 50 ratings  (user_id, item_id, rating)
-_ratings = np.array([
-    # user 0
-    [0, 0, 4], [0, 1, 2], [0, 2, 3], [0, 3, 4], [0, 4, 5],
-    [0, 5, 3], [0, 6, 2], [0, 7, 4], [0, 8, 3], [0, 9, 4],
-    # user 1
-    [1, 0, 3], [1, 1, 4], [1, 2, 2], [1, 3, 3], [1, 4, 2],
-    [1, 5, 4], [1, 6, 5], [1, 7, 3], [1, 8, 4], [1, 9, 2],
-    # user 2
-    [2,10, 5], [2,11, 4], [2,12, 5], [2,13, 3], [2,14, 4],
-    [2, 0, 2], [2, 2, 4], [2, 5, 3], [2, 8, 4], [2, 6, 3],
-    # user 3
-    [3, 1, 5], [3, 3, 4], [3, 4, 4], [3, 6, 2], [3, 7, 5],
-    [3,10, 3], [3,11, 3], [3,12, 4], [3,13, 2], [3,14, 3],
-    # user 4
-    [4, 0, 1], [4, 2, 2], [4, 3, 2], [4, 5, 2], [4, 6, 1],
-    [4,10, 4], [4,11, 5], [4,12, 4], [4,13, 5], [4,14, 4],
-], dtype=np.int32)
+# Load environment variables.
+load_dotenv()
 
-# Our restaurant catalogue (index ⇒ name).  Add / remove freely — just keep the
-# length in sync with num_items below.
-_RESTAURANTS = [
-    "Kung Fu Tea (Broadview)",
-    "Burger's Priest (Yonge & Eglinton)",
-    "Sushi Zone",
-    "TAQUERIA EL PASTORCITO",
-    "Kinka Izakaya",
-    "Planta Queen",
-    "Fresh on Spadina",
-    "Pizza Nova",
-    "Paramount Fine Foods",
-    "Pizzeria Libretto",
-    "Pho Tien Thanh",
-    "The Keg",
-    "Dim Sum King",
-    "Banh Mi Boys",
-    "Khao San Road",
-]
-_NAME_TO_ID = {name: idx for idx, name in enumerate(_RESTAURANTS)}
+client = MongoClient(os.getenv("MONGO_URI"))
+db = client["test"]
+review_collection = db["internalreviews"]
+restaurant_collection = db["restaurants"]
+user_collection = db["users"]
+config = {}
 
-num_users:  int = _ratings[:, 0].max() + 1          # 5
-num_items:  int = len(_RESTAURANTS)                  # 15
-latent_dim: int = 8                                  # embedding size
-global_mean: float = _ratings[:, 2].mean()           # ~3.3
+data = review_collection.find({"user_id": {"$exists": True}, "restaurant_id": {"$exists": True}, "rating": {"$exists": True}}, 
+                              {"_id": 0, "user_id": 1, "restaurant_id": 1, "rating": 1}).to_list()
+df = pd.DataFrame(data)                      # data is the list you showed
+df['user_id'] = df['user_id'].astype(str)    # ObjectId → string
+df['restaurant_id'] = df['restaurant_id'].astype(str)
 
-# ----------------------------------------------------------------------
-# 2.  Prepare tf.data.Dataset
-# ----------------------------------------------------------------------
-x_train = _ratings[:, :2]                            # user_id, item_id
-y_train = _ratings[:, 2].astype(np.float32)
+def _listdict_to_df(data: List[dict]) -> pd.DataFrame:
+    """Convert list‑of‑dict ratings into a validated DataFrame."""
+    if not isinstance(data, list):
+        raise TypeError("`data` must be a list of dicts.")
+    df = pd.DataFrame(data)
+    required = {"user_id", "restaurant_id", "rating"}
+    if not required.issubset(df.columns):
+        missing = required - set(df.columns)
+        raise ValueError(f"data missing required keys: {missing}")
+    return df
 
-train_ds = (tf.data.Dataset
-              .from_tensor_slices((x_train, y_train))
-              .shuffle(buffer_size=len(_ratings))
-              .batch(16))
 
-# ----------------------------------------------------------------------
-# 3.  Matrix-factorisation model
-# ----------------------------------------------------------------------
-class MF(tf.keras.Model):
-    def __init__(self, n_users: int, n_items: int, k: int):
+def _encode_ids(df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict, Dict]:
+    """Encode raw user/restaurant IDs as contiguous ints starting at 0."""
+    user_ids = df["user_id"].unique().tolist()
+    item_ids = df["restaurant_id"].unique().tolist()
+
+    user2idx = {u: i for i, u in enumerate(user_ids)}
+    item2idx = {i: j for j, i in enumerate(item_ids)}
+
+    df = df.assign(
+        user_idx=df["user_id"].map(user2idx).astype(np.int32),
+        item_idx=df["restaurant_id"].map(item2idx).astype(np.int32),
+    )
+    return df, user2idx, item2idx
+
+
+def _train_test_split(
+    df: pd.DataFrame, test_fraction: float = 0.2, seed: int = 42
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Random row‑level split (reproducible via `seed`)."""
+    rng = np.random.default_rng(seed)
+    mask = rng.random(len(df)) >= test_fraction
+    return df[mask], df[~mask]
+
+
+def _make_dataset(
+    df: pd.DataFrame, batch_size: int = 1024, shuffle: bool = True
+) -> tf.data.Dataset:
+    """Convert DataFrame to `(features, label)` batches for tf.data."""
+    X = df[["user_idx", "item_idx"]].to_numpy(dtype=np.int32)
+    y = df["rating"].to_numpy(dtype=np.float32)
+
+    ds = tf.data.Dataset.from_tensor_slices((X, y))
+    if shuffle:
+        ds = ds.shuffle(buffer_size=len(df), reshuffle_each_iteration=True)
+    return ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)
+
+
+# -----------------------------------------------------------------------------
+# Model definition
+# -----------------------------------------------------------------------------
+
+class MFRecommender(tf.keras.Model):
+    """Matrix‑factorisation with per‑user & per‑item bias."""
+
+    def __init__(self, num_users: int, num_items: int, embedding_dim: int = 64):
         super().__init__()
-        self.user_emb  = tf.keras.layers.Embedding(n_users, k,
-                            embeddings_initializer="he_normal")
-        self.item_emb  = tf.keras.layers.Embedding(n_items, k,
-                            embeddings_initializer="he_normal")
-        self.user_bias = tf.keras.layers.Embedding(n_users, 1,
-                            embeddings_initializer="zeros")
-        self.item_bias = tf.keras.layers.Embedding(n_items, 1,
-                            embeddings_initializer="zeros")
+        reg = tf.keras.regularizers.l2(1e-6)
+        self.user_emb = tf.keras.layers.Embedding(
+            num_users, embedding_dim, embeddings_initializer="he_normal", embeddings_regularizer=reg
+        )
+        self.item_emb = tf.keras.layers.Embedding(
+            num_items, embedding_dim, embeddings_initializer="he_normal", embeddings_regularizer=reg
+        )
+        self.user_bias = tf.keras.layers.Embedding(num_users, 1)
+        self.item_bias = tf.keras.layers.Embedding(num_items, 1)
 
-    def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        """inputs: shape (batch, 2) with columns [user_id, item_id]."""
-        u, i = inputs[:, 0], inputs[:, 1]
-        dot   = tf.reduce_sum(self.user_emb(u) * self.item_emb(i), axis=1)
-        b_u   = tf.squeeze(self.user_bias(u), axis=1)
-        b_i   = tf.squeeze(self.item_bias(i), axis=1)
-        return dot + b_u + b_i + global_mean               # final prediction
+    def call(self, x: tf.Tensor) -> tf.Tensor:  # x.shape == (batch, 2)
+        u = self.user_emb(x[:, 0])
+        i = self.item_emb(x[:, 1])
+        dot = tf.reduce_sum(u * i, axis=1, keepdims=True)
+        b_u = self.user_bias(x[:, 0])
+        b_i = self.item_bias(x[:, 1])
+        return tf.squeeze(dot + b_u + b_i, axis=1)
 
 
-# ----------------------------------------------------------------------
-# 4.  Train once on start-up
-# ----------------------------------------------------------------------
-model = MF(num_users, num_items, latent_dim)
-model.compile(optimizer=tf.keras.optimizers.Adam(2e-2),
-              loss="mse",
-              metrics=[tf.keras.metrics.RootMeanSquaredError()])
+# -----------------------------------------------------------------------------
+# Training / inference helpers
+# -----------------------------------------------------------------------------
 
-model.fit(train_ds, epochs=30, verbose=0)   # quick, just to set item factors
+def train_model(
+    df: pd.DataFrame,
+    embedding_dim: int = 64,
+    epochs: int = 10,
+    batch_size: int = 1024,
+    lr: float = 1e-3,
+) -> Tuple[MFRecommender, Dict, Dict, float]:
+    """Train and validate the model; return test RMSE."""
 
-# Extract trained item factors & biases for fast numpy math in each request
-_item_vecs:   np.ndarray = model.item_emb.get_weights()[0]        # (num_items, k)
-_item_bias:   np.ndarray = model.item_bias.get_weights()[0].ravel()  # (num_items,)
+    df, user2idx, item2idx = _encode_ids(df)
+    train_df, test_df = _train_test_split(df)
 
-# ----------------------------------------------------------------------
-# 5.  Cold-start user-vector constructor
-# ----------------------------------------------------------------------
-def _build_user_vector(rated: list[tuple[int, float]]) -> np.ndarray:
+    train_ds = _make_dataset(train_df, batch_size, shuffle=True)
+    test_ds = _make_dataset(test_df, batch_size, shuffle=False)
+
+    model = MFRecommender(len(user2idx), len(item2idx), embedding_dim)
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(lr),
+        loss=tf.keras.losses.MeanSquaredError(),
+        metrics=[tf.keras.metrics.RootMeanSquaredError(name="rmse")],
+    )
+    model.fit(train_ds, validation_data=test_ds, epochs=epochs, verbose=2)
+
+    _, rmse = model.evaluate(test_ds, verbose=0)
+    print(f"Test RMSE: {rmse:.4f}")
+    return model, user2idx, item2idx, rmse
+
+
+def recommend(
+    model: MFRecommender,
+    user_id_raw: str | int,
+    user2idx: Dict,
+    item2idx: Dict,
+    df_full: pd.DataFrame,
+    top_k: int = 10,
+) -> List[Tuple[str | int, float]]:
+    """Return Top‑K *(restaurant_id, predicted_rating)* for **unseen** restaurants."""
+
+    if user_id_raw not in user2idx:
+        raise ValueError(f"Unknown user_id: {user_id_raw}")
+
+    user_idx = user2idx[user_id_raw]
+    seen_items = set(df_full[df_full["user_id"] == user_id_raw]["restaurant_id"])
+    unseen_items = [iid for iid in item2idx.keys() if iid not in seen_items]
+
+    user_vec = np.full(len(unseen_items), user_idx, dtype=np.int32)
+    item_vec = np.array([item2idx[i] for i in unseen_items], dtype=np.int32)
+
+    preds = model.predict(np.stack([user_vec, item_vec], axis=1), batch_size=4096, verbose=0)
+    best = np.argsort(preds)[-top_k:][::-1]
+    return [(unseen_items[i], float(preds[i])) for i in best]
+
+
+# -----------------------------------------------------------------------------
+# Public convenience entry point
+# -----------------------------------------------------------------------------
+
+def demo(
+    df: any,
+    *,
+    embedding_dim: int = 64,
+    epochs: int = 10,
+    batch_size: int = 1024,
+    lr: float = 1e-3,
+    top_k: int = 10,
+    seed: int = 42,
+) -> Tuple[MFRecommender, Dict[str, Dict]]:
+    """Train on `data` and print sample recommendations for a random user.
+
+    Returns
+    -------
+    model : MFRecommender
+    encode : dict with keys `user2idx`, `item2idx`
     """
-    Simple heuristic: centre ratings at global_mean, weight each item vector by
-    (rating - global_mean), then L2-normalise.  Handles empty input gracefully.
-    """
-    if not rated:
-        return np.zeros(latent_dim, dtype=np.float32)
 
-    numer = np.zeros(latent_dim, dtype=np.float32)
-    denom = 1e-6
-    for item_id, rating in rated:
-        weight = float(rating) - global_mean
-        numer += weight * _item_vecs[item_id]
-        denom += abs(weight)
-    return numer / denom
+    model, user2idx, item2idx, _ = train_model(
+        df,
+        embedding_dim=embedding_dim,
+        epochs=epochs,
+        batch_size=batch_size,
+        lr=lr,
+    )
 
+    random.seed(seed)
+    config["model"] = model
+    config["user2idx"] = user2idx
+    config["item2idx"] = item2idx
+    config["top_k"] = top_k
+    # random_user = random.choice(df["user_id"].unique().tolist())
+    # recs = recommend(model, random_user, user2idx, item2idx, df, top_k=top_k)
 
-def _predict_scores(user_vec: np.ndarray,
-                    rated_items: set[int],
-                    top_n: int = 5) -> list[str]:
-    """
-    Compute score = global_mean + user_vec·item_vec + item_bias
-    for all items not yet rated, return the top N names.
-    """
-    all_ids = np.arange(num_items, dtype=np.int32)
-    mask    = np.isin(all_ids, list(rated_items), invert=True)
-    candidates = all_ids[mask]
+    # print(f"\nTop‑{top_k} recommendations for user {random_user}:")
+    # for rank, (rest_id, score) in enumerate(recs, start=1):
+    #     print(f"  {rank:2d}. Restaurant {rest_id}  (predicted rating = {score:.2f})")
 
-    if candidates.size == 0:
-        return []
+    return model, {"user2idx": user2idx, "item2idx": item2idx}
 
-    dots = _item_vecs[candidates] @ user_vec
-    preds = global_mean + dots + _item_bias[candidates]
-    top_indices = np.argsort(-preds)[:top_n]   # descending
-    return [_RESTAURANTS[candidates[i]] for i in top_indices]
-
-# ----------------------------------------------------------------------
-# 6.  Flask app
-# ----------------------------------------------------------------------
-app = Flask(__name__)
-
-@app.route("/recommend", methods=["POST"])
+@app.route("/restaurants/recommend", methods=["POST"])
 @cross_origin()
-def recommend_endpoint():
-    data = request.get_json(silent=True)
-    if data is None:
-        abort(400, "'application/json' body required")
+def restaurant_recommend_endpoint():
+    supabase_id = request.json["supabaseId"]
+    user_id = str(user_collection.find_one({"supabaseId": supabase_id})["_id"])
+    print(user_id)
+    recs = recommend(config['model'], user_id, config['user2idx'], config['item2idx'], df, top_k=config['top_k'])
+    print()
+    recs = restaurant_collection.find({"_id": {"$in": [ObjectId(rec[0]) for rec in recs]}}).to_list()
+    print(recs[0])
+    for i in range(len(recs)):
+        recs[i]["_id"] = str(recs[i]["_id"])
+    return json_util.dumps({'recommendations':recs})
 
-    # ------------------------------------------------------------------
-    # 6a.  Parse ratings — mandatory
-    # ------------------------------------------------------------------
-    if "ratings" not in data or not isinstance(data["ratings"], list):
-        abort(400, "Provide a 'ratings' list: "
-                   "[{'restaurant': name, 'rating': 1-5}, ...]")
-
-    rated_pairs: list[tuple[int, float]] = []
-    already_rated: set[int] = set()
-
-    for entry in data["ratings"]:
-        if (not isinstance(entry, dict)
-                or "restaurant" not in entry
-                or "rating"     not in entry):
-            abort(400, "Each rating must have 'restaurant' & 'rating' fields.")
-
-        name   = entry["restaurant"]
-        if name not in _NAME_TO_ID:
-            abort(400, f"Unknown restaurant: {name!r}")
-
-        rating = entry["rating"]
-        try:
-            rating = float(rating)
-        except (ValueError, TypeError):
-            abort(400, f"Rating for {name!r} must be numeric")
-
-        if not 1.0 <= rating <= 5.0:
-            abort(400, f"Rating for {name!r} must be between 1 and 5")
-
-        item_id = _NAME_TO_ID[name]
-        rated_pairs.append((item_id, rating))
-        already_rated.add(item_id)
-
-    # ------------------------------------------------------------------
-    # 6b.  Build cold-start user vector
-    # ------------------------------------------------------------------
-    user_vec = _build_user_vector(rated_pairs)
-
-    # ------------------------------------------------------------------
-    # 6c.  Produce recommendations
-    # ------------------------------------------------------------------
-    recs = _predict_scores(user_vec, already_rated, top_n=5)
-    return jsonify(recommendations=recs)
-
-# ----------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Self‑test with synthetic data if executed directly (optional)
+# -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    # Flask’s default reloader can create duplicate trainers; disable it.
-    app.run(host="0.0.0.0", port=5000, debug=False, use_reloader=False)
-
+    demo(df, epochs=3, top_k=5)
+    app.run(host="0.0.0.0", port=5000, debug=True)
+    
