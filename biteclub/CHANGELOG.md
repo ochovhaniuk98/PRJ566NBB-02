@@ -134,6 +134,18 @@ Components created for the following:
 ### New ML powered features
 - The restaurant list and blog post recommendations are now powered with an ML recommender system
 
+### Restaurant Profile Enhancements
+
+- Business users can now manage and update the events and announcements for their restaurant.
+- Business users will now be able to reply to reviews, react to reviews, and manage the engagement on their restaurant profile.
+- Business users can now report inappropriate reviews, comments, and blog posts related to their restaurant.
+
+### Review System Enhancements
+
+- The reviews now have an engagement system where users can like or dislike reviews and make comments on their reviews to engage with the restaurant management.
+- The reviews are sorted based on the engagement metrics (likes/dislikes) and the recency of the review.
+- Reported reviews will be hidden from the public view until the moderation team reviews them.
+
 ### Front-End Development
 Components created:
  - Filter menu for restaurant search
