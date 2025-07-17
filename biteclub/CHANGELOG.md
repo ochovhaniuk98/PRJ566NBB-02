@@ -8,7 +8,7 @@
 ### MongoDB
 - Setup Schema for collection as per the SRS. (Collections: User, Photo, Comment, InstagramPost, BlogPost, InternalReview, ExternalReview, ChallengeStep, AvailableChallengeDetail, ActiveChallengeDetail, Challenge, PointValueDetail, Point, Event, Announcement, MenuItem, BusinessHours, Restaurant, BusinessUser, etc.) 
 - Added restaurant data for resturants in Toronto.
-- Added mock data for users and reviews.
+- Added mock data for users and reviews. 
 - Setup MongoDB connection configuration in the backend with basic CRUD operations.
 
 ## User Authentication
@@ -145,3 +145,11 @@ Components created for the following:
 - The reviews now have an engagement system where users can like or dislike reviews and make comments on their reviews to engage with the restaurant management.
 - The reviews are sorted based on the engagement metrics (likes/dislikes) and the recency of the review.
 - Reported reviews will be hidden from the public view until the moderation team reviews them.
+
+### Front-End Development
+Components created:
+ - Filter menu for restaurant search
+ - Comments section for blog post
+ - Comments section for expanded review
+ - Report user/content form
+ - Events and Announcements tab section in Restaurant profile (includes forms for creating/deleting events and announcements)
