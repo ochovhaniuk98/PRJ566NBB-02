@@ -40,7 +40,7 @@ function ContentModerationTag({ contentType, status }) {
     },
     ApprovedAndBanned: {
       label: 'Approved and Banned',
-        className: 'bg-gray-800 text-gray-100 border border-gray-700',
+      className: 'bg-gray-800 text-gray-100 border border-gray-700',
     },
   };
 
@@ -108,48 +108,47 @@ export default function ContentModerationCard({ report, onResolve }) {
     }
   };
 
-const handleApproveAndBanUser = async () => {
-  setLoading(true);
-  try {
-    // Step 1: Approve the report
-    const approveRes = await fetch(`/api/reports/${report._id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        status: 'ApprovedAndBanned',
-        resolvedAt: new Date(),
-        incrementStrike: true,
-      }),
-    });
+  const handleApproveAndBanUser = async () => {
+    setLoading(true);
+    try {
+      // Step 1: Approve the report
+      const approveRes = await fetch(`/api/reports/${report._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'ApprovedAndBanned',
+          resolvedAt: new Date(),
+          incrementStrike: true,
+        }),
+      });
 
-    if (!approveRes.ok) {
-      throw new Error(`Report update failed: ${approveRes.status}`);
+      if (!approveRes.ok) {
+        throw new Error(`Report update failed: ${approveRes.status}`);
+      }
+
+      // Step 2: Ban the user
+      const banRes = await fetch(`/api/admin-user/ban-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          banUserId: report.reportedUserId?.supabaseId,
+          numStrikes: report.reportedUserId?.strike,
+        }),
+      });
+
+      if (!banRes.ok) {
+        throw new Error(`Ban user failed: ${banRes.status}`);
+      }
+
+      onResolve?.(report._id);
+      alert('Approved and Banned User');
+    } catch (error) {
+      console.error('Approval and ban user failed', error);
+      alert('Failed to approve and ban user');
+    } finally {
+      setLoading(false);
     }
-
-    // Step 2: Ban the user
-    const banRes = await fetch(`/api/admin-user/ban-user`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        banUserId: report.reportedUserId?.supabaseId,
-        numStrikes: report.reportedUserId?.strike,
-      }),
-    });
-
-    if (!banRes.ok) {
-      throw new Error(`Ban user failed: ${banRes.status}`);
-    }
-
-    onResolve?.(report._id);
-    alert('Approved and Banned User');
-  } catch (error) {
-    console.error('Approval and ban user failed', error);
-    alert('Failed to approve and ban user');
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="mb-4">
@@ -166,10 +165,10 @@ const handleApproveAndBanUser = async () => {
             - 120px : the first column will always be 120 pixels wide (fixed width).
             - 1fr   : the second column takes up the remaining space (flexible, like a stretchable unit). 
         */}
-        <div className="grid grid-cols-[120px_1fr] text-gray-600 gap-y-1">
+        <div className="grid grid-cols-[200px_1fr] text-gray-600 gap-y-1">
           {/* REPORTED USER */}
           <span className="col-span-2">
-            <strong>Reported User </strong>
+            <strong>Reported User</strong>
           </span>
 
           <span>Name</span>
@@ -228,22 +227,7 @@ const handleApproveAndBanUser = async () => {
 
           <span>Tag</span>
           <ContentModerationTag contentType={report.contentType} status={report.status} />
-          {(report.status === 'Approved' || report.status === 'Rejected') && (
-            <>
-              <span>Resolved Time</span>
-              <span>
-                :{' '}
-                {new Date(report.resolvedAt)?.toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: '2-digit',
-                  hour12: true,
-                })}
-              </span>
-            </>
-          )}
+
           {report.contentId && (
             <>
               <span>Content</span>
@@ -263,8 +247,10 @@ const handleApproveAndBanUser = async () => {
                       ? `/blog-posts/comments/${report.contentId?._id}`
                       : report.contentType === 'BlogPost'
                       ? `/blog-posts/${report.contentId?._id}`
-                      : report.contentType === 'InternalReview' || report.contentType === 'ExternalReview' // [!] REDIRECT TO RESTAURANT PROFILE INSTEAD.
-                      ? `/restaurants/${report.contentId?.restaurant_id}`
+                      : report.contentType === 'InternalReview'
+                      ? `/restaurants/${report.contentId?.restaurant_id}` // redirect to the restaurant page only (cannot open the specific review)
+                      : report.contentType === 'ExternalReview'
+                      ? report.contentId?.content?.embedLink || '#' // redirect to IG post
                       : '#'
                   }
                   className="text-neutral-600 cursor-pointer underline hover:text-blue-600"
@@ -272,6 +258,31 @@ const handleApproveAndBanUser = async () => {
                   rel="noopener noreferrer"
                 >
                   {report.contentId?.title || report.contentId?._id}
+                </a>
+              </span>
+            </>
+          )}
+
+          {report.contentType === 'ExternalReview' && (
+            <>
+              <span>Affected Restaurant</span>
+              {/* Fall back to ._id if title is not present */}
+
+              <span>
+                :{' '}
+                {/* 
+                [TODO: ADJUST PATH]
+                  CommentPost → /blog-posts/comments/[id]                   (Done)
+                  BlogPost → /blog-posts/[id]                               (Done)
+                  Review → /restaurants/[restaurantId]/reviews/[reviewId]   (Not sure of how to get to a specific review)
+                */}
+                <a
+                  href={`/restaurants/${report.contentId?.restaurant_id}` || '#'}
+                  className="text-neutral-600 cursor-pointer underline hover:text-blue-600"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {report.contentId?.restaurant_id?.name || report.contentId?.restaurant_id}
                 </a>
               </span>
             </>
@@ -292,6 +303,23 @@ const handleApproveAndBanUser = async () => {
               hour12: true,
             })}
           </span>
+
+          {report.status !== 'Pending' && (
+            <>
+              <span>Resolved Time</span>
+              <span>
+                :{' '}
+                {new Date(report.resolvedAt)?.toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
+              </span>
+            </>
+          )}
         </div>
 
         {report.status === 'Pending' && (

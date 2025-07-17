@@ -3,7 +3,15 @@ import ReportForm from './ReportForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag } from '@fortawesome/free-solid-svg-icons';
 
-export function ReportContentLink({ setPopupHovered = () => {}, contentTitle, alignToRight = false }) {
+export function ReportContentLink({
+  setPopupHovered = () => {},
+  contentTitle,
+  alignToRight = false,
+  reportType = '',
+  contentType = '',
+  contentId = '',
+  author = '',
+}) {
   const [openReportForm, setOpenReportForm] = useState(false);
 
   return (
@@ -20,9 +28,19 @@ export function ReportContentLink({ setPopupHovered = () => {}, contentTitle, al
           <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy mr-2`} />
           Report Content
         </li>
+
       </ul>
       {/* Report form */}
-      {openReportForm && <ReportForm onClose={() => setOpenReportForm(false)} contentTitle={contentTitle} />}
+      {openReportForm && (
+        <ReportForm
+          onClose={() => setOpenReportForm(false)}
+          contentTitle={contentTitle}
+          reportType={reportType}
+          reportedUser={author}
+          contentType={contentType}
+          contentId={contentId}
+        />
+      )}
     </div>
   );
 }

@@ -19,7 +19,6 @@ export default function ReportForm({
   /*
   // ==========================================| DEMO DATA |==========================================
   // ref: dbSchema.js -- ReportSchema
-  // DEMO: Reporting a Content
   const demoContentData = {
     // [Note] NOT the reportType i.e. 'User' or 'Content'
     // One of: ['InternalReview', 'ExternalReview', 'CommentPost', 'BlogPost', 'User']
@@ -40,25 +39,6 @@ export default function ReportForm({
 
     // reason from form textarea input
     reason: 'THIS USER IS POSTING SPAM...',
-  };
-
-  // DEMO: Reporting a User
-  const demoUserData = {
-    contentType: 'User',
-    reportedUserId: '684b90b687f7b607b363bf4d',
-    reporterType: 'User',
-    reporterId: '6852bb8f5f6e83284b2eda97',
-    reason: ' THIS USER IS POSTING CRAZY THINGS...',
-  };
-
-  // DEMO: Reported by a Business User
-  const demoReporterBusinessData = {
-    contentType: 'InternalReview',
-    contentId: '6851d1c41104eb24a4cd6c72',
-    reportedUserId: '68377e090be4711cfe59c72a',
-    reporterType: 'BusinessUser',
-    reporterId: '68548967aec05d6c03193b3c', // [!] Business User Id not restaurant Id
-    reason: "... I am the Business User and I don't find this   related to my restaurant... ",
   };
   // =================================================================================================
   */
