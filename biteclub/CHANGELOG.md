@@ -133,3 +133,11 @@ Components created for the following:
 
 ### New ML powered features
 - The restaurant list and blog post recommendations are now powered with an ML recommender system
+
+### Front-End Development
+Components created:
+ - Filter menu for restaurant search
+ - Comments section for blog post
+ - Comments section for expanded review
+ - Report user/content form
+ - Events and Announcements tab section in Restaurant profile (includes forms for creating/deleting events and announcements)
