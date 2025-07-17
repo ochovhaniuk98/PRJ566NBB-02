@@ -23,7 +23,7 @@ export default function RestaurantResults() {
       const supabase = createClient()
       const { data: { user }, error } = await supabase.auth.getUser();
       if (!error) {
-        const personalizedRecommendationsRes = await fetch(`${process.env.NEXT_PUBLIC_RECOMMENDER_URL}/recommend`, {
+        const personalizedRecommendationsRes = await fetch(`${process.env.NEXT_PUBLIC_RECOMMENDER_URL}/restaurants/recommend`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
