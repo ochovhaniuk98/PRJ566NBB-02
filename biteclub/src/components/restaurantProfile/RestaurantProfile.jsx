@@ -214,7 +214,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         {/* Photos */}
         {selectedTab === restaurantTabs[2] && <PhotoGallery photos={restaurantImages} isOwner={isOwner} />}
         {/* Events and Announcements */}
-        {selectedTab === restaurantTabs[3] && <EventsAndAnnounce />}
+        {selectedTab === restaurantTabs[3] && <EventsAndAnnounce isOwner={isOwner} restaurantId={restaurantId} />}
         {/* Business Info */}
         {selectedTab === restaurantTabs[restaurantTabs.length - 1] && <BusinessInfo restaurant={restaurantData} />}
       </div>
