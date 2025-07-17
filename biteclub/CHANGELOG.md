@@ -112,3 +112,21 @@ Components created for the following:
 ### Admin Dashboard
 - Admin Panel created for managing approval of business users' accounts based on their uploaded documents.
 - Admins can view and approve/reject business user accounts.
+
+# Sprint 3
+### Blog Posts list 
+ - User can now navigate to the blog post section from the main menu and see the list of the blog posts that consists of the combination of popular blog posts and newly added blog posts.
+
+### Restaurants list 
+ - User can now navigate to the restaurant section from the main menu and see the list of the restaurants that consists of the combination of popular restaurants and newly added blog posts.
+   
+### Restaurant Filter
+ - In addition to searching for a restaurants, users can also filter restaurants to narrow their search.
+ - Geolocation of the user is used to do a distance filtering.
+
+### Comments and Replies
+ - Users can now post a comments on a blog post to engage with the community.
+ - Users can reply to the comments. Only one level of nested comments is allowed.
+
+### Reporting inappropriate blog post or comment
+- Users can now report a blog post or a comment and moderation team will be reviewing the request.
