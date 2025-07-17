@@ -6,7 +6,14 @@ import ReviewCardExpanded from './ReviewCardExpanded';
 import { createClient } from '@/lib/auth/client';
 import { updateReviewEngagement } from '@/lib/db/dbOperations';
 
-export default function MasonryReviewGrid({ selectedReview, setSelectedReview, reviewList }) {
+export default function MasonryReviewGrid({
+  selectedReview,
+  setSelectedReview,
+  reviewList,
+  restaurantId,
+  isOwner,
+  restaurantName,
+}) {
   // breakpoints for when an internal review is selected and the expanded panel appears
   const breakpointColumnsObj = useMemo(() => {
     const isInternal = selectedReview && !selectedReview?.content?.embedLink;
@@ -91,9 +98,11 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
     fetchUser();
   }, []);
 
-  const [engagementData, setEngagementData] = useState(() => {
-    // Initialize from combinedList's reviews likes/dislikes/comments counts
-    return combinedList.reduce((acc, review) => {
+  const [engagementData, setEngagementData] = useState({});
+
+  useEffect(() => {
+    if (!user || !combinedList.length) return;
+    const newEngagementData = combinedList.reduce((acc, review) => {
       acc[review._id] = {
         likes: review.likes?.count || 0,
         dislikes: review.dislikes?.count || 0,
@@ -103,7 +112,8 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
       };
       return acc;
     }, {});
-  });
+    setEngagementData(newEngagementData);
+  }, [user, combinedList]);
 
   const updateEngagementState = (reviewId, resData) => {
     setEngagementData(prev => ({
@@ -114,6 +124,7 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
         dislikes: resData.dislikes.count,
         userLiked: resData.likes.users.includes(user._id),
         userDisliked: resData.dislikes.users.includes(user._id),
+        comments: resData.comments.length,
       },
     }));
   };
@@ -138,6 +149,16 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
         console.error('Failed to update dislike engagement:', error);
       }
     };
+  };
+
+  const updateCommentCount = (reviewId, newCount) => {
+    setEngagementData(prev => ({
+      ...prev,
+      [reviewId]: {
+        ...prev[reviewId],
+        comments: newCount,
+      },
+    }));
   };
 
   return (
@@ -174,11 +195,16 @@ export default function MasonryReviewGrid({ selectedReview, setSelectedReview, r
       {/* Expanded side panel (visible when internal review is selected) */}
       {selectedReview && !selectedReview?.content?.embedLink && (
         <ReviewCardExpanded
+          currentUser={user}
+          restaurantId={restaurantId}
+          restaurantName={restaurantName}
+          isOwner={isOwner}
           selectedReview={selectedReview}
           reviewEngagementStats={engagementData[selectedReview._id]}
           onLike={handleLike(selectedReview._id)}
           onDislike={handleDislike(selectedReview._id)}
           onClose={() => setSelectedReview(null)}
+          updateCommentCount={updateCommentCount}
         />
       )}
     </div>
