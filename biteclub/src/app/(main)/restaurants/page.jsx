@@ -1,4 +1,4 @@
-use client';
+'use client';
 import RestaurantCard from '@/components/restaurantProfile/RestaurantCard';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';

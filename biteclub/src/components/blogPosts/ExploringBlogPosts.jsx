@@ -7,6 +7,7 @@ import { Button } from '../shared/Button';
 export default function ExploringBlogPosts() {
   const [blogPosts, setBlogPosts] = useState([]);
   const [page, setPage] = useState(1);
+
   const [hasMore, setHasMore] = useState(true);
   const [fetchCompleted, setFetchCompleted] = useState(false);
 
@@ -24,9 +25,8 @@ export default function ExploringBlogPosts() {
     setFetchCompleted(false);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_RECOMMENDER_URL}/blogposts/posts?limit=20&offset=${(page-1)*20}`);
+      const res = await fetch(`/api/blog-posts/get-exploring-posts?page=${page}&limit=20`);
       const data = await res.json();
-      console.log(data)
 
       if (reset) {
         setPage(1);
@@ -73,7 +73,7 @@ export default function ExploringBlogPosts() {
   const loadMore = () => {
     // save current vertical scroll position before state update
     scrollPositionRef.current = window.scrollY;
-    setPage(prev => prev+1);
+    setPage(prev => prev + 1);
   };
 
   return (
