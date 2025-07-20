@@ -80,7 +80,7 @@ export default function MainMenu() {
         {menuLinks.map((link, idx) => {
           const isSelected = pathname === link;
           return (
-            <div className={`group flex flex-col items-center gap-y-1 cursor-pointer`}>
+            <div key={idx} className={`group flex flex-col items-center gap-y-1 cursor-pointer`}>
               <div
                 className={`${
                   isSelected ? 'bg-brand-yellow' : 'bg-brand-green-extralite'
