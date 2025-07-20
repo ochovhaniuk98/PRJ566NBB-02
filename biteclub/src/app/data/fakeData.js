@@ -466,6 +466,7 @@ export const fakeUser = {
   },
   userType: 'user',
   joinedSince: new Date('2025-08-15'),
+  numChallengesCompleted: 8,
 };
 
 export const fakeComment = {
@@ -538,4 +539,14 @@ export const fakeBlogPost = {
     "I wandered into this small café during a storm and discovered the best chai latte I've ever had. Cozy vibes, vintage décor, and friendly staff — what a gem!",
   previewImage: '/img/placeholderImg.jpg',
   previewTitle: 'A Rainy Day Café Hunt',
+};
+
+// CHALLENGES
+export const fakeChallenge1 = {
+  title: 'Around the World in 80 Days',
+  description: 'See the world in Toronto! Try a cuisine from 5 different continents.',
+  numberOfPoints: 300,
+  thumbnailImage: '/img/placeholderImg.jpg',
+  restaurants: [],
+  duration: 7, // days
 };
