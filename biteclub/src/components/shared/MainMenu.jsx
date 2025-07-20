@@ -11,6 +11,7 @@ export default function MainMenu() {
   const pathname = usePathname();
   const [userType, setUserType] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const fetchUserType = async () => {
@@ -52,6 +53,14 @@ export default function MainMenu() {
     '/blog-posts',
     '/users/settings',
   ];
+  const menuItems = [
+    { icon: faHouseChimney, label: 'Home' },
+    { icon: faUser, label: 'Profile' },
+    { icon: faGamepad, label: 'Challenges' },
+    { icon: faUtensils, label: 'Restaurants' },
+    { icon: faMicroblog, label: 'Blogs' },
+    { icon: faGear, label: 'Settings' },
+  ];
 
   // Now the menu bar will not load until the user profile is ready.
   // This prevents users from clicking it too early (i.e., before the user profile is loaded), which could cause an unintended redirect to the login page.
@@ -60,24 +69,34 @@ export default function MainMenu() {
   }
 
   return (
-    <aside className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey">
-      <nav className="space-y-16 flex flex-col items-center">
+    <aside
+      className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey hover:w-fit"
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+    >
+      <nav className="space-y-6 flex flex-col items-center text-brand-navy">
         {menuLinks.map((link, idx) => {
           const isSelected = pathname === link;
           return (
-            <div
-              className={`${
-                isSelected ? 'bg-brand-yellow' : 'bg-brand-green-extralite'
-              } rounded-full aspect-square flex items-center justify-center outline outline-brand-navy hover:bg-brand-green-lite`}
-              key={idx}
-            >
-              <Link
+            <div className={`group flex flex-col items-center gap-y-1 cursor-pointer`}>
+              <div
+                className={`${
+                  isSelected ? 'bg-brand-yellow' : 'bg-brand-green-extralite'
+                } rounded-full aspect-square w-8 h-8 flex items-center justify-center outline outline-brand-navy transition-transform duration-200 group-hover:scale-115`}
                 key={idx}
-                href={link}
-                className={`block p-1 ${isSelected ? 'text-brand-navy' : 'text-brand-navy'} hover:text-brand-navy`}
               >
-                <FontAwesomeIcon icon={menuIcons[idx]} className="icon-lg" />
-              </Link>
+                <Link
+                  key={idx}
+                  href={link}
+                  className={`block p-1 ${isSelected ? 'text-brand-navy' : 'text-brand-navy'} hover:text-brand-navy`}
+                >
+                  <FontAwesomeIcon icon={menuItems[idx].icon} className="icon-lg" />
+                </Link>
+              </div>
+              {/* show label text only on hover */}
+              {isHovered ? <h6>{menuItems[idx].label}</h6> : <h6 className={`opacity-0`}>X</h6>}
             </div>
           );
         })}
