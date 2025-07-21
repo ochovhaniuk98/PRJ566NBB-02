@@ -25,7 +25,7 @@ const CUISINE_CONFIG = {
   },
 };
 
-export default function Questionnaire() {
+export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png' }) {
   const router = useRouter();
 
   const [dietaryOptions, setDietaryOptions] = useState([
@@ -104,17 +104,34 @@ export default function Questionnaire() {
         openToDiversity,
       }),
     });
-    if (res.status == 200){
-      router.push("/")
+    if (res.status == 200) {
+      router.push('/');
     }
   }
 
+  const bgImage =
+    step === FIRST_STEP
+      ? "url('/img/greenOnYellowBG.png')"
+      : step === SECOND_STEP
+      ? "url('/img/peachOnAquaBG.png')"
+      : "url('/img/yellowOnBlueBG.png')";
+
   return (
     <div className="grid grid-cols-[55%_45%] h-screen relative">
-      <div className="bg-black"></div>
+      {/* background image*/}
+      <div
+        className="bg-cover"
+        style={{
+          backgroundImage: bgImage,
+          backgroundSize: '175%',
+          backgroundPosition: '-2rem',
+        }}
+      ></div>
       <div className="relative bg-[#fffbe6] p-[10%] h-full">
         <div className="flex flex-col items-center">
-          <h1 className="self-center text-xl font-extrabold">{step}</h1>
+          <div>
+            <h1 className="self-center text-xl font-secondary">{step}</h1>
+          </div>
           <span className="self-center text-[8px]">STEP {step}/3</span>
         </div>
         {step == FIRST_STEP ? (
@@ -176,7 +193,7 @@ function PreferencesSelector({ config, picked, setPicked, options, setOptions })
 
   return (
     <div className="flex flex-col h-full">
-      <h2 className="font-bold self-center">{config.title}</h2>
+      <h2 className="self-center">{config.title}</h2>
       <div className="mb-[50px]">
         <p className="text-sm">{config.instructions}</p>
         <div className="flex flex-wrap gap-2 p-4 rounded-2xl">
