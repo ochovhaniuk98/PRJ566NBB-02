@@ -466,6 +466,7 @@ export const fakeUser = {
   },
   userType: 'user',
   joinedSince: new Date('2025-08-15'),
+  numChallengesCompleted: 8,
 };
 
 export const fakeComment = {
@@ -538,4 +539,107 @@ export const fakeBlogPost = {
     "I wandered into this small café during a storm and discovered the best chai latte I've ever had. Cozy vibes, vintage décor, and friendly staff — what a gem!",
   previewImage: '/img/placeholderImg.jpg',
   previewTitle: 'A Rainy Day Café Hunt',
+};
+
+///////////////////////////// FAKE DATA FOR CHALLENGES ///////////////////////////////////////////
+
+// FAKE RESTAURANTS
+export const fakeRestaurants = [
+  {
+    _id: 'r1',
+    name: 'The Pomegranate Restaurant',
+    location: '420 College St, Toronto, ON M5T 1T3',
+  },
+  {
+    _id: 'r2',
+    name: 'Pai',
+    location: '18 Duncan St, Toronto, ON M5H 3G8',
+  },
+  {
+    _id: 'r3',
+    name: 'Gusto101',
+    location: '12345 Another Address St. Totonto M32 1L6',
+  },
+  {
+    _id: 'r4',
+    name: 'The  Vegan Hub',
+    location: '18 Duncan St, Toronto, ON M5H 3G8',
+  },
+  {
+    _id: 'r5',
+    name: 'The Pomegranate Restaurant',
+    location: '420 College St, Toronto, ON M5T 1T3',
+  },
+];
+
+// FAKE CHALLENGES
+export const fakeChallenges = [
+  {
+    _id: 'abc',
+    title: 'Around the World in 80 Days',
+    description: 'See the world in Toronto! Try a cuisine from 5 different continents.',
+    numberOfPoints: 300,
+    thumbnailImage: '/img/placeholderImg.jpg',
+    restaurants: ['r1', 'r2', 'r3', 'r4', 'r5'],
+    duration: 80,
+  },
+  {
+    _id: 'def',
+    title: 'The Great Vegan Voyage',
+    description: 'Greens, greens, eat your greens! Save the planet with your diet.',
+    numberOfPoints: 500,
+    thumbnailImage: '/img/placeholderImg.jpg',
+    restaurants: ['r3', 'r5', 'r1'],
+    duration: 30,
+  },
+  {
+    _id: 'xyz',
+    title: 'Shiapao Pow Showdown',
+    description: 'Try different steamed buns from Toronto.',
+    numberOfPoints: 200,
+    thumbnailImage: '/img/placeholderImg.jpg',
+    restaurants: ['r2', 'r4', 'r5'],
+    duration: 3,
+  },
+  {
+    _id: 'lmn',
+    title: 'Taco Taco Taco',
+    description: 'Eat tacos from 5 spots in the city.',
+    numberOfPoints: 450,
+    thumbnailImage: '/img/placeholderImg.jpg',
+    restaurants: ['r1', 'r2', 'r3', 'r4', 'r5'],
+    duration: 30,
+  },
+];
+
+// FAKE ACTIVATED CHALLENGE DETAIL
+export const fakeActivatedChallengeDetail = {
+  _id: 'activation1',
+  userId: '664abc1234567890fedcba98',
+  challengeId: 'abc',
+  challengeSteps: [
+    {
+      restaurantId: 'r1',
+      verificationStatus: false,
+    },
+    {
+      restaurantId: 'r2',
+      verificationStatus: true,
+    },
+    {
+      restaurantId: 'r3',
+      verificationStatus: false,
+    },
+    {
+      restaurantId: 'r4',
+      verificationStatus: true,
+    },
+    {
+      restaurantId: 'r5',
+      verificationStatus: false,
+    },
+  ],
+  completionStatus: 'in-progress', // or 'completed' or 'dropped'
+  startDate: new Date('2025-07-01T00:00:00Z'),
+  endDate: new Date('2025-08-15T00:00:00Z'),
 };

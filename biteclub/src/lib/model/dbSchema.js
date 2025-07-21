@@ -37,6 +37,7 @@ const UserSchema = new mongoose.Schema({
   orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
   userType: String,
   joinedSince: Date, // (sprint 2) newly added. for user dashboard.
+  numChallengesCompleted: Number,
 });
 
 // TODO: Review if counts can be removed and be calculated through the users array
