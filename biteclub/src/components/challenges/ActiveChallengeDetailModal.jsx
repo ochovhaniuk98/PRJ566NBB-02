@@ -147,7 +147,9 @@ function ChallengeStep({ idx, restaurant, isVerified }) {
     >
       {/* white plate */}
       <div
-        className={`rounded-full w-full aspect-square bg-white border border-brand-grey-lite flex flex-col items-center justify-center p-2 text-center relative`}
+        className={`rounded-full w-full aspect-square bg-white border border-brand-grey-lite flex flex-col items-center justify-center p-2 text-center relative ${
+          !isVerified && 'shadow-md'
+        }`}
       >
         <div className="absolute h-24 w-24 rounded-full bg-brand-grey-lite/10 shadow-inner flex flex-col items-center justify-center">
           {/* empty plate if verified*/}
