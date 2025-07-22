@@ -40,17 +40,6 @@ export function LoginForm({ className, ...props }) {
       if (userError || !user) throw userError;
 
       const userType = user?.user_metadata.user_type;
-      // console.log(`TYPE: ${userType}`)
-
-      // Call API to get MongoDB userType.
-      // const response = await fetch('/api/get-user-type', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ supabaseId: user.id }),
-      // });
-
-      // const { userType } = await response.json();
-      // if (!response.ok) throw new Error(`Failed to get user role: ${userType || 'unknown error'}`);
 
       // Redirect based on userType
       router.push(`/users/${userType}`);

@@ -10,39 +10,18 @@ import { useEffect, useState } from 'react';
 
 export default function MainMenu() {
   const { user } = useUser(); // Current logged-in user's Supabase info
-  const [userType, setUserType] = useState(null);
+  const userType = user?.user_metadata?.user_type || null;
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    const fetchUserType = async () => {
-      try {
-
-        if (!user?.id) {
-          setUserType(null);
-          setLoading(false);
-          return; // Exit early if no user is logged in
-        }
-
-        // const response = await fetch(`/api/get-user-type?authId=${data.user.id}`);
-        const response = await fetch(`/api/get-user-type?authId=${user.id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch user type');
-        }
-
-        const { userType } = await response.json();
-        setUserType(userType);
-      } catch (error) {
-        console.error('Error fetching user type:', error);
-        setUserType(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserType();
-  }, [user?.id]);
+    // Wait for user to be resolved (either an object or null)
+    // Avoid staying in "loading" forever
+    if (user !== undefined) {
+      setLoading(false);
+    }
+  }, [user]);
 
   const menuIcons = [faHouseChimney, faUser, faGamepad, faUtensils, faMicroblog, faGear];
   // !!! settings link temporary - will put it inside general user's profile later !!!
@@ -63,10 +42,12 @@ export default function MainMenu() {
     { icon: faGear, label: 'Settings' },
   ];
 
-  // Now the menu bar will not load until the user profile is ready.
+  // return an EMPTY Menu Bar until the USER profile is READY.
   // This prevents users from clicking it too early (i.e., before the user profile is loaded), which could cause an unintended redirect to the login page.
   if (loading) {
-    return null;
+    return (
+      <aside className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey hover:w-fit"></aside>
+    );
   }
 
   return (

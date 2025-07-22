@@ -43,28 +43,18 @@ export default function ReportForm({
   // =================================================================================================
   */
 
-  const [reason, setReason] = useState('');
-  const [reporterUserType, setReporterUserType] = useState(null);
-  const [reporter, setReporter] = useState(null);
   const { user } = useUser(); // Current logged-in user's Supabase info
+  const userType = user?.user_metadata.user_type; // reporter = current user
+
+  const [reason, setReason] = useState('');
+  const [reporter, setReporter] = useState(null);
 
   // Fetch current user and their profile
   useEffect(() => {
     const fetchReporterData = async () => {
       try {
-        
-        if(!user?.id) return;
+        if (!user?.id) return;
         const authId = user.id;
-
-        // Get user type
-        const reporterUserTypeRes = await fetch(`/api/get-user-type?authId=${authId}`);
-        if (!reporterUserTypeRes.ok) {
-          console.error('Failed to fetch user type');
-          return;
-        }
-
-        const { userType } = await reporterUserTypeRes.json();
-        setReporterUserType(userType);
 
         // Get profile based on type
         let reporterRes;
@@ -106,9 +96,9 @@ export default function ReportForm({
 
     // renaming userType
     let reporterType;
-    if (reporterUserType === 'general') {
+    if (userType === 'general') {
       reporterType = 'User';
-    } else if (reporterUserType === 'business') {
+    } else if (userType === 'business') {
       reporterType = 'BusinessUser';
     }
 
