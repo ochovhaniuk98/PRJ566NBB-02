@@ -76,6 +76,7 @@ import content from '@/components/tiptap-rich-text-editor/tiptap-templates/simpl
 import { InstagramNode } from '../../tiptap-extension/InstagramNode';
 import { RestaurantMention } from '../../tiptap-node/restaurant-mention-node/RestaurantMention';
 import { useCallback } from 'react';
+import { formatEmbedLink } from '@/lib/utils/utility-functions';
 
 const MainToolbarContent = ({ onHighlighterClick, onLinkClick, isMobile, onInstagramClick }) => {
   return (
@@ -216,7 +217,12 @@ export function SimpleEditor({ onContentChange, content = null }) {
 
   const insertInstagram = useCallback(() => {
     const url = prompt('Paste Instagram post URL:');
-    if (url) {
+    if (!url) {
+      alert('No URL provided. Please try again.');
+      return;
+    }
+    const formattedLink = formatEmbedLink(url);
+    if (formattedLink) {
       editor
         .chain()
         .focus()
@@ -225,6 +231,8 @@ export function SimpleEditor({ onContentChange, content = null }) {
           attrs: { url },
         })
         .run();
+    } else {
+      alert('Invalid Instagram post link format. Please try again.');
     }
   }, [editor]);
 
