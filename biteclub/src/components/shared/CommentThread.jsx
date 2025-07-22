@@ -4,7 +4,6 @@ import { Button } from './Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 
 import { faTrashCan, faFlag } from '@fortawesome/free-solid-svg-icons';
@@ -17,8 +16,7 @@ import ReportForm from '../shared/ReportForm';
 export default function CommentThread({ post }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
-  // const [user, setUser] = useState(null);
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
   const [userProfile, setUserProfile] = useState(null);
   const [fetchedPostUser, setFetchedPostUser] = useState(false);
 
@@ -39,12 +37,8 @@ export default function CommentThread({ post }) {
     // set user
     const fetchUserProfile = async () => {
       try {
-        // const supabase = createClient();
-        // const { data } = await supabase.auth.getUser();
-        // if (!data?.user) throw new Error('No Supabase user');
-        // const supabaseId = data.user.id;
 
-        if (!user?.id) return; // Wait until user is available
+        if (!user?.id) return;
 
         // const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
         const res = await fetch(`/api/users/get-general-user?id=${user.id}`);
@@ -62,7 +56,7 @@ export default function CommentThread({ post }) {
     };
 
     fetchUserProfile();
-  }, [post]);
+  }, [post, user?.id]);
 
   // nest replies within parent comments (parent comment -> [reply 1, reply 2 ...])
   function nestComments(comments) {

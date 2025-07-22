@@ -4,14 +4,13 @@ import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Button } from '@/components/shared/Button';
 import { useState, useEffect, useRef } from 'react';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
 
 export default function Home() {
   const [personalizedRecommendations, setPersonalizedRecommendations] = useState([]);
   const [fetchCompleted, setFetchCompleted] = useState(false);
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
 
   // fetch restaurants
   const fetchRestaurants = async (reset = false) => {
@@ -21,9 +20,9 @@ export default function Home() {
       console.warn('User not found. Skipping personalized fetch.');
       return;
     }
-    // const supabase = createClient()
-    // const { data: { user }, error } = await supabase.auth.getUser();
+
     try {
+      if (!user?.id) return;
       const personalizedRecommendationsRes = await fetch(
         `${process.env.NEXT_PUBLIC_RECOMMENDER_URL}/restaurants/recommend`,
         {

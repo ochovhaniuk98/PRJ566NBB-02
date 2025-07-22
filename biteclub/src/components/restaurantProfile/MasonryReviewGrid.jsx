@@ -3,7 +3,6 @@ import ReviewCard from '../shared/ReviewCard';
 import { useEffect, useMemo, useState } from 'react';
 import InstagramEmbed from './InstagramEmbed';
 import ReviewCardExpanded from './ReviewCardExpanded';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 import { updateReviewEngagement } from '@/lib/db/dbOperations';
 
@@ -15,42 +14,40 @@ export default function MasonryReviewGrid({
   isOwner,
   restaurantName,
 }) {
-  // const [user, setUser] = useState(null);
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
   const [userProfile, setUserProfile] = useState(null);
   const [reportedReviewIds, setReportedReviewIds] = useState([]);
   const [engagementData, setEngagementData] = useState({});
 
   useEffect(() => {
     const fetchUser = async () => {
-      // const supabase = createClient();
-      // const { data } = await supabase.auth.getUser();
-      // if (!data?.user) {
-      //   console.error('No user logged in');
-      //   return;
-      // }
-      // const userType = data.user.user_metadata?.user_type;
-      const userType = user.user_metadata?.user_type;
+      if (!user?.id) return;
 
-      let mongoUser;
-      if (userType === 'business') {
-        // mongoUser = await fetch(`/api/business-user/get-profile-by-authId?authId=${data.user.id}`);
-        mongoUser = await fetch(`/api/business-user/get-profile-by-authId?authId=${user.id}`);
-      } else {
-        // mongoUser = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
-        mongoUser = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
-      }
-      if (!mongoUser.ok) {
-        console.error('Failed to fetch user profile:', mongoUser.status);
-        return;
-      }
-      const { profile } = await mongoUser.json();
+      try {
+        const userType = user.user_metadata?.user_type;
 
-      setUserProfile(profile);
-      console.log('Fetched user:', profile);
+        let mongoUser;
+        if (userType === 'business') {
+          mongoUser = await fetch(`/api/business-user/get-profile-by-authId?authId=${user.id}`);
+        } else {
+          mongoUser = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
+        }
+
+        if (!mongoUser.ok) {
+          console.error('Failed to fetch user profile:', mongoUser.status);
+          return;
+        }
+
+        const { profile } = await mongoUser.json();
+        setUserProfile(profile);
+        console.log('Fetched user:', profile);
+      } catch (err) {
+        console.error('Error fetching user profile:', err.message);
+      }
     };
+
     fetchUser();
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     const fetchReportedReviews = async () => {

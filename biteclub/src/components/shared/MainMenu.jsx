@@ -1,7 +1,6 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,19 +9,16 @@ import { faMicroblog } from '@fortawesome/free-brands-svg-icons';
 import { useEffect, useState } from 'react';
 
 export default function MainMenu() {
-  const { user } = useUser();
-  const pathname = usePathname();
+  const { user } = useUser(); // Current logged-in user's Supabase info
   const [userType, setUserType] = useState(null);
+  const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const fetchUserType = async () => {
       try {
-        // const supabase = createClient();
-        // const { data } = await supabase.auth.getUser();
 
-        // if (!data?.user?.id) {
         if (!user?.id) {
           setUserType(null);
           setLoading(false);
@@ -46,7 +42,7 @@ export default function MainMenu() {
     };
 
     fetchUserType();
-  }, []);
+  }, [user?.id]);
 
   const menuIcons = [faHouseChimney, faUser, faGamepad, faUtensils, faMicroblog, faGear];
   // !!! settings link temporary - will put it inside general user's profile later !!!

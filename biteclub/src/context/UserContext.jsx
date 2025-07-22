@@ -36,7 +36,6 @@ export const UserProvider = ({ children }) => {
 // Custom hook to use the context in other components (e.g., useUser())
 export const useUser = () => useContext(UserContext);
 
-
 /*
     example usage of useUser:
     -------------------------
@@ -49,4 +48,19 @@ export const useUser = () => useContext(UserContext);
     return <div>Welcome, {user?.email}</div>
     }
 
+*/
+
+/*
+  const supabase = createClient();
+
+  Always use supabase.auth.getUser() to protect pages and user data.
+  Never trust supabase.auth.getSession() inside Server Components. It isn't guaranteed to revalidate the Auth token.
+  It's safe to trust getUser() because it sends a request to the Supabase Auth server every time to revalidate the Auth token.
+  const { data, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !data.user) {
+    throw new Error('User not authenticated');
+  }
+
+  const user = data.user;
 */

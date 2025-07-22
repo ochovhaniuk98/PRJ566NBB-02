@@ -3,12 +3,11 @@ import { useEffect, useState, useRef } from 'react';
 import Masonry from 'react-masonry-css';
 import BlogPostCard from '../shared/BlogPostCard';
 import { Button } from '../shared/Button';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 export default function FollowingBlogPosts() {
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
   const [userMongoId, setUserMongoId] = useState(null);
   const [blogPosts, setBlogPosts] = useState([]);
   const [page, setPage] = useState(1);
@@ -28,11 +27,7 @@ export default function FollowingBlogPosts() {
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        // const supabase = createClient();
-        // const { data, error: authError } = await supabase.auth.getUser();
-        // if (authError || !data.user) throw new Error('User not authenticated');
-
-        // const id = await getGeneralUserMongoIDbySupabaseId({ supabaseId: data.user.id });
+        if (!user?.id) return;
         const id = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
         console.log('(userDashboard) MONGOID:', id);
         if (!id) throw new Error('MongoDB ID not found');
@@ -43,7 +38,7 @@ export default function FollowingBlogPosts() {
     };
 
     fetchUserId();
-  }, []);
+  }, [user?.id]);
 
   // fetch Exploring blog posts
   const fetchExploringPosts = async (reset = false) => {

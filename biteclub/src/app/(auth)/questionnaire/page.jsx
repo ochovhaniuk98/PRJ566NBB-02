@@ -1,8 +1,7 @@
 'use client';
 import { useState, useRef } from 'react';
-// import { createClient } from '@/lib/auth/client';
-import { useUser } from '@/context/UserContext';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/context/UserContext';
 
 const DIETARY_CONFIG = {
   title: 'DIETARY PREFERENCES',
@@ -28,7 +27,7 @@ const CUISINE_CONFIG = {
 
 export default function Questionnaire() {
   const router = useRouter();
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
 
   const [dietaryOptions, setDietaryOptions] = useState([
     'Vegetarian',
@@ -78,7 +77,7 @@ export default function Questionnaire() {
   const [restaurantFrequency, setRestaurantFrequency] = useState(DEFAULT_VALUE);
   const [decisionDifficulty, setDecisionDifficulty] = useState(DEFAULT_VALUE);
   const [openToDiversity, setOpenToDiversity] = useState(DEFAULT_VALUE);
-  // const supabase = createClient();
+
   function nextStep() {
     if (step == FIRST_STEP) {
       setStep(SECOND_STEP);

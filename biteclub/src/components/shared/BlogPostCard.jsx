@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-// import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faEllipsis } from '@fortawesome/free-solid-svg-icons';
@@ -29,8 +27,7 @@ export default function BlogPostCard({
   onSelect = () => {},
   onDeleteClick, // optional — do NOT provide a default
 }) {
-  // const supabase = createClient();
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
   const [isFavourited, setIsFavourited] = useState(false); // tracks whether post is favourited
   const blogId = blogPostData._id;
@@ -44,11 +41,9 @@ export default function BlogPostCard({
   useEffect(() => {
     const checkFavouriteStatus = async () => {
       try {
-        // const { data, error } = await supabase.auth.getUser();
-        // if (error || !data?.user?.id) return;
-        if (!user?.id) return; // Wait until user is available
+        if (!user?.id) return;
 
-        const res = await fetch(`/api/blog-posts/is-favourited?authId=${data.user.id}&blogId=${blogId}`);
+        const res = await fetch(`/api/blog-posts/is-favourited?authId=${user.id}&blogId=${blogId}`);
 
         const result = await res.json();
         if (res.ok) {
@@ -59,22 +54,19 @@ export default function BlogPostCard({
       }
     };
     checkFavouriteStatus();
-    }, [blogId]);
-  // }, [blogId, user?.id]);
+    }, [blogId, user?.id]);
 
   const handleFavouriteBlogPostClick = async e => {
     e.stopPropagation();
 
     try {
-      // const { data, error } = await supabase.auth.getUser();
-      // if (error || !data?.user?.id) throw new Error('User not logged in');
-      if (!user?.id) return; // Wait until user is available
+      if (!user?.id) return; 
+
       const res = await fetch('/api/blog-posts/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           blogId,
-          // supabaseUserId: data.user.id,
           supabaseUserId: user.id,
         }),
       });

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
@@ -14,8 +13,7 @@ import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
 
 export default function Settings() {
-  // const [user, setUser] = useState(null);
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatarUrl] = useState('');
   const [password, setPassword] = useState('');
@@ -25,16 +23,9 @@ export default function Settings() {
   const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
   const [feedPersonalization, setFeedPersonalization] = useState(false);
   const [error, setError] = useState(null);
-  // const supabase = createClient();
 
   useEffect(() => {
     const fetchData = async () => {
-      // const { data } = await supabase.auth.getUser();
-      // if (!data?.user) return;
-
-      // setUser(data.user);
-
-      // const res = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
       if (!user?.id) return; // Wait until user is available
 
       const res = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
@@ -54,7 +45,7 @@ export default function Settings() {
     };
 
     fetchData();
-  }, []);
+  }, [user?.id]);
 
   const handleSubmit = async e => {
     e.preventDefault();

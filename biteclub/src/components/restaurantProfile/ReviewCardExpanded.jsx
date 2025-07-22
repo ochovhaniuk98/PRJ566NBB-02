@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-// import { createClient } from '@/lib/auth/client';
 import Image from 'next/image';
 import EngagementIconStat from '../shared/EngagementIconStat';
 import StarRating from '../shared/StarRating';

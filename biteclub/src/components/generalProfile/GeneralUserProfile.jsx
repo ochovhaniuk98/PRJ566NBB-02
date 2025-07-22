@@ -305,7 +305,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   if (!userProfile)
     return (
       <div className="mb-8 p-16">
-        <p>Loading...</p>
+        <p>Loading Profile...</p>
       </div>
     );
 

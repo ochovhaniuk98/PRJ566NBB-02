@@ -1,6 +1,5 @@
 // src/components/blogPosts/BlogPost.jsx
 import { useEffect, useState } from 'react';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 import ReadOnlyEditor from '../tiptap-rich-text-editor/ReadOnlyEditor';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
@@ -18,7 +17,7 @@ export default function BlogPost({ id }) {
   // for reporting a post
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
 
   useEffect(() => {
     if (!id) return;
@@ -55,18 +54,14 @@ export default function BlogPost({ id }) {
   // When user save blog-post as favourite
   const handleFavouriteBlogPostClick = async () => {
     try {
-      // const supabase = createClient();
 
-      // const { data, error } = await supabase.auth.getUser();
-      // if (error || !data?.user?.id) throw new Error('User not logged in');
-      if (!user?.id) return; // Wait until user is available
+      if (!user?.id) return; 
 
       const res = await fetch('/api/blog-posts/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           blogId: id,
-          // supabaseUserId: data.user.id,
           supabaseUserId: user.id,
         }),
       });

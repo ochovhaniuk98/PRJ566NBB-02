@@ -2,7 +2,6 @@
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/shared/Button';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 
 const redemption_options = [
@@ -25,19 +24,14 @@ function randomString() {
 }
 
 export default Redeem => {
-  // const [user, setUser] = useState(null);
   const [points, setPoints] = useState(null);
-  // const supabase = createClient();
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
 
   useEffect(() => {
     const fetchData = async () => {
-      // const { data } = await supabase.auth.getUser();
-      // if (!data?.user) return;
+      if (!user?.id) return;
 
-      // setUser(data.user);
-
-      const res = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
+      const res = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
       const { profile } = await res.json();
 
       console.log('Points: ', profile.numOfPoints);
@@ -45,7 +39,7 @@ export default Redeem => {
     };
 
     fetchData();
-  }, []);
+  }, [user?.id]);
 
   async function redeemOption(option) {
     if (option.points_needed > points) {

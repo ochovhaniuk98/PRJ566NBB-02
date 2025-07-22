@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 import GeneralUserProfile from '@/components/generalProfile/GeneralUserProfile';
 
 export default function GeneralPage() {
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
   // Notes for useParams():
   // - useParams() returns values as strings, but when used in a dynamic segment like /general/[generalUserId], it will be:
   // - const params = useParams(); // returns an object like: { generalUserId: '683dd306de808a3cb965680f' }
@@ -19,25 +18,10 @@ export default function GeneralPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!generalUserId) {
-        setLoading(false);
-        return;
-      }
 
-      // const supabase = createClient();
-      // const { data, error } = await supabase.auth.getUser();
-
-      // if (error || !data.user) {
-      //   setLoading(false);
-      //   return;
-      // }
-
-      // const user = data.user;
       try {
-        // if (!user?.id) return;
+        if (!user?.id) return; // Wait until user is available
         const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
-        // console.log(`(generals public profile) current user MONGOID: `, userMongoId);
-        // console.log(`(generals public profile) mongoId in params: `, generalUserId);
 
         if (userMongoId && userMongoId === generalUserId) {
           setIsOwner(true);

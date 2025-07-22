@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 import { Label } from '../shared/Label';
 import { Button } from '../shared/Button';
@@ -47,18 +46,12 @@ export default function ReportForm({
   const [reason, setReason] = useState('');
   const [reporterUserType, setReporterUserType] = useState(null);
   const [reporter, setReporter] = useState(null);
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
 
   // Fetch current user and their profile
   useEffect(() => {
     const fetchReporterData = async () => {
       try {
-        // const supabase = createClient();
-        // const { data, error } = await supabase.auth.getUser();
-        // if (error || !data?.user) {
-        //   console.error('Failed to get current user:', error);
-        //   return;
-        // }
         
         if(!user?.id) return;
         const authId = user.id;
@@ -96,7 +89,7 @@ export default function ReportForm({
     };
 
     fetchReporterData();
-  }, []);
+  }, [user?.id]);
 
   const handleSubmit = async e => {
     e.preventDefault();

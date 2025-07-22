@@ -1,4 +1,3 @@
-// import { createClient } from '@/lib/auth/client';
 import { useUser } from '@/context/UserContext';
 
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
@@ -21,7 +20,7 @@ import MasonryReviewGrid from './MasonryReviewGrid';
 import EventsAndAnnounce from './EventsAndAnnounce';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
-  const { user } = useUser();
+  const { user } = useUser(); // Current logged-in user's Supabase info
 
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
@@ -84,28 +83,11 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     }
   }, [restaurantData]);
 
-  // const getSupabaseUserId = async () => {
-  //   try {
-  //     const supabase = createClient();
-  //     const { data, error } = await supabase.auth.getUser();
-  //     if (error || !data?.user?.id) throw new Error('User not logged in');
-  //     return data.user.id;
-  //   } catch (err) {
-  //     console.error('Error getting Supabase user ID:', err.message);
-  //     return null;
-  //   }
-  // };
 
   useEffect(() => {
     const fetchMongoUserId = async () => {
       try {
-        // const supabaseUserId = await getSupabaseUserId();
-        // if (!supabaseUserId) {
-        //   console.error('Supabase User ID not found');
-        //   return;
-        // }
-
-        if (!user?.id) return; // Wait until user is available
+        if (!user?.id) return;
         const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
 
         if (!userMongoId) {
@@ -120,16 +102,11 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     };
     // Only fetch user ID if not the owner and userId is not already set
     if (!isOwner && !userId) fetchMongoUserId();
-  }, []);
+  }, [user?.id]);
 
   // When user save restaurant as favourite
   const handleFavouriteRestaurantClick = async () => {
     try {
-      // const supabaseUserId = await getSupabaseUserId();
-      // if (!supabaseUserId) {
-      //   console.error('Supabase User ID not found');
-      //   return;
-      // }
       if (!user?.id) return; // Wait until user is available
 
       const res = await fetch('/api/restaurants/save-as-favourite', {
@@ -137,7 +114,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurantId,
-          // supabaseUserId: supabaseUserId,
           supabaseUserId: user.id,
         }),
       });

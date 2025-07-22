@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-// import { createClient } from '@/lib/auth/client';
-import { useUser } from '@/context/UserContext';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/context/UserContext';
 import Avatar from './avatar';
 import { Input } from '@/components/shared/Input';
 import { Button } from '@/components/shared/Button';
@@ -11,22 +10,11 @@ import { Label } from '@/components/shared/Label';
 
 export default function GeneralSetupForm() {
   const router = useRouter();
-  // const [user, setUser] = useState(null);
+  const { user } = useUser(); // Current logged-in user's Supabase info
+
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const { user } = useUser();
-
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     const supabase = createClient();
-  //     const { data, error } = await supabase.auth.getUser();
-  //     if (!error) setUser(data.user);
-  //     setUsername(data.user.user_metadata?.name || '');
-  //   };
-  //   fetchUser();
-  // }, []);
 
   useEffect(() => {
     if (user) {
