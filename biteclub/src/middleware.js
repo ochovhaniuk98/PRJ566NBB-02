@@ -16,10 +16,9 @@ export const config = {
      * Feel free to modify this pattern to include more paths.
      */
 
-    // $: excludes the empty string path (i.e. localhost:3000/)
-    // '/((?!_next/|favicon.ico|img/|auth|error|restaurants|$).*)',
-
     // TODO: always remember to check if the route is public or protected. 
+    
+    // $: excludes the empty string path (i.e. localhost:3000/)
     // If public, we need to update the below, or Auth Session will be null somehow...
     '/((?!_next/|favicon.ico|img/|login|sign-up|sign-up-success|callback|auth-error|forgot-password|update-password|confirm|signout|restaurants|$).*)',
   ],
