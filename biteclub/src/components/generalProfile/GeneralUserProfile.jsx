@@ -70,6 +70,16 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [deleteAllTarget, setDeleteAllTarget] = useState(''); // 'reviews' or 'blogPosts'
   const [confirmationText, setConfirmationText] = useState('');
 
+  // Loading states for each tabs
+
+  const [loadingStates, setLoadingStates] = useState({
+    reviews: false,
+    favRestaurants: false,
+    favBlogs: false,
+    followers: false,
+    followings: false,
+  });
+
   const filteredTabs = profileTabs.filter((tab, index) => {
     if (index === 2 && !displayVisitedPlaces) return false; // Tab 2 - visited places
     if (index === 3 && !displayFavouriteRestaurants) return false; // Tab 3 - favourite restaurants
@@ -117,165 +127,200 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       try {
         // TAB 1 -- REVIEWS
         if (selectedTab === profileTabs[1]) {
-          const res = await fetch(`/api/user-reviews/${generalUserId}`);
-          if (res.ok) {
-            const reviews = await res.json();
-            // add user data to each review
-            reviews.internalReviews = reviews.internalReviews.map(review => ({
-              ...review,
-              user_id: {
-                _id: userProfile?._id,
-                username: userProfile?.username,
-                userProfilePicture: userProfile?.userProfilePicture,
-              },
-            }));
-            reviews.externalReviews = reviews.externalReviews.map(review => ({
-              ...review,
-              user_id: {
-                _id: userProfile?._id,
-                username: userProfile?.username,
-              },
-            }));
-            setMyReviews(reviews);
-          } else {
-            console.error('Failed to fetch reviews');
+          setLoadingStates(prev => ({ ...prev, reviews: true }));
+          try {
+            const res = await fetch(`/api/user-reviews/${generalUserId}`);
+            if (res.ok) {
+              const reviews = await res.json();
+              // add user data to each review
+              reviews.internalReviews = reviews.internalReviews.map(review => ({
+                ...review,
+                user_id: {
+                  _id: userProfile?._id,
+                  username: userProfile?.username,
+                  userProfilePicture: userProfile?.userProfilePicture,
+                },
+              }));
+              reviews.externalReviews = reviews.externalReviews.map(review => ({
+                ...review,
+                user_id: {
+                  _id: userProfile?._id,
+                  username: userProfile?.username,
+                },
+              }));
+              setMyReviews(reviews);
+            } else {
+              console.error('Failed to fetch reviews');
+            }
+          } catch (err) {
+            console.error('Error fetching reviews:', err);
+          } finally {
+            setLoadingStates(prev => ({ ...prev, reviews: false }));
           }
           return;
         }
 
         // TAB 2 -- VISITED
         /*
-        if (selectedTab === profileTabs[2]) {
-          return;
-        }
-        */
+      if (selectedTab === profileTabs[2]) {
+        return;
+      }
+      */
 
         // TAB 3 -- FAVOURITE RESTAURANT
         if (selectedTab === profileTabs[3]) {
-          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
-          if (!profileRes.ok) {
-            console.error('Failed to fetch profile');
-            return;
-          }
+          setLoadingStates(prev => ({ ...prev, favRestaurants: true }));
+          try {
+            const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+            if (!profileRes.ok) {
+              console.error('Failed to fetch profile');
+              return;
+            }
 
-          const profileData = await profileRes.json();
-          setUserProfile(profileData.profile);
+            const profileData = await profileRes.json();
+            setUserProfile(profileData.profile);
 
-          const restaurantIds = profileData.profile?.favouriteRestaurants;
-          if (!Array.isArray(restaurantIds) || restaurantIds.length === 0) {
-            setFavouritedRestaurants([]);
-            return;
-          }
+            const restaurantIds = profileData.profile?.favouriteRestaurants;
+            if (!Array.isArray(restaurantIds) || restaurantIds.length === 0) {
+              setFavouritedRestaurants([]);
+              return;
+            }
 
-          const res = await fetch(`/api/restaurants/by-ids`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: restaurantIds }),
-          });
+            const res = await fetch(`/api/restaurants/by-ids`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ids: restaurantIds }),
+            });
 
-          if (res.ok) {
-            const data = await res.json();
-            // Might use setTimeout to delay the UI update later,
-            // so the user can immediately favourite it again if they mistakenly unfavourited it.
-            // setTimeout(() => {
-            setFavouritedRestaurants(data.restaurants);
-            // }, 1000);
+            if (res.ok) {
+              const data = await res.json();
+              // Might use setTimeout to delay the UI update later,
+              // so the user can immediately favourite it again if they mistakenly unfavourited it.
+              // setTimeout(() => {
+              setFavouritedRestaurants(data.restaurants);
+              // }, 1000);
+            }
+          } catch (err) {
+            console.error('Error fetching favourite restaurants:', err);
+          } finally {
+            setLoadingStates(prev => ({ ...prev, favRestaurants: false }));
           }
           return;
         }
 
         // TAB 4 -- FAVOURITE BLOG POSTS
         if (selectedTab === profileTabs[4]) {
-          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
-          if (!profileRes.ok) {
-            console.error('Failed to fetch profile');
-            return;
-          }
+          setLoadingStates(prev => ({ ...prev, favBlogs: true }));
+          try {
+            const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+            if (!profileRes.ok) {
+              console.error('Failed to fetch profile');
+              return;
+            }
 
-          const profileData = await profileRes.json();
-          setUserProfile(profileData.profile);
+            const profileData = await profileRes.json();
+            setUserProfile(profileData.profile);
 
-          const blogIds = profileData.profile?.favouriteBlogs;
-          if (!Array.isArray(blogIds) || blogIds.length === 0) {
-            setFavouritedBlogs([]);
-            return;
-          }
+            const blogIds = profileData.profile?.favouriteBlogs;
+            if (!Array.isArray(blogIds) || blogIds.length === 0) {
+              setFavouritedBlogs([]);
+              return;
+            }
 
-          const postsRes = await fetch(`/api/blog-posts/by-ids`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: blogIds }),
-          });
+            const postsRes = await fetch(`/api/blog-posts/by-ids`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ids: blogIds }),
+            });
 
-          if (postsRes.ok) {
-            const postsData = await postsRes.json();
-            // setTimeout(() => {
-            setFavouritedBlogs(postsData);
-            // }, 1000);
+            if (postsRes.ok) {
+              const postsData = await postsRes.json();
+              // setTimeout(() => {
+              setFavouritedBlogs(postsData);
+              // }, 1000);
+            }
+          } catch (err) {
+            console.error('Error fetching favourite blog posts:', err);
+          } finally {
+            setLoadingStates(prev => ({ ...prev, favBlogs: false }));
           }
           return;
         }
 
         // TAB 5 -- FOLLOWERS
         if (selectedTab === profileTabs[5]) {
-          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
-          if (!profileRes.ok) {
-            console.error('Failed to fetch profile');
-            return;
-          }
+          setLoadingStates(prev => ({ ...prev, followers: true }));
+          try {
+            const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+            if (!profileRes.ok) {
+              console.error('Failed to fetch profile');
+              return;
+            }
 
-          const profileData = await profileRes.json();
-          setUserProfile(profileData.profile);
+            const profileData = await profileRes.json();
+            setUserProfile(profileData.profile);
 
-          const followerIds = profileData.profile?.followers;
-          if (!Array.isArray(followerIds) || followerIds.length === 0) {
-            setFollowers([]);
-            return;
-          }
+            const followerIds = profileData.profile?.followers;
+            if (!Array.isArray(followerIds) || followerIds.length === 0) {
+              setFollowers([]);
+              return;
+            }
 
-          const followerRes = await fetch(`/api/generals/get-profiles-by-dbIds`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: followerIds }),
-          });
+            const followerRes = await fetch(`/api/generals/get-profiles-by-dbIds`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ids: followerIds }),
+            });
 
-          if (followerRes.ok) {
-            const followersData = await followerRes.json();
-            // setTimeout(() => {
-            setFollowers(followersData.users);
-            // }, 1000); // Delay UI update
+            if (followerRes.ok) {
+              const followersData = await followerRes.json();
+              // setTimeout(() => {
+              setFollowers(followersData.users);
+              // }, 1000); // Delay UI update
+            }
+          } catch (err) {
+            console.error('Error fetching followers:', err);
+          } finally {
+            setLoadingStates(prev => ({ ...prev, followers: false }));
           }
           return;
         }
 
         // TAB 6 -- FOLLOWINGS
         if (selectedTab === profileTabs[6]) {
-          const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
-          if (!profileRes.ok) {
-            console.error('Failed to fetch profile');
-            return;
-          }
+          setLoadingStates(prev => ({ ...prev, followings: true }));
+          try {
+            const profileRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+            if (!profileRes.ok) {
+              console.error('Failed to fetch profile');
+              return;
+            }
 
-          const profileData = await profileRes.json();
-          setUserProfile(profileData.profile);
+            const profileData = await profileRes.json();
+            setUserProfile(profileData.profile);
 
-          const followingIds = profileData.profile?.followings;
-          if (!Array.isArray(followingIds) || followingIds.length === 0) {
-            setFollowings([]);
-            return;
-          }
+            const followingIds = profileData.profile?.followings;
+            if (!Array.isArray(followingIds) || followingIds.length === 0) {
+              setFollowings([]);
+              return;
+            }
 
-          const followingsRes = await fetch(`/api/generals/get-profiles-by-dbIds`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: followingIds }),
-          });
+            const followingsRes = await fetch(`/api/generals/get-profiles-by-dbIds`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ids: followingIds }),
+            });
 
-          if (followingsRes.ok) {
-            const followingsData = await followingsRes.json();
-            // setTimeout(() => {
-            setFollowings(followingsData.users);
-            // }, 1000); // Delay UI update
+            if (followingsRes.ok) {
+              const followingsData = await followingsRes.json();
+              // setTimeout(() => {
+              setFollowings(followingsData.users);
+              // }, 1000); // Delay UI update
+            }
+          } catch (err) {
+            console.error('Error fetching followings:', err);
+          } finally {
+            setLoadingStates(prev => ({ ...prev, followings: false }));
           }
           return;
         }
@@ -461,6 +506,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             ) : (
               <ProfileTabBar tabs={filteredTabs} onTabChange={setSelectedTab} />
             )}
+
             {/* Blog Posts */}
             {selectedTab === profileTabs[0] &&
               (!myBlogPosts || myBlogPosts.length === 0 ? (
@@ -470,16 +516,10 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               ) : (
                 <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
                   {myBlogPosts.map((post, i) => {
-                    // Check if this blog post's ID is currently in the list of selected posts
                     const isSelected = selectedBlogPosts.includes(post._id);
-                    // Toggle selection on checkbox click
                     const toggleSelect = () => {
                       setSelectedBlogPosts(prev =>
-                        // If this post is already selected, remove it from the list
-                        prev.includes(post._id)
-                          ? prev.filter(id => id !== post._id)
-                          : // If it's not selected yet, add it to the list
-                            [...prev, post._id]
+                        prev.includes(post._id) ? prev.filter(id => id !== post._id) : [...prev, post._id]
                       );
                     };
 
@@ -502,7 +542,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                   })}
                 </Masonry>
               ))}
-            {/* Reviews*/}
+
+            {/* Reviews */}
             {selectedTab === profileTabs[1] && (
               <>
                 <div className="flex gap-x-2 mb-4">
@@ -513,13 +554,16 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                     From Instagram
                   </Button>
                 </div>
-                {!showInstaReview &&
-                  (myReviews?.internalReviews.length === 0 ? (
+                {loadingStates.reviews ? (
+                  <div className="col-span-3 text-center">
+                    <p>Loading reviews...</p>
+                  </div>
+                ) : !showInstaReview ? (
+                  myReviews?.internalReviews.length === 0 ? (
                     <div className="col-span-3 text-center">
                       <p>No internal reviews yet.</p>
                     </div>
                   ) : (
-                    /* internal reviews */
                     <div className="flex gap-2">
                       <div className="flex-1">
                         <Masonry
@@ -527,39 +571,33 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                           className="flex gap-2"
                           columnClassName="space-y-2"
                         >
-                          {
-                            /* sort reviews by most recently posted */
-                            [...myReviews.internalReviews]
-                              .sort((a, b) => new Date(b.date_posted) - new Date(a.date_posted))
-                              .map((review, i) => (
-                                /* internal reviews */
-                                <ReviewCard
-                                  key={review._id || i}
-                                  review={review}
-                                  photos={review.photos}
-                                  isOwner={isOwner}
-                                  // setEditReviewForm={setEditReviewForm}
-                                  setEditReviewForm={() => {
-                                    setEditReviewForm(true);
-                                    setEditReviewData(review);
-                                  }}
-                                  onClick={() => setSelectedReview(review)}
-                                  isEditModeOn={editMode && selectedTab === profileTabs[1]}
-                                  isSelected={selectedInternalReviews.includes(review._id)}
-                                  onSelect={() => {
-                                    setSelectedInternalReviews(prev =>
-                                      prev.includes(review._id)
-                                        ? prev.filter(id => id !== review._id)
-                                        : [...prev, review._id]
-                                    );
-                                  }}
-                                  onDeleteClick={() => handleDeleteSingleReview(review._id, 'internal')}
-                                />
-                              ))
-                          }
+                          {[...myReviews.internalReviews]
+                            .sort((a, b) => new Date(b.date_posted) - new Date(a.date_posted))
+                            .map((review, i) => (
+                              <ReviewCard
+                                key={review._id || i}
+                                review={review}
+                                photos={review.photos}
+                                isOwner={isOwner}
+                                setEditReviewForm={() => {
+                                  setEditReviewForm(true);
+                                  setEditReviewData(review);
+                                }}
+                                onClick={() => setSelectedReview(review)}
+                                isEditModeOn={editMode && selectedTab === profileTabs[1]}
+                                isSelected={selectedInternalReviews.includes(review._id)}
+                                onSelect={() => {
+                                  setSelectedInternalReviews(prev =>
+                                    prev.includes(review._id)
+                                      ? prev.filter(id => id !== review._id)
+                                      : [...prev, review._id]
+                                  );
+                                }}
+                                onDeleteClick={() => handleDeleteSingleReview(review._id, 'internal')}
+                              />
+                            ))}
                         </Masonry>
                       </div>
-                      {/* Expanded side panel (visible when internal review is selected) */}
                       {selectedReview && (
                         <ReviewCardExpanded
                           selectedReview={selectedReview}
@@ -568,38 +606,41 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                         />
                       )}
                     </div>
-                  ))}
-                {/* Instagram Reviews */}
-                {showInstaReview &&
-                  (myReviews?.externalReviews.length === 0 ? (
-                    <div className="col-span-3 text-center">
-                      <p>No Instagram reviews yet.</p>
-                    </div>
-                  ) : (
-                    <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
-                      {myReviews?.externalReviews.map((review, i) => (
-                        <div key={review._id || i} className="mb-4 break-inside-avoid">
-                          <InstagramEmbed
-                            key={review._id}
-                            url={review.content?.embedLink}
-                            isEditModeOn={editMode}
-                            isSelected={selectedExternalReviews.includes(review._id)}
-                            onSelect={() => {
-                              setSelectedExternalReviews(prev =>
-                                prev.includes(review._id) ? prev.filter(id => id !== review._id) : [...prev, review._id]
-                              );
-                            }}
-                            onDeleteClick={() => handleDeleteSingleReview(review._id, 'external')}
-                          />
-                        </div>
-                      ))}
-                    </Masonry>
-                  ))}
+                  )
+                ) : myReviews?.externalReviews.length === 0 ? (
+                  <div className="col-span-3 text-center">
+                    <p>No Instagram reviews yet.</p>
+                  </div>
+                ) : (
+                  <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
+                    {myReviews?.externalReviews.map((review, i) => (
+                      <div key={review._id || i} className="mb-4 break-inside-avoid">
+                        <InstagramEmbed
+                          key={review._id}
+                          url={review.content?.embedLink}
+                          isEditModeOn={editMode}
+                          isSelected={selectedExternalReviews.includes(review._id)}
+                          onSelect={() => {
+                            setSelectedExternalReviews(prev =>
+                              prev.includes(review._id) ? prev.filter(id => id !== review._id) : [...prev, review._id]
+                            );
+                          }}
+                          onDeleteClick={() => handleDeleteSingleReview(review._id, 'external')}
+                        />
+                      </div>
+                    ))}
+                  </Masonry>
+                )}
               </>
             )}
+
             {/* Favourite Restaurants */}
             {selectedTab === profileTabs[3] &&
-              (favouritedRestaurants.length === 0 ? (
+              (loadingStates.favRestaurants ? (
+                <div className="col-span-3 text-center">
+                  <p>Loading favourite restaurants...</p>
+                </div>
+              ) : favouritedRestaurants.length === 0 ? (
                 <div className="col-span-3 text-center">
                   <p>No favourite restaurants yet.</p>
                 </div>
@@ -610,38 +651,40 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                   ))}
                 </GridCustomCols>
               ))}
+
             {/* Favourite Blog Posts */}
             {selectedTab === profileTabs[4] &&
-              (favouritedBlogs.length === 0 ? (
+              (loadingStates.favBlogs ? (
+                <div className="col-span-3 text-center">
+                  <p>Loading favourite blog posts...</p>
+                </div>
+              ) : favouritedBlogs.length === 0 ? (
                 <div className="col-span-3 text-center">
                   <p>No favourite blog posts yet.</p>
                 </div>
               ) : (
                 <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
-                  {/* {favouritedBlogs.map(blog => (
-                  // The "Favourite Blog Posts" should not display posts written by the owner (i.e. isOwner should be false / !isOwner).
-                  // However, users may still favourite their own posts — so this logic (false) might be adjusted later.
-                  <BlogPostCard key={blog._id} blogPostData={blog} userId={userProfile._id} />
-                ))} */}
                   {favouritedBlogs.map((post, i) => (
                     <BlogPostCard
                       key={post._id || i}
                       blogPostData={post}
                       writtenByOwner={isOwner}
                       setShowTextEditor={setShowTextEditor}
-                      // Users should not be able to delete or edit anything in favBlogs tab
-                      // setEditBlogPost={setEditBlogPost}
                       isEditModeOn={false}
-                      isSelected={false} // no selection needed
-                      onSelect={() => {}} // do nothing on checkbox click
-                      // onDeleteClick={() => {}} // Do NOT show delete functionality in this tab.
+                      isSelected={false}
+                      onSelect={() => {}}
                     />
                   ))}
                 </Masonry>
               ))}
-            {/* My Followers (users who follow owner )*/}
+
+            {/* My Followers */}
             {selectedTab === profileTabs[5] &&
-              (followers.length === 0 ? (
+              (loadingStates.followers ? (
+                <div className="col-span-3 text-center">
+                  <p>Loading followers...</p>
+                </div>
+              ) : followers.length === 0 ? (
                 <div className="col-span-3 text-center">
                   <p>No followers yet.</p>
                 </div>
@@ -653,9 +696,13 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 </GridCustomCols>
               ))}
 
-            {/* Following (users who are followed by owner )*/}
+            {/* Followings */}
             {selectedTab === profileTabs[6] &&
-              (followings.length === 0 ? (
+              (loadingStates.followings ? (
+                <div className="col-span-3 text-center">
+                  <p>Loading followings...</p>
+                </div>
+              ) : followings.length === 0 ? (
                 <div className="col-span-3 text-center">
                   <p>No followings yet.</p>
                 </div>
@@ -668,6 +715,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               ))}
           </>
         )}
+
         {/**** Tab menu and contents - END ****/}
 
         {showTextEditor && (
@@ -712,7 +760,10 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             <h2 className="text-lg font-bold mb-2">Confirm Content Deletion</h2>
             <p className="mb-4 text-sm text-gray-700">
               Are you sure you want to delete{' '}
-              <strong>all {deleteAllTarget === 'reviews' ? 'reviews (Both BiteClub and Instagram)' : 'blog posts'}</strong>? This action is
+              <strong>
+                all {deleteAllTarget === 'reviews' ? 'reviews (Both BiteClub and Instagram)' : 'blog posts'}
+              </strong>
+              ? This action is
               <strong> irreversible</strong>. Please type <code>DELETE</code> to confirm.
             </p>
 
