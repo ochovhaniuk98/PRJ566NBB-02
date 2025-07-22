@@ -92,12 +92,12 @@ export function LoginForm({ className, ...props }) {
           <CardTitle className="text-center">
             <h2>Login</h2>
           </CardTitle>
-          <CardDescription>
-            <p className="text-center">Login with your Google account</p>
+              <CardDescription>
+            <h3 className="text-center">Welcome Back</h3>
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-4 items-center">
+          <div className="flex flex-col gap-4 items-center mb-4">
             <Button
               variant="googlebtn"
               className="w-60 font-roboto font-normal"
