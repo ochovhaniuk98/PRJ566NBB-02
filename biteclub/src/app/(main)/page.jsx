@@ -80,7 +80,7 @@ export default function Home() {
         // fetch restaurants
         const params = new URLSearchParams({
           q: '',
-          page,
+          page: 1,
           limit: 5,
         });
 
