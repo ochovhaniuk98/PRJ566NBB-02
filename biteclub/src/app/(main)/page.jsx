@@ -8,44 +8,101 @@ import { createClient } from '@/lib/auth/client';
 import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
 
 export default function Home() {
-  const [personalizedRecommendations, setPersonalizedRecommendations] = useState([])
+  const [personalizedRecommendations, setPersonalizedRecommendations] = useState([]);
   const [fetchCompleted, setFetchCompleted] = useState(false);
+
+  // cuisine spotlight restaurants
+  const [cuisine, setCuisine] = useState('');
+  const [restaurants, setRestaurants] = useState([]);
+  const [fetchedCuisineRestaurants, setFetchedCuisineRestaurants] = useState(false);
 
   // fetch restaurants
   const fetchRestaurants = async (reset = false) => {
     setFetchCompleted(false);
 
     try {
-      const supabase = createClient()
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const supabase = createClient();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
       if (!error) {
         try {
-          const personalizedRecommendationsRes = await fetch(`${process.env.NEXT_PUBLIC_RECOMMENDER_URL}/restaurants/recommend`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ "supabaseId": user.id })
-          });
+          const personalizedRecommendationsRes = await fetch(
+            `${process.env.NEXT_PUBLIC_RECOMMENDER_URL}/restaurants/recommend`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ supabaseId: user.id }),
+            }
+          );
 
           if (!personalizedRecommendationsRes.ok) {
-            throw new Error("Failed to fetch")
+            throw new Error('Failed to fetch');
           }
           const data = await personalizedRecommendationsRes.json();
           setPersonalizedRecommendations(data.recommendations);
-          console.log(data.recommendations)
+          console.log(data.recommendations);
           setFetchCompleted(true);
-        } catch (error) { 
+        } catch (error) {
           console.log(error);
         }
       }
-
-
     } catch (error) {
       setFetchCompleted(false);
       console.error('Failed to fetch restaurants:', error);
     }
   };
+
+  // get cuisine spotlight
+  useEffect(() => {
+    async function fetchCuisineSpotlight() {
+      try {
+        // fetch cuisine
+        const res = await fetch('/api/restaurants/cuisines/cuisineOfTheWeek');
+        const data = await res.json();
+        setCuisine(data.cuisines);
+
+        console.log('Cuisine Spotlight', data.cuisines);
+      } catch (err) {
+        console.error('Failed to load cuisine spotlight of the week:', err);
+      }
+    }
+
+    fetchCuisineSpotlight();
+  }, []);
+
+  useEffect(() => {
+    async function fetchCuisineSpotlightRestaurants() {
+      try {
+        // fetch restaurants
+        const params = new URLSearchParams({
+          q: '',
+          page,
+          limit: 5,
+        });
+
+        if (cuisine) {
+          params.append('cuisines', cuisine.join(','));
+          // console.log(`Cuisines chosen: ${cuisine.join(',')}`);
+        }
+
+        const res = await fetch(`/api/restaurants/search?${params.toString()}`);
+        const data = await res.json();
+
+        setRestaurants(data.restaurants);
+        setFetchedCuisineRestaurants(true);
+
+        console.log('Cuisine spotlight restaurants', data.restaurants);
+      } catch (err) {
+        console.error('Failed to load cuisine spotlight restaurants:', err);
+      }
+    }
+
+    fetchCuisineSpotlightRestaurants();
+  }, [cuisine]);
 
   // reset page = 1
   useEffect(() => {
@@ -53,36 +110,53 @@ export default function Home() {
     fetchRestaurants(true); // reset = true
   }, []);
 
-
-  return fetchCompleted ? (
-    <div>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
-        {personalizedRecommendations.length > 0 && <div>
-          <h2>
-            For you
-          </h2>
-          <div className='overflow-x-scroll'>
-            <div className='w-fit h-full flex flex-row'>
-              {fetchCompleted && (
-                <>
-                  <GridCustomCols numOfCols={5} className="mt-4">
-                    {personalizedRecommendations.map((restaurant, i) => (
-                      <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
-                    ))}
-                  </GridCustomCols>
-                </>
-              )}
+  return (
+    <>
+      {fetchedCuisineRestaurants && (
+        <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
+          <div>
+            <div className="overflow-x-scroll">
+              <div className="w-fit h-full flex flex-row">
+                <GridCustomCols numOfCols={5} className="mt-4">
+                  {restaurants.map((restaurant, i) => (
+                    <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
+                  ))}
+                </GridCustomCols>
+              </div>
             </div>
           </div>
-        </div>}
-      </div>
-      <div><h2>
-        Blog posts for you
-      </h2>
-        <ExploringBlogPostsAI />
-      </div>
-    </div>
-  ) : (
-    <h1 className="text-5xl text-center font-primary font-bold text-brand-navy mt-50">This is the homepage.</h1>
-  )
+        </div>
+      )}
+      {fetchCompleted ? (
+        <div>
+          <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
+            {personalizedRecommendations.length > 0 && (
+              <div>
+                <h2>For you</h2>
+                <div className="overflow-x-scroll">
+                  <div className="w-fit h-full flex flex-row">
+                    {fetchCompleted && (
+                      <>
+                        <GridCustomCols numOfCols={5} className="mt-4">
+                          {personalizedRecommendations.map((restaurant, i) => (
+                            <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
+                          ))}
+                        </GridCustomCols>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div>
+            <h2>Blog posts for you</h2>
+            <ExploringBlogPostsAI />
+          </div>
+        </div>
+      ) : (
+        <h1 className="text-5xl text-center font-primary font-bold text-brand-navy mt-50">This is the homepage.</h1>
+      )}
+    </>
+  );
 }
