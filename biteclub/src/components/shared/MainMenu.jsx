@@ -1,13 +1,16 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faHouseChimney, faGamepad, faUtensils, faGear } from '@fortawesome/free-solid-svg-icons';
 import { faMicroblog } from '@fortawesome/free-brands-svg-icons';
 import { useEffect, useState } from 'react';
 
 export default function MainMenu() {
+  const { user } = useUser();
   const pathname = usePathname();
   const [userType, setUserType] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,16 +19,18 @@ export default function MainMenu() {
   useEffect(() => {
     const fetchUserType = async () => {
       try {
-        const supabase = createClient();
-        const { data } = await supabase.auth.getUser();
+        // const supabase = createClient();
+        // const { data } = await supabase.auth.getUser();
 
-        if (!data?.user?.id) {
+        // if (!data?.user?.id) {
+        if (!user?.id) {
           setUserType(null);
           setLoading(false);
           return; // Exit early if no user is logged in
         }
 
-        const response = await fetch(`/api/get-user-type?authId=${data.user.id}`);
+        // const response = await fetch(`/api/get-user-type?authId=${data.user.id}`);
+        const response = await fetch(`/api/get-user-type?authId=${user.id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch user type');
         }

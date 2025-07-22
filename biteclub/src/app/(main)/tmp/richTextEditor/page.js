@@ -4,30 +4,32 @@
 import { SimpleEditor } from '@/components/tiptap-rich-text-editor/tiptap-templates/simple/simple-editor';
 import { useState, useEffect } from 'react';
 
-import { createClient } from '@/lib/auth/client'; //to get user
+// import { createClient } from '@/lib/auth/client'; //to get user
+import { useUser } from '@/context/UserContext';
 
 import ReadOnlyEditor from '@/components/tiptap-rich-text-editor/ReadOnlyEditor';
 
 export default function Page() {
   const [editorContent, setEditorContent] = useState(null);
 
-  //to get user
-  const [user, setUser] = useState(null);
-  const supabase = createClient();
+  // to get user
+  // const [user, setUser] = useState(null);
+  const { user } = useUser();
+  // const supabase = createClient();
 
   const [displayPost, setPost] = useState(null);
 
   // Get User
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data?.user) return;
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const { data } = await supabase.auth.getUser();
+  //     if (!data?.user) return;
 
-      setUser(data.user);
-      console.log('User: ', data?.user);
-    };
-    fetchData();
-  }, [supabase]);
+  //     setUser(data.user);
+  //     console.log('User: ', data?.user);
+  //   };
+  //   fetchData();
+  // }, [supabase]);
 
   // Save the content
   const handleSave = async () => {

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 // import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
@@ -28,7 +29,8 @@ export default function BlogPostCard({
   onSelect = () => {},
   onDeleteClick, // optional — do NOT provide a default
 }) {
-  const supabase = createClient();
+  // const supabase = createClient();
+  const { user } = useUser();
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
   const [isFavourited, setIsFavourited] = useState(false); // tracks whether post is favourited
   const blogId = blogPostData._id;
@@ -42,8 +44,9 @@ export default function BlogPostCard({
   useEffect(() => {
     const checkFavouriteStatus = async () => {
       try {
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data?.user?.id) return;
+        // const { data, error } = await supabase.auth.getUser();
+        // if (error || !data?.user?.id) return;
+        if (!user?.id) return; // Wait until user is available
 
         const res = await fetch(`/api/blog-posts/is-favourited?authId=${data.user.id}&blogId=${blogId}`);
 
@@ -56,21 +59,23 @@ export default function BlogPostCard({
       }
     };
     checkFavouriteStatus();
-  }, [blogId]);
+    }, [blogId]);
+  // }, [blogId, user?.id]);
 
   const handleFavouriteBlogPostClick = async e => {
     e.stopPropagation();
 
     try {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user?.id) throw new Error('User not logged in');
-
+      // const { data, error } = await supabase.auth.getUser();
+      // if (error || !data?.user?.id) throw new Error('User not logged in');
+      if (!user?.id) return; // Wait until user is available
       const res = await fetch('/api/blog-posts/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           blogId,
-          supabaseUserId: data.user.id,
+          // supabaseUserId: data.user.id,
+          supabaseUserId: user.id,
         }),
       });
 

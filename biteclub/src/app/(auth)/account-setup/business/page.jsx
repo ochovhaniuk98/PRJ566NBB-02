@@ -1,7 +1,10 @@
 'use client';
 
+// src/app/(auth)/account-setup/business/page.jsx
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
+
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/shared/Input';
 import { Button } from '@/components/shared/Button';
@@ -12,7 +15,9 @@ import { faCloudArrowUp, faUtensils } from '@fortawesome/free-solid-svg-icons';
 
 export default function BusinessSetupForm() {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const { user } = useUser();
+
+  // const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState('');
 
@@ -29,14 +34,14 @@ export default function BusinessSetupForm() {
   const [licenseDownloadUrl, setLicenseDownloadUrl] = useState(null);
 
   // --- Fetch user from Supabase on component mount ---
-  useEffect(() => {
-    const fetchUser = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase.auth.getUser();
-      if (!error) setUser(data.user);
-    };
-    fetchUser();
-  }, []);
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const supabase = createClient();
+  //     const { data, error } = await supabase.auth.getUser();
+  //     if (!error) setUser(data.user);
+  //   };
+  //   fetchUser();
+  // }, []);
 
   // --- Autocomplete logic: fetch results based on user input (debounced) ---
   useEffect(() => {

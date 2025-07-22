@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 import { useRouter } from 'next/navigation';
 import Avatar from './avatar';
 import { Input } from '@/components/shared/Input';
@@ -10,20 +11,30 @@ import { Label } from '@/components/shared/Label';
 
 export default function GeneralSetupForm() {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const { user } = useUser();
+
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const supabase = createClient();
+  //     const { data, error } = await supabase.auth.getUser();
+  //     if (!error) setUser(data.user);
+  //     setUsername(data.user.user_metadata?.name || '');
+  //   };
+  //   fetchUser();
+  // }, []);
+
   useEffect(() => {
-    const fetchUser = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase.auth.getUser();
-      if (!error) setUser(data.user);
-      setUsername(data.user.user_metadata?.name || '');
-    };
-    fetchUser();
-  }, []);
+    if (user) {
+      // Set username from user metadata or fallback
+      setUsername(user.user_metadata?.name || user.email || '');
+    }
+  }, [user]);
+  
 
   const handleSubmit = async () => {
     setLoading(true);

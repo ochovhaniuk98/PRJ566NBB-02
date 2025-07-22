@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 import { Button } from '../shared/Button';
 import ReportForm from '../shared/ReportForm';
@@ -20,6 +21,7 @@ import {
 // isFollowing: tracks whether or not the owner is following the user displayed on this card
 export default function GeneralUserCard({ generalUserData }) {
   const router = useRouter();
+  const { user } = useUser();
   const generalUserUrl = `/generals/${generalUserData._id}`;
 
   const [showMorePopup, setShowMorePopup] = useState(false);
@@ -41,19 +43,25 @@ export default function GeneralUserCard({ generalUserData }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!generalUserData._id) return;
+      // if (!generalUserData._id) return;
 
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data.user) return;
+      // const { data, error } = await supabase.auth.getUser();
+      // if (error || !data.user) return;
+      // const user = data.user;
 
-      const user = data.user;
-      const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
-      console.log(`(generals public profile) current user MONGOID: `, userMongoId);
-      console.log(`(generals public profile) mongoId in params: `, generalUserData._id);
-      if (userMongoId && userMongoId === generalUserData._id) {
-        setIsOwner(true);
-      } else {
-        setAnotherUserId(generalUserData._id);
+      if (!generalUserData._id || !user?.id) return;
+      try {
+        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
+        console.log(`(generals public profile) current user MONGOID: `, userMongoId);
+
+        console.log(`(generals public profile) mongoId in params: `, generalUserData._id);
+        if (userMongoId && userMongoId === generalUserData._id) {
+          setIsOwner(true);
+        } else {
+          setAnotherUserId(generalUserData._id);
+        }
+      } catch (error) {
+        console.error('(GeneralUserCard) Error checking user ownership:', error);
       }
     };
 
@@ -173,7 +181,12 @@ export default function GeneralUserCard({ generalUserData }) {
       {/* </Link> */}
       {/* Report User Form */}
       {openReportForm && (
-        <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} contentType='User' reportedUser={generalUserData} />
+        <ReportForm
+          reportType="user"
+          onClose={() => setOpenReportForm(false)}
+          contentType="User"
+          reportedUser={generalUserData}
+        />
       )}
     </div>
   );

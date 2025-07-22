@@ -1,4 +1,5 @@
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
@@ -20,6 +21,8 @@ import MasonryReviewGrid from './MasonryReviewGrid';
 import EventsAndAnnounce from './EventsAndAnnounce';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
+  const { user } = useUser();
+
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
@@ -81,27 +84,29 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     }
   }, [restaurantData]);
 
-  const getSupabaseUserId = async () => {
-    try {
-      const supabase = createClient();
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user?.id) throw new Error('User not logged in');
-      return data.user.id;
-    } catch (err) {
-      console.error('Error getting Supabase user ID:', err.message);
-      return null;
-    }
-  };
+  // const getSupabaseUserId = async () => {
+  //   try {
+  //     const supabase = createClient();
+  //     const { data, error } = await supabase.auth.getUser();
+  //     if (error || !data?.user?.id) throw new Error('User not logged in');
+  //     return data.user.id;
+  //   } catch (err) {
+  //     console.error('Error getting Supabase user ID:', err.message);
+  //     return null;
+  //   }
+  // };
 
   useEffect(() => {
     const fetchMongoUserId = async () => {
       try {
-        const supabaseUserId = await getSupabaseUserId();
-        if (!supabaseUserId) {
-          console.error('Supabase User ID not found');
-          return;
-        }
-        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: supabaseUserId });
+        // const supabaseUserId = await getSupabaseUserId();
+        // if (!supabaseUserId) {
+        //   console.error('Supabase User ID not found');
+        //   return;
+        // }
+
+        if (!user?.id) return; // Wait until user is available
+        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
 
         if (!userMongoId) {
           console.error('MongoDB User ID not found for Supabase ID:', supabaseUserId);
@@ -120,18 +125,20 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   // When user save restaurant as favourite
   const handleFavouriteRestaurantClick = async () => {
     try {
-      const supabaseUserId = await getSupabaseUserId();
-      if (!supabaseUserId) {
-        console.error('Supabase User ID not found');
-        return;
-      }
+      // const supabaseUserId = await getSupabaseUserId();
+      // if (!supabaseUserId) {
+      //   console.error('Supabase User ID not found');
+      //   return;
+      // }
+      if (!user?.id) return; // Wait until user is available
 
       const res = await fetch('/api/restaurants/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurantId,
-          supabaseUserId: supabaseUserId,
+          // supabaseUserId: supabaseUserId,
+          supabaseUserId: user.id,
         }),
       });
 

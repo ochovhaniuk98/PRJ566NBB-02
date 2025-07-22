@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // useRouter instead of Link, so we can manually handle the redirection on Clicking the Card (vs Saving the Restaurant as Favourite)
 // import Link from 'next/link';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
@@ -13,7 +14,8 @@ import StarRating from '../shared/StarRating';
 
 export default function RestaurantCard({ restaurantData }) {
   const router = useRouter();
-  const supabase = createClient();
+  // const supabase = createClient();
+  const { user } = useUser();
 
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
   const [isFavourited, setIsFavourited] = useState(false);
@@ -24,10 +26,12 @@ export default function RestaurantCard({ restaurantData }) {
   useEffect(() => {
     const checkFavouriteStatus = async () => {
       try {
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data?.user?.id) return;
+        // const { data, error } = await supabase.auth.getUser();
+        // if (error || !data?.user?.id) return;
+        if (!user?.id) return;
 
-        const res = await fetch(`/api/restaurants/is-favourited?authId=${data.user.id}&restaurantId=${restaurantId}`);
+        // const res = await fetch(`/api/restaurants/is-favourited?authId=${data.user.id}&restaurantId=${restaurantId}`);
+        const res = await fetch(`/api/restaurants/is-favourited?authId=${user.id}&restaurantId=${restaurantId}`);
 
         const result = await res.json();
         if (res.ok) {
@@ -45,15 +49,16 @@ export default function RestaurantCard({ restaurantData }) {
     e.stopPropagation();
 
     try {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user?.id) throw new Error('User not logged in');
-
+      // const { data, error } = await supabase.auth.getUser();
+      // if (error || !data?.user?.id) throw new Error('User not logged in');
+      if (!user?.id) return;
       const res = await fetch('/api/restaurants/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurantId,
-          supabaseUserId: data.user.id,
+          // supabaseUserId: data.user.id,
+          supabaseUserId: user.id,
         }),
       });
 

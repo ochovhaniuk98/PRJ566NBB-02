@@ -2,7 +2,8 @@
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/shared/Button';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 
 const redemption_options = [
   {
@@ -20,20 +21,21 @@ const redemption_options = [
 ];
 
 function randomString() {
-    return [...Array(5)].map((value) => (Math.random() * 1000000).toString(36).replace('.', '')).join('');
+  return [...Array(5)].map(value => (Math.random() * 1000000).toString(36).replace('.', '')).join('');
 }
 
 export default Redeem => {
-  
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const [points, setPoints] = useState(null);
-  const supabase = createClient();
+  // const supabase = createClient();
+  const { user } = useUser();
+
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data?.user) return;
+      // const { data } = await supabase.auth.getUser();
+      // if (!data?.user) return;
 
-      setUser(data.user);
+      // setUser(data.user);
 
       const res = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
       const { profile } = await res.json();
@@ -47,23 +49,23 @@ export default Redeem => {
 
   async function redeemOption(option) {
     if (option.points_needed > points) {
-      alert("Insufficient points!")
+      alert('Insufficient points!');
       return;
     }
 
     const res = await fetch('/api/points', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            supabaseId: user.id,
-            numOfPoints: points - option.points_needed
-          }),
-        });
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supabaseId: user.id,
+        numOfPoints: points - option.points_needed,
+      }),
+    });
 
-        if (res.ok) {
-          alert("Points successfully redeemed!\n" + "Your coupon code is " + randomString());
-        }
-      }
+    if (res.ok) {
+      alert('Points successfully redeemed!\n' + 'Your coupon code is ' + randomString());
+    }
+  }
 
   return (
     <MainBaseContainer>
@@ -77,7 +79,14 @@ export default Redeem => {
             return (
               <div className="flex flex-row w-full justify-between text-[50px]" key={redemption_option.value}>
                 <div className="self-start font-bold text-[50px]">${redemption_option.value}</div>
-                <Button type="button" className="w-30" variant="default" onClick={() => {redeemOption(redemption_option)}}>
+                <Button
+                  type="button"
+                  className="w-30"
+                  variant="default"
+                  onClick={() => {
+                    redeemOption(redemption_option);
+                  }}
+                >
                   {redemption_option.points_needed}
                 </Button>
               </div>

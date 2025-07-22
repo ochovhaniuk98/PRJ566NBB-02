@@ -3,10 +3,13 @@
 import RestaurantProfile from '@/components/restaurantProfile/RestaurantProfile';
 import { getBusinessUserRestaurantId, getBusinessUserVerificationStatus } from '@/lib/db/dbOperations';
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
+
 import { useRouter } from 'next/navigation';
 
 export default function BusinessUserRestaurantPage() {
+  const { user } = useUser();
   const [restaurantId, setRestaurantId] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -14,16 +17,18 @@ export default function BusinessUserRestaurantPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase.auth.getUser();
+        // const supabase = createClient();
+        // const { data, error } = await supabase.auth.getUser();
 
-        if (error || !data.user) {
-          setLoading(false);
-          return;
-        }
+        // if (error || !data.user) {
+        //   setLoading(false);
+        //   return;
+        // }
 
-        const user = data.user;
+        // const user = data.user;
 
+        // if (!user?.id) return;
+        
         // Fetch restaurantId and verification status in parallel
         const [profile, verified] = await Promise.all([
           getBusinessUserRestaurantId({ supabaseId: user.id }),

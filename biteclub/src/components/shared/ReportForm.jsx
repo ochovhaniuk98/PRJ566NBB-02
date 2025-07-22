@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 import { Label } from '../shared/Label';
 import { Button } from '../shared/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -46,18 +47,21 @@ export default function ReportForm({
   const [reason, setReason] = useState('');
   const [reporterUserType, setReporterUserType] = useState(null);
   const [reporter, setReporter] = useState(null);
+  const { user } = useUser();
 
   // Fetch current user and their profile
   useEffect(() => {
     const fetchReporterData = async () => {
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data?.user) {
-          console.error('Failed to get current user:', error);
-          return;
-        }
-        const authId = data.user.id;
+        // const supabase = createClient();
+        // const { data, error } = await supabase.auth.getUser();
+        // if (error || !data?.user) {
+        //   console.error('Failed to get current user:', error);
+        //   return;
+        // }
+        
+        if(!user?.id) return;
+        const authId = user.id;
 
         // Get user type
         const reporterUserTypeRes = await fetch(`/api/get-user-type?authId=${authId}`);

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/auth/client';
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Input } from '@/components/shared/Input';
@@ -13,7 +14,8 @@ import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
 
 export default function Settings() {
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  const { user } = useUser();
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatarUrl] = useState('');
   const [password, setPassword] = useState('');
@@ -23,16 +25,19 @@ export default function Settings() {
   const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
   const [feedPersonalization, setFeedPersonalization] = useState(false);
   const [error, setError] = useState(null);
-  const supabase = createClient();
+  // const supabase = createClient();
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data?.user) return;
+      // const { data } = await supabase.auth.getUser();
+      // if (!data?.user) return;
 
-      setUser(data.user);
+      // setUser(data.user);
 
-      const res = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
+      // const res = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
+      if (!user?.id) return; // Wait until user is available
+
+      const res = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
       const { profile } = await res.json();
 
       setUsername(profile.username || '');
@@ -56,6 +61,7 @@ export default function Settings() {
     setError(null); // reset error state
 
     try {
+      if (!user?.id) return;
       if (password !== '') {
         const { error } = await supabase.auth.updateUser({ password });
 
@@ -63,25 +69,23 @@ export default function Settings() {
         if (error) throw error;
       }
 
-      if (user?.id) {
-        const res = await fetch('/api/generals/update-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            supabaseId: user.id,
-            userBio,
-            username,
-            displayFavouriteRestaurants,
-            displayFavouriteBlogPosts,
-            displayVisitedPlaces,
-            feedPersonalization,
-          }),
-        });
+      const res = await fetch('/api/generals/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          supabaseId: user.id,
+          userBio,
+          username,
+          displayFavouriteRestaurants,
+          displayFavouriteBlogPosts,
+          displayVisitedPlaces,
+          feedPersonalization,
+        }),
+      });
 
-        if (!res.ok) {
-          const { message } = await res.json();
-          throw new Error(message || 'Profile update failed');
-        }
+      if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || 'Profile update failed');
       }
 
       alert('Settings updated!');

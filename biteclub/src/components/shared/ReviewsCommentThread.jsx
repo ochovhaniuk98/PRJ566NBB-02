@@ -4,8 +4,8 @@ import { Button } from './Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
-import { createClient } from '@/lib/auth/client';
-
+// import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 import { faTrashCan, faFlag } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import ReportForm from '../shared/ReportForm';
@@ -16,7 +16,9 @@ import ReportForm from '../shared/ReportForm';
 export default function ReviewsCommentThread({ post }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  const { user } = useUser();
+  const [userProfile, setUserProfile] = useState(null);
   const [fetchedPostUser, setFetchedPostUser] = useState(false);
 
   // comments
@@ -36,16 +38,18 @@ export default function ReviewsCommentThread({ post }) {
     // set user
     const fetchUser = async () => {
       try {
-        const supabase = createClient();
-        const { data } = await supabase.auth.getUser();
-        if (!data?.user) throw new Error('No Supabase user');
-        const supabaseId = data.user.id;
+        // const supabase = createClient();
+        // const { data } = await supabase.auth.getUser();
+        // if (!data?.user) throw new Error('No Supabase user');
+        // const supabaseId = data.user.id;
+        if (!user?.id) return;
 
-        const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
+        // const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
+        const res = await fetch(`/api/users/get-general-user?id=${user.id}`);
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const userData = await res.json();
 
-        setUser(userData);
+        setUserProfile(userData);
         console.log('userData: ', userData);
         setFetchedPostUser(true);
       } catch (error) {
@@ -112,7 +116,7 @@ export default function ReviewsCommentThread({ post }) {
     if (newComment.trim()) {
       // add new comment
       try {
-        if (!blogPost || !user) return;
+        if (!blogPost || !userProfile) return;
 
         // post request to create a new comment
         const res = await fetch('/api/blog-posts/comments/add-comment', {
@@ -123,11 +127,11 @@ export default function ReviewsCommentThread({ post }) {
           body: JSON.stringify({
             blogPostId: blogPost._id,
             parent_id: null,
-            avatarURL: user.userProfilePicture.url,
+            avatarURL: userProfile.userProfilePicture.url,
             content: newComment,
-            author: user.username,
+            author: userProfile.username,
             date_posted: new Date().toISOString(),
-            user: user._id,
+            user: userProfile._id,
           }),
         });
 
@@ -154,7 +158,7 @@ export default function ReviewsCommentThread({ post }) {
     if (replyContent.trim()) {
       // add new reply
       try {
-        if (!blogPost || !user) return;
+        if (!blogPost || !userProfile) return;
 
         // post request to create a new comment
         const res = await fetch('/api/blog-posts/comments/add-comment', {
@@ -165,11 +169,11 @@ export default function ReviewsCommentThread({ post }) {
           body: JSON.stringify({
             blogPostId: blogPost._id,
             parent_id: parentId,
-            avatarURL: user.userProfilePicture.url,
+            avatarURL: userProfile.userProfilePicture.url,
             content: replyContent,
-            author: user.username,
+            author: userProfile.username,
             date_posted: new Date().toISOString(),
-            user: user._id,
+            user: userProfile._id,
           }),
         });
 
@@ -199,7 +203,7 @@ export default function ReviewsCommentThread({ post }) {
         commentId: comment._id,
         like: true,
         dislike: false,
-        userId: user._id,
+        userId: userProfile._id,
       }),
     });
     if (!res.ok) throw new Error(`Could not add like to a comment ${res.status}`);
@@ -221,7 +225,7 @@ export default function ReviewsCommentThread({ post }) {
         commentId: comment._id,
         like: false,
         dislike: true,
-        userId: user._id,
+        userId: userProfile._id,
       }),
     });
     if (!res.ok) throw new Error(`Could not add dislike to a comment ${res.status}`);
@@ -257,7 +261,7 @@ export default function ReviewsCommentThread({ post }) {
             <Comment
               key={comment._id}
               comment={comment}
-              userId={user._id}
+              userId={userProfile._id}
               onReply={addReply}
               onLike={onLike}
               onDislike={onDislike}
@@ -347,12 +351,15 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
     // get reporter object
     const fetchReporter = async () => {
       try {
-        const supabase = createClient();
-        const { data } = await supabase.auth.getUser();
-        if (!data?.user) throw new Error('No Supabase user');
-        const supabaseId = data.user.id;
+        // const supabase = createClient();
+        // const { data } = await supabase.auth.getUser();
+        // if (!data?.user) throw new Error('No Supabase user');
+        // const supabaseId = data.user.id;
 
-        const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
+        if (!user?.id) return;
+
+        // const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
+        const res = await fetch(`/api/users/get-general-user?id=${user.id}`);
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const reporter = await res.json();
 
