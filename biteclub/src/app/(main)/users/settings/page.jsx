@@ -13,35 +13,46 @@ import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
 
 export default function Settings() {
+  // User infomation
   const { user } = useUser(); // Current logged-in user's Supabase info
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatarUrl] = useState('');
   const [password, setPassword] = useState('');
   const [userBio, setUserBio] = useState('');
+
+  // Display preference
   const [displayFavouriteRestaurants, setDisplayFavouriteRestaurants] = useState(false);
   const [displayFavouriteBlogPosts, setDisplayFavouriteBlogPosts] = useState(false);
   const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
   const [feedPersonalization, setFeedPersonalization] = useState(false);
+
+  // States
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user?.id) return; // Wait until user is available
+      if (!user?.id) return;
 
-      const res = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
-      const { profile } = await res.json();
+      try {
+        const res = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
+        const { profile } = await res.json();
 
-      setUsername(profile.username || '');
-      setUserBio(profile.userBio || '');
-      setDisplayFavouriteRestaurants(
-        profile.displayFavouriteRestaurants == undefined ? false : profile.displayFavouriteRestaurants
-      );
-      setDisplayFavouriteBlogPosts(
-        profile.displayFavouriteBlogPosts == undefined ? false : profile.displayFavouriteBlogPosts
-      );
-      setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.displayVisitedPlaces);
-      setFeedPersonalization(profile.feedPersonalization == undefined ? false : profile.feedPersonalization);
-      // setAvatarUrl(profile.avatarUrl || '');
+        setUsername(profile.username || '');
+        setUserBio(profile.userBio || '');
+        setDisplayFavouriteRestaurants(
+          profile.displayFavouriteRestaurants == undefined ? false : profile.displayFavouriteRestaurants
+        );
+        setDisplayFavouriteBlogPosts(
+          profile.displayFavouriteBlogPosts == undefined ? false : profile.displayFavouriteBlogPosts
+        );
+        setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.displayVisitedPlaces);
+        setFeedPersonalization(profile.feedPersonalization == undefined ? false : profile.feedPersonalization);
+      } catch (err) {
+        console.error('Failed to fetch settings profile:', err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -91,6 +102,12 @@ export default function Settings() {
 
   // If the user signed up using Google OAuth, they do not need to update their password.
   const isGoogleUser = user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google');
+  if (loading)
+    return (
+      <div className="mb-8 p-16">
+        <p>Loading...</p>
+      </div>
+    );
 
   return (
     <MainBaseContainer>
