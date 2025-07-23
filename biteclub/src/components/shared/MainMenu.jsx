@@ -70,7 +70,7 @@ export default function MainMenu() {
 
   return (
     <aside
-      className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey hover:w-fit"
+      className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey hover:w-fit font-primary"
       onMouseLeave={() => setIsHovered(false)}
       onMouseEnter={() => {
         setIsHovered(true);

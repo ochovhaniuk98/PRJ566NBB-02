@@ -111,7 +111,7 @@ export default function AddReviewForm({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 flex justify-center  z-[100]  overflow-scroll scrollbar-hide">
+      <div className="fixed inset-0 bg-black/50 flex justify-center  z-[200]  overflow-scroll scrollbar-hide">
         <div className="relative bg-transparent p-8 w-2xl min-h-fit ">
           {/* Toggle Switch -- Allows users to select "Write a review" OR "Add Instagram Post" if adding NEW review (non-edit mode) */}
           <div className="bg-brand-green-lite w-full font-secondary uppercase rounded-t-lg flex justify-between cursor-pointer">

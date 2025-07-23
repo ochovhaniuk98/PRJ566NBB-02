@@ -148,7 +148,7 @@ export default function ReportForm({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex justify-center z-50 overflow-scroll scrollbar-hide w-full h-full"
+      className="fixed inset-0 bg-black/50 flex justify-center z-[100] overflow-scroll scrollbar-hide w-full h-full"
       onClick={e => e.stopPropagation()}
     >
       <div className="relative bg-transparent p-8 w-2xl min-h-fit ">

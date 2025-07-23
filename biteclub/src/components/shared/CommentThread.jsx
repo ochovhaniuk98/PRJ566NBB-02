@@ -383,17 +383,6 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
               <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy mr-3 cursor-pointer`} />
             </div>
 
-            {openReportForm && (
-              <ReportForm
-                onClose={() => setOpenReportForm(false)}
-                contentTitle={comment.content}
-                contentType="CommentPost"
-                contentId={comment._id}
-                reportedUser={reportedUser}
-                // reporter={reporter}
-              />
-            )}
-
             {showReplyBtn && (
               <button onClick={() => setShowReplyInput(!showReplyInput)} className="hover:text-black cursor-pointer">
                 <FontAwesomeIcon icon={faComment} className={`icon-md text-brand-navy`} /> Reply
@@ -443,6 +432,16 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
           </div>
         </div>
       </div>
+      {openReportForm && (
+        <ReportForm
+          onClose={() => setOpenReportForm(false)}
+          contentTitle={comment.content}
+          contentType="CommentPost"
+          contentId={comment._id}
+          reportedUser={reportedUser}
+          // reporter={reporter}
+        />
+      )}
     </>
   );
 };

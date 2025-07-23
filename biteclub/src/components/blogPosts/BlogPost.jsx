@@ -4,9 +4,11 @@ import { createClient } from '@/lib/auth/client';
 import ReadOnlyEditor from '../tiptap-rich-text-editor/ReadOnlyEditor';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faFlag } from '@fortawesome/free-solid-svg-icons';
+import { faFlag } from '@fortawesome/free-solid-svg-icons';
 import ReportForm from '../shared/ReportForm';
 import CommentThread from '../shared/CommentThread';
+import AuthorDateBlurb from '../shared/AuthorDateBlurb';
+import { faThumbsDown, faThumbsUp, faHeart } from '@fortawesome/free-regular-svg-icons';
 
 export default function BlogPost({ id }) {
   const [blogPost, setBlogPost] = useState(null);
@@ -103,27 +105,47 @@ export default function BlogPost({ id }) {
   return (
     <div className="flex w-full">
       <div className="flex-3/8 mt-20">
-        <div className="flex flex-row gap-x-4">
-          <SingleTabWithIcon icon={faHeart} detailText={numOfFavourites ?? 0} onClick={handleFavouriteBlogPostClick} />
-
-          {/* show Report form when flag icon is clicked */}
-          <div
-            className="font-primary font-semibold text-brand-navy flex items-center gap-x-2 cursor-pointer"
-            onClick={e => {
-              setOpenReportForm(prev => !prev);
-            }}
-          >
-            <FontAwesomeIcon icon={faFlag} className={`icon-lg text-brand-navy`} />
-            Report Content
-          </div>
-        </div>
         <div className="w-full text-center">
           {postTitle && (
             <div className="simple-editor-content align-center font-primary text-4xl font-medium">{postTitle}</div>
           )}
         </div>
-
+        {/* engagement */}
+        <div className="m-auto mt-8 border-b-1 border-brand-peach py-1 w-xl flex justify-between items-center cursor-pointer">
+          <AuthorDateBlurb
+            authorPic={'https://i.pravatar.cc/80?u=placeholder'}
+            authorName={'Blogpost Authorname'}
+            date={blogPost?.date_posted}
+          />
+          <div className="flex flex-row gap-x-2 font-primary font-medium text-brand-grey">
+            <div className="flex items-center w-10">
+              <FontAwesomeIcon icon={faThumbsUp} className={`icon-lg text-brand-navy mr-1`} />0
+            </div>
+            <div className="flex items-center w-10">
+              <FontAwesomeIcon icon={faThumbsDown} className={`icon-lg text-brand-navy mr-1`} />0
+            </div>
+            {/* favourite */}
+            <div className="flex items-center w-10" onClick={handleFavouriteBlogPostClick}>
+              <FontAwesomeIcon icon={faHeart} className={`icon-lg text-brand-navy mr-1`} />
+              {numOfFavourites ?? 0}
+            </div>
+            {/* 
+            <SingleTabWithIcon
+              icon={faHeart}
+              detailText={numOfFavourites ?? 0}
+            />*/}
+            {/* show Report form when flag icon is clicked */}
+            <FontAwesomeIcon
+              icon={faFlag}
+              className={`icon-lg text-brand-navy`}
+              onClick={e => {
+                setOpenReportForm(prev => !prev);
+              }}
+            />
+          </div>
+        </div>
         {postContent && <ReadOnlyEditor content={postContent} />}
+
         {/* Report Content Form */}
         {openReportForm && (
           <ReportForm
