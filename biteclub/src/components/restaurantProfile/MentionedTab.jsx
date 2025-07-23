@@ -34,7 +34,9 @@ export default function MentionedTab({ restaurantId }) {
       </div>
     );
   if (error) return <div className="text-red-500">{error}</div>;
-  if (!blogPosts || blogPosts.length === 0) return <div>No mentions found.</div>;
+  if (!blogPosts || blogPosts.length === 0) return (      <div className="col-span-3 text-center">
+        <p>No mentions found.</p>
+      </div>);
 
   // for blog posts' Masonry grid
   const breakpointColumnsObj = {

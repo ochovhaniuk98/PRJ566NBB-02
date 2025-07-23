@@ -97,7 +97,11 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
 
           {/* Event Cards */}
           <div className="flex flex-col gap-4">
-            {events.length === 0 && <div className="text-gray-500">No events available</div>}
+            {events.length === 0 && (
+              <div className="col-span-3 text-start">
+                <p>No events available</p>
+              </div>
+            )}
             {events.map(event => (
               <EventCard
                 key={event._id}
@@ -129,7 +133,11 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
           </div>
           {/* Announcement Cards */}
           <div className="flex flex-col gap-4">
-            {announcements.length === 0 && <div className="text-gray-500">No announcements available</div>}
+            {announcements.length === 0 && (
+              <div className="col-span-3 text-start">
+                <p>No announcements available</p>
+              </div>
+            )}
             {announcements.map(announcement => (
               <AnnouncementCard
                 key={announcement._id}

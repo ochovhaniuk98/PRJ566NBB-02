@@ -196,7 +196,11 @@ export default function MasonryReviewGrid({
 
   // Exit early if no reviews
   if (!reviewList || (!reviewList?.internalReviews?.length && !reviewList?.externalReviews?.length)) {
-    return <div className="col-span-3 text-center text-gray-500">No reviews available</div>;
+    return (
+      <div className="col-span-3 text-center">
+        <p>No reviews available.</p>
+      </div>
+    );
   }
 
   return (
