@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Input } from '@/components/shared/Input';
@@ -10,11 +11,14 @@ import { Switch } from '@/components/shared/Switch';
 import { Button } from '@/components/shared/Button';
 import { LogoutButton } from '@/components/auth/Logout-button';
 import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
+import Spinner from '@/components/shared/Spinner';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
 
 export default function Settings() {
   // User infomation
   const { user } = useUser(); // Current logged-in user's Supabase info
+  const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
+
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatarUrl] = useState('');
   const [password, setPassword] = useState('');
@@ -30,33 +34,45 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (!user?.id) return;
+
+  //     try {
+  //       const res = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
+  //       const { profile } = await res.json();
+
+  //       setUsername(profile.username || '');
+  //       setUserBio(profile.userBio || '');
+  //       setDisplayFavouriteRestaurants(
+  //         profile.displayFavouriteRestaurants == undefined ? false : profile.displayFavouriteRestaurants
+  //       );
+  //       setDisplayFavouriteBlogPosts(
+  //         profile.displayFavouriteBlogPosts == undefined ? false : profile.displayFavouriteBlogPosts
+  //       );
+  //       setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.displayVisitedPlaces);
+  //       setFeedPersonalization(profile.feedPersonalization == undefined ? false : profile.feedPersonalization);
+  //     } catch (err) {
+  //       console.error('Failed to fetch settings profile:', err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [user?.id]);
+
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user?.id) return;
+    if (!userData) return;
 
-      try {
-        const res = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
-        const { profile } = await res.json();
-
-        setUsername(profile.username || '');
-        setUserBio(profile.userBio || '');
-        setDisplayFavouriteRestaurants(
-          profile.displayFavouriteRestaurants == undefined ? false : profile.displayFavouriteRestaurants
-        );
-        setDisplayFavouriteBlogPosts(
-          profile.displayFavouriteBlogPosts == undefined ? false : profile.displayFavouriteBlogPosts
-        );
-        setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.displayVisitedPlaces);
-        setFeedPersonalization(profile.feedPersonalization == undefined ? false : profile.feedPersonalization);
-      } catch (err) {
-        console.error('Failed to fetch settings profile:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user?.id]);
+    setUsername(userData.username || '');
+    setUserBio(userData.userBio || '');
+    setDisplayFavouriteRestaurants(userData.displayFavouriteRestaurants ?? false);
+    setDisplayFavouriteBlogPosts(userData.displayFavouriteBlogPosts ?? false);
+    setDisplayVisitedPlaces(userData.displayVisitedPlaces ?? false);
+    setFeedPersonalization(userData.feedPersonalization ?? false);
+    setLoading(false);
+  }, [userData]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -102,12 +118,14 @@ export default function Settings() {
 
   // If the user signed up using Google OAuth, they do not need to update their password.
   const isGoogleUser = user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google');
-  if (loading)
-    return (
-      <div className="mb-8 p-16">
-        <p>Loading...</p>
-      </div>
-    );
+  // if (loading)
+  //   return (
+  //     <div className="mb-8 p-16">
+  //       <p>Loading...</p>
+  //     </div>
+  //   );
+
+  if (loadingData || loading) return <Spinner />;
 
   return (
     <MainBaseContainer>

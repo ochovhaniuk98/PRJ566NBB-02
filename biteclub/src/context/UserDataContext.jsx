@@ -39,8 +39,8 @@ export const UserDataProvider = ({ children }) => {
         return;
       }
 
-      const { userData } = await res.json();
-      setUserData(userData);
+      const { profile } = await res.json();
+      setUserData(profile);
     } catch (err) {
       console.error('Error fetching user data:', err);
     } finally {

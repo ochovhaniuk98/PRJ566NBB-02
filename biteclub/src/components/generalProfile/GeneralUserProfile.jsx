@@ -17,6 +17,8 @@ import { Button } from '../shared/Button';
 import RestaurantCard from '../restaurantProfile/RestaurantCard';
 import ReviewCardExpanded from '../restaurantProfile/ReviewCardExpanded';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
+import Spinner from '@/components/shared/Spinner';
+
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // userId: from MongoDB, not supabase. By default "false" just in-case.
@@ -347,12 +349,14 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     0: 1,
   };
 
-  if (!userProfile)
-    return (
-      <div className="mb-8 p-16">
-        <p>Loading Profile...</p>
-      </div>
-    );
+  // if (!userProfile)
+  //   return (
+  //     <div className="mb-8 p-16">
+  //       <p>Loading Profile...</p>
+  //     </div>
+  //   );
+
+  if (!userProfile) return <Spinner message="Loading Profile..." />;
 
   // =====================================
   // HANDLE DELETE: BLOG POSTS AND REVIEWS

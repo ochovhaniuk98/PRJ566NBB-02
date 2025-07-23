@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
 
 import GeneralUserProfile from '@/components/generalProfile/GeneralUserProfile';
+import Spinner from '@/components/shared/Spinner';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 export default function GeneralUserDashboard() {
@@ -36,12 +37,15 @@ export default function GeneralUserDashboard() {
     fetchData();
   }, [user?.id]);
 
-  if (loading)
-    return (
-      <div className="mb-8 p-16">
-        <p>Loading Dashboard...</p>
-      </div>
-    );
+  // if (loading)
+  //   return (
+  //     <div className="mb-8 p-16">
+  //       <p>Loading Dashboard...</p>
+  //     </div>
+  //   );
+
+    if (loading) return <Spinner message='Loading Dashboard...'/>;
+
   if (error)
     return (
       <div className="mb-8 p-16">
