@@ -65,15 +65,21 @@ export default function Redeem() {
 
   return (
     <MainBaseContainer>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center m-16">
-        <div className="flex flex-row justify-between w-full mb-8">
-          <h1>Redeem</h1>
-          <span>Total points: {points}</span>
+      <div className="main-side-padding mb-16 w-full flex flex-col items-center mt-16">
+        <div className="flex flex-col items-start gap-4 w-full m-8">
+          <h1>Get Your Rewards</h1>
+          <p>
+            Complete challenges to earn points, then redeem them here for exclusive food coupons.
+          </p>
+          <p className="text-2xl">Your points: {points}</p>
         </div>
-        <div className="flex flex-col justify-between w-full h-[300px]">
+        <div className="flex flex-col gap-6 min-w-full">
           {redemption_options.map(redemption_option => {
             return (
-              <div className="flex flex-row w-full justify-between text-[50px]" key={redemption_option.value}>
+              <div
+                className="flex flex-row w-full justify-between items-center text-[50px]"
+                key={redemption_option.value}
+              >
                 <div className="self-start font-bold text-[50px]">${redemption_option.value}</div>
                 <Button
                   type="button"
@@ -83,7 +89,7 @@ export default function Redeem() {
                     redeemOption(redemption_option);
                   }}
                 >
-                  {redemption_option.points_needed}
+                  {redemption_option.points_needed} points
                 </Button>
               </div>
             );
