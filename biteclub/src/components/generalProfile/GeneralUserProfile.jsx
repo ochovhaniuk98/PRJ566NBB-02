@@ -513,9 +513,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Blog Posts */}
             {selectedTab === profileTabs[0] &&
               (loadingStates.blogs ? (
-                <div className="col-span-3 text-center">
-                  <p>Loading blog posts...</p>
-                </div>
+                <Spinner message="Loading blog posts..." />
               ) : myBlogPosts?.length === 0 ? (
                 <div className="col-span-3 text-center">
                   <p>No blog posts yet.</p>
@@ -562,9 +560,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                   </Button>
                 </div>
                 {loadingStates.reviews ? (
-                  <div className="col-span-3 text-center">
-                    <p>Loading reviews...</p>
-                  </div>
+                  <Spinner message="Loading reviews..." />
                 ) : !showInstaReview ? (
                   myReviews?.internalReviews.length === 0 ? (
                     <div className="col-span-3 text-center">
@@ -644,9 +640,10 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Favourite Restaurants */}
             {selectedTab === profileTabs[3] &&
               (loadingStates.favRestaurants ? (
-                <div className="col-span-3 text-center">
-                  <p>Loading favourite restaurants...</p>
-                </div>
+                // <div className="col-span-3 text-center">
+                //   <p>Loading favourite restaurants...</p>
+                // </div>
+                <Spinner message="Loading favourite restaurants..." />
               ) : favouritedRestaurants.length === 0 ? (
                 <div className="col-span-3 text-center">
                   <p>No favourite restaurants yet.</p>
@@ -662,9 +659,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Favourite Blog Posts */}
             {selectedTab === profileTabs[4] &&
               (loadingStates.favBlogs ? (
-                <div className="col-span-3 text-center">
-                  <p>Loading favourite blog posts...</p>
-                </div>
+                <Spinner message="Loading favourite blog posts..." />
               ) : favouritedBlogs.length === 0 ? (
                 <div className="col-span-3 text-center">
                   <p>No favourite blog posts yet.</p>
@@ -688,9 +683,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* My Followers */}
             {selectedTab === profileTabs[5] &&
               (loadingStates.followers ? (
-                <div className="col-span-3 text-center">
-                  <p>Loading followers...</p>
-                </div>
+                <Spinner message="Loading followers..." />
               ) : followers.length === 0 ? (
                 <div className="col-span-3 text-center">
                   <p>No followers yet.</p>
@@ -706,9 +699,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {/* Followings */}
             {selectedTab === profileTabs[6] &&
               (loadingStates.followings ? (
-                <div className="col-span-3 text-center">
-                  <p>Loading followings...</p>
-                </div>
+                <Spinner message="Loading followings..." />
               ) : followings.length === 0 ? (
                 <div className="col-span-3 text-center">
                   <p>No followings yet.</p>
