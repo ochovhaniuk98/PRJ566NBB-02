@@ -118,6 +118,28 @@ export default function MasonryReviewGrid({
     setEngagementData(newEngagementData);
   }, [userData, filteredCombinedList]);
 
+  // breakpoints for when an internal review is selected and the expanded panel appears
+  const breakpointColumnsObj = useMemo(() => {
+    const isInternal = selectedReview && !selectedReview?.content?.embedLink;
+    return isInternal
+      ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
+      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
+  }, [selectedReview]);
+
+  // Exit early if no reviews
+  if (!reviewList || (!reviewList?.internalReviews?.length && !reviewList?.externalReviews?.length)) {
+    return (
+      <div className="col-span-3 text-center">
+        <p>No reviews available.</p>
+      </div>
+    );
+  }
+
+  if (loadingData || loading) return <Spinner />;
+
+  // ===================
+  // HANDLES & FUNCTIONS
+  // ===================
   const updateEngagementState = (reviewId, resData) => {
     setEngagementData(prev => ({
       ...prev,
@@ -163,25 +185,6 @@ export default function MasonryReviewGrid({
       },
     }));
   };
-
-  // breakpoints for when an internal review is selected and the expanded panel appears
-  const breakpointColumnsObj = useMemo(() => {
-    const isInternal = selectedReview && !selectedReview?.content?.embedLink;
-    return isInternal
-      ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
-      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
-  }, [selectedReview]);
-
-  // Exit early if no reviews
-  if (!reviewList || (!reviewList?.internalReviews?.length && !reviewList?.externalReviews?.length)) {
-    return (
-      <div className="col-span-3 text-center">
-        <p>No reviews available.</p>
-      </div>
-    );
-  }
-
-  if (loadingData || loading) return <Spinner />;
 
   return (
     <div className="flex gap-2">

@@ -16,7 +16,6 @@ export default function GeneralUserDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-
         if (!user?.id) return;
         const id = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
 
@@ -37,19 +36,12 @@ export default function GeneralUserDashboard() {
     fetchData();
   }, [user?.id]);
 
-  // if (loading)
-  //   return (
-  //     <div className="mb-8 p-16">
-  //       <p>Loading Dashboard...</p>
-  //     </div>
-  //   );
-
-    if (loading) return <Spinner message='Loading Dashboard...'/>;
+  if (loading) return <Spinner message="Loading Dashboard..." />;
 
   if (error)
     return (
       <div className="mb-8 p-16">
-        <p className='text-red-400'>{error}</p>
+        <p className="text-red-400">{error}</p>
       </div>
     );
 

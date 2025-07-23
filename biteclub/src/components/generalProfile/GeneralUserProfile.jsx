@@ -357,9 +357,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   if (loading || !userProfile) return <Spinner message="Loading Profile..." />;
 
-  // =====================================
-  // HANDLE DELETE: BLOG POSTS AND REVIEWS
-  // =====================================
+  // =======
+  // HANDLES
+  // =======
 
   // DELETE BLOG POSTS
   // -----------------

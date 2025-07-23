@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Spinner from '@/components/shared/Spinner';
 
 export function LogoutButton() {
-    const [loggingOut, setLoggingOut] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const router = useRouter();
 
@@ -17,7 +17,11 @@ export function LogoutButton() {
     router.push('/');
   };
 
-  if (loggingOut) return <Spinner message='Logging out...'/>
+  if (loggingOut) return <Spinner message="Logging out..." />;
 
-  return <Button  className="w-40" variant="default"  onClick={logout}>Logout</Button>;
+  return (
+    <Button className="w-40" variant="default" onClick={logout}>
+      Logout
+    </Button>
+  );
 }
