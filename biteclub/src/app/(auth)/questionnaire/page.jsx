@@ -2,6 +2,11 @@
 import { useState, useRef } from 'react';
 import { createClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBowlFood, faBowlRice, faCarrot, faSpoon, faUtensils } from '@fortawesome/free-solid-svg-icons';
+import { faCircleRight, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
+import Image from 'next/image';
+import { Button } from '@/components/shared/Button';
 
 const DIETARY_CONFIG = {
   title: 'DIETARY PREFERENCES',
@@ -109,6 +114,7 @@ export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png'
     }
   }
 
+  //background images
   const bgImage =
     step === FIRST_STEP
       ? "url('/img/greenOnYellowBG.png')"
@@ -117,7 +123,7 @@ export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png'
       : "url('/img/yellowOnBlueBG.png')";
 
   return (
-    <div className="grid grid-cols-[55%_45%] h-screen relative">
+    <div className="grid grid-cols-[55%_45%] h-screen relative overflow-y-hidden">
       {/* background image*/}
       <div
         className="bg-cover"
@@ -127,12 +133,13 @@ export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png'
           backgroundPosition: '-2rem',
         }}
       ></div>
-      <div className="relative bg-[#fffbe6] p-[10%] h-full">
+      <div className="relative bg-[#fffbe6] p-12 py-8 h-full">
         <div className="flex flex-col items-center">
-          <div>
-            <h1 className="self-center text-xl font-secondary">{step}</h1>
+          <div className="relative h-11 w-16">
+            <Image src="/img/trayIcon.png" alt="tray icon" className="object-contain relative" fill={true} />
+            <h1 className="absolute bottom-1 left-[42%] text-3xl font-secondary text-brand-navy">{step}</h1>
           </div>
-          <span className="self-center text-[8px]">STEP {step}/3</span>
+          <span className="self-center text-[12px] font-medium">STEP {step}/3</span>
         </div>
         {step == FIRST_STEP ? (
           <PreferencesSelector
@@ -167,8 +174,19 @@ export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png'
             I'll do this later
           </a>
         ) : null}
-        <button onClick={step != FINAL_STEP ? nextStep : submit} className="absolute bottom-8.5 right-10.5">
-          {step != FINAL_STEP ? 'Next Step' : 'Complete'}
+        <button
+          onClick={step != FINAL_STEP ? nextStep : submit}
+          className="absolute bottom-8.5 right-10.5 flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer"
+        >
+          {step != FINAL_STEP ? (
+            <>
+              Next Step <FontAwesomeIcon icon={faCircleRight} className={`text-3xl text-brand-navy`} />
+            </>
+          ) : (
+            <>
+              Complete <FontAwesomeIcon icon={faCircleCheck} className={`text-3xl text-brand-navy`} />
+            </>
+          )}
         </button>
       </div>
     </div>
@@ -192,37 +210,46 @@ function PreferencesSelector({ config, picked, setPicked, options, setOptions })
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <h2 className="self-center">{config.title}</h2>
-      <div className="mb-[50px]">
-        <p className="text-sm">{config.instructions}</p>
-        <div className="flex flex-wrap gap-2 p-4 rounded-2xl">
+    <div className="flex flex-col h-full mt-4">
+      <h2 className="self-center mb-2">{config.title}</h2>
+      <div className="mb-[70px]">
+        <p className="mb-2">{config.instructions}</p>
+        <div className="flex flex-wrap gap-2 p-2 px-0 mt-6 rounded-2xl">
           {options.map(t => (
             <button
               key={t}
               type="button"
               onClick={() => toggle(t)}
-              className={`inline-flex items-center gap-1 px-4 py-1 rounded-full text-sm font-semibold shadow-sm border-none transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8bc53f] ${
-                picked.includes(t) ? 'bg-[#8bc53f] text-white' : 'bg-[#fff5df] text-[#06317b]'
+              className={`inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-primary font-medium border-none cursor-pointer transition-colors duration-150 focus:outline-none  ${
+                picked.includes(t) ? 'bg-[#a6d34d] text-black' : 'bg-[#FFF5D8] text-[#08349e]'
               }`}
             >
               {t}
-              <span className="text-blue-800 text-base ml-1">🐘</span>
+              <FontAwesomeIcon icon={faCarrot} className={`text-sm text-brand-navy ml-2`} />
             </button>
           ))}
         </div>
       </div>
       <div>
-        <h2 className="font-semibold text-base">{config.customSection.missingPrompt}</h2>
-        <p className="text-sm">{config.customSection.inputInstructions}</p>
+        <h3 className="normal-case">{config.customSection.missingPrompt}</h3>
+        <p className="">{config.customSection.inputInstructions}</p>
         <div className="flex flex-col w-[55%]">
           <input ref={customInput} className="rounded-3xl" placeholder={config.customSection.inputPlaceholder} />
-          <button
+          <Button
+            type="submit"
+            className="w-30 self-center"
+            variant="default"
+            disabled={false}
+            onClick={addCustomSelection}
+          >
+            {config.customSection.buttonLabel}
+          </Button>
+          {/*<button
             className="self-center rounded-3xl bg-[#ffdcbe] w-[130px] text-sm py-[5px]"
             onClick={addCustomSelection}
           >
             {config.customSection.buttonLabel}
-          </button>
+          </button>*/}
         </div>
       </div>
     </div>
@@ -230,8 +257,8 @@ function PreferencesSelector({ config, picked, setPicked, options, setOptions })
 }
 
 function Scale({ value, setValue }) {
-  const SELECTED_OPTION_STYLING = 'bg-[#80c001] h-[17px] w-[17px] rounded-full z-10';
-  const UNSELECTED_OPTION_STYLING = 'bg-[#ffdcbe] h-[17px] w-[7px] rounded-xl z-10';
+  const SELECTED_OPTION_STYLING = 'bg-[#56e4be] h-[28px] w-[28px] rounded-full z-10';
+  const UNSELECTED_OPTION_STYLING = 'bg-[#ffdcbe] h-[28px] w-[12px] rounded-xl z-10';
   const buttons = [];
   for (let i = 1; i <= 5; i++) {
     buttons.push(
@@ -248,8 +275,8 @@ function Scale({ value, setValue }) {
   }
   return (
     <>
-      <div className="relative flex flex-row justify-between w-[95%] h-[17px]">
-        <div className="self-center absolute bg-[#ffdcbe] h-[7px] w-full" />
+      <div className="relative flex flex-row justify-between w-[75%] h-[28px]">
+        <div className="self-center absolute bg-[#ffdcbe] h-[10px] w-full" />
         {buttons}
       </div>
     </>
@@ -266,10 +293,10 @@ function LikertScale({
   setOpenToDiversity,
 }) {
   return (
-    <div className="flex flex-col items-left h-full">
-      <h1 className="text-xl self-center font-bold">Know your zone</h1>
+    <div className="flex flex-col items-left h-full mt-4">
+      <h2 className="self-center mb-2">Know Your Zone</h2>
       <p>Complete the following to help us understand how comfortable you are trying new foods and cuisines.</p>
-      <div className="flex flex-col items-center w-full justify-between h-[60%]">
+      <div className="flex flex-col items-center w-full justify-between h-[60%] mt-4">
         <div className="flex flex-col items-center w-full">
           <p>I find it easy to try new foods.</p>
           <Scale value={likelinessToTryFood} setValue={setLikelinessToTryFood} />
