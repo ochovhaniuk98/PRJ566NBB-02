@@ -1,26 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import Masonry from 'react-masonry-css';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
 import GeneralUserBanner from '@/components/generalProfile/GeneralUserBanner';
 import GeneralUserCard from '@/components/generalProfile/GeneralUserCard';
+import RestaurantCard from '../restaurantProfile/RestaurantCard';
 import BlogPostCard from '@/components/shared/BlogPostCard';
 import ReviewCard from '@/components/shared/ReviewCard';
-import StarRating from '../shared/StarRating';
-import AddReviewForm from '../shared/AddReviewForm';
-import { Button } from '../shared/Button';
-import RestaurantCard from '../restaurantProfile/RestaurantCard';
 import ReviewCardExpanded from '../restaurantProfile/ReviewCardExpanded';
 import InstagramEmbed from '../restaurantProfile/InstagramEmbed';
+import AddReviewForm from '../shared/AddReviewForm';
+import StarRating from '../shared/StarRating';
+import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
 import Spinner from '@/components/shared/Spinner';
+import { Button } from '../shared/Button';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
+  // User infomation
+  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
+  const [userProfile, setUserProfile] = useState(null);
 
   // userId: from MongoDB, not supabase. By default "false" just in-case.
   // const isOwner = true; // flag for showing certain components for profile owner
@@ -34,7 +39,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     'Following',
   ];
 
-  const [userProfile, setUserProfile] = useState(null);
   const [selectedTab, setSelectedTab] = useState(profileTabs[0]);
   const [showTextEditor, setShowTextEditor] = useState(false);
   const [myBlogPosts, setMyBlogPosts] = useState([]);
@@ -94,33 +98,78 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // DATA FETCHING
   // =============
   // TAB 0 -- BLOG POSTS
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [profileRes, postsRes] = await Promise.all([
-          fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`),
-          fetch(`/api/blog-posts/get-posts-by-userId/${generalUserId}`),
-        ]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const [profileRes, postsRes] = await Promise.all([
+  //         fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`),
+  //         fetch(`/api/blog-posts/get-posts-by-userId/${generalUserId}`),
+  //       ]);
 
-        if (!profileRes.ok || !postsRes.ok) {
-          console.error('One or both requests failed');
-          return;
+  //       if (!profileRes.ok || !postsRes.ok) {
+  //         console.error('One or both requests failed');
+  //         return;
+  //       }
+
+  //       const [profileData, postsData] = await Promise.all([profileRes.json(), postsRes.json()]);
+
+  //       setUserProfile(profileData.profile);
+  //       setMyBlogPosts(postsData);
+  //       setDisplayFavouriteRestaurants(profileData.profile.displayFavouriteRestaurants);
+  //       setDisplayFavouriteBlogPosts(profileData.profile.displayFavouriteBlogPosts);
+  //       setDisplayVisitedPlaces(profileData.profile.displayVisitedPlaces);
+  //     } catch (err) {
+  //       console.error('(GeneralUserProfile) Failed to fetch user data: ', err);
+  //     }
+  //   };
+
+  //   if (generalUserId) fetchData();
+  // }, [generalUserId, showTextEditor]);
+
+  useEffect(() => {
+    const fetchBlogData = async () => {
+      try {
+        let profile = userProfile;
+
+        // If we don't have userProfile yet and it's not the owner, fetch it
+        if (!profile && !isOwner && generalUserId) {
+          const res = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
+          if (!res.ok) {
+            console.error('Failed to fetch profile');
+            return;
+          }
+          const { profile: fetchedProfile } = await res.json();
+          profile = fetchedProfile;
+          setUserProfile(profile); // Cache it
         }
 
-        const [profileData, postsData] = await Promise.all([profileRes.json(), postsRes.json()]);
+        if (isOwner) {
+          profile = userData;
+          setUserProfile(userData); // for consistent usage later
+        }
 
-        setUserProfile(profileData.profile);
+        if (!profile) return;
+
+        // Fetch blog posts
+        const postsRes = await fetch(`/api/blog-posts/get-posts-by-userId/${profile._id}`);
+        if (!postsRes.ok) {
+          console.error('Failed to fetch blog posts');
+          return;
+        }
+        const postsData = await postsRes.json();
         setMyBlogPosts(postsData);
-        setDisplayFavouriteRestaurants(profileData.profile.displayFavouriteRestaurants);
-        setDisplayFavouriteBlogPosts(profileData.profile.displayFavouriteBlogPosts);
-        setDisplayVisitedPlaces(profileData.profile.displayVisitedPlaces);
+
+        // Update display toggles from profile
+        setDisplayFavouriteRestaurants(profile.displayFavouriteRestaurants);
+        setDisplayFavouriteBlogPosts(profile.displayFavouriteBlogPosts);
+        setDisplayVisitedPlaces(profile.displayVisitedPlaces);
       } catch (err) {
-        console.error('(GeneralUserProfile) Failed to fetch user data: ', err);
+        console.error('(GeneralUserProfile) Failed to fetch blog post data: ', err);
       }
     };
 
-    if (generalUserId) fetchData();
-  }, [generalUserId, showTextEditor]);
+    if (generalUserId || isOwner) fetchBlogData();
+  }, [generalUserId, isOwner, userData, showTextEditor]);
 
   // THEN: Load data ONLY when the tab is selected
   useEffect(() => {
