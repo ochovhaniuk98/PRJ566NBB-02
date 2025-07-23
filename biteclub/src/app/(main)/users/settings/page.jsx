@@ -43,6 +43,7 @@ export default function Settings() {
     setDisplayFavouriteBlogPosts(userData.displayFavouriteBlogPosts ?? false);
     setDisplayVisitedPlaces(userData.displayVisitedPlaces ?? false);
     setFeedPersonalization(userData.feedPersonalization ?? false);
+    setAvatarUrl(userData.userProfilePicture.url ?? null);
     setLoading(false);
   }, [loadingData, userData]);
 
@@ -97,7 +98,7 @@ export default function Settings() {
     <MainBaseContainer>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center m-16 bg-white">
         {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
-        {user ? (
+        {user && (
           <Avatar
             uid={user.id}
             url={avatar_url}
@@ -106,8 +107,6 @@ export default function Settings() {
               setAvatarUrl(url);
             }}
           />
-        ) : (
-          <p>Loading user...</p>
         )}
 
         <form className="w-4xl mt-8" onSubmit={handleSubmit}>
