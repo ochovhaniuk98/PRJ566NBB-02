@@ -1,10 +1,12 @@
 'use client';
 
-import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/shared/Button';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
+import { Button } from '@/components/shared/Button';
+import MainBaseContainer from '@/components/shared/MainBaseContainer';
+import Spinner from '@/components/shared/Spinner';
+
 const redemption_options = [
   {
     points_needed: 50,
@@ -24,30 +26,19 @@ function randomString() {
   return [...Array(5)].map(value => (Math.random() * 1000000).toString(36).replace('.', '')).join('');
 }
 
-export default Redeem => {
-  const [points, setPoints] = useState(null);
+export default function Redeem() {
   const { user } = useUser(); // Current logged-in user's Supabase info
-  const { userData, loadingData, refreshUserData } = useUserData();
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (!user?.id) return;
-
-  //     const res = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
-  //     const { profile } = await res.json();
-
-  //     console.log('Points: ', profile.numOfPoints);
-  //     setPoints(profile.numOfPoints);
-  //   };
-
-  //   fetchData();
-  // }, [user?.id]);
+  const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
+  const [points, setPoints] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userData?.numOfPoints) return;
+    if (loadingData || !userData?.numOfPoints) return;
     setPoints(userData.numOfPoints);
-  }, [userData?.numOfPoints]);
+    setLoading(false);
+  }, [loadingData, userData?.numOfPoints]);
 
+  if (loadingData || loading) return <Spinner />;
 
   async function redeemOption(option) {
     if (option.points_needed > points) {

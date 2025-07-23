@@ -35,7 +35,7 @@ export default function Settings() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!userData) return;
+    if (loadingData || !userData) return;
 
     setUsername(userData.username || '');
     setUserBio(userData.userBio || '');
@@ -44,7 +44,9 @@ export default function Settings() {
     setDisplayVisitedPlaces(userData.displayVisitedPlaces ?? false);
     setFeedPersonalization(userData.feedPersonalization ?? false);
     setLoading(false);
-  }, [userData]);
+  }, [loadingData, userData]);
+
+  if (loadingData || loading) return <Spinner />;
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -90,8 +92,6 @@ export default function Settings() {
 
   // If the user signed up using Google OAuth, they do not need to update their password.
   const isGoogleUser = user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google');
-
-  if (loadingData || loading) return <Spinner />;
 
   return (
     <MainBaseContainer>

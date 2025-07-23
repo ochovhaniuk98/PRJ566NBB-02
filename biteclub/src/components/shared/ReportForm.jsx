@@ -42,10 +42,10 @@ export default function ReportForm({
   useEffect(() => {
     if (loadingData || !userData) return;
     setLoading(false);
-  }, [userData]);
+  }, [loadingData, userData]);
 
   if (loadingData || loading) return <Spinner />;
-
+  
   const handleSubmit = async e => {
     e.preventDefault();
 
@@ -97,6 +97,7 @@ export default function ReportForm({
       alert('Something went wrong. Please try again.');
     }
   };
+
 
   return (
     <div

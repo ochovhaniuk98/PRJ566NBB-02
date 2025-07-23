@@ -1,11 +1,12 @@
-import Masonry from 'react-masonry-css';
-import ReviewCard from '../shared/ReviewCard';
 import { useEffect, useMemo, useState } from 'react';
-import InstagramEmbed from './InstagramEmbed';
-import ReviewCardExpanded from './ReviewCardExpanded';
+import Masonry from 'react-masonry-css';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
 import { updateReviewEngagement } from '@/lib/db/dbOperations';
+import Spinner from '@/components/shared/Spinner';
+import ReviewCard from '../shared/ReviewCard';
+import InstagramEmbed from './InstagramEmbed';
+import ReviewCardExpanded from './ReviewCardExpanded';
 
 export default function MasonryReviewGrid({
   selectedReview,
@@ -16,40 +17,17 @@ export default function MasonryReviewGrid({
   restaurantName,
 }) {
   const { user } = useUser(); // Current logged-in user's Supabase info
-  const { userData, loadingData, refreshUserData } = useUserData();
-  // const [userProfile, setUserProfile] = useState(null);
+  const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [reportedReviewIds, setReportedReviewIds] = useState([]);
   const [engagementData, setEngagementData] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     if (!user?.id) return;
+  useEffect(() => {
+    if (loadingData || !userData) return;
+    setLoading(false);
+  }, [loadingData, userData]);
 
-  //     try {
-  //       const userType = user.user_metadata?.user_type;
-
-  //       let mongoUser;
-  //       if (userType === 'business') {
-  //         mongoUser = await fetch(`/api/business-user/get-profile-by-authId?authId=${user.id}`);
-  //       } else {
-  //         mongoUser = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
-  //       }
-
-  //       if (!mongoUser.ok) {
-  //         console.error('Failed to fetch user profile:', mongoUser.status);
-  //         return;
-  //       }
-
-  //       const { profile } = await mongoUser.json();
-  //       setUserProfile(profile);
-  //       console.log('Fetched user:', profile);
-  //     } catch (err) {
-  //       console.error('Error fetching user profile:', err.message);
-  //     }
-  //   };
-
-  //   fetchUser();
-  // }, [user?.id]);
+  if (loadingData || loading) return <Spinner />;
 
   useEffect(() => {
     const fetchReportedReviews = async () => {
