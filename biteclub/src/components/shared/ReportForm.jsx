@@ -44,8 +44,6 @@ export default function ReportForm({
     setLoading(false);
   }, [loadingData, userData]);
 
-  if (loadingData || loading) return <Spinner />;
-  
   const handleSubmit = async e => {
     e.preventDefault();
 
@@ -97,7 +95,8 @@ export default function ReportForm({
       alert('Something went wrong. Please try again.');
     }
   };
-
+  
+  if (loadingData || loading) return <Spinner />;
 
   return (
     <div

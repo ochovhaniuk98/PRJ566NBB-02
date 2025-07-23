@@ -38,8 +38,6 @@ export default function Redeem() {
     setLoading(false);
   }, [loadingData, userData?.numOfPoints]);
 
-  if (loadingData || loading) return <Spinner />;
-
   async function redeemOption(option) {
     if (option.points_needed > points) {
       alert('Insufficient points!');
@@ -59,6 +57,8 @@ export default function Redeem() {
       alert('Points successfully redeemed!\n' + 'Your coupon code is ' + randomString());
     }
   }
+
+  if (loadingData || loading) return <Spinner />;
 
   return (
     <MainBaseContainer>
@@ -89,4 +89,4 @@ export default function Redeem() {
       </div>
     </MainBaseContainer>
   );
-};
+}

@@ -46,8 +46,6 @@ export default function Settings() {
     setLoading(false);
   }, [loadingData, userData]);
 
-  if (loadingData || loading) return <Spinner />;
-
   const handleSubmit = async e => {
     e.preventDefault();
     setError(null); // reset error state
@@ -92,6 +90,8 @@ export default function Settings() {
 
   // If the user signed up using Google OAuth, they do not need to update their password.
   const isGoogleUser = user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google');
+
+  if (loadingData || loading) return <Spinner />;
 
   return (
     <MainBaseContainer>

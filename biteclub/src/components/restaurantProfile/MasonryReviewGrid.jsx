@@ -27,8 +27,6 @@ export default function MasonryReviewGrid({
     setLoading(false);
   }, [loadingData, userData]);
 
-  if (loadingData || loading) return <Spinner />;
-
   useEffect(() => {
     const fetchReportedReviews = async () => {
       const res = await fetch('/api/reports');
@@ -182,6 +180,8 @@ export default function MasonryReviewGrid({
       </div>
     );
   }
+
+  if (loadingData || loading) return <Spinner />;
 
   return (
     <div className="flex gap-2">
