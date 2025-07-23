@@ -48,7 +48,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
 
-  /* States below are for MANAGING general profile */
+  // General profile Management
   const [editMode, setEditMode] = useState(false); // tracks whether owner wants to manage CONTENT on profile (displays edit/delete panel on each card)
   const [selectedInternalReviews, setSelectedInternalReviews] = useState([]);
   const [selectedExternalReviews, setSelectedExternalReviews] = useState([]);
@@ -65,6 +65,9 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [showModal, setShowModal] = useState(false);
   const [deleteAllTarget, setDeleteAllTarget] = useState(''); // 'reviews' or 'blogPosts'
   const [confirmationText, setConfirmationText] = useState('');
+
+  // States
+  const [loading, setLoading] = useState(true);
 
   // ===============
   // TABS MANAGEMENT
@@ -84,7 +87,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   // Loading states for each tabs
   const [loadingStates, setLoadingStates] = useState({
-    blogs: false,
+    blogs: true,
     reviews: false,
     favRestaurants: false,
     favBlogs: false,
@@ -104,12 +107,14 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // =============
   // USER PROFILE PREFERENCE & TAB 0 -- BLOG POSTS
   useEffect(() => {
-    const fetchBlogData = async () => {
-      try {
-        let profile = userProfile;
+    const fetchProfileAndBlogs = async () => {
+      setLoadingStates(prev => ({ ...prev, blogs: true }));
 
-        // If we don't have userProfile yet and it's not the owner, fetch it
-        if (!profile && !isOwner && generalUserId) {
+      try {
+        let profile = isOwner ? userData : userProfile;
+
+        // Fetch profile if needed
+        if (!isOwner && !profile && generalUserId) {
           const res = await fetch(`/api/generals/get-profile-by-dbId?dbId=${generalUserId}`);
           if (!res.ok) {
             console.error('Failed to fetch profile');
@@ -117,12 +122,12 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           }
           const { profile: fetchedProfile } = await res.json();
           profile = fetchedProfile;
-          setUserProfile(profile); // cache it
+          setUserProfile(profile); // cache
         }
 
-        if (isOwner) {
-          profile = userData;
-          setUserProfile(userData); // for consistent usage later
+        // If owner and not yet cached, cache it
+        if (isOwner && !userProfile) {
+          setUserProfile(userData);
         }
 
         if (!profile) return;
@@ -136,23 +141,27 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         const postsData = await postsRes.json();
         setMyBlogPosts(postsData);
 
-        // Update display toggles from profile
+        // Update display toggles
         setDisplayFavouriteRestaurants(profile.displayFavouriteRestaurants);
         setDisplayFavouriteBlogPosts(profile.displayFavouriteBlogPosts);
         setDisplayVisitedPlaces(profile.displayVisitedPlaces);
       } catch (err) {
-        console.error('(GeneralUserProfile) Failed to fetch blog post data: ', err);
+        console.error('(GeneralUserProfile) Failed to fetch blog post data:', err);
       } finally {
         setLoadingStates(prev => ({ ...prev, blogs: false }));
+        setLoading(false);
       }
     };
 
-    if (generalUserId || isOwner) fetchBlogData();
-  }, [generalUserId, isOwner, loadingData, userData, showTextEditor]);
+    // Run only when Blog tab is selected
+    if ((generalUserId || isOwner) && selectedTab === profileTabs[0]) {
+      fetchProfileAndBlogs();
+    }
+  }, [selectedTab, generalUserId, isOwner, userData, loadingData, showTextEditor, userProfile]);
 
   // THEN: Load data ONLY when the tab is selected
   useEffect(() => {
-    if (!generalUserId || !selectedTab) return;
+    if (!userProfile?._id || !selectedTab) return;
 
     const fetchTabData = async () => {
       try {
@@ -346,7 +355,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     0: 1,
   };
 
-  if (!userProfile) return <Spinner message="Loading Profile..." />;
+  if (loading || !userProfile) return <Spinner message="Loading Profile..." />;
 
   // =====================================
   // HANDLE DELETE: BLOG POSTS AND REVIEWS
@@ -502,56 +511,44 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             )}
 
             {/* Blog Posts */}
-
-            {selectedTab === profileTabs[0] && (
-              <>
-                {loadingStates.blogs && (
-                  <div className="col-span-3 text-center">
-                    <p>Loading blogs...</p>
-                  </div>
-                )}
-
-                {!loadingStates.blogs && myBlogPosts?.length === 0 && (
-                  <div className="col-span-3 text-center">
-                    <p>No blog posts yet.</p>
-                  </div>
-                )}
-
-                {!loadingStates.blogs && myBlogPosts?.length > 0 && (
-                  <Masonry
-                    breakpointCols={breakpointColumnsObjInsta}
-                    className="flex gap-2"
-                    columnClassName="space-y-2"
-                  >
-                    {myBlogPosts.map((post, i) => {
-                      const isSelected = selectedBlogPosts.includes(post._id);
-                      const toggleSelect = () => {
-                        setSelectedBlogPosts(prev =>
-                          prev.includes(post._id) ? prev.filter(id => id !== post._id) : [...prev, post._id]
-                        );
-                      };
-
-                      return (
-                        <BlogPostCard
-                          key={post._id || i}
-                          blogPostData={post}
-                          writtenByOwner={isOwner}
-                          setShowTextEditor={setShowTextEditor}
-                          setEditBlogPost={() => {
-                            setEditBlogPost(true);
-                            setEditBlogPostData(post);
-                          }}
-                          isEditModeOn={editMode}
-                          isSelected={isSelected}
-                          onSelect={toggleSelect}
-                          onDeleteClick={() => handleDeleteSingleBlogPost(post._id)}
-                        />
+            {selectedTab === profileTabs[0] &&
+              (loadingStates.blogs ? (
+                <div className="col-span-3 text-center">
+                  <p>Loading blog posts...</p>
+                </div>
+              ) : myBlogPosts?.length === 0 ? (
+                <div className="col-span-3 text-center">
+                  <p>No blog posts yet.</p>
+                </div>
+              ) : (
+                <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
+                  {myBlogPosts.map((post, i) => {
+                    const isSelected = selectedBlogPosts.includes(post._id);
+                    const toggleSelect = () => {
+                      setSelectedBlogPosts(prev =>
+                        prev.includes(post._id) ? prev.filter(id => id !== post._id) : [...prev, post._id]
                       );
-                    })}
-                  </Masonry>
-                )}
-              </>
-            )}
+                    };
+
+                    return (
+                      <BlogPostCard
+                        key={post._id || i}
+                        blogPostData={post}
+                        writtenByOwner={isOwner}
+                        setShowTextEditor={setShowTextEditor}
+                        setEditBlogPost={() => {
+                          setEditBlogPost(true);
+                          setEditBlogPostData(post);
+                        }}
+                        isEditModeOn={editMode}
+                        isSelected={isSelected}
+                        onSelect={toggleSelect}
+                        onDeleteClick={() => handleDeleteSingleBlogPost(post._id)}
+                      />
+                    );
+                  })}
+                </Masonry>
+              ))}
 
             {/* Reviews */}
             {selectedTab === profileTabs[1] && (
