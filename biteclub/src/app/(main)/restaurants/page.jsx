@@ -42,7 +42,7 @@ export default function RestaurantResults() {
       setFetchCompleted(true);
     } catch (error) {
       setFetchCompleted(true);
-      console.error('Failed to fetch restaurants:', error);
+      console.error('(Restaurant results) Failed to fetch restaurants:', error);
     }
   };
 

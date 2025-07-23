@@ -43,7 +43,7 @@ export default function Home() {
       console.log(data.recommendations);
       setFetchCompleted(true);
     } catch (error) {
-      console.error('Failed to fetch restaurants:', error);
+      console.error('(main) Failed to fetch restaurants:', error);
       setFetchCompleted(false);
     }
   };
