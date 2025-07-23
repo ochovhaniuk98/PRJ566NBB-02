@@ -34,34 +34,6 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (!user?.id) return;
-
-  //     try {
-  //       const res = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
-  //       const { profile } = await res.json();
-
-  //       setUsername(profile.username || '');
-  //       setUserBio(profile.userBio || '');
-  //       setDisplayFavouriteRestaurants(
-  //         profile.displayFavouriteRestaurants == undefined ? false : profile.displayFavouriteRestaurants
-  //       );
-  //       setDisplayFavouriteBlogPosts(
-  //         profile.displayFavouriteBlogPosts == undefined ? false : profile.displayFavouriteBlogPosts
-  //       );
-  //       setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.displayVisitedPlaces);
-  //       setFeedPersonalization(profile.feedPersonalization == undefined ? false : profile.feedPersonalization);
-  //     } catch (err) {
-  //       console.error('Failed to fetch settings profile:', err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [user?.id]);
-
   useEffect(() => {
     if (!userData) return;
 
@@ -118,12 +90,6 @@ export default function Settings() {
 
   // If the user signed up using Google OAuth, they do not need to update their password.
   const isGoogleUser = user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google');
-  // if (loading)
-  //   return (
-  //     <div className="mb-8 p-16">
-  //       <p>Loading...</p>
-  //     </div>
-  //   );
 
   if (loadingData || loading) return <Spinner />;
 

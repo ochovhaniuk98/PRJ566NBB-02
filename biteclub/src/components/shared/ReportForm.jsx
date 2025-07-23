@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import { Label } from '../shared/Label';
 import { Button } from '../shared/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag } from '@fortawesome/free-solid-svg-icons';
+import Spinner from '@/components/shared/Spinner';
 import Image from 'next/image';
 
 export default function ReportForm({
@@ -12,89 +14,52 @@ export default function ReportForm({
   reportType,
   contentTitle = '',
   // For sending data to admin panel
-  contentType = '', // [REQUIRED / NOT NULL]
+  contentType = '', // [REQUIRED]
   contentId = '', // [NULLABLE] Only if the reported contentType is a User
-  reportedUser = '', // [REQUIRED / NOT NULL] User OBJECT (not just Id) -- The one who got reported
+  reportedUser = '', // [REQUIRED] User OBJECT (not just Id) -- The one who got reported
 }) {
   /*
   // ==========================================| DEMO DATA |==========================================
   // ref: dbSchema.js -- ReportSchema
   const demoContentData = {
     // [Note] NOT the reportType i.e. 'User' or 'Content'
-    // One of: ['InternalReview', 'ExternalReview', 'CommentPost', 'BlogPost', 'User']
-    contentType: 'BlogPost',
-
-    // If reporting content is not a user, contentId (Mongoose ObjectId) must be provided
-    contentId: '684c2ef7dd04f407d876b971',
-
-    // Author or owner of the reported content
-    // Even though this could be derived from the content, we store it explicitly for easier querying and population
-    reportedUserId: '684b90b687f7b607b363bf4d',
-
-    // 'User' or 'BusinessUser'
-    reporterType: 'User',
-
-    // The Mongoose ObjectId of user who send out this report
-    reporterId: '6852bb8f5f6e83284b2eda97',
-
-    // reason from form textarea input
-    reason: 'THIS USER IS POSTING SPAM...',
+    contentType: 'BlogPost',                    // One of: ['InternalReview', 'ExternalReview', 'CommentPost', 'BlogPost', 'User']
+    contentId: '684c2ef7dd04f407d876b971',      // If reporting content is not a user, contentId (Mongoose ObjectId) must be provided
+    reportedUserId: '684b90b687f7b607b363bf4d', // Author or owner of the reported content
+    reporterType: 'User',                       // 'User' or 'BusinessUser'
+    reporterId: '6852bb8f5f6e83284b2eda97',     // The Mongoose ObjectId of user who send out this report
+    reason: 'THIS USER IS POSTING SPAM...',     // reason from form textarea input
   };
   // =================================================================================================
   */
 
   const { user } = useUser(); // Current logged-in user's Supabase info
   const userType = user?.user_metadata.user_type; // reporter = current user
-
+  const { userData, loadingData, refreshUserData } = useUserData();
   const [reason, setReason] = useState('');
-  const [reporter, setReporter] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch current user and their profile
   useEffect(() => {
-    const fetchReporterData = async () => {
-      try {
-        if (!user?.id) return;
-        const authId = user.id;
+    if (loadingData || !userData) return;
+    setLoading(false);
+  }, [userData]);
 
-        // Get profile based on type
-        let reporterRes;
-        if (userType == 'general') {
-          reporterRes = await fetch(`/api/generals/get-profile-by-authId?authId=${authId}`);
-        } else if (userType == 'business') {
-          reporterRes = await fetch(`/api/business-user/get-profile-by-authId?authId=${authId}`);
-        } else {
-          console.warn('Unknown user type:', userType);
-          return;
-        }
-
-        if (!reporterRes.ok) {
-          console.error('Failed to fetch current profile:', reporterRes.status);
-          return;
-        }
-        const { profile } = await reporterRes.json(); // { profile } matching what the API call returned
-        setReporter(profile);
-      } catch (err) {
-        console.error('Error in fetchReporterData:', err);
-      }
-    };
-
-    fetchReporterData();
-  }, [user?.id]);
+  if (loadingData || loading) return <Spinner />;
 
   const handleSubmit = async e => {
     e.preventDefault();
 
-    if (!reporter || !reportedUser) {
-      alert('Something is wrong with the user data.');
+    if (!userData || !reportedUser) {
+      alert('User data not ready. Please try again later.');
       return;
     }
 
-    if (reportedUser._id === reporter._id) {
+    if (reportedUser._id === userData._id) {
       alert('You cannot report yourself!');
       return;
     }
 
-    // renaming userType
+    // renaming userType to match API call requirements
     let reporterType;
     if (userType === 'general') {
       reporterType = 'User';
@@ -106,7 +71,7 @@ export default function ReportForm({
       contentType: contentType,
       contentId: contentId,
       reportedUserId: reportedUser._id,
-      reporterId: reporter._id,
+      reporterId: userData._id,
       reporterType: reporterType,
       reason: reason.trim(),
     };
@@ -186,6 +151,7 @@ export default function ReportForm({
               Cancel
             </Button>
           </div>
+
         </form>
       </div>
     </div>

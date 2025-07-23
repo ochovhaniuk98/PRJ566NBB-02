@@ -21,6 +21,7 @@ import Spinner from '@/components/shared/Spinner';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
+
   // userId: from MongoDB, not supabase. By default "false" just in-case.
   // const isOwner = true; // flag for showing certain components for profile owner
   const profileTabs = [

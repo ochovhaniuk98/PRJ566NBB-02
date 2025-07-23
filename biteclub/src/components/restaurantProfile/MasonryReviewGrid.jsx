@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import InstagramEmbed from './InstagramEmbed';
 import ReviewCardExpanded from './ReviewCardExpanded';
 import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import { updateReviewEngagement } from '@/lib/db/dbOperations';
 
 export default function MasonryReviewGrid({
@@ -15,39 +16,40 @@ export default function MasonryReviewGrid({
   restaurantName,
 }) {
   const { user } = useUser(); // Current logged-in user's Supabase info
-  const [userProfile, setUserProfile] = useState(null);
+  const { userData, loadingData, refreshUserData } = useUserData();
+  // const [userProfile, setUserProfile] = useState(null);
   const [reportedReviewIds, setReportedReviewIds] = useState([]);
   const [engagementData, setEngagementData] = useState({});
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!user?.id) return;
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     if (!user?.id) return;
 
-      try {
-        const userType = user.user_metadata?.user_type;
+  //     try {
+  //       const userType = user.user_metadata?.user_type;
 
-        let mongoUser;
-        if (userType === 'business') {
-          mongoUser = await fetch(`/api/business-user/get-profile-by-authId?authId=${user.id}`);
-        } else {
-          mongoUser = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
-        }
+  //       let mongoUser;
+  //       if (userType === 'business') {
+  //         mongoUser = await fetch(`/api/business-user/get-profile-by-authId?authId=${user.id}`);
+  //       } else {
+  //         mongoUser = await fetch(`/api/generals/get-profile-by-authId?authId=${user.id}`);
+  //       }
 
-        if (!mongoUser.ok) {
-          console.error('Failed to fetch user profile:', mongoUser.status);
-          return;
-        }
+  //       if (!mongoUser.ok) {
+  //         console.error('Failed to fetch user profile:', mongoUser.status);
+  //         return;
+  //       }
 
-        const { profile } = await mongoUser.json();
-        setUserProfile(profile);
-        console.log('Fetched user:', profile);
-      } catch (err) {
-        console.error('Error fetching user profile:', err.message);
-      }
-    };
+  //       const { profile } = await mongoUser.json();
+  //       setUserProfile(profile);
+  //       console.log('Fetched user:', profile);
+  //     } catch (err) {
+  //       console.error('Error fetching user profile:', err.message);
+  //     }
+  //   };
 
-    fetchUser();
-  }, [user?.id]);
+  //   fetchUser();
+  // }, [user?.id]);
 
   useEffect(() => {
     const fetchReportedReviews = async () => {
@@ -125,20 +127,20 @@ export default function MasonryReviewGrid({
   }, [combinedList, reportedReviewIds]);
 
   useEffect(() => {
-    if (!userProfile || !filteredCombinedList.length) return;
+    if (!userData || !filteredCombinedList.length) return;
 
     const newEngagementData = filteredCombinedList.reduce((acc, review) => {
       acc[review._id] = {
         likes: review.likes?.count || 0,
         dislikes: review.dislikes?.count || 0,
         comments: review.comments?.length || 0,
-        userLiked: review.likes?.users?.includes(userProfile?._id) || false,
-        userDisliked: review.dislikes?.users?.includes(userProfile?._id) || false,
+        userLiked: review.likes?.users?.includes(userData?._id) || false,
+        userDisliked: review.dislikes?.users?.includes(userData?._id) || false,
       };
       return acc;
     }, {});
     setEngagementData(newEngagementData);
-  }, [userProfile, filteredCombinedList]);
+  }, [userData, filteredCombinedList]);
 
   const updateEngagementState = (reviewId, resData) => {
     setEngagementData(prev => ({
@@ -147,8 +149,8 @@ export default function MasonryReviewGrid({
         ...prev[reviewId],
         likes: resData.likes.count,
         dislikes: resData.dislikes.count,
-        userLiked: resData.likes.users.includes(userProfile._id),
-        userDisliked: resData.dislikes.users.includes(userProfile._id),
+        userLiked: resData.likes.users.includes(userData._id),
+        userDisliked: resData.dislikes.users.includes(userData._id),
         comments: resData.comments.length,
       },
     }));
@@ -157,7 +159,7 @@ export default function MasonryReviewGrid({
   const handleLike = reviewId => {
     return async () => {
       try {
-        const resData = await updateReviewEngagement(reviewId, userProfile._id, true, false);
+        const resData = await updateReviewEngagement(reviewId, userData._id, true, false);
         updateEngagementState(reviewId, resData);
       } catch (error) {
         console.error('Failed to update like engagement:', error);
@@ -168,7 +170,7 @@ export default function MasonryReviewGrid({
   const handleDislike = reviewId => {
     return async () => {
       try {
-        const resData = await updateReviewEngagement(reviewId, userProfile._id, false, true);
+        const resData = await updateReviewEngagement(reviewId, userData._id, false, true);
         updateEngagementState(reviewId, resData);
       } catch (error) {
         console.error('Failed to update dislike engagement:', error);
@@ -237,7 +239,7 @@ export default function MasonryReviewGrid({
       {/* Expanded side panel (visible when internal review is selected) */}
       {selectedReview && !selectedReview?.content?.embedLink && (
         <ReviewCardExpanded
-          currentUser={userProfile}
+          currentUser={userData}
           restaurantId={restaurantId}
           restaurantName={restaurantName}
           isOwner={isOwner}
