@@ -1,23 +1,23 @@
+import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
+import { faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
+import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
 import InfoBanner from '@/components/restaurantProfile/InfoBanner';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
-import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
-
-import { faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
+import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
-import { useEffect, useState } from 'react';
-import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import AddReviewForm from '../shared/AddReviewForm';
 import MentionedTab from './MentionedTab';
-import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 import MasonryReviewGrid from './MasonryReviewGrid';
 import EventsAndAnnounce from './EventsAndAnnounce';
+import Spinner from '@/components/shared/Spinner';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const { user } = useUser(); // Current logged-in user's Supabase info
@@ -83,7 +83,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     }
   }, [restaurantData]);
 
-
   useEffect(() => {
     const fetchMongoUserId = async () => {
       try {
@@ -103,6 +102,8 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     // Only fetch user ID if not the owner and userId is not already set
     if (!isOwner && !userId) fetchMongoUserId();
   }, [user?.id]);
+
+  if (!restaurantData || !reviewsData) return <Spinner message="Loading..." />;
 
   // When user save restaurant as favourite
   const handleFavouriteRestaurantClick = async () => {
@@ -133,14 +134,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
       console.error('Error toggling favourite:', err.message);
     }
   };
-
-  if (!restaurantData || !reviewsData) {
-    return (
-      <div className="mb-8 p-16">
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
 

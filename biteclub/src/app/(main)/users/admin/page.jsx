@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/shared/Button';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
 import ContentModerationCard from '@/components/adminPanel/ContentModerationCard';
+import Spinner from '@/components/shared/Spinner';
 
 export default function AdminPage() {
 
@@ -91,12 +92,7 @@ export default function AdminPage() {
     fetchData();
   }, [selectedTab, router]);
 
-  if (loading)
-    return (
-      <div className="mb-8 p-16">
-        <p>Loading...</p>
-      </div>
-    );
+  if (loading) return <Spinner message='Loading...' />;
 
   const handleBusinessVerificationApprove = async userId => {
     try {

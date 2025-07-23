@@ -1,11 +1,11 @@
 'use client';
 
-import RestaurantProfile from '@/components/restaurantProfile/RestaurantProfile';
-import { getBusinessUserRestaurantId, getBusinessUserVerificationStatus } from '@/lib/db/dbOperations';
 import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
-
 import { useRouter } from 'next/navigation';
+import RestaurantProfile from '@/components/restaurantProfile/RestaurantProfile';
+import { getBusinessUserRestaurantId, getBusinessUserVerificationStatus } from '@/lib/db/dbOperations';
+import Spinner from '@/components/shared/Spinner';
 
 export default function BusinessUserRestaurantPage() {
   const { user } = useUser(); // Current logged-in user's Supabase info
@@ -44,12 +44,7 @@ export default function BusinessUserRestaurantPage() {
     fetchData();
   }, [router, user?.id]);
 
-  if (loading)
-    return (
-      <div className="mb-8 p-16">
-        <p>Loading Dashboard...</p>
-      </div>
-    );
+  if (loading) return <Spinner message='Loading...' />;
 
   return <RestaurantProfile isOwner={true} restaurantId={restaurantId} />;
 }

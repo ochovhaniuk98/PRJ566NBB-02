@@ -6,6 +6,7 @@ import { faCalendarAlt, faBullhorn, faCirclePlus, faTrashAlt } from '@fortawesom
 import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
+import Spinner from '@/components/shared/Spinner';
 import {
   addAnnouncement,
   addEvent,
@@ -21,7 +22,7 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
   const [announcements, setAnnouncements] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [mode, setMode] = useState('event'); // determines what kind of form to show: 'event' or 'announcement'
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchEventsAndAnnouncements = async () => {
       const [eventsData, announcementsData] = await Promise.all([
@@ -30,9 +31,12 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
       ]);
       setEvents(eventsData);
       setAnnouncements(announcementsData);
+      setLoading(false);
     };
     fetchEventsAndAnnouncements();
   }, [restaurantId]);
+
+  if (loading) return <Spinner />;
 
   const handleAddEvent = async event => {
     try {

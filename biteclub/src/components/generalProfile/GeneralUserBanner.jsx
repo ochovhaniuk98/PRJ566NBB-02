@@ -19,7 +19,6 @@ import {
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import ReportForm from '../shared/ReportForm';
-import Spinner from '@/components/shared/Spinner';
 
 /* Description: Shows general user info and allows OWNER to write blog post or manage content by clicking corresponding buttons in component.
     showTextEditor: shows/hides text editor

@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 import GeneralUserProfile from '@/components/generalProfile/GeneralUserProfile';
+import Spinner from '@/components/shared/Spinner';
 
 export default function GeneralPage() {
   const { user } = useUser(); // Current logged-in user's Supabase info
@@ -36,12 +37,8 @@ export default function GeneralPage() {
     fetchData();
   }, [generalUserId]);
 
-  if (loading)
-    return (
-      <div className="mb-8 p-16">
-        <p>Loading...</p>
-      </div>
-    );
+  if (loading) return <Spinner message='Loading Profile...' />;
+
   if (!generalUserId) return <p>Invalid user profile link.</p>;
 
   return <GeneralUserProfile isOwner={isOwner} generalUserId={generalUserId} />;

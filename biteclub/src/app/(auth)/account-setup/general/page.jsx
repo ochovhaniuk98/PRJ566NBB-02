@@ -7,6 +7,7 @@ import Avatar from './avatar';
 import { Input } from '@/components/shared/Input';
 import { Button } from '@/components/shared/Button';
 import { Label } from '@/components/shared/Label';
+import Spinner from '@/components/shared/Spinner';
 
 export default function GeneralSetupForm() {
   const router = useRouter();
@@ -70,7 +71,7 @@ export default function GeneralSetupForm() {
               }}
             />
           ) : (
-            <p>Loading user...</p>
+           <Spinner message='Loading User...' />
           )}
 
           <div>
