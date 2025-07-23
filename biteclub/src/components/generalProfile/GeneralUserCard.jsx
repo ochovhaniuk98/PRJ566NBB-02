@@ -122,14 +122,16 @@ export default function GeneralUserCard({ generalUserData }) {
         <div className="flex flex-col items-center font-primary text-brand-navy relative w-full">
           <div className="text-xl flex justify-between items-center w-full">
             {generalUserData.username}
-            <FontAwesomeIcon
-              icon={faEllipsisVertical}
-              className={`icon-lg text-brand-navy`}
+            {/* wrapped ... icon in invisible div so it's easier to click */}
+            <div
+              className="pt-1 pl-4 pr-2 pb-2 absolute -right-2 cursor-pointer"
               onClick={e => {
                 e.stopPropagation();
                 setShowMorePopup(prev => !prev);
               }}
-            />
+            >
+              <FontAwesomeIcon icon={faEllipsisVertical} className={`icon-lg text-brand-navy`} />
+            </div>
             {showMorePopup && (
               <MorePopup
                 setPopupHovered={setPopupHovered}
@@ -173,7 +175,12 @@ export default function GeneralUserCard({ generalUserData }) {
       {/* </Link> */}
       {/* Report User Form */}
       {openReportForm && (
-        <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} contentType='User' reportedUser={generalUserData} />
+        <ReportForm
+          reportType="user"
+          onClose={() => setOpenReportForm(false)}
+          contentType="User"
+          reportedUser={generalUserData}
+        />
       )}
     </div>
   );

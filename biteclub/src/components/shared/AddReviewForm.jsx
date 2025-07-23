@@ -111,7 +111,7 @@ export default function AddReviewForm({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 flex justify-center  z-[99999999999999]  overflow-scroll scrollbar-hide">
+      <div className="fixed inset-0 bg-black/50 flex justify-center  z-[100]  overflow-scroll scrollbar-hide">
         <div className="relative bg-transparent p-8 w-2xl min-h-fit ">
           {/* Toggle Switch -- Allows users to select "Write a review" OR "Add Instagram Post" if adding NEW review (non-edit mode) */}
           <div className="bg-brand-green-lite w-full font-secondary uppercase rounded-t-lg flex justify-between cursor-pointer">
@@ -188,9 +188,10 @@ export default function AddReviewForm({
                 />
                 {
                   /* The div below is just a PLACEHOLDER/for styling puposes so that the form stays the same height when the "Add Photos" button is clicked.
-                Do NOT use for backend logic. The "real" photo div is inside ReviewImageUpload.*/ showPhotoPlaceholder && (
-                    <div className="w-full h-50 bg-brand-blue-lite  p-4  rounded-lg overflow-y-scroll grid grid-cols-5 gap-1 shadow-inner"></div>
-                  )
+                Do NOT use for backend logic. The "real" photo div is inside ReviewImageUpload.*/ showPhotoPlaceholder &&
+                    reviewImages.length <= 0 && (
+                      <div className="w-full h-50 bg-brand-blue-lite  p-4  rounded-lg overflow-y-scroll grid grid-cols-5 gap-1 shadow-inner"></div>
+                    )
                 }
               </div>
               {

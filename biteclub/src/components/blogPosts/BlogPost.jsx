@@ -100,10 +100,9 @@ export default function BlogPost({ id }) {
     }
   };
 
-
   return (
     <div className="flex w-full">
-      <div className="flex-[3] mt-20">
+      <div className="flex-3/8 mt-20">
         <div className="flex flex-row gap-x-4">
           <SingleTabWithIcon icon={faHeart} detailText={numOfFavourites ?? 0} onClick={handleFavouriteBlogPostClick} />
 
@@ -118,7 +117,12 @@ export default function BlogPost({ id }) {
             Report Content
           </div>
         </div>
-        {postTitle && <h2 className="simple-editor-content ml-[200px]">{postTitle}</h2>}
+        <div className="w-full text-center">
+          {postTitle && (
+            <div className="simple-editor-content align-center font-primary text-4xl font-medium">{postTitle}</div>
+          )}
+        </div>
+
         {postContent && <ReadOnlyEditor content={postContent} />}
         {/* Report Content Form */}
         {openReportForm && (

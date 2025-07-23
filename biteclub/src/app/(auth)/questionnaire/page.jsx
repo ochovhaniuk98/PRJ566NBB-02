@@ -257,8 +257,8 @@ function PreferencesSelector({ config, picked, setPicked, options, setOptions })
 }
 
 function Scale({ value, setValue }) {
-  const SELECTED_OPTION_STYLING = 'bg-[#56e4be] h-[28px] w-[28px] rounded-full z-10';
-  const UNSELECTED_OPTION_STYLING = 'bg-[#ffdcbe] h-[28px] w-[12px] rounded-xl z-10';
+  const SELECTED_OPTION_STYLING = 'bg-[#56e4be] h-[28px] w-[28px] rounded-full z-10 shadow-md cursor-pointer';
+  const UNSELECTED_OPTION_STYLING = 'bg-[#ffdcbe] h-[28px] w-[12px] rounded-xl z-10 cursor-pointer hover:scale-120';
   const buttons = [];
   for (let i = 1; i <= 5; i++) {
     buttons.push(

@@ -93,14 +93,17 @@ export default function BlogPostCard({
     >
       <div className="p-4 pt-2">
         {/* show link to open Report form when ... icon is clicked */}
-        <FontAwesomeIcon
+        {
+          // hid "..." icon
+          /*<FontAwesomeIcon
           icon={faEllipsis}
           className={`icon-lg text-brand-navy`}
           onClick={e => {
             e.stopPropagation();
             setShowReportFormLink(prev => !prev);
           }}
-        />
+        />*/
+        }
         <div
           onClick={handleFavouriteBlogPostClick}
           onMouseEnter={() => setIsHovered(true)}
@@ -132,6 +135,7 @@ export default function BlogPostCard({
           <EngagementIconStat
             iconArr={reviewCardIconArr}
             statNumArr={[blogPostData.likes.count, blogPostData?.comments?.length]}
+            forBlogPostCard={true}
           />
         </div>
       </div>
