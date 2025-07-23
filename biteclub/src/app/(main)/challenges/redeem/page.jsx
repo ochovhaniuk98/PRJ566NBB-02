@@ -29,14 +29,17 @@ function randomString() {
 export default function Redeem() {
   const { user } = useUser(); // Current logged-in user's Supabase info
   const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
-  const [points, setPoints] = useState(null);
+  const [points, setPoints] = useState(0); // not null
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (loadingData || !userData?.numOfPoints) return;
-    setPoints(userData.numOfPoints);
+    // [!] do not set "!userData?.numOfPoints" or it will run forever if the user does not have points yet
+    if (loadingData || !userData) return;
+    if (userData?.numOfPoints != undefined) {
+      setPoints(userData.numOfPoints);
+    }
     setLoading(false);
-  }, [loadingData, userData?.numOfPoints]);
+  }, [loadingData, userData]);
 
   async function redeemOption(option) {
     if (option.points_needed > points) {
