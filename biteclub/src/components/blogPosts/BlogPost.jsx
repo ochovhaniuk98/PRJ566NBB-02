@@ -2,13 +2,22 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/auth/client';
 import ReadOnlyEditor from '../tiptap-rich-text-editor/ReadOnlyEditor';
-import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFlag } from '@fortawesome/free-solid-svg-icons';
 import ReportForm from '../shared/ReportForm';
 import CommentThread from '../shared/CommentThread';
 import AuthorDateBlurb from '../shared/AuthorDateBlurb';
-import { faThumbsDown, faThumbsUp, faHeart } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faThumbsUp as faThumbsUpRegular,
+  faThumbsDown as faThumbsDownRegular,
+  faHeart as faHeartRegular,
+} from '@fortawesome/free-regular-svg-icons';
+
+import {
+  faThumbsUp as faThumbsUpSolid,
+  faThumbsDown as faThumbsDownSolid,
+  faHeart as faHeartSolid,
+  faFlag,
+} from '@fortawesome/free-solid-svg-icons';
 
 export default function BlogPost({ id }) {
   const [blogPost, setBlogPost] = useState(null);
@@ -19,6 +28,11 @@ export default function BlogPost({ id }) {
   // for reporting a post
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
+
+  // for changing icons depending on if user liked/disliked/favourited
+  const [hasLiked, setHasLiked] = useState(false);
+  const [hasDisliked, setHasDisliked] = useState(false);
+  const [hasFavourited, setHasFavourited] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -102,6 +116,24 @@ export default function BlogPost({ id }) {
     }
   };
 
+  // handle like/dislike/favourite
+  const handleLike = () => {
+    setHasLiked(prev => !prev);
+    setHasDisliked(false);
+    // NOT CONNECTED TO BACKEND YET
+  };
+
+  const handleDislike = () => {
+    setHasDisliked(prev => !prev);
+    setHasLiked(false);
+    // NOT CONNECTED TO BACKEND YET
+  };
+
+  const handleFavouriteToggle = async () => {
+    await handleFavouriteBlogPostClick();
+    setHasFavourited(prev => !prev);
+  };
+
   return (
     <div className="flex w-full">
       <div className="flex-3/8 mt-20">
@@ -110,23 +142,37 @@ export default function BlogPost({ id }) {
             <div className="simple-editor-content align-center font-primary text-4xl font-medium">{postTitle}</div>
           )}
         </div>
-        {/* engagement */}
+        {/* author + engagement icons*/}
         <div className="m-auto mt-8 border-b-1 border-brand-peach py-1 w-xl flex justify-between items-center cursor-pointer">
+          {/* author */}
           <AuthorDateBlurb
             authorPic={'https://i.pravatar.cc/80?u=placeholder'}
             authorName={'Blogpost Authorname'}
             date={blogPost?.date_posted}
           />
           <div className="flex flex-row gap-x-2 font-primary font-medium text-brand-grey">
-            <div className="flex items-center w-10">
-              <FontAwesomeIcon icon={faThumbsUp} className={`icon-lg text-brand-navy mr-1`} />0
+            {/* thumbs up */}
+            <div className="flex items-center w-10" onClick={handleLike}>
+              <FontAwesomeIcon
+                icon={hasLiked ? faThumbsUpSolid : faThumbsUpRegular}
+                className="icon-lg text-brand-navy mr-1"
+              />
+              0
             </div>
-            <div className="flex items-center w-10">
-              <FontAwesomeIcon icon={faThumbsDown} className={`icon-lg text-brand-navy mr-1`} />0
+            {/* thumbs down */}
+            <div className="flex items-center w-10" onClick={handleDislike}>
+              <FontAwesomeIcon
+                icon={hasDisliked ? faThumbsDownSolid : faThumbsDownRegular}
+                className="icon-lg text-brand-navy mr-1"
+              />
+              0
             </div>
             {/* favourite */}
-            <div className="flex items-center w-10" onClick={handleFavouriteBlogPostClick}>
-              <FontAwesomeIcon icon={faHeart} className={`icon-lg text-brand-navy mr-1`} />
+            <div className="flex items-center w-10" onClick={handleFavouriteToggle}>
+              <FontAwesomeIcon
+                icon={hasFavourited ? faHeartSolid : faHeartRegular}
+                className={`icon-lg mr-1 ${hasFavourited ? 'text-brand-red' : 'text-brand-navy'}`}
+              />
               {numOfFavourites ?? 0}
             </div>
             {/* 
