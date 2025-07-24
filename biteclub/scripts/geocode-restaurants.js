@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 import axios from 'axios';
 import dbConnect from '../src/lib/db/dbConnect.js';
 import { Restaurant } from '../src/lib/model/dbSchema.js';
-import 'dotenv/config';
 
 async function geocodeAddress(address) {
   try {
