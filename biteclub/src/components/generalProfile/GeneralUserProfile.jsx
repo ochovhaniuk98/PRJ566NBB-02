@@ -211,7 +211,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         if (selectedTab === profileTabs[3]) {
           setLoadingStates(prev => ({ ...prev, favRestaurants: true }));
           try {
-            if (!userProfile?.favRestaurants) return;
+            if (!userProfile?.favouriteRestaurants) return;
             const restaurantIds = userProfile.favouriteRestaurants;
             if (!Array.isArray(restaurantIds) || restaurantIds.length === 0) {
               setFavouritedRestaurants([]);
@@ -225,11 +225,11 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             });
 
             if (res.ok) {
-              const data = await res.json();
+              const { restaurants } = await res.json();
               // Might use setTimeout to delay the UI update later,
               // so the user can immediately favourite it again if they mistakenly unfavourited it.
               // setTimeout(() => {
-              setFavouritedRestaurants(data.restaurants);
+              setFavouritedRestaurants(restaurants);
               // }, 1000);
             }
           } catch (err) {
@@ -304,6 +304,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
         // TAB 6 -- FOLLOWINGS
         if (selectedTab === profileTabs[6]) {
+
           setLoadingStates(prev => ({ ...prev, followings: true }));
           try {
             if (!userProfile?.followings) return;
