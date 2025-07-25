@@ -10,13 +10,13 @@ export async function POST(request, { params }) {
   try {
     const { id } = await params; // extract userId from URL param
     const body = await request.json();
-    const { title, content } = body;
+    const { title, content, images } = body;
 
     if (!title || !content) {
       return new Response(JSON.stringify({ error: 'Missing title or content' }), { status: 400 });
     }
 
-    const result = await createBlogPost({ title, content, userId: id });
+    const result = await createBlogPost({ title, content, images, userId: id });
 
     if (!result) {
       return new Response(JSON.stringify({ error: 'Failed to create blog post or user not found' }), { status: 500 });
