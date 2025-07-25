@@ -153,7 +153,7 @@ const MobileToolbarContent = ({ type, onBack }) => (
   </>
 );
 
-export function SimpleEditor({ onContentChange, content = null }) {
+export function SimpleEditor({ onContentChange, onImageUpload, content = null }) {
   const isMobile = useMobile();
   const windowSize = useWindowSize();
   const [mobileView, setMobileView] = React.useState('main');
@@ -188,6 +188,9 @@ export function SimpleEditor({ onContentChange, content = null }) {
         maxSize: MAX_FILE_SIZE,
         limit: 3,
         upload: handleImageUpload,
+        onSuccess: image => {
+          onImageUpload?.(image.public_id);
+        },
         onError: error => console.error('Upload failed:', error),
       }),
       TrailingNode,
