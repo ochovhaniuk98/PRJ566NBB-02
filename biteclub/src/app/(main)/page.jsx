@@ -6,6 +6,7 @@ import { Button } from '@/components/shared/Button';
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/auth/client';
 import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [personalizedRecommendations, setPersonalizedRecommendations] = useState([]);
@@ -15,6 +16,7 @@ export default function Home() {
   const [cuisine, setCuisine] = useState('');
   const [restaurants, setRestaurants] = useState([]);
   const [fetchedCuisineRestaurants, setFetchedCuisineRestaurants] = useState(false);
+  const router = useRouter();
 
   // fetch restaurants
   const fetchRestaurants = async (reset = false) => {
@@ -75,6 +77,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    // fetch cuisine restaurants
     async function fetchCuisineSpotlightRestaurants() {
       try {
         // fetch restaurants
@@ -92,7 +95,10 @@ export default function Home() {
         const res = await fetch(`/api/restaurants/search?${params.toString()}`);
         const data = await res.json();
 
-        setRestaurants(data.restaurants);
+        let filteredRestaurants = data.restaurants;
+        filteredRestaurants = data.restaurants.filter(r => r.cuisines?.some(c => cuisine.includes(c)));
+
+        setRestaurants(filteredRestaurants);
         setFetchedCuisineRestaurants(true);
 
         console.log('Cuisine spotlight restaurants', data.restaurants);
@@ -110,11 +116,19 @@ export default function Home() {
     fetchRestaurants(true); // reset = true
   }, []);
 
+  const handleSubmit = async () => {
+    router.push('/restaurants/cuisine');
+  };
+
   return (
     <>
       {fetchedCuisineRestaurants && (
         <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
           <div>
+            <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
+            <Button className="gap-0 absolute top-20 right-20" variant="link" onClick={handleSubmit}>
+              View All
+            </Button>
             <div className="overflow-x-scroll">
               <div className="w-fit h-full flex flex-row">
                 <GridCustomCols numOfCols={5} className="mt-4">
