@@ -126,7 +126,7 @@ const BlogPostSchema = new mongoose.Schema({
   },
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CommentPost' }], // comments will be stored separately in CommentPost collection
   Instagram_posts: [InstagramPostSchema], // no longer needed, it's part of post body
-  photos: [String], // array of Cloudinary public_ids
+  images: [String], // array of Cloudinary public_ids
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   previewTitle: String,
   previewText: String,
