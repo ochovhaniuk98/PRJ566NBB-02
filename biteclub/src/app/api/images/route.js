@@ -2,15 +2,24 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { removeRestaurantImage, postTestCloudinaryImage } from '@/lib/db/dbOperations';
 
-// For now it is done for testing purposes - Image is saved in Cloudinary and metadata will be saved in MongoDB
-// POST request to add image metadata to MongoDB (Testing Collection Name: TestCloudinaryImage)
 // src/app/api/images/route.js
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { url, caption, updated_at } = body;
 
-    const result = await postTestCloudinaryImage({ url, caption, updated_at });
+    const { file } = body;
+    if (!file) {
+      return new Response(JSON.stringify({ error: 'Missing required field: file' }), { status: 400 });
+    }
+
+    const result = await cloudinary.uploader.upload(file, {
+      resource_type: 'image',
+      upload_preset: 'my-uploads',
+    });
+
+    if (!result || !result.public_id) {
+      throw new Error('Failed to upload image to Cloudinary');
+    }
 
     return new Response(JSON.stringify({ message: 'Image saved', image: result }), {
       status: 201,
