@@ -1164,3 +1164,40 @@ export async function getPostComment({ commentId }) {
     throw error;
   }
 }
+
+// CHALLENGES
+// Get Active Challenges by User Id
+export async function getActiveChallengesByUserId({ userId }) {
+  try {
+    await dbConnect();
+
+    const activeChallenges = (await ActivateChallengeDetail.find({ userId })) || [];
+
+    if (activeChallenges.length === 0) {
+      console.log(`No active challenges found for userId: ${userId}`);
+    }
+
+    return activeChallenges;
+  } catch (error) {
+    console.error('Error retrieving active challenges:', error);
+    throw error;
+  }
+}
+
+// Get Challenge by Challenge Id
+export async function getChallengeByChallengeId({ challengeId }) {
+  try {
+    await dbConnect();
+
+    const challenge = await Challenge.findById(challengeId);
+
+    if (!challenge) {
+      throw new Error(`Could not find challenge by id: ${challengeId}`);
+    }
+
+    return challenge;
+  } catch (error) {
+    console.error('Error finding a challenge by challenge id:', error);
+    throw error;
+  }
+}

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MainBaseContainer from '../shared/MainBaseContainer';
 import ActiveChallengeDetailModal from './ActiveChallengeDetailModal';
 import Leaderboard from './Leaderboard';
@@ -11,7 +11,8 @@ export default function ChallengesPage() {
   const MAX_ACTIVE = 3; // users can only have MAX 3 active challenges
   const [showChallengeDetailModal, setShowChallengeDetailModal] = useState(false); // opens/closes modal showing selected challenge details
   const [selectedChallenge, setSelectedChallenge] = useState(null); // ensures modal opens with correct challenge details
-  const [activeChallenges, setActiveChallenges] = useState([fakeActivatedChallengeDetail]); // list of user's active challenges
+  const [activeChallenges, setActiveChallenges] = useState([]); // list of user's active challenges
+  const [fetchedActivatedChallenges, setFetchedActivatedChallenges] = useState(false);
 
   // Creates "active" challenge data and adds it to user's active challenges array (created for DEMO purposes)
   function handleActivateChallenge(challenge) {
@@ -20,6 +21,25 @@ export default function ChallengesPage() {
     const newActivated = createActivatedChallengeDetail(challenge, USER_ID);
     setActiveChallenges(prev => [...prev, newActivated]);
   }
+
+  useEffect(() => {
+    // get user's activated challenges
+    async function fetchActivatedChallenges() {
+      const userId = '6831f193ce0d8ebd1ea4877f'; // TODO: we will need to fetch real user's id once Nicole's PR is merged
+      try {
+        const res = await fetch(`api/challenges/active-challenges/get-by-userId/${userId}`);
+        const data = await res.json();
+        // console.log('Activated Challenges:', data[0]);
+        setActiveChallenges(data);
+
+        // console.log('Active challenges: ', activeChallenges);
+      } catch (err) {
+        console.error('Failed to load activated challenges:', err);
+      }
+      setFetchedActivatedChallenges(true);
+    }
+    fetchActivatedChallenges();
+  }, []);
 
   return (
     <MainBaseContainer>
@@ -31,11 +51,14 @@ export default function ChallengesPage() {
         </div>
         <div className="flex w-full min-h-96 my-4 gap-x-4">
           {/* Active Challenges */}
-          <AllActiveChallenges
-            setShowChallengeDetailModal={setShowChallengeDetailModal}
-            setSelectedChallenge={setSelectedChallenge}
-            activeChallenges={activeChallenges}
-          />
+          {fetchedActivatedChallenges && (
+            <AllActiveChallenges
+              setShowChallengeDetailModal={setShowChallengeDetailModal}
+              setSelectedChallenge={setSelectedChallenge}
+              activeChallenges={activeChallenges}
+            />
+          )}
+
           {/* Leaderboard */}
           <Leaderboard />
         </div>

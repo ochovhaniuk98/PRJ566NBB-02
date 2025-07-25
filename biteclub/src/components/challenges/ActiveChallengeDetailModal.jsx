@@ -15,7 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { getDaysRemaining } from './Util';
 import { fakeRestaurants, fakeChallenges } from '@/app/data/fakeData';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // DESCRIPTION: Pop-Up MODAL that appears when an active challenge card is clicked
 export default function ActiveChallengeDetailModal({
@@ -24,8 +24,24 @@ export default function ActiveChallengeDetailModal({
   activeChallenges,
   setActiveChallenges,
 }) {
-  // get specific challenge from "fakeChallenges" array to access details
-  const challenge = fakeChallenges.find(c => c._id === selectedActiveChallenge.challengeId);
+  const [challenge, setChallenge] = useState('');
+  const [fetchedChallenge, setFetchedChallenge] = useState(false);
+  // TODO: fetch a challenge by activeChallengeData.challengeId
+  useEffect(() => {
+    async function fetchChallenge() {
+      try {
+        const res = await fetch(`api/challenges/all-challenges/get-by-challengeId/${activeChallengeData.challengeId}`);
+        const data = await res.json();
+        console.log('data', data);
+        setChallenge(data);
+      } catch (err) {
+        console.error('Failed to fetch challenge:', err);
+      }
+
+      setFetchedChallenge(true);
+    }
+    fetchChallenge();
+  }, []);
   // get num of completed challenge steps
   const numCompletedSteps = selectedActiveChallenge.challengeSteps.filter(step => step.verificationStatus).length;
   // format string for challenge progress
