@@ -56,3 +56,14 @@ export async function getCuisinesOfTheWeek(count = 12) {
   }
   return cuisinesOfTheWeek;
 }
+
+export async function getRandomCuisine() {
+  const allCuisines = await getAllCuisines();
+
+  if (!allCuisines || allCuisines.length === 0) {
+    allCuisines = fallbackCuisines;
+  }
+
+  const randomIndex = Math.floor(Math.random() * allCuisines.length);
+  return allCuisines[randomIndex];
+}

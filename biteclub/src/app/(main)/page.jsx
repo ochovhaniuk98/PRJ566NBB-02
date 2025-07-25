@@ -116,8 +116,13 @@ export default function Home() {
     fetchRestaurants(true); // reset = true
   }, []);
 
-  const handleSubmit = async () => {
+  const handleViewAllSubmit = async () => {
     router.push('/restaurants/cuisine');
+  };
+
+  const handleSurpriseMeSubmit = async () => {
+    // TODO: redirect to random cuisine
+    router.push('/restaurants/cuisine/random');
   };
 
   return (
@@ -127,7 +132,10 @@ export default function Home() {
           <div>
             <div className="flex items-center justify-between">
               <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
-              <Button variant="link" onClick={handleSubmit}>
+              <Button variant="link" size="lg" onClick={handleSurpriseMeSubmit}>
+                <h3>Surprise Me →</h3>
+              </Button>
+              <Button variant="link" onClick={handleViewAllSubmit}>
                 View All
               </Button>
             </div>
