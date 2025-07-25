@@ -68,8 +68,8 @@ export default function CuisinePage() {
       // if we've fetched everything, stop loading more
       // console.log(`filteredRestaurants?.length: ${filteredRestaurants?.length}`);
       if (
-        (reset ? filteredRestaurants?.length : restaurants?.length + filteredRestaurants?.length) >=
-        filteredRestaurants?.length
+        (reset ? data?.restaurants?.length : filteredRestaurants?.length + data?.restaurants?.length) >=
+        data?.totalCount
       ) {
         setHasMore(false);
       } else {
@@ -108,9 +108,12 @@ export default function CuisinePage() {
         </div>
       )}
       {hasMore && (
-        <div className="mt-6 flex justify-center">
-          <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
-        </div>
+        <>
+          <div className="mt-6 flex justify-center">
+            <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
+          </div>
+          <br />
+        </>
       )}
     </>
   );
