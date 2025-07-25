@@ -5,7 +5,7 @@ import { EditorContent, EditorContext, useEditor } from '@tiptap/react';
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from '@tiptap/starter-kit';
-import { Image } from '@tiptap/extension-image';
+// import { Image } from '@tiptap/extension-image'; // Removed as we are using custom BlogImage extension
 import { TaskItem } from '@tiptap/extension-task-item';
 import { TaskList } from '@tiptap/extension-task-list';
 import { TextAlign } from '@tiptap/extension-text-align';
@@ -19,6 +19,7 @@ import { Underline } from '@tiptap/extension-underline';
 import { Link } from '@/components/tiptap-rich-text-editor/tiptap-extension/link-extension';
 import { Selection } from '@/components/tiptap-rich-text-editor/tiptap-extension/selection-extension';
 import { TrailingNode } from '@/components/tiptap-rich-text-editor/tiptap-extension/trailing-node-extension';
+import { BlogImage } from '@/components/tiptap-rich-text-editor/tiptap-extension/image-extension';
 
 // --- UI Primitives ---
 import { Button } from '@/components/tiptap-rich-text-editor/tiptap-ui-primitive/button';
@@ -177,7 +178,8 @@ export function SimpleEditor({ onContentChange, content = null }) {
       TaskList,
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
-      Image,
+      // Image,
+      BlogImage,
       Typography,
 
       Selection,
