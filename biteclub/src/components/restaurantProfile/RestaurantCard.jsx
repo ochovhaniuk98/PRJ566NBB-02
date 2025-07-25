@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // useRouter instead of next/Link, so we can manually handle the redirection on Clicking the Card (vs Saving the Restaurant as Favourite)
 
 import { useUser } from '@/context/UserContext';
-
+import { useUserData } from '@/context/UserDataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
@@ -14,7 +14,7 @@ import StarRating from '../shared/StarRating';
 export default function RestaurantCard({ restaurantData, onFavouriteToggle = () => {} }) {
   const router = useRouter();
   const { user } = useUser(); // Current logged-in user's Supabase info
-
+  const { refreshUserData } = useUserData();
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
   const [isFavourited, setIsFavourited] = useState(false);
   const restaurantId = restaurantData._id;
@@ -61,6 +61,7 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
 
       setIsFavourited(result.isFavourited);
+          refreshUserData();
       onFavouriteToggle(result.isFavourited, restaurantId);
     } catch (err) {
       console.error('Error toggling favourite:', err.message);

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
@@ -29,6 +30,7 @@ export default function BlogPostCard({
   onFavouriteToggle = () => {},
 }) {
   const { user } = useUser(); // Current logged-in user's Supabase info
+  const { refreshUserData } = useUserData();
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
   const [isFavourited, setIsFavourited] = useState(false); // tracks whether post is favourited
   const blogId = blogPostData._id;
@@ -76,6 +78,7 @@ export default function BlogPostCard({
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
 
       setIsFavourited(result.isFavourited);
+      refreshUserData();
       onFavouriteToggle(result.isFavourited, blogId);
     } catch (err) {
       console.error('Error toggling favourite:', err.message);

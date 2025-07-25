@@ -45,8 +45,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   const [favouritedRestaurants, setFavouritedRestaurants] = useState([]);
   const [favouritedBlogs, setFavouritedBlogs] = useState([]);
-  const [triggerFavRestaurantsRefresh, setTriggerFavRestaurantsRefresh] = useState(false);
-  const [triggerFavBlogsRefresh, setTriggerFavBlogsRefresh] = useState(false);
 
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
@@ -58,7 +56,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [editReviewForm, setEditReviewForm] = useState(false); // for opening/closing form to edit a SPECIFIC REVIEW
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value the owner gives when editing a review
   const [editReviewData, setEditReviewData] = useState(null);
-  const [triggerReviewRefresh, setTriggerReviewRefresh] = useState(false); // help with update the review tabs after Adding or Editing a review
 
   const [selectedBlogPosts, setSelectedBlogPosts] = useState([]);
   const [editBlogPost, setEditBlogPost] = useState(false); // tracks whether text editor is adding a NEW post or EDITING an existing one
@@ -68,6 +65,12 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const [showModal, setShowModal] = useState(false);
   const [deleteAllTarget, setDeleteAllTarget] = useState(''); // 'reviews' or 'blogPosts'
   const [confirmationText, setConfirmationText] = useState('');
+
+  // Trigger Refresh: help with immediate UI update
+  const [triggerReviewRefresh, setTriggerReviewRefresh] = useState(false);
+  const [triggerFavRestaurantsRefresh, setTriggerFavRestaurantsRefresh] = useState(false);
+  const [triggerFavBlogsRefresh, setTriggerFavBlogsRefresh] = useState(false);
+  const [triggerFollowingsRefresh, setTriggerFollowingsRefresh] = useState(false);
 
   // States
   const [loading, setLoading] = useState(true);
@@ -506,6 +509,17 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     // If Favourite Blog Posts tab is active, refresh list immediately
     if (selectedTab === profileTabs[4]) setTriggerFavBlogsRefresh(prev => !prev);
   };
+
+  //   const handleFollowingToggle = (isFav, blogId) => {
+  //   setUserProfile(prev => {
+  //     if (!prev) return prev;
+  //     const updatedFavs = isFav ? [...prev.favouriteBlogs, blogId] : prev.favouriteBlogs.filter(id => id !== blogId);
+  //     return { ...prev, favouriteBlogs: updatedFavs };
+  //   });
+  //   // If Favourite Blog Posts tab is active, refresh list immediately
+  //   if (selectedTab === profileTabs[4]) setTriggerFavBlogsRefresh(prev => !prev);
+  // };
+
 
   return (
     <MainBaseContainer>
