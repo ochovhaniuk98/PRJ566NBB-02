@@ -60,7 +60,7 @@ export default function RandomCuisinePage() {
 
       const res = await fetch(`/api/restaurants/search?${params.toString()}`);
       const data = await res.json();
-      console.log('Raw data:', data);
+      // console.log('Raw data:', data);
 
       let filteredRestaurants = data.restaurants;
       filteredRestaurants = data.restaurants.filter(r => r.cuisines?.some(c => cuisine.includes(c)));
@@ -75,11 +75,11 @@ export default function RandomCuisinePage() {
 
       // if we've fetched everything, stop loading more
       // console.log(`filteredRestaurants?.length: ${filteredRestaurants?.length}`);
-      console.log(`filteredRestaurants?.length : ${filteredRestaurants?.length}`);
-      console.log(`data?.restaurants?.length: ${data?.restaurants?.length}`);
-      console.log(`data?.totalCoun: ${data?.totalCount}`);
-      console.log(`restaurantsCount: ${restaurantsCount}`);
-      console.log(`hasMore: ${hasMore}`);
+      // console.log(`filteredRestaurants?.length : ${filteredRestaurants?.length}`);
+      // console.log(`data?.restaurants?.length: ${data?.restaurants?.length}`);
+      // console.log(`data?.totalCoun: ${data?.totalCount}`);
+      // console.log(`restaurantsCount: ${restaurantsCount}`);
+      // console.log(`hasMore: ${hasMore}`);
       if (filteredRestaurants?.length + data?.restaurants?.length >= data?.totalCount) {
         setHasMore(false);
       } else {
@@ -87,28 +87,6 @@ export default function RandomCuisinePage() {
       }
 
       setFetchedCuisineRestaurants(true);
-      console.log(`hasMore: ${hasMore}`);
-
-      //   let allRestaurants = data.restaurants;
-      //   let filteredRestaurants = allRestaurants.filter(r => r.cuisines?.some(c => cuisine.includes(c)));
-
-      //   const rejectedCount = allRestaurants.length - filteredRestaurants.length;
-      //   const newTotalCount = data.totalCount - rejectedCount;
-
-      //   setRestaurants(prev => {
-      //     const ids = new Set(prev.map(r => r._id));
-      //     const newOnes = filteredRestaurants.filter(r => !ids.has(r._id));
-      //     return [...prev, ...newOnes];
-      //   });
-
-      //   // Use the updated newTotalCount instead of restaurantsCount
-      //   const totalFetched = restaurants.length + filteredRestaurants.length;
-
-      //   setHasMore(totalFetched < newTotalCount);
-
-      //   setFetchedCuisineRestaurants(true);
-
-      // console.log('Cuisine spotlight restaurants', data.restaurants);
     } catch (err) {
       console.error('Failed to load cuisine spotlight restaurants:', err);
     }
