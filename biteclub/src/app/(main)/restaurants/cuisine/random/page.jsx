@@ -124,7 +124,7 @@ export default function RandomCuisinePage() {
       {fetchedCuisineRestaurants && (
         <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
           <div>
-            <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
+            <h2>SURPRISE CUISINE: {cuisine}</h2>
             <div className="overflow-x-scroll">
               <div className="w-fit h-full flex flex-row">
                 <GridCustomCols numOfCols={5} className="mt-4">
