@@ -20,7 +20,7 @@ export const UserDataProvider = ({ children }) => {
       }
 
       const endpoint =
-        userType === 'general'
+        userType === 'general' || userType === 'admin'
           ? `/api/generals/get-profile-by-authId?authId=${user.id}`
           : userType === 'business'
           ? `/api/business-user/get-profile-by-authId?authId=${user.id}`
@@ -60,7 +60,6 @@ export const UserDataProvider = ({ children }) => {
 };
 
 export const useUserData = () => useContext(UserDataContext);
-
 
 // Usage
 // import { useUserData } from '@/context/UserDataContext'
