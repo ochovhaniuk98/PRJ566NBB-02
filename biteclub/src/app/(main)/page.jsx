@@ -125,10 +125,12 @@ export default function Home() {
       {fetchedCuisineRestaurants && (
         <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
           <div>
-            <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
-            <Button className="gap-0 absolute top-20 right-20" variant="link" onClick={handleSubmit}>
-              View All
-            </Button>
+            <div className="flex items-center justify-between">
+              <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
+              <Button variant="link" onClick={handleSubmit}>
+                View All
+              </Button>
+            </div>
             <div className="overflow-x-scroll">
               <div className="w-fit h-full flex flex-row">
                 <GridCustomCols numOfCols={5} className="mt-4">
