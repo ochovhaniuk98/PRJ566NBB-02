@@ -33,20 +33,37 @@ export async function DELETE(request) {
   try {
     const body = await request.json();
 
-    // type can be 'restaurant-image' or 'restaurant-banner-image'
-    const { restaurantId, public_id, object_id, type } = body;
+    // type can be 'restaurant-image', 'restaurant-banner-image' or 'blog-image'
+    // when type is 'blog-image', we will pass 'images' as an array of public_ids
+    const { restaurantId, public_id, object_id, type, images } = body;
 
-    if ((!public_id && !object_id) || !restaurantId) {
-      return new Response(JSON.stringify({ error: 'Missing required fields: restaurantId, public_id, or object_id' }), {
-        status: 400,
+    if (type === 'blog-image') {
+      if (!images || !Array.isArray(images) || images.length === 0) {
+        return new Response(JSON.stringify({ error: 'Missing required field: images' }), { status: 400 });
+      }
+
+      const res = await cloudinary.api.delete_resources(images, {
+        invalidate: true,
       });
+
+      if (
+        !res.deleted || // deleted field missing
+        res.partial || // partial delete flagged
+        res.error || // error present
+        !images.every(id => Object.prototype.hasOwnProperty.call(res.deleted, id))
+      ) {
+        throw new Error('Failed to delete image(s) from Cloudinary');
+      }
+      return new Response(JSON.stringify({ message: 'Image deleted successfully' }), { status: 200 });
     }
 
     if (public_id) {
       // Check if public_id is provided and process the deletion from Cloudinary
-      const res = await cloudinary.uploader.destroy(public_id);
+      const res = await cloudinary.uploader.destroy(public_id, {
+        invalidate: true,
+      });
 
-      if (res.result !== 'ok' && res.result !== 'not_found') {
+      if (res.result !== 'ok' && res.result !== 'not found') {
         throw new Error('Failed to delete image from Cloudinary');
       }
     }
