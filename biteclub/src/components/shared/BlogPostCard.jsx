@@ -26,6 +26,7 @@ export default function BlogPostCard({
   isSelected = false,
   onSelect = () => {},
   onDeleteClick, // optional — do NOT provide a default
+  onFavouriteToggle = () => {},
 }) {
   const { user } = useUser(); // Current logged-in user's Supabase info
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
@@ -54,13 +55,13 @@ export default function BlogPostCard({
       }
     };
     checkFavouriteStatus();
-    }, [blogId, user?.id]);
+  }, [blogId, user?.id]);
 
   const handleFavouriteBlogPostClick = async e => {
     e.stopPropagation();
 
     try {
-      if (!user?.id) return; 
+      if (!user?.id) return;
 
       const res = await fetch('/api/blog-posts/save-as-favourite', {
         method: 'POST',
@@ -75,6 +76,9 @@ export default function BlogPostCard({
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
 
       setIsFavourited(result.isFavourited);
+
+      // onFavouriteToggle();
+      onFavouriteToggle(result.isFavourited, blogId);
     } catch (err) {
       console.error('Error toggling favourite:', err.message);
     }

@@ -45,6 +45,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   const [favouritedRestaurants, setFavouritedRestaurants] = useState([]);
   const [favouritedBlogs, setFavouritedBlogs] = useState([]);
+  const [triggerFavBlogsRefresh, setTriggerFavBlogsRefresh] = useState(false);
+
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
 
@@ -304,7 +306,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
         // TAB 6 -- FOLLOWINGS
         if (selectedTab === profileTabs[6]) {
-
           setLoadingStates(prev => ({ ...prev, followings: true }));
           try {
             if (!userProfile?.followings) return;
@@ -339,7 +340,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     };
 
     fetchTabData();
-  }, [selectedTab, generalUserId, triggerReviewRefresh]);
+  }, [selectedTab, generalUserId, triggerReviewRefresh, triggerFavBlogsRefresh]);
 
   // Masonry breakpoints for internal reviews and expanded review side panel
   const breakpointColumnsObj = useMemo(() => {
@@ -480,6 +481,26 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     }
   };
 
+
+
+
+
+const handleFavBlogToggle = (isFav, blogId) => {
+  setUserProfile(prev => {
+    if (!prev) return prev;
+    const updatedFavs = isFav
+      ? [...prev.favouriteBlogs, blogId]
+      : prev.favouriteBlogs.filter(id => id !== blogId);
+    return { ...prev, favouriteBlogs: updatedFavs };
+  });
+
+  // Optional: If Favourite Blog Posts tab is active, refresh list immediately
+  if (selectedTab === profileTabs[4]) setTriggerFavBlogsRefresh(prev => !prev);
+};
+
+
+
+
   return (
     <MainBaseContainer>
       <GeneralUserBanner
@@ -543,6 +564,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                         isSelected={isSelected}
                         onSelect={toggleSelect}
                         onDeleteClick={() => handleDeleteSingleBlogPost(post._id)}
+                        // onFavouriteToggle={() => setTriggerFavBlogsRefresh(prev => !prev)}
+                        onFavouriteToggle={(isFav, id) => handleFavBlogToggle(isFav, id)}
                       />
                     );
                   })}
@@ -676,6 +699,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                       isEditModeOn={false}
                       isSelected={false}
                       onSelect={() => {}}
+                      // onFavouriteToggle={() => setTriggerFavBlogsRefresh(prev => !prev)}
+                      onFavouriteToggle={(isFav, id) => handleFavBlogToggle(isFav, id)}
                     />
                   ))}
                 </Masonry>
