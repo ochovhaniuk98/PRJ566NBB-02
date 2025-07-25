@@ -76,8 +76,6 @@ export default function BlogPostCard({
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
 
       setIsFavourited(result.isFavourited);
-
-      // onFavouriteToggle();
       onFavouriteToggle(result.isFavourited, blogId);
     } catch (err) {
       console.error('Error toggling favourite:', err.message);

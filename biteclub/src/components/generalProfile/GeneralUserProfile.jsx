@@ -45,6 +45,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
   const [favouritedRestaurants, setFavouritedRestaurants] = useState([]);
   const [favouritedBlogs, setFavouritedBlogs] = useState([]);
+  const [triggerFavRestaurantsRefresh, setTriggerFavRestaurantsRefresh] = useState(false);
   const [triggerFavBlogsRefresh, setTriggerFavBlogsRefresh] = useState(false);
 
   const [followers, setFollowers] = useState([]);
@@ -340,7 +341,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     };
 
     fetchTabData();
-  }, [selectedTab, generalUserId, triggerReviewRefresh, triggerFavBlogsRefresh]);
+  }, [selectedTab, generalUserId, triggerReviewRefresh, triggerFavBlogsRefresh, triggerFavRestaurantsRefresh]);
 
   // Masonry breakpoints for internal reviews and expanded review side panel
   const breakpointColumnsObj = useMemo(() => {
@@ -481,25 +482,30 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     }
   };
 
+  // FAVOURITE TOGGLE -- BLOGS, RESTAURANTS
+  // --------------------------------------
 
+  const handleFavRestaurantToggle = (isFav, restaurantId) => {
+    setUserProfile(prev => {
+      if (!prev) return prev;
+      const updatedFavs = isFav
+        ? [...prev.favouriteRestaurants, restaurantId]
+        : prev.favouriteRestaurants.filter(id => id !== restaurantId);
+      return { ...prev, favouriteRestaurants: updatedFavs };
+    });
+    // If Favourite Restaurants tab is active, refresh list immediately
+    if (selectedTab === profileTabs[3]) setTriggerFavRestaurantsRefresh(prev => !prev);
+  };
 
-
-
-const handleFavBlogToggle = (isFav, blogId) => {
-  setUserProfile(prev => {
-    if (!prev) return prev;
-    const updatedFavs = isFav
-      ? [...prev.favouriteBlogs, blogId]
-      : prev.favouriteBlogs.filter(id => id !== blogId);
-    return { ...prev, favouriteBlogs: updatedFavs };
-  });
-
-  // Optional: If Favourite Blog Posts tab is active, refresh list immediately
-  if (selectedTab === profileTabs[4]) setTriggerFavBlogsRefresh(prev => !prev);
-};
-
-
-
+  const handleFavBlogToggle = (isFav, blogId) => {
+    setUserProfile(prev => {
+      if (!prev) return prev;
+      const updatedFavs = isFav ? [...prev.favouriteBlogs, blogId] : prev.favouriteBlogs.filter(id => id !== blogId);
+      return { ...prev, favouriteBlogs: updatedFavs };
+    });
+    // If Favourite Blog Posts tab is active, refresh list immediately
+    if (selectedTab === profileTabs[4]) setTriggerFavBlogsRefresh(prev => !prev);
+  };
 
   return (
     <MainBaseContainer>
@@ -564,7 +570,6 @@ const handleFavBlogToggle = (isFav, blogId) => {
                         isSelected={isSelected}
                         onSelect={toggleSelect}
                         onDeleteClick={() => handleDeleteSingleBlogPost(post._id)}
-                        // onFavouriteToggle={() => setTriggerFavBlogsRefresh(prev => !prev)}
                         onFavouriteToggle={(isFav, id) => handleFavBlogToggle(isFav, id)}
                       />
                     );
@@ -664,9 +669,6 @@ const handleFavBlogToggle = (isFav, blogId) => {
             {/* Favourite Restaurants */}
             {selectedTab === profileTabs[3] &&
               (loadingStates.favRestaurants ? (
-                // <div className="col-span-3 text-center">
-                //   <p>Loading favourite restaurants...</p>
-                // </div>
                 <Spinner message="Loading favourite restaurants..." />
               ) : favouritedRestaurants.length === 0 ? (
                 <div className="col-span-3 text-center">
@@ -675,7 +677,11 @@ const handleFavBlogToggle = (isFav, blogId) => {
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {favouritedRestaurants.map(restaurant => (
-                    <RestaurantCard key={restaurant._id} restaurantData={restaurant} />
+                    <RestaurantCard
+                      key={restaurant._id}
+                      restaurantData={restaurant}
+                      onFavouriteToggle={(isFav, id) => handleFavRestaurantToggle(isFav, id)}
+                    />
                   ))}
                 </GridCustomCols>
               ))}
@@ -699,7 +705,6 @@ const handleFavBlogToggle = (isFav, blogId) => {
                       isEditModeOn={false}
                       isSelected={false}
                       onSelect={() => {}}
-                      // onFavouriteToggle={() => setTriggerFavBlogsRefresh(prev => !prev)}
                       onFavouriteToggle={(isFav, id) => handleFavBlogToggle(isFav, id)}
                     />
                   ))}

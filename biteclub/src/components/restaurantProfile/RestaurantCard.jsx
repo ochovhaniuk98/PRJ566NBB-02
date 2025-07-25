@@ -11,7 +11,7 @@ import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
 import Image from 'next/image';
 import StarRating from '../shared/StarRating';
 
-export default function RestaurantCard({ restaurantData }) {
+export default function RestaurantCard({ restaurantData, onFavouriteToggle = () => {} }) {
   const router = useRouter();
   const { user } = useUser(); // Current logged-in user's Supabase info
 
@@ -61,6 +61,7 @@ export default function RestaurantCard({ restaurantData }) {
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
 
       setIsFavourited(result.isFavourited);
+      onFavouriteToggle(result.isFavourited, restaurantId);
     } catch (err) {
       console.error('Error toggling favourite:', err.message);
     }
