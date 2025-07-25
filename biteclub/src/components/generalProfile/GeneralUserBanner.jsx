@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import Image from 'next/image';
 import { Button } from '@/components/shared/Button';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
@@ -38,6 +39,7 @@ export default function GeneralUserBanner({
   setShowModal,
 }) {
   const { user } = useUser(); // Current logged-in user's Supabase info
+  const { refreshUserData } = useUserData();
   const [reviewCount, setReviewCount] = useState(0);
   const [openReportForm, setOpenReportForm] = useState(false); // for reporting user
 
@@ -98,7 +100,6 @@ export default function GeneralUserBanner({
     if (generalUserData._id) fetchReviewCount();
   }, [generalUserData._id]);
 
-
   useEffect(() => {
     if (isOwner) {
       setLoadingChecklist(prev => ({ ...prev, followingCheck: true }));
@@ -152,6 +153,7 @@ export default function GeneralUserBanner({
       if (!res.ok) throw new Error(result.error || 'Failed to follow / unfollow user');
 
       setIsFollowing(result.isFollowing); // Update state
+      await refreshUserData();
     } catch (err) {
       console.error('Error toggling follow:', err.message);
     }

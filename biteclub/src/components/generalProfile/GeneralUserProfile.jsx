@@ -344,7 +344,14 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     };
 
     fetchTabData();
-  }, [selectedTab, generalUserId, triggerReviewRefresh, triggerFavBlogsRefresh, triggerFavRestaurantsRefresh]);
+  }, [
+    selectedTab,
+    generalUserId,
+    triggerReviewRefresh,
+    triggerFavBlogsRefresh,
+    triggerFavRestaurantsRefresh,
+    triggerFollowingsRefresh,
+  ]);
 
   // Masonry breakpoints for internal reviews and expanded review side panel
   const breakpointColumnsObj = useMemo(() => {
@@ -485,9 +492,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     }
   };
 
-  // FAVOURITE TOGGLE -- BLOGS, RESTAURANTS
-  // --------------------------------------
-
+  // UI UPDATES FOR FAVOURITE / FOLLOWINGS TOGGLE
+  // --------------------------------------------
   const handleFavRestaurantToggle = (isFav, restaurantId) => {
     setUserProfile(prev => {
       if (!prev) return prev;
@@ -510,16 +516,17 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
     if (selectedTab === profileTabs[4]) setTriggerFavBlogsRefresh(prev => !prev);
   };
 
-  //   const handleFollowingToggle = (isFav, blogId) => {
-  //   setUserProfile(prev => {
-  //     if (!prev) return prev;
-  //     const updatedFavs = isFav ? [...prev.favouriteBlogs, blogId] : prev.favouriteBlogs.filter(id => id !== blogId);
-  //     return { ...prev, favouriteBlogs: updatedFavs };
-  //   });
-  //   // If Favourite Blog Posts tab is active, refresh list immediately
-  //   if (selectedTab === profileTabs[4]) setTriggerFavBlogsRefresh(prev => !prev);
-  // };
+  const handleFollowingToggle = (isFollowing, followingsId) => {
+    setUserProfile(prev => {
+      if (!prev) return prev;
+      const updatedFollowing = isFollowing
+        ? [...prev.followings, followingsId]
+        : prev.followings.filter(id => id !== followingsId);
+      return { ...prev, followings: updatedFollowing };
+    });
 
+    if (selectedTab === profileTabs[6]) setTriggerFollowingsRefresh(prev => !prev);
+  };
 
   return (
     <MainBaseContainer>
@@ -736,7 +743,12 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {followers.map((follower, i) => (
-                    <GeneralUserCard key={follower._id} generalUserData={follower} isFollowing={false} />
+                    <GeneralUserCard
+                      key={follower._id}
+                      generalUserData={follower}
+                      isFollowing={false}
+                      onFollowingToggle={handleFollowingToggle}
+                    />
                   ))}
                 </GridCustomCols>
               ))}
@@ -752,7 +764,12 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {followings.map((following, i) => (
-                    <GeneralUserCard key={following._id} generalUserData={following} isFollowing={true} />
+                    <GeneralUserCard
+                      key={following._id}
+                      generalUserData={following}
+                      isFollowing={true}
+                      onFollowingToggle={handleFollowingToggle}
+                    />
                   ))}
                 </GridCustomCols>
               ))}

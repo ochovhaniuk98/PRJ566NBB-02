@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 import { Button } from '../shared/Button';
 import ReportForm from '../shared/ReportForm';
@@ -18,9 +19,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 // isFollowing: tracks whether or not the owner is following the user displayed on this card
-export default function GeneralUserCard({ generalUserData }) {
+export default function GeneralUserCard({ generalUserData, onFollowingToggle = () => {} }) {
   const router = useRouter();
   const { user } = useUser(); // Current logged-in user's Supabase info
+  const { refreshUserData } = useUserData();
   const generalUserUrl = `/generals/${generalUserData._id}`;
 
   const [showMorePopup, setShowMorePopup] = useState(false);
@@ -99,6 +101,8 @@ export default function GeneralUserCard({ generalUserData }) {
       if (!res.ok) throw new Error(result.error || 'Failed to follow / unfollow user');
 
       setIsFollowing(result.isFollowing); // Update state
+      await refreshUserData();
+      onFollowingToggle(result.isFollowing, anotherUserId);
     } catch (err) {
       console.error('Error toggling follow:', err.message);
     }
