@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react';
 import { createClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/context/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBowlFood, faBowlRice, faCarrot, faSpoon, faUtensils } from '@fortawesome/free-solid-svg-icons';
 import { faCircleRight, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
