@@ -1,7 +1,7 @@
 'use client';
 import { useState, useRef } from 'react';
-import { createClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/context/UserContext';
 
 const DIETARY_CONFIG = {
   title: 'DIETARY PREFERENCES',
@@ -27,6 +27,7 @@ const CUISINE_CONFIG = {
 
 export default function Questionnaire() {
   const router = useRouter();
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
 
   const [dietaryOptions, setDietaryOptions] = useState([
     'Vegetarian',
@@ -76,7 +77,7 @@ export default function Questionnaire() {
   const [restaurantFrequency, setRestaurantFrequency] = useState(DEFAULT_VALUE);
   const [decisionDifficulty, setDecisionDifficulty] = useState(DEFAULT_VALUE);
   const [openToDiversity, setOpenToDiversity] = useState(DEFAULT_VALUE);
-  const supabase = createClient();
+
   function nextStep() {
     if (step == FIRST_STEP) {
       setStep(SECOND_STEP);
@@ -95,7 +96,8 @@ export default function Questionnaire() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        supabaseId: (await supabase.auth.getUser()).data.user.id,
+        // supabaseId: (await supabase.auth.getUser()).data.user.id,
+        supabaseId: user.id,
         selectedCuisines,
         selectedDietaryPreferences,
         likelinessToTryFood,
@@ -104,8 +106,8 @@ export default function Questionnaire() {
         openToDiversity,
       }),
     });
-    if (res.status == 200){
-      router.push("/")
+    if (res.status == 200) {
+      router.push('/');
     }
   }
 

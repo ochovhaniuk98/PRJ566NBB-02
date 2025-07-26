@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Input } from '@/components/shared/Input';
@@ -10,52 +11,56 @@ import { Switch } from '@/components/shared/Switch';
 import { Button } from '@/components/shared/Button';
 import { LogoutButton } from '@/components/auth/Logout-button';
 import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
+import Spinner from '@/components/shared/Spinner';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
 
 export default function Settings() {
-  const [user, setUser] = useState(null);
+  // User infomation
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
+  const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
+  // If the user signed up using Google OAuth, they do not need to update their password.
+  const isGoogleUser = user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google');
+
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatarUrl] = useState('');
   const [password, setPassword] = useState('');
   const [userBio, setUserBio] = useState('');
+
+  // Display preference
   const [displayFavouriteRestaurants, setDisplayFavouriteRestaurants] = useState(false);
   const [displayFavouriteBlogPosts, setDisplayFavouriteBlogPosts] = useState(false);
   const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
   const [feedPersonalization, setFeedPersonalization] = useState(false);
+
+  // States
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const supabase = createClient();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data?.user) return;
+    if (loadingData || !userData) return;
 
-      setUser(data.user);
+    setUsername(userData.username || '');
+    setUserBio(userData.userBio || '');
+    setDisplayFavouriteRestaurants(userData.displayFavouriteRestaurants ?? false);
+    setDisplayFavouriteBlogPosts(userData.displayFavouriteBlogPosts ?? false);
+    setDisplayVisitedPlaces(userData.displayVisitedPlaces ?? false);
+    setFeedPersonalization(userData.feedPersonalization ?? false);
+    setAvatarUrl(userData.userProfilePicture.url ?? null);
+    setLoading(false);
+  }, [loadingData, userData]);
 
-      const res = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
-      const { profile } = await res.json();
+  if (loadingData || loading) return <Spinner />;
 
-      setUsername(profile.username || '');
-      setUserBio(profile.userBio || '');
-      setDisplayFavouriteRestaurants(
-        profile.displayFavouriteRestaurants == undefined ? false : profile.displayFavouriteRestaurants
-      );
-      setDisplayFavouriteBlogPosts(
-        profile.displayFavouriteBlogPosts == undefined ? false : profile.displayFavouriteBlogPosts
-      );
-      setDisplayVisitedPlaces(profile.displayVisitedPlaces == undefined ? false : profile.displayVisitedPlaces);
-      setFeedPersonalization(profile.feedPersonalization == undefined ? false : profile.feedPersonalization);
-      // setAvatarUrl(profile.avatarUrl || '');
-    };
-
-    fetchData();
-  }, []);
-
+  // ========
+  // HANDLERS
+  // ========
   const handleSubmit = async e => {
     e.preventDefault();
     setError(null); // reset error state
 
     try {
+      if (!user?.id) return;
       if (password !== '') {
         const { error } = await supabase.auth.updateUser({ password });
 
@@ -63,25 +68,23 @@ export default function Settings() {
         if (error) throw error;
       }
 
-      if (user?.id) {
-        const res = await fetch('/api/generals/update-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            supabaseId: user.id,
-            userBio,
-            username,
-            displayFavouriteRestaurants,
-            displayFavouriteBlogPosts,
-            displayVisitedPlaces,
-            feedPersonalization,
-          }),
-        });
+      const res = await fetch('/api/generals/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          supabaseId: user.id,
+          userBio,
+          username,
+          displayFavouriteRestaurants,
+          displayFavouriteBlogPosts,
+          displayVisitedPlaces,
+          feedPersonalization,
+        }),
+      });
 
-        if (!res.ok) {
-          const { message } = await res.json();
-          throw new Error(message || 'Profile update failed');
-        }
+      if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || 'Profile update failed');
       }
 
       alert('Settings updated!');
@@ -94,14 +97,11 @@ export default function Settings() {
     }
   };
 
-  // If the user signed up using Google OAuth, they do not need to update their password.
-  const isGoogleUser = user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google');
-
   return (
     <MainBaseContainer>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center m-16 bg-white">
         {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
-        {user ? (
+        {user && (
           <Avatar
             uid={user.id}
             url={avatar_url}
@@ -110,8 +110,6 @@ export default function Settings() {
               setAvatarUrl(url);
             }}
           />
-        ) : (
-          <p>Loading user...</p>
         )}
 
         <form className="w-4xl mt-8" onSubmit={handleSubmit}>

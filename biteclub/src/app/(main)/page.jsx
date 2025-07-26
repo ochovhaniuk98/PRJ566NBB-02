@@ -4,13 +4,14 @@ import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Button } from '@/components/shared/Button';
 import { useState, useEffect, useRef } from 'react';
-import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [personalizedRecommendations, setPersonalizedRecommendations] = useState([]);
   const [fetchCompleted, setFetchCompleted] = useState(false);
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
 
   // cuisine spotlight restaurants
   const [cuisine, setCuisine] = useState('');
@@ -22,39 +23,35 @@ export default function Home() {
   const fetchRestaurants = async (reset = false) => {
     setFetchCompleted(false);
 
-    try {
-      const supabase = createClient();
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-      if (!error) {
-        try {
-          const personalizedRecommendationsRes = await fetch(
-            `${process.env.NEXT_PUBLIC_RECOMMENDER_URL}/restaurants/recommend`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ supabaseId: user.id }),
-            }
-          );
+    if (!user) {
+      console.warn('User not found. Skipping personalized fetch.');
+      return;
+    }
 
-          if (!personalizedRecommendationsRes.ok) {
-            throw new Error('Failed to fetch');
-          }
-          const data = await personalizedRecommendationsRes.json();
-          setPersonalizedRecommendations(data.recommendations);
-          console.log(data.recommendations);
-          setFetchCompleted(true);
-        } catch (error) {
-          console.log(error);
+    try {
+      if (!user?.id) return;
+      const personalizedRecommendationsRes = await fetch(
+        `${process.env.NEXT_PUBLIC_RECOMMENDER_URL}/restaurants/recommend`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ supabaseId: user.id }),
         }
+      );
+
+      if (!personalizedRecommendationsRes.ok) {
+        throw new Error('Failed to fetch');
       }
+
+      const data = await personalizedRecommendationsRes.json();
+      setPersonalizedRecommendations(data.recommendations);
+      console.log(data.recommendations);
+      setFetchCompleted(true);
     } catch (error) {
+      console.error('(main) Failed to fetch restaurants:', error);
       setFetchCompleted(false);
-      console.error('Failed to fetch restaurants:', error);
     }
   };
 

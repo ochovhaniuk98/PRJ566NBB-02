@@ -4,7 +4,9 @@ import GridCustomCols from '@/components/shared/GridCustomCols';
 export default function PhotoGallery({ photos, isOwner = false }) {
   if (!photos || photos.length === 0) {
     return (
-      <div className="text-center text-gray-500">{isOwner ? 'No photos uploaded yet.' : 'No photos available.'}</div>
+      <div className="col-span-3 text-center">
+        <p>{isOwner ? 'No photos uploaded yet.' : 'No photos available.'}</p>
+      </div>
     );
   }
 
