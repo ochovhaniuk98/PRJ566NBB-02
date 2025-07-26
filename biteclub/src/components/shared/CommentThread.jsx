@@ -1,12 +1,11 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { Button } from './Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
-import { useUser } from '@/context/UserContext';
-
+// import { createClient } from '@/lib/auth/client';
+import { useUserData } from '@/context/UserDataContext';
 import { faTrashCan, faFlag } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import ReportForm from '../shared/ReportForm';
@@ -17,9 +16,8 @@ import ReportForm from '../shared/ReportForm';
 export default function CommentThread({ post }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
-  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-
-  const [userProfile, setUserProfile] = useState(null);
+  const { userData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
+  const [user, setUser] = useState(null);
   const [fetchedPostUser, setFetchedPostUser] = useState(false);
 
   // comments
@@ -37,18 +35,18 @@ export default function CommentThread({ post }) {
     console.log('Blog Post in Comments Thread component is: ', post);
 
     // set user
-    const fetchUserProfile = async () => {
+    const fetchUser = async () => {
       try {
-        if (!user?.id) return;
+        // const supabase = createClient();
+        // const { data } = await supabase.auth.getUser();
+        // if (!data?.user) throw new Error('No Supabase user');
+        // const supabaseId = data.user.id;
 
         // const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
-        const res = await fetch(`/api/users/get-general-user?id=${user.id}`);
+        // if (!res.ok) throw new Error(`Status ${res.status}`);
+        // const userData = await res.json();
 
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        const userData = await res.json();
-
-        // setUser(userData);
-        setUserProfile(userData);
+        setUser(userData);
         console.log('userData: ', userData);
         setFetchedPostUser(true);
       } catch (error) {
@@ -56,8 +54,8 @@ export default function CommentThread({ post }) {
       }
     };
 
-    fetchUserProfile();
-  }, [post, user?.id]);
+    fetchUser();
+  }, [post]);
 
   // nest replies within parent comments (parent comment -> [reply 1, reply 2 ...])
   function nestComments(comments) {
@@ -115,7 +113,7 @@ export default function CommentThread({ post }) {
     if (newComment.trim()) {
       // add new comment
       try {
-        if (!blogPost || !userProfile) return;
+        if (!blogPost || !user) return;
 
         // post request to create a new comment
         const res = await fetch('/api/blog-posts/comments/add-comment', {
@@ -126,11 +124,11 @@ export default function CommentThread({ post }) {
           body: JSON.stringify({
             blogPostId: blogPost._id,
             parent_id: null,
-            avatarURL: userProfile.userProfilePicture.url,
+            avatarURL: user.userProfilePicture.url,
             content: newComment,
-            author: userProfile.username,
+            author: user.username,
             date_posted: new Date().toISOString(),
-            user: userProfile._id,
+            user: user._id,
           }),
         });
 
@@ -157,7 +155,7 @@ export default function CommentThread({ post }) {
     if (replyContent.trim()) {
       // add new reply
       try {
-        if (!blogPost || !userProfile) return;
+        if (!blogPost || !user) return;
 
         // post request to create a new comment
         const res = await fetch('/api/blog-posts/comments/add-comment', {
@@ -168,11 +166,11 @@ export default function CommentThread({ post }) {
           body: JSON.stringify({
             blogPostId: blogPost._id,
             parent_id: parentId,
-            avatarURL: userProfile.userProfilePicture.url,
+            avatarURL: user.userProfilePicture.url,
             content: replyContent,
-            author: userProfile.username,
+            author: user.username,
             date_posted: new Date().toISOString(),
-            user: userProfile._id,
+            user: user._id,
           }),
         });
 
@@ -202,7 +200,7 @@ export default function CommentThread({ post }) {
         commentId: comment._id,
         like: true,
         dislike: false,
-        userId: userProfile._id,
+        userId: user._id,
       }),
     });
     if (!res.ok) throw new Error(`Could not add like to a comment ${res.status}`);
@@ -224,7 +222,7 @@ export default function CommentThread({ post }) {
         commentId: comment._id,
         like: false,
         dislike: true,
-        userId: userProfile._id,
+        userId: user._id,
       }),
     });
     if (!res.ok) throw new Error(`Could not add dislike to a comment ${res.status}`);
@@ -260,38 +258,29 @@ export default function CommentThread({ post }) {
             <Comment
               key={comment._id}
               comment={comment}
-              userId={userProfile._id}
+              userId={user._id}
               onReply={addReply}
               onLike={onLike}
               onDislike={onDislike}
               onDelete={onDelete}
-              reportedUser={userProfile}
+              reportedUser={user}
             />
           ))}
       </div>
 
       {/* main textarea input + "post" button */}
-      {user?.id ? (
-        <div className="absolute bottom-4 left-0 right-0 bg-white pt-2 px-4 border-t-1 border-brand-peach">
-          <textarea
-            rows={3}
-            placeholder="Write a comment..."
-            value={newComment}
-            onChange={e => setNewComment(e.target.value)}
-            className="w-full border rounded-md p-2 mb-2"
-          />
-          <Button type="submit" variant="default" className="block min-w-30" onClick={addComment}>
-            Post
-          </Button>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center gap-4 mb-4">
-          <p className="text-center">Login to post a comment</p>
-          <Link href="/login">
-            <Button>Login</Button>
-          </Link>
-        </div>
-      )}
+      <div className="absolute bottom-4 left-0 right-0 bg-white pt-2 px-4 border-t-1 border-brand-peach">
+        <textarea
+          rows={3}
+          placeholder="Write a comment..."
+          value={newComment}
+          onChange={e => setNewComment(e.target.value)}
+          className="w-full border rounded-md p-2 mb-2"
+        />
+        <Button type="submit" variant="default" className="block min-w-30" onClick={addComment}>
+          Post
+        </Button>
+      </div>
     </div>
   );
 }
