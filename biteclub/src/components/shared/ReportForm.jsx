@@ -33,7 +33,7 @@ export default function ReportForm({
   // =================================================================================================
   */
 
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const userType = user?.user_metadata.user_type; // reporter = current user
   const { userData, loadingData, refreshUserData } = useUserData();
   const [reason, setReason] = useState('');
@@ -95,7 +95,7 @@ export default function ReportForm({
       alert('Something went wrong. Please try again.');
     }
   };
-  
+
   if (loadingData || loading) return <Spinner />;
 
   return (
@@ -151,7 +151,6 @@ export default function ReportForm({
               Cancel
             </Button>
           </div>
-
         </form>
       </div>
     </div>

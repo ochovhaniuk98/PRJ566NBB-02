@@ -21,7 +21,8 @@ import {
 // isFollowing: tracks whether or not the owner is following the user displayed on this card
 export default function GeneralUserCard({ generalUserData, onFollowingToggle = () => {} }) {
   const router = useRouter();
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   const { refreshUserData } = useUserData();
   const generalUserUrl = `/generals/${generalUserData._id}`;
 

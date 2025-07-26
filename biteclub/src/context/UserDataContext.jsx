@@ -6,7 +6,7 @@ import { useUser } from './UserContext';
 const UserDataContext = createContext();
 
 export const UserDataProvider = ({ children }) => {
-  const { user } = useUser();
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const userType = user?.user_metadata?.user_type;
 
   const [userData, setUserData] = useState(null);

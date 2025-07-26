@@ -27,7 +27,7 @@ const CUISINE_CONFIG = {
 
 export default function Questionnaire() {
   const router = useRouter();
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
 
   const [dietaryOptions, setDietaryOptions] = useState([
     'Vegetarian',

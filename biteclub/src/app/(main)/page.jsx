@@ -10,7 +10,7 @@ import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
 export default function Home() {
   const [personalizedRecommendations, setPersonalizedRecommendations] = useState([]);
   const [fetchCompleted, setFetchCompleted] = useState(false);
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
 
   // fetch restaurants
   const fetchRestaurants = async (reset = false) => {

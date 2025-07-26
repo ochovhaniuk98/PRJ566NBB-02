@@ -13,7 +13,8 @@ import StarRating from '../shared/StarRating';
 
 export default function RestaurantCard({ restaurantData, onFavouriteToggle = () => {} }) {
   const router = useRouter();
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   const { refreshUserData } = useUserData();
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
   const [isFavourited, setIsFavourited] = useState(false);
@@ -61,7 +62,7 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
 
       setIsFavourited(result.isFavourited);
-          refreshUserData();
+      refreshUserData();
       onFavouriteToggle(result.isFavourited, restaurantId);
     } catch (err) {
       console.error('Error toggling favourite:', err.message);

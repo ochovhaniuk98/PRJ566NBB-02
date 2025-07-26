@@ -11,21 +11,20 @@ import Spinner from '@/components/shared/Spinner';
 
 export default function GeneralSetupForm() {
   const router = useRouter();
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
 
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      // Set username from user metadata or fallback
-      setUsername(user.user_metadata?.name || user.email || '');
-    }
-  }, [user]);
-  
+    if (!user?.user_metadata?.name && !user?.email) return;
+    setUsername(user.user_metadata?.name || user.email || '');
+  }, [user?.user_metadata?.name, user?.email]);
 
   const handleSubmit = async () => {
+    if (!user?.id) return;
+
     setLoading(true);
 
     const data = {
@@ -71,7 +70,7 @@ export default function GeneralSetupForm() {
               }}
             />
           ) : (
-           <Spinner message='Loading User...' />
+            <Spinner message="Loading User..." />
           )}
 
           <div>

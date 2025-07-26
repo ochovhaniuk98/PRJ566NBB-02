@@ -9,8 +9,9 @@ import { faMicroblog } from '@fortawesome/free-brands-svg-icons';
 import { useEffect, useState } from 'react';
 
 export default function MainMenu() {
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const userType = user?.user_metadata?.user_type || null;
+  
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
