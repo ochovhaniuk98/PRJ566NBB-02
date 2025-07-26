@@ -36,16 +36,8 @@ export default function CommentThread({ post }) {
 
     // set user
     const fetchUser = async () => {
+      if (!userData._id) return;
       try {
-        // const supabase = createClient();
-        // const { data } = await supabase.auth.getUser();
-        // if (!data?.user) throw new Error('No Supabase user');
-        // const supabaseId = data.user.id;
-
-        // const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
-        // if (!res.ok) throw new Error(`Status ${res.status}`);
-        // const userData = await res.json();
-
         setUser(userData);
         console.log('userData: ', userData);
         setFetchedPostUser(true);

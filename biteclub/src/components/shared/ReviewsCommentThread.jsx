@@ -39,13 +39,7 @@ export default function ReviewsCommentThread({ post }) {
     // set user
     const fetchUser = async () => {
       try {
-        // if (!user?.id) return;
         if (!userData?._id) return;
-        // const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
-        // const res = await fetch(`/api/users/get-general-user?id=${user.id}`);
-        // if (!res.ok) throw new Error(`Status ${res.status}`);
-        // const userData = await res.json();
-
         setUserProfile(userData);
         console.log('userData: ', userData);
         setFetchedPostUser(true);
@@ -348,14 +342,7 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
     // get reporter object
     const fetchReporter = async () => {
       try {
-        // if (!user?.id) return;
         if (!userData?._id) return;
-        // const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
-        // const res = await fetch(`/api/users/get-general-user?id=${user.id}`);
-        // if (!res.ok) throw new Error(`Status ${res.status}`);
-        // const reporter = await res.json();
-        // setReporter(reporter);
-
         setReporter(userData);
       } catch (error) {
         console.error('Failed to fetch reporter:', error);
