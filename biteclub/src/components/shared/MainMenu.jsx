@@ -1,12 +1,11 @@
 'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useUser } from '@/context/UserContext';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faHouseChimney, faGamepad, faUtensils, faGear } from '@fortawesome/free-solid-svg-icons';
 import { faMicroblog } from '@fortawesome/free-brands-svg-icons';
-import { useEffect, useState } from 'react';
+import { useUser } from '@/context/UserContext';
 
 export default function MainMenu() {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info

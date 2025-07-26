@@ -477,7 +477,7 @@ export async function getBusinessUserVerificationStatus({ supabaseId }) {
 // Get business user profile
 export async function getBusinessUserProfileBySupabaseId({ supabaseId }) {
   await dbConnect();
-  const user = await BusinessUser.findOne({ supabaseId });
+  const user = await BusinessUser.findOne({ supabaseId }).populate('restaurantId', 'name');
   if (!user) return null;
   return user; // Returns entire User document
 }
@@ -485,7 +485,7 @@ export async function getBusinessUserProfileBySupabaseId({ supabaseId }) {
 export async function getBusinessUserProfileByMongoId(mongoId) {
   await dbConnect();
   // const user = await User.findOne({ _id: mongoId });
-  const user = await BusinessUser.findById(mongoId); // Use findById for _id
+  const user = await BusinessUser.findById(mongoId).populate('restaurantId', 'name'); // Use findById for _id
   if (!user) return null;
   return user; // Returns entire User document
 }
