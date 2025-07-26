@@ -44,45 +44,51 @@ export default function MainMenu() {
 
   // return an EMPTY Menu Bar until the USER profile is READY.
   // This prevents users from clicking it too early (i.e., before the user profile is loaded), which could cause an unintended redirect to the login page.
-  if (loading) {
+  if (loading && userType !== 'business') {
     return (
       <aside className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey hover:w-fit"></aside>
     );
   }
 
   return (
-    <aside
-      className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey hover:w-fit"
-      onMouseLeave={() => setIsHovered(false)}
-      onMouseEnter={() => {
-        setIsHovered(true);
-      }}
-    >
-      <nav className="space-y-6 flex flex-col items-center text-brand-navy">
-        {menuLinks.map((link, idx) => {
-          const isSelected = pathname === link;
-          return (
-            <div key={idx} className={`group flex flex-col items-center gap-y-1 cursor-pointer`}>
-              <div
-                className={`${
-                  isSelected ? 'bg-brand-yellow' : 'bg-brand-green-extralite'
-                } rounded-full aspect-square w-8 h-8 flex items-center justify-center outline outline-brand-navy transition-transform duration-200 group-hover:scale-115`}
-                key={idx}
-              >
-                <Link
-                  key={idx}
-                  href={link}
-                  className={`block p-1 ${isSelected ? 'text-brand-navy' : 'text-brand-navy'} hover:text-brand-navy`}
-                >
-                  <FontAwesomeIcon icon={menuItems[idx].icon} className="icon-lg" />
-                </Link>
-              </div>
-              {/* show label text only on hover */}
-              {isHovered ? <h6>{menuItems[idx].label}</h6> : <h6 className={`opacity-0`}>X</h6>}
-            </div>
-          );
-        })}
-      </nav>
-    </aside>
+    <>
+      {userType !== 'business' && (
+        <aside
+          className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey hover:w-fit"
+          onMouseLeave={() => setIsHovered(false)}
+          onMouseEnter={() => {
+            setIsHovered(true);
+          }}
+        >
+          <nav className="space-y-6 flex flex-col items-center text-brand-navy">
+            {menuLinks.map((link, idx) => {
+              const isSelected = pathname === link;
+              return (
+                <div key={idx} className={`group flex flex-col items-center gap-y-1 cursor-pointer`}>
+                  <div
+                    className={`${
+                      isSelected ? 'bg-brand-yellow' : 'bg-brand-green-extralite'
+                    } rounded-full aspect-square w-8 h-8 flex items-center justify-center outline outline-brand-navy transition-transform duration-200 group-hover:scale-115`}
+                    key={idx}
+                  >
+                    <Link
+                      key={idx}
+                      href={link}
+                      className={`block p-1 ${
+                        isSelected ? 'text-brand-navy' : 'text-brand-navy'
+                      } hover:text-brand-navy`}
+                    >
+                      <FontAwesomeIcon icon={menuItems[idx].icon} className="icon-lg" />
+                    </Link>
+                  </div>
+                  {/* show label text only on hover */}
+                  {isHovered ? <h6>{menuItems[idx].label}</h6> : <h6 className={`opacity-0`}>X</h6>}
+                </div>
+              );
+            })}
+          </nav>
+        </aside>
+      )}
+    </>
   );
 }
