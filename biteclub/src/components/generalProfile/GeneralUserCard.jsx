@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 import { Button } from '../shared/Button';
 import ReportForm from '../shared/ReportForm';
@@ -18,8 +19,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 // isFollowing: tracks whether or not the owner is following the user displayed on this card
-export default function GeneralUserCard({ generalUserData }) {
+export default function GeneralUserCard({ generalUserData, onFollowingToggle = () => {} }) {
   const router = useRouter();
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
+  const { refreshUserData } = useUserData();
   const generalUserUrl = `/generals/${generalUserData._id}`;
 
   const [showMorePopup, setShowMorePopup] = useState(false);
@@ -33,32 +37,31 @@ export default function GeneralUserCard({ generalUserData }) {
     { icon: faGamepad, bgColour: 'white', iconColour: 'brand-green' },
   ];
   const [openReportForm, setOpenReportForm] = useState(false);
-
   const [isOwner, setIsOwner] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [anotherUserId, setAnotherUserId] = useState(null);
-  const supabase = createClient();
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!generalUserData._id) return;
+      if (!generalUserData._id || !user?.id) return;
 
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data.user) return;
+      try {
+        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
+        console.log(`(generals public profile) current user MONGOID: `, userMongoId);
 
-      const user = data.user;
-      const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
-      console.log(`(generals public profile) current user MONGOID: `, userMongoId);
-      console.log(`(generals public profile) mongoId in params: `, generalUserData._id);
-      if (userMongoId && userMongoId === generalUserData._id) {
-        setIsOwner(true);
-      } else {
-        setAnotherUserId(generalUserData._id);
+        console.log(`(generals public profile) mongoId in params: `, generalUserData._id);
+        if (userMongoId && userMongoId === generalUserData._id) {
+          setIsOwner(true);
+        } else {
+          setAnotherUserId(generalUserData._id);
+        }
+      } catch (error) {
+        console.error('(GeneralUserCard) Error checking user ownership:', error);
       }
     };
 
     fetchData();
-  }, [generalUserData._id]);
+  }, [generalUserData._id, user?.id]);
 
   useEffect(() => {
     if (isOwner) return;
@@ -72,11 +75,8 @@ export default function GeneralUserCard({ generalUserData }) {
 
     const checkFollowingStatus = async () => {
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data?.user?.id) return;
-
-        const res = await fetch(`/api/generals/is-following?authId=${data.user.id}&fId=${anotherUserId}`);
+        if (!user?.id) return;
+        const res = await fetch(`/api/generals/is-following?authId=${user.id}&fId=${anotherUserId}`);
         const result = await res.json();
         if (res.ok) setIsFollowing(result.isFollowing);
       } catch (err) {
@@ -85,26 +85,25 @@ export default function GeneralUserCard({ generalUserData }) {
     };
 
     checkFollowingStatus();
-  }, [anotherUserId, isOwner]);
+  }, [anotherUserId, isOwner, user?.id]);
 
   const handleFollowClick = async e => {
     e.stopPropagation();
 
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data?.user?.id || !anotherUserId) return;
-    const authUserId = data.user.id;
-
+    if (!user?.id || !anotherUserId) return;
     try {
       const res = await fetch('/api/generals/follow-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ supabaseUserId: authUserId, anotherUserId }),
+        body: JSON.stringify({ supabaseUserId: user.id, anotherUserId }),
       });
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to follow / unfollow user');
 
       setIsFollowing(result.isFollowing); // Update state
+      await refreshUserData();
+      onFollowingToggle(result.isFollowing, anotherUserId);
     } catch (err) {
       console.error('Error toggling follow:', err.message);
     }

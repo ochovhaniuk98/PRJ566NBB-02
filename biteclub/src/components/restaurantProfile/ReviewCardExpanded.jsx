@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-// import { createClient } from '@/lib/auth/client';
 import Image from 'next/image';
 import EngagementIconStat from '../shared/EngagementIconStat';
 import StarRating from '../shared/StarRating';
@@ -41,20 +40,17 @@ export default function ReviewCardExpanded({
     const fetchAuthorProfile = async () => {
       try {
         if (!authorId) return;
-
         const authorRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${authorId}`);
         if (!authorRes.ok) {
           console.error('Failed to fetch author profile:', authorRes.status);
           return;
         }
-
         const { profile } = await authorRes.json(); // { profile } matching what the API call returned
         setAuthorProfile(profile);
       } catch (err) {
         console.error('Error in fetchAuthorProfile:', err);
       }
     };
-
     fetchAuthorProfile();
   }, [authorId]);
 

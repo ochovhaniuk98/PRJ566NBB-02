@@ -3,31 +3,14 @@
 'use client';
 import { SimpleEditor } from '@/components/tiptap-rich-text-editor/tiptap-templates/simple/simple-editor';
 import { useState, useEffect } from 'react';
-
-import { createClient } from '@/lib/auth/client'; //to get user
-
+import { useUser } from '@/context/UserContext';
 import ReadOnlyEditor from '@/components/tiptap-rich-text-editor/ReadOnlyEditor';
 
 export default function Page() {
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   const [editorContent, setEditorContent] = useState(null);
-
-  //to get user
-  const [user, setUser] = useState(null);
-  const supabase = createClient();
-
   const [displayPost, setPost] = useState(null);
-
-  // Get User
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data?.user) return;
-
-      setUser(data.user);
-      console.log('User: ', data?.user);
-    };
-    fetchData();
-  }, [supabase]);
 
   // Save the content
   const handleSave = async () => {
@@ -35,18 +18,6 @@ export default function Page() {
     console.log('User: ', user);
 
     setPost(editorContent);
-
-    // const res = await fetch('/api/blogs', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ content: editorContent }),
-    // });
-
-    // if (res.ok) {
-    //   alert('Saved!');
-    // } else {
-    //   alert('Failed to save');
-    // }
   };
 
   return (

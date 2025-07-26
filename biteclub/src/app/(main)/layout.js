@@ -6,6 +6,8 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 import './../styles/globals.css';
 import MainMenu from '../../components/shared/MainMenu';
 import SearchBar from '../../components/shared/SearchBar';
+import { UserProvider } from '@/context/UserContext';
+import { UserDataProvider } from '@/context/UserDataContext';
 config.autoAddCss = false;
 
 const koho = KoHo({
@@ -42,12 +44,16 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning={true}
     >
       <body className="flex" suppressHydrationWarning={true}>
-        <MainMenu />
-        <div className="flex-1 relative"> 
-           {/* overflow-y-auto */}
-          <SearchBar />
-          <main className="main-side-padding">{children}</main>
-        </div>
+        <UserProvider>
+          <UserDataProvider>
+            <MainMenu />
+            <div className="flex-1 relative">
+              {/* overflow-y-auto */}
+              <SearchBar />
+              <main className="main-side-padding">{children}</main>
+            </div>
+          </UserDataProvider>
+        </UserProvider>
       </body>
     </html>
   );

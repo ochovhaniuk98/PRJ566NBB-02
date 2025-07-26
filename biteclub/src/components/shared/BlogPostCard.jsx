@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-// import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart, faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
@@ -27,8 +27,10 @@ export default function BlogPostCard({
   isSelected = false,
   onSelect = () => {},
   onDeleteClick, // optional — do NOT provide a default
+  onFavouriteToggle = () => {},
 }) {
-  const supabase = createClient();
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+  const { refreshUserData } = useUserData();
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
   const [isFavourited, setIsFavourited] = useState(false); // tracks whether post is favourited
   const blogId = blogPostData._id;
@@ -42,10 +44,9 @@ export default function BlogPostCard({
   useEffect(() => {
     const checkFavouriteStatus = async () => {
       try {
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data?.user?.id) return;
+        if (!user?.id) return;
 
-        const res = await fetch(`/api/blog-posts/is-favourited?authId=${data.user.id}&blogId=${blogId}`);
+        const res = await fetch(`/api/blog-posts/is-favourited?authId=${user.id}&blogId=${blogId}`);
 
         const result = await res.json();
         if (res.ok) {
@@ -56,21 +57,20 @@ export default function BlogPostCard({
       }
     };
     checkFavouriteStatus();
-  }, [blogId]);
+  }, [blogId, user?.id]);
 
   const handleFavouriteBlogPostClick = async e => {
     e.stopPropagation();
 
     try {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user?.id) throw new Error('User not logged in');
+      if (!user?.id) return;
 
       const res = await fetch('/api/blog-posts/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           blogId,
-          supabaseUserId: data.user.id,
+          supabaseUserId: user.id,
         }),
       });
 
@@ -78,6 +78,8 @@ export default function BlogPostCard({
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
 
       setIsFavourited(result.isFavourited);
+      refreshUserData();
+      onFavouriteToggle(result.isFavourited, blogId);
     } catch (err) {
       console.error('Error toggling favourite:', err.message);
     }
