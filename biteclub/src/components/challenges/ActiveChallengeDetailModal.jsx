@@ -157,13 +157,6 @@ export default function ActiveChallengeDetailModal({
   }, [activeChallengeDetail]);
 
   function setProgress() {
-    // if (!activeChallengeDetail) return;
-    // // get num of completed challenge steps
-    // const nCompletedSteps = activeChallengeDetail.challengeSteps.filter(step => step.verificationStatus).length;
-    // setNumCompletedSteps(nCompletedSteps);
-    // // format string for challenge progress
-    // const progressV = nCompletedSteps + '/' + activeChallengeDetail.challengeSteps.length;
-    // setProgressVal(progressV);
     if (!activeChallengeDetail) return;
     // get num of completed challenge steps
     const numCompletedSteps = activeChallengeDetail.challengeSteps.filter(step => step.verificationStatus).length;
@@ -381,7 +374,13 @@ export default function ActiveChallengeDetailModal({
                 <FontAwesomeIcon
                   icon={faXmark}
                   className={` icon-xl text-brand-navy cursor-pointer`}
-                  onClick={() => onClose(false)}
+                  onClick={() => {
+                    const updated = activeChallenges.map(challenge =>
+                      challenge._id === activeChallengeDetail._id ? activeChallengeDetail : challenge
+                    );
+                    setActiveChallenges(updated);
+                    onClose(false);
+                  }}
                 />
               </div>
               <div className="p-6 flex gap-x-8 w-full">
