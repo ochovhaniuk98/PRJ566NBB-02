@@ -26,11 +26,12 @@ export default function ActiveChallengeDetailModal({
 }) {
   const [challenge, setChallenge] = useState('');
   const [fetchedChallenge, setFetchedChallenge] = useState(false);
+
   // fetch a challenge by activeChallengeData.challengeId
   useEffect(() => {
     async function fetchChallenge() {
       try {
-        const res = await fetch(`api/challenges/all-challenges/get-by-challengeId/${activeChallengeData.challengeId}`);
+        const res = await fetch(`api/challenges/active-challenges/get-by-id/${selectedActiveChallenge.challengeId}`);
         const data = await res.json();
         console.log('data', data);
         setChallenge(data);
@@ -42,6 +43,9 @@ export default function ActiveChallengeDetailModal({
     }
     fetchChallenge();
   }, []);
+
+  // TODO: get restaurants list for the challenge
+  // TODO: drop a challenge
   // get num of completed challenge steps
   const numCompletedSteps = selectedActiveChallenge.challengeSteps.filter(step => step.verificationStatus).length;
   // format string for challenge progress
@@ -77,54 +81,58 @@ export default function ActiveChallengeDetailModal({
   }
 
   return (
-    <div className="fixed inset-0  bg-brand-peach/40 flex justify-center items-center  z-[100]  overflow-scroll scrollbar-hide">
-      <div className="bg-transparent p-8">
-        <div className="w-5xl min-h-120 bg-white shadow-lg rounded-lg pb-3 relative">
-          <div className="bg-brand-green-lite flex items-center font-primary font-semibold text-md capitalize py-3 px-3 rounded-t-lg w-full justify-between">
-            <div>
-              <FontAwesomeIcon icon={faGamepad} className={`text-2xl text-white mr-2`} />
-              Update Challenge
-            </div>
-            <FontAwesomeIcon
-              icon={faXmark}
-              className={` icon-xl text-brand-navy cursor-pointer`}
-              onClick={() => onClose(false)}
-            />
-          </div>
-          <div className="p-6 flex gap-x-8 w-full">
-            <div className="w-2/5 flex flex-col gap-y-4">
-              {/* TITLE */}
-              <h1>{challenge.title}</h1>
-              {/* DESC */}
-              <p>{challenge.description}</p>
-              <div className="bg-brand-yellow-lite rounded-lg p-2 px-3 space-y-1">
-                {/*PROGRESS, TIME LEFT, REWARD */}
-                {stats.map((stat, i) => (
-                  <ChallengeStat
-                    key={i}
-                    idx={i}
-                    s_icon={stat.s_icon}
-                    s_label={stat.s_label}
-                    s_value={stat.s_value}
-                    s_unit={stat.s_unit}
-                  />
-                ))}
+    <>
+      {fetchedChallenge && (
+        <div className="fixed inset-0  bg-brand-peach/40 flex justify-center items-center  z-[100]  overflow-scroll scrollbar-hide">
+          <div className="bg-transparent p-8">
+            <div className="w-5xl min-h-120 bg-white shadow-lg rounded-lg pb-3 relative">
+              <div className="bg-brand-green-lite flex items-center font-primary font-semibold text-md capitalize py-3 px-3 rounded-t-lg w-full justify-between">
+                <div>
+                  <FontAwesomeIcon icon={faGamepad} className={`text-2xl text-white mr-2`} />
+                  Update Challenge
+                </div>
+                <FontAwesomeIcon
+                  icon={faXmark}
+                  className={` icon-xl text-brand-navy cursor-pointer`}
+                  onClick={() => onClose(false)}
+                />
               </div>
+              <div className="p-6 flex gap-x-8 w-full">
+                <div className="w-2/5 flex flex-col gap-y-4">
+                  {/* TITLE */}
+                  <h1>{challenge.title}</h1>
+                  {/* DESC */}
+                  <p>{challenge.description}</p>
+                  <div className="bg-brand-yellow-lite rounded-lg p-2 px-3 space-y-1">
+                    {/*PROGRESS, TIME LEFT, REWARD */}
+                    {stats.map((stat, i) => (
+                      <ChallengeStat
+                        key={i}
+                        idx={i}
+                        s_icon={stat.s_icon}
+                        s_label={stat.s_label}
+                        s_value={stat.s_value}
+                        s_unit={stat.s_unit}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {/* CHALLENGE STEPS CONTAINER (for check-in / geolocation) */}
+                <ChallengeStepsContainer challengeSteps={selectedActiveChallenge.challengeSteps} />
+              </div>
+              {/* DROP CHALLENGE btn */}
+              <button
+                onClick={handleDropChallenge}
+                className="absolute left-3 bottom-3 cursor-pointer font-primary font-medium rounded-lg text-sm text-brand-red border border-brand-red py-1 px-3"
+              >
+                <FontAwesomeIcon icon={faTrashAlt} className={` icon-md text-brand-red mr-1`} />
+                Drop Challenge
+              </button>
             </div>
-            {/* CHALLENGE STEPS CONTAINER (for check-in / geolocation) */}
-            <ChallengeStepsContainer challengeSteps={selectedActiveChallenge.challengeSteps} />
           </div>
-          {/* DROP CHALLENGE btn */}
-          <button
-            onClick={handleDropChallenge}
-            className="absolute left-3 bottom-3 cursor-pointer font-primary font-medium rounded-lg text-sm text-brand-red border border-brand-red py-1 px-3"
-          >
-            <FontAwesomeIcon icon={faTrashAlt} className={` icon-md text-brand-red mr-1`} />
-            Drop Challenge
-          </button>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 

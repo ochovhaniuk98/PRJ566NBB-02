@@ -5,10 +5,6 @@ import ActiveChallengeCard from './ActiveChallengeCard';
 import { fakeActivatedChallengeDetail } from '@/app/data/fakeData';
 
 export default function AllActiveChallenges({ activeChallenges, setShowChallengeDetailModal, setSelectedChallenge }) {
-  useEffect(() => {
-    console.log('In AllActiveChallenges:', activeChallenges);
-  }, []);
-
   return (
     <div className="w-3/5">
       <h2>My Active Challenges</h2>

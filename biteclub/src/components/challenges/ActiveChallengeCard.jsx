@@ -9,10 +9,9 @@ import { useState, useEffect } from 'react';
 
 // DESCRIPTION: When a user adds an available challenge, the challenge is ACTIVATED and this card appears
 export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
-  // get specific challenge from "fakeChallenges" array to access details
-  // const challenge = fakeChallenges.find(c => c._id === activeChallengeData.challengeId);
   const [challenge, setChallenge] = useState('');
   const [fetchedChallenge, setFetchedChallenge] = useState(false);
+
   // fetch a challenge by activeChallengeData.challengeId
   useEffect(() => {
     async function fetchChallenge() {
@@ -33,7 +32,7 @@ export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
   // get num of completed challenge steps
   const numCompletedSteps = activeChallengeData.challengeSteps.filter(step => step.verificationStatus).length;
 
-  console.log('activeChallengeData: ', activeChallengeData);
+  // console.log('activeChallengeData: ', activeChallengeData);
 
   return (
     <>
