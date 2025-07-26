@@ -12,11 +12,11 @@ export default function ChallengesPage() {
   const MAX_ACTIVE = 3; // users can only have MAX 3 active challenges
   const [showChallengeDetailModal, setShowChallengeDetailModal] = useState(false); // opens/closes modal showing selected challenge details
   const [selectedChallenge, setSelectedChallenge] = useState(null); // ensures modal opens with correct challenge details
+
   const [activeChallenges, setActiveChallenges] = useState([]); // list of user's active challenges
   const [fetchedActivatedChallenges, setFetchedActivatedChallenges] = useState(false);
 
   const { userData } = useUserData(); // Current logged-in user's MongoDB data
-  console.log('User DDData: ', userData);
 
   // Creates "active" challenge data and adds it to user's active challenges array (created for DEMO purposes)
   function handleActivateChallenge(challenge) {
@@ -33,8 +33,10 @@ export default function ChallengesPage() {
       try {
         const res = await fetch(`api/challenges/active-challenges/get-by-userId/${userData._id}`);
         const data = await res.json();
-        // console.log('Activated Challenges:', data[0]);
-        setActiveChallenges(data);
+
+        const inProgressChallenges = data.filter(challenge => challenge.completionStatus === 'in-progress');
+        // console.log('Activated inProgressChallenges:', inProgressChallenges[0]);
+        setActiveChallenges(inProgressChallenges);
 
         // console.log('Active challenges: ', activeChallenges);
       } catch (err) {

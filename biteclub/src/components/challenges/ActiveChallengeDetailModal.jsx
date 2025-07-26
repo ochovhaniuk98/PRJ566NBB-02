@@ -26,18 +26,26 @@ export default function ActiveChallengeDetailModal({
   activeChallenges,
   setActiveChallenges,
 }) {
+  // challenge
   const [challenge, setChallenge] = useState('');
   const [fetchedChallenge, setFetchedChallenge] = useState(false);
+
+  // active challenge detail
   const [activeChallengeDetail, setActiveChallengeDetail] = useState('');
-  const [fetchedActiveChallengeDetail, setFetchedActiveChallengeDetail] = useState('');
+  const [fetchedActiveChallengeDetail, setFetchedActiveChallengeDetail] = useState(false);
+
+  // restaurants
   const [restaurants, setRestaurants] = useState([]);
   const [fetchedRestaurants, setFetchedRestaurants] = useState(false);
+
+  // progress
   const [progressVal, setProgressVal] = useState('');
   const [fetchedProgressVal, setFetchedProgressVal] = useState(false);
+  const [numCompletedSteps, setNumCompletedSteps] = useState(0);
+  const [stepsLength, setStepsLength] = useState(0);
 
   // user geolocation coordinates
   const [userLocation, setUserLocation] = useState(null);
-  const [fetchedUserLocation, setFetchedUserLocation] = useState(false);
 
   const { userData } = useUserData(); // Current logged-in user's MongoDB data
 
@@ -64,11 +72,11 @@ export default function ActiveChallengeDetailModal({
           `api/challenges/active-challenges/detail/get-by-ids?challengeId=${selectedActiveChallenge.challengeId}&userId=${userData._id}`
         );
         const data = await res.json();
-        // console.log('data', data);
 
         // accept only if activeChallengeDetail is in progress
         if (data && data.completionStatus === 'in-progress') {
           setActiveChallengeDetail(data);
+          setStepsLength(data.challengeSteps.length);
 
           // get restaurantIds from activeChallengeDetail
           const restaurantIds = data.challengeSteps?.map(step => step.restaurantId) || [];
@@ -135,7 +143,6 @@ export default function ActiveChallengeDetailModal({
       } catch (error) {
         console.error('Error checking geolocation permissions:', error);
       }
-      setFetchedUserLocation(true);
     };
 
     fetchActiveChallengeDetail();
@@ -144,13 +151,19 @@ export default function ActiveChallengeDetailModal({
     requestGeolocation(); // request user's location coordinates
   }, []);
 
-  // TODO: drop a challenge
-
+  // when active challenge updates
   useEffect(() => {
     setProgress();
   }, [activeChallengeDetail]);
 
   function setProgress() {
+    // if (!activeChallengeDetail) return;
+    // // get num of completed challenge steps
+    // const nCompletedSteps = activeChallengeDetail.challengeSteps.filter(step => step.verificationStatus).length;
+    // setNumCompletedSteps(nCompletedSteps);
+    // // format string for challenge progress
+    // const progressV = nCompletedSteps + '/' + activeChallengeDetail.challengeSteps.length;
+    // setProgressVal(progressV);
     if (!activeChallengeDetail) return;
     // get num of completed challenge steps
     const numCompletedSteps = activeChallengeDetail.challengeSteps.filter(step => step.verificationStatus).length;
@@ -243,7 +256,15 @@ export default function ActiveChallengeDetailModal({
       console.warn('Step not found for restaurant:', restaurant._id);
       return;
     }
+
+    // update verification
     activeChallengeDetail.challengeSteps[stepIndex].verificationStatus = true;
+    const nCompletedSteps = activeChallengeDetail.challengeSteps.filter(step => step.verificationStatus).length;
+
+    if (nCompletedSteps == stepsLength) {
+      activeChallengeDetail.completionStatus = 'completed';
+      setActiveChallengeDetail(activeChallengeDetail);
+    }
 
     // update in the db
     try {
@@ -255,6 +276,7 @@ export default function ActiveChallengeDetailModal({
         body: JSON.stringify({
           activeChallengeDetailId: activeChallengeDetail._id,
           challengeSteps: activeChallengeDetail.challengeSteps,
+          completionStatus: activeChallengeDetail.completionStatus,
         }),
       });
 
@@ -265,8 +287,6 @@ export default function ActiveChallengeDetailModal({
       }
 
       const data = await res.json();
-      console.log('Update success:', data.updatedChallenge.challengeSteps);
-
       setActiveChallengeDetail(data.updatedChallenge);
 
       alert('You have been successfully checked in.');

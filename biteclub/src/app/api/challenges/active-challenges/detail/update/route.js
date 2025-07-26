@@ -5,9 +5,11 @@ import { updateActiveChallengeDetail } from '@/lib/db/dbOperations';
 
 export async function PUT(req) {
   try {
-    const { activeChallengeDetailId, challengeSteps } = await req.json();
+    const { activeChallengeDetailId, challengeSteps, completionStatus } = await req.json();
 
-    if (!activeChallengeDetailId || !Array.isArray(challengeSteps)) {
+    console.log('completionStatus: ', completionStatus);
+
+    if (!activeChallengeDetailId || !Array.isArray(challengeSteps) || !completionStatus) {
       return NextResponse.json(
         { error: 'Invalid data: activeChallengeDetailId and challengeSteps are required' },
         { status: 400 }
@@ -17,6 +19,7 @@ export async function PUT(req) {
     const updatedChallenge = await updateActiveChallengeDetail({
       activeChallengeDetailId,
       challengeSteps,
+      completionStatus,
     });
 
     return NextResponse.json({ message: 'Challenge updated successfully', updatedChallenge }, { status: 200 });

@@ -9,8 +9,12 @@ import { useState, useEffect } from 'react';
 
 // DESCRIPTION: When a user adds an available challenge, the challenge is ACTIVATED and this card appears
 export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
-  const [challenge, setChallenge] = useState('');
+  // challenge
+  const [challenge, setChallenge] = useState(''); // active challenge data
   const [fetchedChallenge, setFetchedChallenge] = useState(false);
+
+  // num of completed steps
+  const [numCompletedSteps, setNumCompletedSteps] = useState(0);
 
   // fetch a challenge by activeChallengeData.challengeId
   useEffect(() => {
@@ -29,14 +33,20 @@ export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
     fetchChallenge();
   }, []);
 
-  // get num of completed challenge steps
-  const numCompletedSteps = activeChallengeData.challengeSteps.filter(step => step.verificationStatus).length;
+  useEffect(() => {
+    getCompletedSteps();
+  }, [activeChallengeData]);
 
-  // console.log('activeChallengeData: ', activeChallengeData);
+  function getCompletedSteps() {
+    if (!activeChallengeData) return;
+    // get num of completed challenge steps
+    const numCompletedSteps = activeChallengeData.challengeSteps.filter(step => step.verificationStatus).length;
+    setNumCompletedSteps(numCompletedSteps);
+  }
 
   return (
     <>
-      {fetchedChallenge && (
+      {fetchedChallenge && numCompletedSteps && (
         <>
           <div
             className="w-1/3 relative flex flex-col items-center gap-y-2 bg-brand-yellow-lite p-4 font-primary cursor-pointer shadow-lg text-center"

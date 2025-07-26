@@ -1222,19 +1222,20 @@ export async function getChallengeByChallengeId({ challengeId }) {
 }
 
 // Update Active Challenge Detail (Challenge Step)
-export async function updateActiveChallengeDetail({ activeChallengeDetailId, challengeSteps }) {
+export async function updateActiveChallengeDetail({ activeChallengeDetailId, challengeSteps, completionStatus }) {
   try {
     await dbConnect();
 
     const updatedChallenge = await ActivateChallengeDetail.findByIdAndUpdate(
       activeChallengeDetailId,
-      { challengeSteps },
+      { challengeSteps, completionStatus },
       { new: true } // return the updated document
     );
 
     if (!updatedChallenge) {
       throw new Error('ActiveChallengeDetail not found');
     }
+    console.log('updatedChallenge', updatedChallenge);
 
     return updatedChallenge;
   } catch (error) {
