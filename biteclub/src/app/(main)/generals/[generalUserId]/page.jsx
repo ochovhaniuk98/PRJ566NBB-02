@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useUserData } from '@/context/UserDataContext';
+import { useUser } from '@/context/UserContext';
+import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 import GeneralUserProfile from '@/components/generalProfile/GeneralUserProfile';
 import Spinner from '@/components/shared/Spinner';
 
 export default function GeneralPage() {
-  const { userData, loadingData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
-
+  const { user } = useUser(); // Current logged-in user's Supabase info
   // Notes for useParams():
   // - useParams() returns values as strings, but when used in a dynamic segment like /general/[generalUserId], it will be:
   // - const params = useParams(); // returns an object like: { generalUserId: '683dd306de808a3cb965680f' }
@@ -19,9 +19,12 @@ export default function GeneralPage() {
 
   useEffect(() => {
     const fetchData = async () => {
+
       try {
-        if (!userData?._id) return;
-        if (userData._id === generalUserId) {
+        if (!user?.id) return; // Wait until user is available
+        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
+
+        if (userMongoId && userMongoId === generalUserId) {
           setIsOwner(true);
         }
       } catch (error) {
@@ -32,9 +35,9 @@ export default function GeneralPage() {
     };
 
     fetchData();
-  }, [userData._id, generalUserId]);
+  }, [generalUserId]);
 
-  if (loading) return <Spinner message="Loading Profile..." />;
+  if (loading) return <Spinner message='Loading Profile...' />;
 
   if (!generalUserId) return <p>Invalid user profile link.</p>;
 
