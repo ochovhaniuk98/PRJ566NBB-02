@@ -107,7 +107,7 @@ export default function BlogPost({ id }) {
 
           {/* show Report form when flag icon is clicked */}
           <div
-            className="font-primary font-semibold text-brand-navy flex items-center gap-x-2 cursor-pointer"
+            className="font-primary font-semibold text-brand-navy mb-2 flex items-center gap-x-2 cursor-pointer"
             onClick={e => {
               setOpenReportForm(prev => !prev);
             }}
