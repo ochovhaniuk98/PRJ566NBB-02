@@ -18,7 +18,7 @@ export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
       try {
         const res = await fetch(`api/challenges/all-challenges/get-by-challengeId/${activeChallengeData.challengeId}`);
         const data = await res.json();
-        console.log('data', data);
+        // console.log('data', data);
         setChallenge(data);
       } catch (err) {
         console.error('Failed to fetch challenge:', err);

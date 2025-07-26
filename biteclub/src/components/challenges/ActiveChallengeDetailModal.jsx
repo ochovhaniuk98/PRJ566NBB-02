@@ -26,26 +26,58 @@ export default function ActiveChallengeDetailModal({
 }) {
   const [challenge, setChallenge] = useState('');
   const [fetchedChallenge, setFetchedChallenge] = useState(false);
+  const [restaurants, setRestaurants] = useState([]);
+  const [fetchedRestaurants, setFetchedRestaurants] = useState(false);
 
-  // fetch a challenge by activeChallengeData.challengeId
+  // fetch a active challenge detail by activeChallengeData.challengeId
   useEffect(() => {
     async function fetchChallenge() {
+      const userId = '6831f193ce0d8ebd1ea4877f'; // TODO: we will need to fetch real user's id once Nicole's PR is merged
       try {
-        const res = await fetch(`api/challenges/active-challenges/get-by-id/${selectedActiveChallenge.challengeId}`);
+        const res = await fetch(
+          `api/challenges/active-challenges/detail/get-by-ids?challengeId=${selectedActiveChallenge.challengeId}&userId=${userId}`
+        );
         const data = await res.json();
         console.log('data', data);
-        setChallenge(data);
+
+        // accept only if challenge is in progress
+        if (data && data.completionStatus === 'in-progress') {
+          setChallenge(data);
+
+          // get restaurantIds from challenge
+          const restaurantIds = data.challengeSteps?.map(step => step.restaurantId) || [];
+
+          console.log('Restaurant Ids:', restaurantIds);
+          fetchRestaurants(restaurantIds);
+        } else {
+          console.warn('Challenge is not in progress. Status:', data.completionStatus);
+          setChallenge(null);
+        }
       } catch (err) {
         console.error('Failed to fetch challenge:', err);
       }
 
       setFetchedChallenge(true);
     }
+
+    // get restaurants list for the challenge
+    async function fetchRestaurants(restaurantIds) {
+      try {
+        const promises = restaurantIds.map(id => fetch(`/api/restaurants/${id}`).then(res => res.json()));
+        const data = await Promise.all(promises);
+        console.log('Fetched restaurants:', data);
+        setRestaurants(data);
+      } catch (err) {
+        console.error('Failed to fetch restaurants:', err);
+      }
+      setFetchedRestaurants(true);
+    }
+
     fetchChallenge();
   }, []);
 
-  // TODO: get restaurants list for the challenge
   // TODO: drop a challenge
+  // TODO: geolocation confirmation feature
   // get num of completed challenge steps
   const numCompletedSteps = selectedActiveChallenge.challengeSteps.filter(step => step.verificationStatus).length;
   // format string for challenge progress
@@ -80,9 +112,24 @@ export default function ActiveChallengeDetailModal({
     onClose(false);
   }
 
+  // container displays up to 5 steps/plates/restaurants per challenge
+  function ChallengeStepsContainer({ challengeSteps }) {
+    const MAX_NUM_STEPS = 5; // max 5 per challenge
+
+    return (
+      <div className="w-3/5 flex flex-wrap gap-4 gap-x-10 items-center justify-center font-primary pt-4">
+        {challengeSteps.slice(0, MAX_NUM_STEPS).map((step, i) => {
+          /* get restaurant data for each challenge step (FAKE restaurant data) */
+          const restaurant = restaurants.find(r => r._id === step.restaurantId);
+          return <ChallengeStep key={i} idx={i} restaurant={restaurant} isVerified={step.verificationStatus} />;
+        })}
+      </div>
+    );
+  }
+
   return (
     <>
-      {fetchedChallenge && (
+      {fetchedChallenge && fetchedRestaurants && (
         <div className="fixed inset-0  bg-brand-peach/40 flex justify-center items-center  z-[100]  overflow-scroll scrollbar-hide">
           <div className="bg-transparent p-8">
             <div className="w-5xl min-h-120 bg-white shadow-lg rounded-lg pb-3 relative">
@@ -133,21 +180,6 @@ export default function ActiveChallengeDetailModal({
         </div>
       )}
     </>
-  );
-}
-
-// container displays up to 5 steps/plates/restaurants per challenge
-function ChallengeStepsContainer({ challengeSteps }) {
-  const MAX_NUM_STEPS = 5; // max 5 per challenge
-
-  return (
-    <div className="w-3/5 flex flex-wrap gap-4 gap-x-10 items-center justify-center font-primary pt-4">
-      {challengeSteps.slice(0, MAX_NUM_STEPS).map((step, i) => {
-        /* get restaurant data for each challenge step (FAKE restaurant data) */
-        const restaurant = fakeRestaurants.find(r => r._id === step.restaurantId);
-        return <ChallengeStep key={i} idx={i} restaurant={restaurant} isVerified={step.verificationStatus} />;
-      })}
-    </div>
   );
 }
 
