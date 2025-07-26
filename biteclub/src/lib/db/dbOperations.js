@@ -1184,18 +1184,18 @@ export async function getActiveChallengesByUserId({ userId }) {
   }
 }
 
-// Get Active Challenge by Id
-export async function getActiveChallengeById({ challengeId }) {
+// Get Active Challenge Detail by Challenge Id and User ID
+export async function getActiveChallengeDetailByIds({ challengeId, userId }) {
   try {
     await dbConnect();
 
-    const activeChallenge = await ActivateChallengeDetail.findOne({ challengeId: challengeId });
+    const activeChallengeDetail = await ActivateChallengeDetail.findOne({ challengeId: challengeId, userId: userId });
 
-    if (activeChallenge.length === 0) {
-      console.log(`No active challenge found fo rid: ${challengeId}`);
+    if (activeChallengeDetail.length === 0) {
+      console.log(`No active challenge found for ids: Challenge: ${challengeId} User: ${userId}`);
     }
 
-    return activeChallenge;
+    return activeChallengeDetail;
   } catch (error) {
     console.error('Error retrieving active challenge:', error);
     throw error;
