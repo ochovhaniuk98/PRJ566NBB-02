@@ -13,7 +13,7 @@ export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
   // const challenge = fakeChallenges.find(c => c._id === activeChallengeData.challengeId);
   const [challenge, setChallenge] = useState('');
   const [fetchedChallenge, setFetchedChallenge] = useState(false);
-  // TODO: fetch a challenge by activeChallengeData.challengeId
+  // fetch a challenge by activeChallengeData.challengeId
   useEffect(() => {
     async function fetchChallenge() {
       try {
