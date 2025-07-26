@@ -26,10 +26,13 @@ export default function ActiveChallengeDetailModal({
   setActiveChallenges,
 }) {
   const [challenge, setChallenge] = useState('');
-  const [activeChallengeDetail, setActiveChallengeDetail] = useState('');
   const [fetchedChallenge, setFetchedChallenge] = useState(false);
+  const [activeChallengeDetail, setActiveChallengeDetail] = useState('');
+  const [fetchedActiveChallengeDetail, setFetchedActiveChallengeDetail] = useState('');
   const [restaurants, setRestaurants] = useState([]);
   const [fetchedRestaurants, setFetchedRestaurants] = useState(false);
+  const [progressVal, setProgressVal] = useState('');
+  const [fetchedProgressVal, setFetchedProgressVal] = useState(false);
 
   // user geolocation coordinates
   const [userLocation, setUserLocation] = useState(null);
@@ -91,6 +94,7 @@ export default function ActiveChallengeDetailModal({
         console.error('Failed to fetch restaurants:', err);
       }
       setFetchedRestaurants(true);
+      setFetchedActiveChallengeDetail(true);
     }
 
     // get user's location coordinates and store them
@@ -134,15 +138,25 @@ export default function ActiveChallengeDetailModal({
 
     fetchActiveChallengeDetail();
     fetchChallenge();
+    setProgress();
     requestGeolocation(); // request user's location coordinates
   }, []);
 
   // TODO: drop a challenge
 
-  // get num of completed challenge steps
-  const numCompletedSteps = selectedActiveChallenge.challengeSteps.filter(step => step.verificationStatus).length;
-  // format string for challenge progress
-  const progressVal = numCompletedSteps + '/' + selectedActiveChallenge.challengeSteps.length;
+  useEffect(() => {
+    setProgress();
+  }, [activeChallengeDetail]);
+
+  function setProgress() {
+    if (!activeChallengeDetail) return;
+    // get num of completed challenge steps
+    const numCompletedSteps = activeChallengeDetail.challengeSteps.filter(step => step.verificationStatus).length;
+    // format string for challenge progress
+    const progressV = numCompletedSteps + '/' + activeChallengeDetail.challengeSteps.length;
+    setProgressVal(progressV);
+    setFetchedProgressVal(true);
+  }
 
   // challenge stats data: progress, time left, reward
   const stats = [
@@ -155,7 +169,7 @@ export default function ActiveChallengeDetailModal({
     {
       s_icon: faClock,
       s_label: 'Time Left',
-      s_value: getDaysRemaining(selectedActiveChallenge.endDate),
+      s_value: getDaysRemaining(activeChallengeDetail.endDate),
       s_unit: 'days',
     },
     {
@@ -168,7 +182,7 @@ export default function ActiveChallengeDetailModal({
 
   // Drop challenge / Remove from activeChallenges list
   function handleDropChallenge() {
-    const updated = activeChallenges.filter(challenge => challenge._id !== selectedActiveChallenge._id);
+    const updated = activeChallenges.filter(challenge => challenge._id !== activeChallengeDetail._id);
     setActiveChallenges(updated);
     onClose(false);
   }
@@ -249,8 +263,12 @@ export default function ActiveChallengeDetailModal({
       }
 
       const data = await res.json();
-      console.log('Update success:', data.message);
+      console.log('Update success:', data.updatedChallenge.challengeSteps);
+
+      setActiveChallengeDetail(data.updatedChallenge);
+
       alert('You have been successfully checked in.');
+      setProgress();
     } catch (err) {
       console.error('Error while updating challenge detail:', err);
     }
@@ -329,7 +347,7 @@ export default function ActiveChallengeDetailModal({
 
   return (
     <>
-      {fetchedChallenge && fetchedRestaurants && (
+      {fetchedChallenge && fetchedRestaurants && fetchedActiveChallengeDetail && (
         <div className="fixed inset-0  bg-brand-peach/40 flex justify-center items-center  z-[100]  overflow-scroll scrollbar-hide">
           <div className="bg-transparent p-8">
             <div className="w-5xl min-h-120 bg-white shadow-lg rounded-lg pb-3 relative">
@@ -365,7 +383,8 @@ export default function ActiveChallengeDetailModal({
                   </div>
                 </div>
                 {/* CHALLENGE STEPS CONTAINER (for check-in / geolocation) */}
-                <ChallengeStepsContainer challengeSteps={selectedActiveChallenge.challengeSteps} />
+                {/* <ChallengeStepsContainer challengeSteps={selectedActiveChallenge.challengeSteps} /> */}
+                <ChallengeStepsContainer challengeSteps={activeChallengeDetail?.challengeSteps || []} />
               </div>
               {/* DROP CHALLENGE btn */}
               <button
