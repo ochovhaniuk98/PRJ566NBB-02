@@ -17,6 +17,10 @@ export default function TextEditorStyled({
   const [statusMessage, setStatusMessage] = useState('');
   const [statusType, setStatusType] = useState('');
 
+  // Image tracking setup
+  const [currentImageIds, setCurrentImageIds] = useState(editBlogPost && blogPostData ? blogPostData.images || [] : []);
+  const [newImageIds, setNewImageIds] = useState([]);
+
   useEffect(() => {
     if (editBlogPost && blogPostData) {
       setTitle(blogPostData.previewTitle || '');
@@ -31,11 +35,55 @@ export default function TextEditorStyled({
     }
   }, [editBlogPost, blogPostData]);
 
+  // Handle image uploads during the session
+  const handleImageUpload = public_id => {
+    if (!public_id || newImageIds.find(id => id === public_id)) return;
+    setNewImageIds(prev => [...prev, public_id]);
+  };
+
   const handlePublish = async () => {
     if (!content || !title) return;
 
-    // get title and content
-    // create or edit a blog post
+    // Extract all images used in final content
+    const finalImagePublicIds = new Set();
+    const walkContent = node => {
+      if (node.type === 'image' && node.attrs && node.attrs.public_id) {
+        finalImagePublicIds.add(node.attrs.public_id);
+      }
+      if (node.content) {
+        node.content.forEach(childNode => walkContent(childNode));
+      }
+    };
+    walkContent(content);
+
+    // Combine all images tracked (existing + new)
+    const trackedImageIds = [...currentImageIds, ...newImageIds];
+
+    // Find images to delete (tracked but NOT in final content)
+    const imagesToDelete = trackedImageIds.filter(id => !finalImagePublicIds.has(id));
+
+    // Delete images NOT used in final content
+    if (imagesToDelete.length > 0) {
+      try {
+        const response = await fetch('/api/images', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            images: imagesToDelete,
+            type: 'blog-image',
+          }),
+        });
+        if (response.ok) {
+          console.log('Unused images deleted successfully');
+        } else {
+          console.error('Failed to delete unused images');
+        }
+      } catch (error) {
+        console.error('Error deleting unused images:', error);
+      }
+    }
+
+    // Send blog post data to server (create or edit)
     try {
       const url = editBlogPost
         ? `/api/blog-posts/update-post/${blogPostData._id}` // blogPostData must contain `_id`
@@ -51,6 +99,7 @@ export default function TextEditorStyled({
         body: JSON.stringify({
           title,
           content,
+          images: [...finalImagePublicIds], // Use only images present in final content
         }),
       });
 
@@ -68,32 +117,58 @@ export default function TextEditorStyled({
 
       setStatusType('success');
       setStatusMessage(editBlogPost ? 'Blog post updated successfully!' : 'Blog post created successfully!');
-      // ADDED
-      if (!editBlogPost) {
-        setTitle(null);
-        setContent(null);
-      }
-
-      // ADDED
-      if (!editBlogPost) {
-        setTitle(null);
-        setContent(null);
-      }
 
       setTitle(null);
       setContent(null);
+      setNewImageIds([]);
 
-      console.log('Blog post created:', data.blogPost);
+      if (!editBlogPost) {
+        setCurrentImageIds([]);
+      } else {
+        setCurrentImageIds(data.blogPost.images || []);
+      }
     } catch (error) {
       console.error('Error publishing blog post:', error);
+      setStatusType('error');
+      setStatusMessage('Error publishing blog post');
     }
 
-    // clear after 3 seconds
+    // Hide editor after delay
     setTimeout(() => {
       setStatusMessage('');
       setStatusType('');
       setShowTextEditor(false);
-    }, 4000);
+    }, 2000);
+  };
+
+  const handleCancel = async () => {
+    // Delete only new images uploaded during this session
+    if (newImageIds.length > 0) {
+      try {
+        const response = await fetch('/api/images/', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            images: newImageIds,
+            type: 'blog-image',
+          }),
+        });
+
+        if (response.ok) {
+          console.log('New images uploaded in this session deleted successfully');
+        } else {
+          console.error('Failed to delete new images');
+        }
+      } catch (error) {
+        console.error('Error deleting new images:', error);
+      }
+    }
+    // Clear editor and close
+    setTitle(null);
+    setContent(null);
+    setCurrentImageIds([]);
+    setNewImageIds([]);
+    setShowTextEditor(false);
   };
 
   return (
@@ -103,7 +178,7 @@ export default function TextEditorStyled({
           <Button onClick={handlePublish} type="submit" className="w-30" variant="default">
             Publish
           </Button>
-          <Button type="button" className="w-30" variant="secondary" onClick={() => setShowTextEditor(false)}>
+          <Button type="button" className="w-30" variant="secondary" onClick={handleCancel}>
             Cancel
           </Button>
         </div>
@@ -123,7 +198,7 @@ export default function TextEditorStyled({
         </div>
         <div className=" w-full h-700 border border-brand-yellow-lite">
           {/* <SimpleEditor onContentChange={setContent} /> */}
-          <SimpleEditor onContentChange={setContent} content={content} />
+          <SimpleEditor onContentChange={setContent} onImageUpload={handleImageUpload} content={content} />
         </div>
       </div>
     </>

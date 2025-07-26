@@ -5,20 +5,21 @@ import mongoose from 'mongoose';
 import axios from 'axios';
 import dbConnect from '../src/lib/db/dbConnect.js';
 import { Restaurant } from '../src/lib/model/dbSchema.js';
+import 'dotenv/config';
 
 async function geocodeAddress(address) {
   try {
-    const encoded = encodeURIComponent(address); // takes the address string and encodes it for safe use in a URL query parameter ("test?" -> "?x=test%3F")
-    // request to OpenStreetMap Nominatim geocoding API to get geo coordinates for the address provided
-    const res = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encoded}`, {
-      headers: { 'User-Agent': 'Biteclub/1.0' },
-    });
-    const result = res.data[0];
+    const encoded = encodeURIComponent(address);
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encoded}&key=GOOGLE_API_KEY`;
+    const res = await axios.get(url);
+
+    const result = res.data.results[0];
     if (!result) return null;
 
+    const { lat, lng } = result.geometry.location;
     return {
-      latitude: parseFloat(result.lat),
-      longitude: parseFloat(result.lon),
+      latitude: lat,
+      longitude: lng,
     };
   } catch (err) {
     console.error(`Failed to geocode ${address}:`, err.message);
@@ -30,8 +31,13 @@ async function main() {
   await dbConnect();
 
   // now get the restaurants where coordinates were set
+  // const restaurants = await Restaurant.find({
+  //   $or: [{ latitude: { $exists: true } }, { longitude: { $exists: true } }],
+  // });
+
+  // select restaurants that are missing coordinates
   const restaurants = await Restaurant.find({
-    $or: [{ latitude: { $exists: true } }, { longitude: { $exists: true } }],
+    locationCoords: { $exists: false },
   });
 
   console.log(`Found ${restaurants.length} restaurants to geocode.`);

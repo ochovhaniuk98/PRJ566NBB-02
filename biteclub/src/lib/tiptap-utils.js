@@ -124,19 +124,61 @@ export const handleImageUpload = async (file, onProgress, abortSignal) => {
     throw new Error(`File size exceeds maximum allowed (${MAX_FILE_SIZE / (1024 * 1024)}MB)`);
   }
 
-  // For demo/testing: Simulate upload progress
-  for (let progress = 0; progress <= 100; progress += 10) {
-    if (abortSignal?.aborted) {
-      throw new Error('Upload cancelled');
+  let isDone = false;
+  let isCancelled = false;
+  let progress = 0;
+
+  // Start the conversion and upload
+  const uploadPromise = (async () => {
+    const convertedFile = await convertFileToBase64(file, abortSignal);
+
+    const response = await fetch('/api/images/', {
+      method: 'POST',
+      body: JSON.stringify({ file: convertedFile }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to upload image');
     }
-    await new Promise(resolve => setTimeout(resolve, 500));
-    onProgress?.({ progress });
+    const data = await response.json();
+    return {
+      public_id: data.image.public_id,
+      url: data.image.url,
+      status: 'success',
+    };
+  })();
+
+  // Simulate progress bar in parallel with the upload
+  const progressPromise = (async () => {
+    while (!isDone && progress < 95) {
+      if (abortSignal?.aborted) {
+        isCancelled = true;
+        break;
+      }
+      progress += 5;
+      onProgress?.({ progress });
+      await new Promise(res => setTimeout(res, 500));
+    }
+  })();
+
+  try {
+    const result = await uploadPromise;
+    isDone = true;
+    onProgress?.({ progress: 100 });
+    await progressPromise;
+
+    if (isCancelled) {
+      return { ...result, status: 'cancelled' };
+    }
+
+    return result;
+  } catch (error) {
+    isDone = true;
+    onProgress?.({ progress: 100 });
+    await progressPromise;
+    throw error;
   }
-
-  // return "/images/placeholder-image.png"
-
-  // Uncomment for production use:
-  return convertFileToBase64(file, abortSignal);
 };
 
 /**

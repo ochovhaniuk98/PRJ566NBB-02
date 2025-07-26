@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from '@tiptap/starter-kit';
-import { Image } from '@tiptap/extension-image';
+// import { Image } from '@tiptap/extension-image'; // Removed as we are using custom BlogImage extension
 import { TaskItem } from '@tiptap/extension-task-item';
 import { TaskList } from '@tiptap/extension-task-list';
 import { TextAlign } from '@tiptap/extension-text-align';
@@ -22,6 +22,7 @@ import { Underline } from '@tiptap/extension-underline';
 import { Link } from '@/components/tiptap-rich-text-editor/tiptap-extension/link-extension';
 import { Selection } from '@/components/tiptap-rich-text-editor/tiptap-extension/selection-extension';
 import { TrailingNode } from '@/components/tiptap-rich-text-editor/tiptap-extension/trailing-node-extension';
+import { BlogImage } from '@/components/tiptap-rich-text-editor/tiptap-extension/image-extension';
 
 // --- Tiptap Node ---
 import { ImageUploadNode } from '@/components/tiptap-rich-text-editor/tiptap-node/image-upload-node/image-upload-node-extension';
@@ -54,7 +55,8 @@ export default function ReadOnlyEditor({ content }) {
       TaskList,
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
-      Image,
+      // Image,
+      BlogImage,
       Typography,
       Superscript,
       Subscript,
