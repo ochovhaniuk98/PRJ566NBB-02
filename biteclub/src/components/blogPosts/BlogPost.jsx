@@ -86,7 +86,7 @@ export default function BlogPost({ id }) {
   // get reported user object
   const fetchReportedUser = async id => {
     try {
-      if (id) {
+      if (id && user?.id) {
         const res = await fetch(`/api/users/get-general-user-by-MgId?id=${id}`);
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const reportedUser = await res.json();

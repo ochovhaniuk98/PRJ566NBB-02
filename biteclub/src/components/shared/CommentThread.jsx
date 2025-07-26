@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Button } from './Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg-icons';
@@ -37,7 +38,6 @@ export default function CommentThread({ post }) {
     // set user
     const fetchUserProfile = async () => {
       try {
-
         if (!user?.id) return;
 
         // const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
@@ -270,18 +270,27 @@ export default function CommentThread({ post }) {
       </div>
 
       {/* main textarea input + "post" button */}
-      <div className="absolute bottom-4 left-0 right-0 bg-white pt-2 px-4 border-t-1 border-brand-peach">
-        <textarea
-          rows={3}
-          placeholder="Write a comment..."
-          value={newComment}
-          onChange={e => setNewComment(e.target.value)}
-          className="w-full border rounded-md p-2 mb-2"
-        />
-        <Button type="submit" variant="default" className="block min-w-30" onClick={addComment}>
-          Post
-        </Button>
-      </div>
+      {user?.id ? (
+        <div className="absolute bottom-4 left-0 right-0 bg-white pt-2 px-4 border-t-1 border-brand-peach">
+          <textarea
+            rows={3}
+            placeholder="Write a comment..."
+            value={newComment}
+            onChange={e => setNewComment(e.target.value)}
+            className="w-full border rounded-md p-2 mb-2"
+          />
+          <Button type="submit" variant="default" className="block min-w-30" onClick={addComment}>
+            Post
+          </Button>
+        </div>
+      ) : (
+        <div className='flex flex-col items-center gap-4 mb-4'>
+          <p className="text-center">Login to post a comment</p>
+          <Link href="/login">
+            <Button>Login</Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
