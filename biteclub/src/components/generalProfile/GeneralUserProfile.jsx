@@ -25,7 +25,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // =============
   // USERS RELATED
   // =============
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [userProfile, setUserProfile] = useState(null); // could be current user or another general user
 

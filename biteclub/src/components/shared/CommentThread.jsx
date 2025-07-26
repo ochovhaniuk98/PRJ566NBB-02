@@ -17,7 +17,8 @@ import ReportForm from '../shared/ReportForm';
 export default function CommentThread({ post }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   const [userProfile, setUserProfile] = useState(null);
   const [fetchedPostUser, setFetchedPostUser] = useState(false);
 
@@ -284,7 +285,7 @@ export default function CommentThread({ post }) {
           </Button>
         </div>
       ) : (
-        <div className='flex flex-col items-center gap-4 mb-4'>
+        <div className="flex flex-col items-center gap-4 mb-4">
           <p className="text-center">Login to post a comment</p>
           <Link href="/login">
             <Button>Login</Button>

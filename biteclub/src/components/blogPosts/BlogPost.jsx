@@ -17,7 +17,7 @@ export default function BlogPost({ id }) {
   // for reporting a post
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
 
   useEffect(() => {
     if (!id) return;
@@ -54,8 +54,7 @@ export default function BlogPost({ id }) {
   // When user save blog-post as favourite
   const handleFavouriteBlogPostClick = async () => {
     try {
-
-      if (!user?.id) return; 
+      if (!user?.id) return;
 
       const res = await fetch('/api/blog-posts/save-as-favourite', {
         method: 'POST',

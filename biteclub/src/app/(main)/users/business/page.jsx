@@ -8,7 +8,8 @@ import { getBusinessUserRestaurantId, getBusinessUserVerificationStatus } from '
 import Spinner from '@/components/shared/Spinner';
 
 export default function BusinessUserRestaurantPage() {
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   const [restaurantId, setRestaurantId] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -16,9 +17,8 @@ export default function BusinessUserRestaurantPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-
         if (!user?.id) return;
-        
+
         // Fetch restaurantId and verification status in parallel
         const [profile, verified] = await Promise.all([
           getBusinessUserRestaurantId({ supabaseId: user.id }),
@@ -44,7 +44,7 @@ export default function BusinessUserRestaurantPage() {
     fetchData();
   }, [router, user?.id]);
 
-  if (loading) return <Spinner message='Loading...' />;
+  if (loading) return <Spinner message="Loading..." />;
 
   return <RestaurantProfile isOwner={true} restaurantId={restaurantId} />;
 }

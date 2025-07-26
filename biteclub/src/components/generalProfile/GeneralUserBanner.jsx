@@ -38,7 +38,8 @@ export default function GeneralUserBanner({
   setDeleteAllTarget,
   setShowModal,
 }) {
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   const { refreshUserData } = useUserData();
   const [reviewCount, setReviewCount] = useState(0);
   const [openReportForm, setOpenReportForm] = useState(false); // for reporting user

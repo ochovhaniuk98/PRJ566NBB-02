@@ -15,7 +15,8 @@ import ReportForm from '../shared/ReportForm';
 export default function ReviewsCommentThread({ post }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   const [userProfile, setUserProfile] = useState(null);
   const [fetchedPostUser, setFetchedPostUser] = useState(false);
 

@@ -8,7 +8,8 @@ import Spinner from '@/components/shared/Spinner';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 export default function GeneralUserDashboard() {
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   const [loading, setLoading] = useState(true);
   const [userMongoId, setUserMongoId] = useState(null);
   const [error, setError] = useState(null);

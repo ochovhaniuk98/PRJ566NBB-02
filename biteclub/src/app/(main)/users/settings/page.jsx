@@ -16,7 +16,8 @@ import Avatar from '@/app/(auth)/account-setup/general/avatar';
 
 export default function Settings() {
   // User infomation
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   // If the user signed up using Google OAuth, they do not need to update their password.
   const isGoogleUser = user?.app_metadata?.provider === 'google' || user?.app_metadata?.providers?.includes('google');

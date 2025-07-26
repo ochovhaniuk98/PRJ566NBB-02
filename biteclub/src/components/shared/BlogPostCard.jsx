@@ -29,7 +29,7 @@ export default function BlogPostCard({
   onDeleteClick, // optional — do NOT provide a default
   onFavouriteToggle = () => {},
 }) {
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const { refreshUserData } = useUserData();
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
   const [isFavourited, setIsFavourited] = useState(false); // tracks whether post is favourited

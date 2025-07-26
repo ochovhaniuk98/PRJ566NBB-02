@@ -8,7 +8,8 @@ import GeneralUserProfile from '@/components/generalProfile/GeneralUserProfile';
 import Spinner from '@/components/shared/Spinner';
 
 export default function GeneralPage() {
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   // Notes for useParams():
   // - useParams() returns values as strings, but when used in a dynamic segment like /general/[generalUserId], it will be:
   // - const params = useParams(); // returns an object like: { generalUserId: '683dd306de808a3cb965680f' }
@@ -19,7 +20,6 @@ export default function GeneralPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-
       try {
         if (!user?.id) return; // Wait until user is available
         const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
@@ -37,7 +37,7 @@ export default function GeneralPage() {
     fetchData();
   }, [generalUserId]);
 
-  if (loading) return <Spinner message='Loading Profile...' />;
+  if (loading) return <Spinner message="Loading Profile..." />;
 
   if (!generalUserId) return <p>Invalid user profile link.</p>;
 

@@ -27,7 +27,7 @@ function randomString() {
 }
 
 export default function Redeem() {
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [points, setPoints] = useState(0); // not null
   const [loading, setLoading] = useState(true);
@@ -68,9 +68,7 @@ export default function Redeem() {
       <div className="main-side-padding mb-16 w-full flex flex-col items-center mt-16">
         <div className="flex flex-col items-start gap-4 w-full m-8">
           <h1>Get Your Rewards</h1>
-          <p>
-            Complete challenges to earn points, then redeem them here for exclusive food coupons.
-          </p>
+          <p>Complete challenges to earn points, then redeem them here for exclusive food coupons.</p>
           <p className="text-2xl">Your points: {points}</p>
         </div>
         <div className="flex flex-col gap-6 min-w-full">

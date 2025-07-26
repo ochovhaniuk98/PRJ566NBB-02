@@ -7,7 +7,8 @@ import { useUser } from '@/context/UserContext';
 import ReadOnlyEditor from '@/components/tiptap-rich-text-editor/ReadOnlyEditor';
 
 export default function Page() {
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   const [editorContent, setEditorContent] = useState(null);
   const [displayPost, setPost] = useState(null);
 
