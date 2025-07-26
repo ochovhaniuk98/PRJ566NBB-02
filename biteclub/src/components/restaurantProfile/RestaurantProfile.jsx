@@ -20,8 +20,7 @@ import EventsAndAnnounce from './EventsAndAnnounce';
 import Spinner from '@/components/shared/Spinner';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
-  const { user } = useUser(); // Current logged-in user's Supabase info
-
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);

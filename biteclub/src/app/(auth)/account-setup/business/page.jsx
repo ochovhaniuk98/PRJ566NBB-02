@@ -15,8 +15,8 @@ import { faCloudArrowUp, faUtensils } from '@fortawesome/free-solid-svg-icons';
 
 export default function BusinessSetupForm() {
   const router = useRouter();
-  const { user } = useUser(); // Current logged-in user's Supabase info
-  
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
   // const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState('');
@@ -32,7 +32,6 @@ export default function BusinessSetupForm() {
   // --- License upload states ---
   const [uploadedLicenseInfo, setUploadedLicenseInfo] = useState(null);
   const [licenseDownloadUrl, setLicenseDownloadUrl] = useState(null);
-
 
   // --- Autocomplete logic: fetch results based on user input (debounced) ---
   useEffect(() => {

@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
+
 import { faTrashCan, faFlag } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import ReportForm from '../shared/ReportForm';
@@ -15,7 +17,8 @@ import ReportForm from '../shared/ReportForm';
 export default function ReviewsCommentThread({ post }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+  const { userData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [userProfile, setUserProfile] = useState(null);
   const [fetchedPostUser, setFetchedPostUser] = useState(false);
 
@@ -36,13 +39,7 @@ export default function ReviewsCommentThread({ post }) {
     // set user
     const fetchUser = async () => {
       try {
-        if (!user?.id) return;
-
-        // const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
-        const res = await fetch(`/api/users/get-general-user?id=${user.id}`);
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        const userData = await res.json();
-
+        if (!userData?._id) return;
         setUserProfile(userData);
         console.log('userData: ', userData);
         setFetchedPostUser(true);
@@ -345,14 +342,8 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
     // get reporter object
     const fetchReporter = async () => {
       try {
-        if (!user?.id) return;
-
-        // const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
-        const res = await fetch(`/api/users/get-general-user?id=${user.id}`);
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        const reporter = await res.json();
-
-        setReporter(reporter);
+        if (!userData?._id) return;
+        setReporter(userData);
       } catch (error) {
         console.error('Failed to fetch reporter:', error);
       }

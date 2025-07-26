@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 export default function FollowingBlogPosts() {
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const [userMongoId, setUserMongoId] = useState(null);
   const [blogPosts, setBlogPosts] = useState([]);
   const [page, setPage] = useState(1);

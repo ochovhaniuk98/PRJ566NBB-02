@@ -16,7 +16,7 @@ export default function MasonryReviewGrid({
   isOwner,
   restaurantName,
 }) {
-  const { user } = useUser(); // Current logged-in user's Supabase info
+  // const { user } = useUser(); // Current logged-in user's Supabase info
   const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [reportedReviewIds, setReportedReviewIds] = useState([]);
   const [engagementData, setEngagementData] = useState({});
