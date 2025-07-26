@@ -1219,3 +1219,25 @@ export async function getChallengeByChallengeId({ challengeId }) {
     throw error;
   }
 }
+
+// Update Active Challenge Detail (Challenge Step)
+export async function updateActiveChallengeDetail({ activeChallengeDetailId, challengeSteps }) {
+  try {
+    await dbConnect();
+
+    const updatedChallenge = await ActivateChallengeDetail.findByIdAndUpdate(
+      activeChallengeDetailId,
+      { challengeSteps },
+      { new: true } // return the updated document
+    );
+
+    if (!updatedChallenge) {
+      throw new Error('ActiveChallengeDetail not found');
+    }
+
+    return updatedChallenge;
+  } catch (error) {
+    console.error('Error updating active challenge detail:', error);
+    throw error;
+  }
+}
