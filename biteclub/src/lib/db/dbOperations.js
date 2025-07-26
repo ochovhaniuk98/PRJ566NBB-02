@@ -691,7 +691,7 @@ function extractMentionedRestaurantIds(contentJSON) {
 }
 
 // Create a Blog Post
-export async function createBlogPost({ title, content, userId }) {
+export async function createBlogPost({ title, content, images, userId }) {
   await dbConnect();
 
   const blocks = content?.content;
@@ -724,6 +724,7 @@ export async function createBlogPost({ title, content, userId }) {
     previewText: previewText,
     previewImage: previewImage,
     mentions: mentionedRestaurantIds,
+    images: images || [],
   });
 
   await newPost.save();

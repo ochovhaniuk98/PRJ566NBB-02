@@ -31,7 +31,7 @@ function useFileUpload(options) {
         throw new Error('Upload function is not defined');
       }
 
-      const url = await options.upload(
+      const result = await options.upload(
         file,
         event => {
           setFileItem(prev => {
@@ -45,7 +45,7 @@ function useFileUpload(options) {
         abortController.signal
       );
 
-      if (!url) throw new Error('Upload failed: No URL returned');
+      if (!result || !result.url) throw new Error('Upload failed: No URL returned');
 
       if (!abortController.signal.aborted) {
         setFileItem(prev => {
@@ -53,15 +53,15 @@ function useFileUpload(options) {
           return {
             ...prev,
             status: 'success',
-            url,
+            public_id: result?.public_id,
+            url: result?.url,
             progress: 100,
           };
         });
-        options.onSuccess?.(url);
-        return url;
       }
 
-      return null;
+      options.onSuccess?.(result);
+      return result;
     } catch (error) {
       if (!abortController.signal.aborted) {
         setFileItem(prev => {
@@ -290,12 +290,15 @@ export const ImageUploadNode = props => {
   };
 
   const handleUpload = async files => {
-    const url = await uploadFiles(files);
-
-    if (url) {
+    const res = await uploadFiles(files);
+    if (res) {
       const pos = props.getPos();
       const filename = files[0]?.name.replace(/\.[^/.]+$/, '') || 'unknown';
-
+      const { public_id, url, status } = res;
+      // Check if the upload was cancelled; skip insertion if so
+      if (status === 'cancelled') {
+        return;
+      }
       props.editor
         .chain()
         .focus()
@@ -303,7 +306,7 @@ export const ImageUploadNode = props => {
         .insertContentAt(pos, [
           {
             type: 'image',
-            attrs: { src: url, alt: filename, title: filename },
+            attrs: { public_id: public_id, src: url, alt: filename, title: filename },
           },
         ])
         .run();

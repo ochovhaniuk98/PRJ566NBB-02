@@ -40,17 +40,6 @@ export function LoginForm({ className, ...props }) {
       if (userError || !user) throw userError;
 
       const userType = user?.user_metadata.user_type;
-      // console.log(`TYPE: ${userType}`)
-
-      // Call API to get MongoDB userType.
-      // const response = await fetch('/api/get-user-type', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ supabaseId: user.id }),
-      // });
-
-      // const { userType } = await response.json();
-      // if (!response.ok) throw new Error(`Failed to get user role: ${userType || 'unknown error'}`);
 
       // Redirect based on userType
       router.push(`/users/${userType}`);
@@ -92,12 +81,12 @@ export function LoginForm({ className, ...props }) {
           <CardTitle className="text-center">
             <h2>Login</h2>
           </CardTitle>
-          <CardDescription>
-            <p className="text-center">Login with your Google account</p>
+              <CardDescription>
+            <h3 className="text-center">Welcome Back</h3>
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-4 items-center">
+          <div className="flex flex-col gap-4 items-center mb-4">
             <Button
               variant="googlebtn"
               className="w-60 font-roboto font-normal"

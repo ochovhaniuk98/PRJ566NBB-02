@@ -4,8 +4,8 @@ import { Button } from './Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
-import { createClient } from '@/lib/auth/client';
-
+// import { createClient } from '@/lib/auth/client';
+import { useUserData } from '@/context/UserDataContext';
 import { faTrashCan, faFlag } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import ReportForm from '../shared/ReportForm';
@@ -16,6 +16,7 @@ import ReportForm from '../shared/ReportForm';
 export default function CommentThread({ post }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
+  const { userData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [user, setUser] = useState(null);
   const [fetchedPostUser, setFetchedPostUser] = useState(false);
 
@@ -35,16 +36,8 @@ export default function CommentThread({ post }) {
 
     // set user
     const fetchUser = async () => {
+      if (!userData._id) return;
       try {
-        const supabase = createClient();
-        const { data } = await supabase.auth.getUser();
-        if (!data?.user) throw new Error('No Supabase user');
-        const supabaseId = data.user.id;
-
-        const res = await fetch(`/api/users/get-general-user?id=${supabaseId}`);
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-        const userData = await res.json();
-
         setUser(userData);
         console.log('userData: ', userData);
         setFetchedPostUser(true);

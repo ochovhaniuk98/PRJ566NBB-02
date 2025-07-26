@@ -1,7 +1,9 @@
-import { createClient } from '@/lib/auth/client';
 import { useState, useEffect } from 'react';
-
+import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import Image from 'next/image';
+import { Button } from '@/components/shared/Button';
+import { faPen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
@@ -16,9 +18,7 @@ import {
   faFlag,
 } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
 import GridCustomCols from '@/components/shared/GridCustomCols';
-import { Button } from '@/components/shared/Button';
 import ReportForm from '../shared/ReportForm';
 
 /* Description: Shows general user info and allows OWNER to write blog post or manage content by clicking corresponding buttons in component.
@@ -32,26 +32,28 @@ export default function GeneralUserBanner({
   selectedTab,
   generalUserData,
   isOwner = false,
-  handleDeleteSelectedBlogPosts,
-  handleDeleteAllBlogPosts,
-  handleDeleteSelectedReviews,
-  handleDeleteAllReviews,
   blogPostsCount,
-  setShowModal,
+  handleDeleteSelectedBlogPosts,
+  handleDeleteSelectedReviews,
   setDeleteAllTarget,
+  setShowModal,
 }) {
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+
+  const { refreshUserData } = useUserData();
   const [reviewCount, setReviewCount] = useState(0);
   const [openReportForm, setOpenReportForm] = useState(false); // for reporting user
 
-  useEffect(() => {
-    const fetchReviewCount = async () => {
-      const res = await fetch(`/api/generals/${generalUserData._id}/get-review-count`);
-      const data = await res.json();
-      setReviewCount(data.total || 0);
-    };
+  // if the authenticated user is the owner of this profile, we set the generalUserData._id to this user. If not, fetch from DB.
+  const [isFollowing, setIsFollowing] = useState(false);
+  const anotherUserId = !isOwner ? generalUserData._id : null;
 
-    if (generalUserData._id) fetchReviewCount();
-  }, [generalUserData._id]);
+  const [loadingChecklist, setLoadingChecklist] = useState({
+    reviewCount: false,
+    followingCheck: false,
+  });
+  // States
+  const [loading, setLoading] = useState(true);
 
   const iconStats = [
     {
@@ -81,63 +83,78 @@ export default function GeneralUserBanner({
       icon: faGamepad,
       bgColour: 'white',
       iconColour: 'brand-green',
-      statNum: generalUserData?.challenges?.length || 0, // !!! TODO: (commented in sprint 2) should we have Challenges in db USER schema
+      statNum: generalUserData?.challenges?.length || 0,
     },
   ];
 
-  // if the authenticated user is the owner of this profile, we set the generalUserData._id to this user. If not, fetch from DB.
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [authUserId, setAuthUserId] = useState(null);
-  const anotherUserId = !isOwner ? generalUserData._id : null;
+  useEffect(() => {
+    const fetchReviewCount = async () => {
+      try {
+        const res = await fetch(`/api/generals/${generalUserData._id}/get-review-count`);
+        const data = await res.json();
+        setReviewCount(data.total || 0);
+      } finally {
+        setLoadingChecklist(prev => ({ ...prev, reviewCount: true }));
+      }
+    };
+
+    if (generalUserData._id) fetchReviewCount();
+  }, [generalUserData._id]);
 
   useEffect(() => {
-    if (isOwner) return;
-
-    // If we miss Ids, we cannot perform check.
-    if (!anotherUserId) {
-      console.log('(isFollowing) anotherUserId: ', anotherUserId);
-      console.error('anotherUserId is missing -- skipping check');
+    if (isOwner) {
+      setLoadingChecklist(prev => ({ ...prev, followingCheck: true }));
       return;
     }
 
+    // If we miss Ids, we cannot perform check.
+    if (!anotherUserId) {
+      console.error('anotherUserId is missing -- skipping check');
+      return;
+    }
     const checkFollowingStatus = async () => {
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data?.user?.id) return;
-
-        const res = await fetch(`/api/generals/is-following?authId=${data.user.id}&fId=${anotherUserId}`);
+        if (!user?.id || !anotherUserId) return;
+        const res = await fetch(`/api/generals/is-following?authId=${user.id}&fId=${anotherUserId}`);
         const result = await res.json();
         if (res.ok) setIsFollowing(result.isFollowing);
       } catch (err) {
         console.error('Error checking favourite status:', err.message);
+      } finally {
+        setLoadingChecklist(prev => ({ ...prev, followingCheck: true }));
       }
     };
-
     checkFollowingStatus();
-  }, [anotherUserId, isOwner]);
+  }, [anotherUserId, isOwner, user?.id]);
 
+  useEffect(() => {
+    const allDone = Object.values(loadingChecklist).every(Boolean);
+    if (allDone) setLoading(false);
+  }, [loadingChecklist]);
+
+  if (loading) return;
+
+  // ========
+  // HANDLERS
+  // ========
   const handleFollowClick = async () => {
     // Since we are not the owner of this profile:
     // - The "Follow" button is shown
     // - We need to fetch authUser's Supabase ID to send to the API route
-    const supabase = createClient();
-    const { data, error } = await supabase.auth.getUser();
-    if (!error) setAuthUserId(data.user.id);
-
-    if (!anotherUserId || !authUserId) return;
+    if (!anotherUserId || !user.id) return;
 
     try {
       const res = await fetch('/api/generals/follow-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ supabaseUserId: authUserId, anotherUserId }),
+        body: JSON.stringify({ supabaseUserId: user.id, anotherUserId }),
       });
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to follow / unfollow user');
 
       setIsFollowing(result.isFollowing); // Update state
+      await refreshUserData();
     } catch (err) {
       console.error('Error toggling follow:', err.message);
     }
@@ -268,7 +285,12 @@ export default function GeneralUserBanner({
         </div>
       )}
       {openReportForm && (
-        <ReportForm reportType="user" onClose={() => setOpenReportForm(false)} contentType='User' reportedUser={generalUserData} />
+        <ReportForm
+          reportType="user"
+          onClose={() => setOpenReportForm(false)}
+          contentType="User"
+          reportedUser={generalUserData}
+        />
       )}
     </div>
   );

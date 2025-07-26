@@ -6,6 +6,7 @@ import { faCalendarAlt, faBullhorn, faCirclePlus, faTrashAlt } from '@fortawesom
 import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
+import Spinner from '@/components/shared/Spinner';
 import {
   addAnnouncement,
   addEvent,
@@ -21,7 +22,7 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
   const [announcements, setAnnouncements] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [mode, setMode] = useState('event'); // determines what kind of form to show: 'event' or 'announcement'
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchEventsAndAnnouncements = async () => {
       const [eventsData, announcementsData] = await Promise.all([
@@ -30,9 +31,12 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
       ]);
       setEvents(eventsData);
       setAnnouncements(announcementsData);
+      setLoading(false);
     };
     fetchEventsAndAnnouncements();
   }, [restaurantId]);
+
+  if (loading) return <Spinner />;
 
   const handleAddEvent = async event => {
     try {
@@ -97,7 +101,11 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
 
           {/* Event Cards */}
           <div className="flex flex-col gap-4">
-            {events.length === 0 && <div className="text-gray-500">No events available</div>}
+            {events.length === 0 && (
+              <div className="col-span-3 text-start">
+                <p>No events available</p>
+              </div>
+            )}
             {events.map(event => (
               <EventCard
                 key={event._id}
@@ -129,7 +137,11 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
           </div>
           {/* Announcement Cards */}
           <div className="flex flex-col gap-4">
-            {announcements.length === 0 && <div className="text-gray-500">No announcements available</div>}
+            {announcements.length === 0 && (
+              <div className="col-span-3 text-start">
+                <p>No announcements available</p>
+              </div>
+            )}
             {announcements.map(announcement => (
               <AnnouncementCard
                 key={announcement._id}

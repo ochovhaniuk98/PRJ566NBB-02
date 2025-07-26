@@ -6,7 +6,7 @@ import { BlogPost } from '@/lib/model/dbSchema';
 export async function PUT(request, { params }) {
   try {
     const { id } = await params;
-    const { title, content } = await request.json();
+    const { title, content, images } = await request.json();
 
     if (!id || !title || !content) {
       return new Response(JSON.stringify({ error: 'Missing ID, title or content' }), { status: 400 });
@@ -43,6 +43,7 @@ export async function PUT(request, { params }) {
         previewTitle,
         previewText,
         previewImage,
+        images: images || [], // Ensure images is an array
       },
       { new: true }
     );

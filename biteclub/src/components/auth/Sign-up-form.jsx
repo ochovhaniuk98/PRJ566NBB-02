@@ -104,7 +104,7 @@ export function SignUpForm({ className, ...props }) {
         <CardContent>
           {/* User Type Switch -- Ignore label text for now, Not sure what it should say yet. */}
 
-          <div className="flex items-center justify-center gap-6 mb-8">
+          <div className="flex items-center justify-center gap-6 mb-4">
             <label htmlFor="user-role">
               <h5>I am a restaurant business.</h5>
             </label>
@@ -117,7 +117,7 @@ export function SignUpForm({ className, ...props }) {
               // Pressing "Enter" to create account should be for Email registration, not Google.
               type="button" // To prevent that, explicitly set the type (vs default: "submit")
               variant="googlebtn"
-              className="w-60 font-roboto font-normal"
+              className="w-60 font-roboto font-normal mb-4"
               onClick={handleGoogleLogin}
               disabled={isLoading}
             >
@@ -145,7 +145,7 @@ export function SignUpForm({ className, ...props }) {
             </Button>
           </div>
           <form onSubmit={handleSignUp}>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               <div className="relative text-center text-sm text-brand-grey-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-brand-yellow-extralite px-2 text-brand-grey text-xs uppercase font-primary font-semibold">
                   Or
