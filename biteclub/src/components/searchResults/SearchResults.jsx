@@ -137,7 +137,7 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
       setFetchCompleted(true);
     } catch (error) {
       setFetchCompleted(true);
-      console.error('Failed to fetch restaurants:', error);
+      console.error('(Search Results) Failed to fetch restaurants:', error);
     }
   };
 

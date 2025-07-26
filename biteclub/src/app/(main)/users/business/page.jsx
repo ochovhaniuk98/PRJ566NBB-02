@@ -1,12 +1,14 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useUser } from '@/context/UserContext';
+import { useRouter } from 'next/navigation';
 import RestaurantProfile from '@/components/restaurantProfile/RestaurantProfile';
 import { getBusinessUserRestaurantId, getBusinessUserVerificationStatus } from '@/lib/db/dbOperations';
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/auth/client';
-import { useRouter } from 'next/navigation';
+import Spinner from '@/components/shared/Spinner';
 
 export default function BusinessUserRestaurantPage() {
+  const { user } = useUser(); // Current logged-in user's Supabase info
   const [restaurantId, setRestaurantId] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -14,16 +16,9 @@ export default function BusinessUserRestaurantPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase.auth.getUser();
 
-        if (error || !data.user) {
-          setLoading(false);
-          return;
-        }
-
-        const user = data.user;
-
+        if (!user?.id) return;
+        
         // Fetch restaurantId and verification status in parallel
         const [profile, verified] = await Promise.all([
           getBusinessUserRestaurantId({ supabaseId: user.id }),
@@ -47,14 +42,9 @@ export default function BusinessUserRestaurantPage() {
     };
 
     fetchData();
-  }, [router]);
+  }, [router, user?.id]);
 
-  if (loading)
-    return (
-      <div className="mb-8 p-16">
-        <p>Loading...</p>
-      </div>
-    );
+  if (loading) return <Spinner message='Loading...' />;
 
   return <RestaurantProfile isOwner={true} restaurantId={restaurantId} />;
 }

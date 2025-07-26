@@ -1,6 +1,6 @@
 // src/components/blogPosts/BlogPost.jsx
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/auth/client';
+import { useUser } from '@/context/UserContext';
 import ReadOnlyEditor from '../tiptap-rich-text-editor/ReadOnlyEditor';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,6 +17,7 @@ export default function BlogPost({ id }) {
   // for reporting a post
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
+  const { user } = useUser(); // Current logged-in user's Supabase info
 
   useEffect(() => {
     if (!id) return;
@@ -53,17 +54,15 @@ export default function BlogPost({ id }) {
   // When user save blog-post as favourite
   const handleFavouriteBlogPostClick = async () => {
     try {
-      const supabase = createClient();
 
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user?.id) throw new Error('User not logged in');
+      if (!user?.id) return; 
 
       const res = await fetch('/api/blog-posts/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           blogId: id,
-          supabaseUserId: data.user.id,
+          supabaseUserId: user.id,
         }),
       });
 
@@ -87,7 +86,7 @@ export default function BlogPost({ id }) {
   // get reported user object
   const fetchReportedUser = async id => {
     try {
-      if (id) {
+      if (id && user?.id) {
         const res = await fetch(`/api/users/get-general-user-by-MgId?id=${id}`);
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const reportedUser = await res.json();
@@ -100,7 +99,6 @@ export default function BlogPost({ id }) {
     }
   };
 
-
   return (
     <div className="flex w-full">
       <div className="flex-[3] mt-20">
@@ -109,7 +107,7 @@ export default function BlogPost({ id }) {
 
           {/* show Report form when flag icon is clicked */}
           <div
-            className="font-primary font-semibold text-brand-navy flex items-center gap-x-2 cursor-pointer"
+            className="font-primary font-semibold text-brand-navy mb-2 flex items-center gap-x-2 cursor-pointer"
             onClick={e => {
               setOpenReportForm(prev => !prev);
             }}

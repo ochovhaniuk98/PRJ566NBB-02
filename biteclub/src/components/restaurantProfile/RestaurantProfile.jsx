@@ -1,25 +1,27 @@
-import { createClient } from '@/lib/auth/client';
+import { useEffect, useState } from 'react';
+import { useUser } from '@/context/UserContext';
+import { faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
+import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
 import InfoBanner from '@/components/restaurantProfile/InfoBanner';
 import ProfileTabBar from '@/components/shared/ProfileTabBar';
-import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
-import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
-
-import { faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
+import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
-import { useEffect, useState } from 'react';
-import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import AddReviewForm from '../shared/AddReviewForm';
 import MentionedTab from './MentionedTab';
-import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 import MasonryReviewGrid from './MasonryReviewGrid';
 import EventsAndAnnounce from './EventsAndAnnounce';
+import Spinner from '@/components/shared/Spinner';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
+  const { user } = useUser(); // Current logged-in user's Supabase info
+
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
@@ -81,27 +83,11 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     }
   }, [restaurantData]);
 
-  const getSupabaseUserId = async () => {
-    try {
-      const supabase = createClient();
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user?.id) throw new Error('User not logged in');
-      return data.user.id;
-    } catch (err) {
-      console.error('Error getting Supabase user ID:', err.message);
-      return null;
-    }
-  };
-
   useEffect(() => {
     const fetchMongoUserId = async () => {
       try {
-        const supabaseUserId = await getSupabaseUserId();
-        if (!supabaseUserId) {
-          console.error('Supabase User ID not found');
-          return;
-        }
-        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: supabaseUserId });
+        if (!user?.id) return;
+        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
 
         if (!userMongoId) {
           console.error('MongoDB User ID not found for Supabase ID:', supabaseUserId);
@@ -115,23 +101,21 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     };
     // Only fetch user ID if not the owner and userId is not already set
     if (!isOwner && !userId) fetchMongoUserId();
-  }, []);
+  }, [user?.id]);
+
+  if (!restaurantData || !reviewsData) return <Spinner message="Loading..." />;
 
   // When user save restaurant as favourite
   const handleFavouriteRestaurantClick = async () => {
     try {
-      const supabaseUserId = await getSupabaseUserId();
-      if (!supabaseUserId) {
-        console.error('Supabase User ID not found');
-        return;
-      }
+      if (!user?.id) return; // Wait until user is available
 
       const res = await fetch('/api/restaurants/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurantId,
-          supabaseUserId: supabaseUserId,
+          supabaseUserId: user.id,
         }),
       });
 
@@ -150,14 +134,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
       console.error('Error toggling favourite:', err.message);
     }
   };
-
-  if (!restaurantData || !reviewsData) {
-    return (
-      <div className="mb-8 p-16">
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
 

@@ -1,10 +1,12 @@
-import Masonry from 'react-masonry-css';
-import ReviewCard from '../shared/ReviewCard';
 import { useEffect, useMemo, useState } from 'react';
+import Masonry from 'react-masonry-css';
+import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
+import { updateReviewEngagement } from '@/lib/db/dbOperations';
+import Spinner from '@/components/shared/Spinner';
+import ReviewCard from '../shared/ReviewCard';
 import InstagramEmbed from './InstagramEmbed';
 import ReviewCardExpanded from './ReviewCardExpanded';
-import { createClient } from '@/lib/auth/client';
-import { updateReviewEngagement } from '@/lib/db/dbOperations';
 
 export default function MasonryReviewGrid({
   selectedReview,
@@ -14,36 +16,16 @@ export default function MasonryReviewGrid({
   isOwner,
   restaurantName,
 }) {
-  const [user, setUser] = useState(null);
+  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [reportedReviewIds, setReportedReviewIds] = useState([]);
   const [engagementData, setEngagementData] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const supabase = createClient();
-      const { data } = await supabase.auth.getUser();
-      if (!data?.user) {
-        console.error('No user logged in');
-        return;
-      }
-      const userType = data.user.user_metadata?.user_type;
-      let mongoUser;
-      if (userType === 'business') {
-        mongoUser = await fetch(`/api/business-user/get-profile-by-authId?authId=${data.user.id}`);
-      } else {
-        mongoUser = await fetch(`/api/generals/get-profile-by-authId?authId=${data.user.id}`);
-      }
-      if (!mongoUser.ok) {
-        console.error('Failed to fetch user profile:', mongoUser.status);
-        return;
-      }
-      const { profile } = await mongoUser.json();
-
-      setUser(profile);
-      console.log('Fetched user:', profile);
-    };
-    fetchUser();
-  }, []);
+    if (loadingData || !userData) return;
+    setLoading(false);
+  }, [loadingData, userData]);
 
   useEffect(() => {
     const fetchReportedReviews = async () => {
@@ -121,21 +103,43 @@ export default function MasonryReviewGrid({
   }, [combinedList, reportedReviewIds]);
 
   useEffect(() => {
-    if (!user || !filteredCombinedList.length) return;
+    if (!userData || !filteredCombinedList.length) return;
 
     const newEngagementData = filteredCombinedList.reduce((acc, review) => {
       acc[review._id] = {
         likes: review.likes?.count || 0,
         dislikes: review.dislikes?.count || 0,
         comments: review.comments?.length || 0,
-        userLiked: review.likes?.users?.includes(user?._id) || false,
-        userDisliked: review.dislikes?.users?.includes(user?._id) || false,
+        userLiked: review.likes?.users?.includes(userData?._id) || false,
+        userDisliked: review.dislikes?.users?.includes(userData?._id) || false,
       };
       return acc;
     }, {});
     setEngagementData(newEngagementData);
-  }, [user, filteredCombinedList]);
+  }, [userData, filteredCombinedList]);
 
+  // breakpoints for when an internal review is selected and the expanded panel appears
+  const breakpointColumnsObj = useMemo(() => {
+    const isInternal = selectedReview && !selectedReview?.content?.embedLink;
+    return isInternal
+      ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
+      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
+  }, [selectedReview]);
+
+  // Exit early if no reviews
+  if (!reviewList || (!reviewList?.internalReviews?.length && !reviewList?.externalReviews?.length)) {
+    return (
+      <div className="col-span-3 text-center">
+        <p>No reviews available.</p>
+      </div>
+    );
+  }
+
+  if (loadingData || loading) return <Spinner />;
+
+  // ===================
+  // HANDLES & FUNCTIONS
+  // ===================
   const updateEngagementState = (reviewId, resData) => {
     setEngagementData(prev => ({
       ...prev,
@@ -143,8 +147,8 @@ export default function MasonryReviewGrid({
         ...prev[reviewId],
         likes: resData.likes.count,
         dislikes: resData.dislikes.count,
-        userLiked: resData.likes.users.includes(user._id),
-        userDisliked: resData.dislikes.users.includes(user._id),
+        userLiked: resData.likes.users.includes(userData._id),
+        userDisliked: resData.dislikes.users.includes(userData._id),
         comments: resData.comments.length,
       },
     }));
@@ -153,7 +157,7 @@ export default function MasonryReviewGrid({
   const handleLike = reviewId => {
     return async () => {
       try {
-        const resData = await updateReviewEngagement(reviewId, user._id, true, false);
+        const resData = await updateReviewEngagement(reviewId, userData._id, true, false);
         updateEngagementState(reviewId, resData);
       } catch (error) {
         console.error('Failed to update like engagement:', error);
@@ -164,7 +168,7 @@ export default function MasonryReviewGrid({
   const handleDislike = reviewId => {
     return async () => {
       try {
-        const resData = await updateReviewEngagement(reviewId, user._id, false, true);
+        const resData = await updateReviewEngagement(reviewId, userData._id, false, true);
         updateEngagementState(reviewId, resData);
       } catch (error) {
         console.error('Failed to update dislike engagement:', error);
@@ -181,19 +185,6 @@ export default function MasonryReviewGrid({
       },
     }));
   };
-
-  // breakpoints for when an internal review is selected and the expanded panel appears
-  const breakpointColumnsObj = useMemo(() => {
-    const isInternal = selectedReview && !selectedReview?.content?.embedLink;
-    return isInternal
-      ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
-      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
-  }, [selectedReview]);
-
-  // Exit early if no reviews
-  if (!reviewList || (!reviewList?.internalReviews?.length && !reviewList?.externalReviews?.length)) {
-    return <div className="col-span-3 text-center text-gray-500">No reviews available</div>;
-  }
 
   return (
     <div className="flex gap-2">
@@ -229,7 +220,7 @@ export default function MasonryReviewGrid({
       {/* Expanded side panel (visible when internal review is selected) */}
       {selectedReview && !selectedReview?.content?.embedLink && (
         <ReviewCardExpanded
-          currentUser={user}
+          currentUser={userData}
           restaurantId={restaurantId}
           restaurantName={restaurantName}
           isOwner={isOwner}
