@@ -47,7 +47,7 @@ export default function ChallengesPage() {
     fetchActivatedChallenges();
   }, [userData]);
 
-  // remove active challenge from the board if the user completes the challenge
+  // remove active challenge from the board if user completes the challenge
   useEffect(() => {
     const filtered = activeChallenges.filter(challenge => challenge.completionStatus !== 'completed');
     if (filtered.length !== activeChallenges.length) {
