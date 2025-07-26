@@ -2,14 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
-
+import { useUserData } from '@/context/UserDataContext';
 import GeneralUserProfile from '@/components/generalProfile/GeneralUserProfile';
 import Spinner from '@/components/shared/Spinner';
-import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 export default function GeneralUserDashboard() {
-  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-
+  const { user } = useUser(); // Current logged-in user's Supabase info
+  const { userData, loadingData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [loading, setLoading] = useState(true);
   const [userMongoId, setUserMongoId] = useState(null);
   const [error, setError] = useState(null);
@@ -17,16 +16,9 @@ export default function GeneralUserDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!user?.id) return;
-        const id = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
+        if (!userData?._id) return;
 
-        console.log(`(userDashboard) MONGOID: `, id);
-
-        if (!id) {
-          throw new Error('MongoDB ID not found');
-        }
-
-        setUserMongoId(id);
+        setUserMongoId(userData._id);
       } catch (err) {
         setError(`Something went wrong. Please try again later.`);
       } finally {
@@ -35,7 +27,7 @@ export default function GeneralUserDashboard() {
     };
 
     fetchData();
-  }, [user?.id]);
+  }, [userData?._id]);
 
   if (loading) return <Spinner message="Loading Dashboard..." />;
 

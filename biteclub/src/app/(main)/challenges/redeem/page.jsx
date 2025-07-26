@@ -28,7 +28,7 @@ function randomString() {
 
 export default function Redeem() {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
+  const { userData, loadingData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [points, setPoints] = useState(0); // not null
   const [loading, setLoading] = useState(true);
 

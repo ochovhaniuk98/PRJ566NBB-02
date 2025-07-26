@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useUser } from '@/context/UserContext';
-import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
+import { useUserData } from '@/context/UserDataContext';
 import GeneralUserProfile from '@/components/generalProfile/GeneralUserProfile';
 import Spinner from '@/components/shared/Spinner';
 
 export default function GeneralPage() {
-  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+  const { userData, loadingData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
 
   // Notes for useParams():
   // - useParams() returns values as strings, but when used in a dynamic segment like /general/[generalUserId], it will be:
@@ -21,10 +20,8 @@ export default function GeneralPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!user?.id) return; // Wait until user is available
-        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
-
-        if (userMongoId && userMongoId === generalUserId) {
+        if (!userData?._id) return;
+        if (userData._id === generalUserId) {
           setIsOwner(true);
         }
       } catch (error) {
@@ -35,7 +32,7 @@ export default function GeneralPage() {
     };
 
     fetchData();
-  }, [generalUserId]);
+  }, [userData._id, generalUserId]);
 
   if (loading) return <Spinner message="Loading Profile..." />;
 
