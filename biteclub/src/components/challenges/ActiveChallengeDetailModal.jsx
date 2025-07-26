@@ -17,6 +17,7 @@ import { getDaysRemaining } from './Util';
 import { fakeRestaurants, fakeChallenges } from '@/app/data/fakeData';
 import { useState, useEffect } from 'react';
 import * as geolib from 'geolib'; // https://www.npmjs.com/package/geolib
+import { useUserData } from '@/context/UserDataContext';
 
 // DESCRIPTION: Pop-Up MODAL that appears when an active challenge card is clicked
 export default function ActiveChallengeDetailModal({
@@ -38,6 +39,8 @@ export default function ActiveChallengeDetailModal({
   const [userLocation, setUserLocation] = useState(null);
   const [fetchedUserLocation, setFetchedUserLocation] = useState(false);
 
+  const { userData } = useUserData(); // Current logged-in user's MongoDB data
+
   // fetch a activeChallengeDetail by activeChallengeData.challengeId
   useEffect(() => {
     // CHALLENGE
@@ -56,10 +59,9 @@ export default function ActiveChallengeDetailModal({
 
     // ACTIVE CHALLENGE DETAIL
     async function fetchActiveChallengeDetail() {
-      const userId = '6831f193ce0d8ebd1ea4877f'; // TODO: we will need to fetch real user's id once Nicole's PR is merged
       try {
         const res = await fetch(
-          `api/challenges/active-challenges/detail/get-by-ids?challengeId=${selectedActiveChallenge.challengeId}&userId=${userId}`
+          `api/challenges/active-challenges/detail/get-by-ids?challengeId=${selectedActiveChallenge.challengeId}&userId=${userData._id}`
         );
         const data = await res.json();
         // console.log('data', data);

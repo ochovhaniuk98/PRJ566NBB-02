@@ -5,6 +5,7 @@ import ActiveChallengeDetailModal from './ActiveChallengeDetailModal';
 import Leaderboard from './Leaderboard';
 import AllActiveChallenges from './AllActiveChallenges';
 import { fakeChallenges, fakeActivatedChallengeDetail } from '@/app/data/fakeData';
+import { useUserData } from '@/context/UserDataContext';
 
 export default function ChallengesPage() {
   const USER_ID = '664abc1234567890fedcba98'; // Porfile Owner's ID
@@ -13,6 +14,9 @@ export default function ChallengesPage() {
   const [selectedChallenge, setSelectedChallenge] = useState(null); // ensures modal opens with correct challenge details
   const [activeChallenges, setActiveChallenges] = useState([]); // list of user's active challenges
   const [fetchedActivatedChallenges, setFetchedActivatedChallenges] = useState(false);
+
+  const { userData } = useUserData(); // Current logged-in user's MongoDB data
+  console.log('User DDData: ', userData);
 
   // Creates "active" challenge data and adds it to user's active challenges array (created for DEMO purposes)
   function handleActivateChallenge(challenge) {
@@ -25,9 +29,9 @@ export default function ChallengesPage() {
   useEffect(() => {
     // get user's activated challenges
     async function fetchActivatedChallenges() {
-      const userId = '6831f193ce0d8ebd1ea4877f'; // TODO: we will need to fetch real user's id once Nicole's PR is merged
+      if (!userData) return;
       try {
-        const res = await fetch(`api/challenges/active-challenges/get-by-userId/${userId}`);
+        const res = await fetch(`api/challenges/active-challenges/get-by-userId/${userData._id}`);
         const data = await res.json();
         // console.log('Activated Challenges:', data[0]);
         setActiveChallenges(data);
@@ -39,47 +43,51 @@ export default function ChallengesPage() {
       setFetchedActivatedChallenges(true);
     }
     fetchActivatedChallenges();
-  }, []);
+  }, [userData]);
 
   return (
-    <MainBaseContainer>
-      <div className="main-side-padding w-full flex flex-col items-center m-16">
-        {/* PLACEHOLDER for main progress bar and general user header */}
-        <div className="w-full bg-gray-100 p-3 text-center">
-          <h2>Placeholder for main progress bar and general user header</h2>
-          <a href="/challenges/redeem">Redeem</a>
-        </div>
-        <div className="flex w-full min-h-96 my-4 gap-x-4">
-          {/* Active Challenges */}
-          {fetchedActivatedChallenges && (
-            <AllActiveChallenges
-              setShowChallengeDetailModal={setShowChallengeDetailModal}
-              setSelectedChallenge={setSelectedChallenge}
-              activeChallenges={activeChallenges}
-            />
-          )}
+    <>
+      {userData && (
+        <MainBaseContainer>
+          <div className="main-side-padding w-full flex flex-col items-center m-16">
+            {/* PLACEHOLDER for main progress bar and general user header */}
+            <div className="w-full bg-gray-100 p-3 text-center">
+              <h2>Placeholder for main progress bar and general user header</h2>
+              <a href="/challenges/redeem">Redeem</a>
+            </div>
+            <div className="flex w-full min-h-96 my-4 gap-x-4">
+              {/* Active Challenges */}
+              {fetchedActivatedChallenges && (
+                <AllActiveChallenges
+                  setShowChallengeDetailModal={setShowChallengeDetailModal}
+                  setSelectedChallenge={setSelectedChallenge}
+                  activeChallenges={activeChallenges}
+                />
+              )}
 
-          {/* Leaderboard */}
-          <Leaderboard />
-        </div>
-        {/* PLACEHOLDER for AI-generated challenges */}
-        <div className="w-full bg-gray-100 p-3 text-center">
-          <h2 className="uppercase">Placeholder for AI-generated challenges</h2>
-          {/* DEMO for adding/activating challenges */}
-          <DemoAddingChallenge onActivate={handleActivateChallenge} />
-        </div>
+              {/* Leaderboard */}
+              <Leaderboard />
+            </div>
+            {/* PLACEHOLDER for AI-generated challenges */}
+            <div className="w-full bg-gray-100 p-3 text-center">
+              <h2 className="uppercase">Placeholder for AI-generated challenges</h2>
+              {/* DEMO for adding/activating challenges */}
+              <DemoAddingChallenge onActivate={handleActivateChallenge} />
+            </div>
 
-        {/* When active challenge card is clicked, show MODAL */}
-        {showChallengeDetailModal && (
-          <ActiveChallengeDetailModal
-            onClose={setShowChallengeDetailModal}
-            selectedActiveChallenge={selectedChallenge}
-            setActiveChallenges={setActiveChallenges}
-            activeChallenges={activeChallenges}
-          />
-        )}
-      </div>
-    </MainBaseContainer>
+            {/* When active challenge card is clicked, show MODAL */}
+            {showChallengeDetailModal && (
+              <ActiveChallengeDetailModal
+                onClose={setShowChallengeDetailModal}
+                selectedActiveChallenge={selectedChallenge}
+                setActiveChallenges={setActiveChallenges}
+                activeChallenges={activeChallenges}
+              />
+            )}
+          </div>
+        </MainBaseContainer>
+      )}
+    </>
   );
 }
 
