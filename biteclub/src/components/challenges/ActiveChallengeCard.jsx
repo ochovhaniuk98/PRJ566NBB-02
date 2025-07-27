@@ -46,7 +46,7 @@ export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
 
   return (
     <>
-      {fetchedChallenge && numCompletedSteps && (
+      {fetchedChallenge && numCompletedSteps >= 0 && (
         <>
           <div
             className="w-1/3 relative flex flex-col items-center gap-y-2 bg-brand-yellow-lite p-4 font-primary cursor-pointer shadow-lg text-center"
