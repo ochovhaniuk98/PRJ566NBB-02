@@ -15,6 +15,7 @@ export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
 
   // num of completed steps
   const [numCompletedSteps, setNumCompletedSteps] = useState(0);
+  const [fetchedNumCompletedSteps, setFetchedNumCompletedSteps] = useState(false);
 
   // fetch a challenge by activeChallengeData.challengeId
   useEffect(() => {
@@ -42,11 +43,12 @@ export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
     // get num of completed challenge steps
     const numCompletedSteps = activeChallengeData.challengeSteps.filter(step => step.verificationStatus).length;
     setNumCompletedSteps(numCompletedSteps);
+    setFetchedNumCompletedSteps(true);
   }
 
   return (
     <>
-      {fetchedChallenge && numCompletedSteps >= 0 && (
+      {fetchedChallenge && fetchedNumCompletedSteps >= 0 && (
         <>
           <div
             className="w-1/3 relative flex flex-col items-center gap-y-2 bg-brand-yellow-lite p-4 font-primary cursor-pointer shadow-lg text-center"
