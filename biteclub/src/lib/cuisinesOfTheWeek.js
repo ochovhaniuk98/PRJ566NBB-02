@@ -19,9 +19,24 @@ export const fallbackCuisines = [
 // calculates week number of the year
 export function getWeekNumber() {
   const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 1); // January 1st of this year
-  const diff = now - start + (start.getTimezoneOffset() - now.getTimezoneOffset()) * 60000; //  time difference between now and Jan 1st (in milliseconds)
-  const oneWeek = 7 * 24 * 60 * 60 * 1000; // milliseconds in one week
+
+  // set date to the nearest Monday at midnight
+  const day = now.getDay(); // 0 = sunday, 1 = Monday, ..., 6 = Saturday
+  const diffToMonday = (day + 6) % 7; // converts Sunday (0) - 6, Monday (1) - 0,...
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - diffToMonday);
+  monday.setHours(0, 0, 0, 0);
+
+  const start = new Date(now.getFullYear(), 0, 1); // Jan 1st of this year
+  const dayOfWeekStart = start.getDay(); // Day of the week of Jan 1st
+  const diffToFirstMonday = (dayOfWeekStart + 6) % 7;
+  const firstMonday = new Date(start); // get monday
+  firstMonday.setDate(start.getDate() - diffToFirstMonday);
+  firstMonday.setHours(0, 0, 0, 0);
+
+  const diff = monday - firstMonday;
+  const oneWeek = 7 * 24 * 60 * 60 * 1000;
+
   return Math.floor(diff / oneWeek) + 1;
 }
 
@@ -40,4 +55,15 @@ export async function getCuisinesOfTheWeek(count = 12) {
     cuisinesOfTheWeek.push(allCuisines[(startIndex + i) % allCuisines.length]);
   }
   return cuisinesOfTheWeek;
+}
+
+export async function getRandomCuisine() {
+  const allCuisines = await getAllCuisines();
+
+  if (!allCuisines || allCuisines.length === 0) {
+    allCuisines = fallbackCuisines;
+  }
+
+  const randomIndex = Math.floor(Math.random() * allCuisines.length);
+  return allCuisines[randomIndex];
 }
