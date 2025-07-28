@@ -167,7 +167,7 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
         {/* !!! General user stats not included in schema !!! */}
         <div className="flex justify-between space-x-7">
           {iconStats.map((elem, i) => (
-            <IconStat key={i} iconStyles={elem} />
+            <IconStat key={i} iconStyles={elem} idx={i} />
           ))}
         </div>
       </div>
@@ -185,13 +185,14 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
   );
 }
 
-function IconStat({ iconStyles }) {
+function IconStat({ iconStyles, idx }) {
+  const statColours = ['#56e4be', '#ffb300', '#ffdcbe', '#80c001'];
   return (
     <div className="flex flex-col items-center">
       <div
         className={`aspect-square w-9 rounded-full bg-${iconStyles.bgColour} border border-transparent flex justify-center items-center `}
       >
-        <FontAwesomeIcon icon={iconStyles.icon} className={`icon-xl text-${iconStyles.iconColour}`} />
+        <FontAwesomeIcon icon={iconStyles.icon} className={`icon-xl`} style={{ color: statColours[idx] }} />
       </div>
       <h4>1234</h4>
     </div>

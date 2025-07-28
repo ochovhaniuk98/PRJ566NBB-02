@@ -2,12 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from './Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg-icons';
-import Image from 'next/image';
 // import { createClient } from '@/lib/auth/client';
 import { useUserData } from '@/context/UserDataContext';
-import { faTrashCan, faFlag } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import ReportForm from '../shared/ReportForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

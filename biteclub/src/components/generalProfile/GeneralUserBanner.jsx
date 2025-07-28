@@ -3,7 +3,7 @@ import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
 import Image from 'next/image';
 import { Button } from '@/components/shared/Button';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faUserMinus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
@@ -175,9 +175,9 @@ export default function GeneralUserBanner({
           </div>
         </div>
         {/*user name, bio, join date, follow btn*/}
-        <div className="flex flex-col gap-2">
-          <h1>{generalUserData.username}</h1>
-          <div className="min-h-28 py-4">
+        <div className="flex flex-col gap-2 mr-4 pt-4">
+          <span className="text-4xl font-bold font-primary mb-1">{generalUserData.username}</span>
+          <div className="min-h-20 py-4 px-2 rounded-lg">
             <p>{generalUserData.userBio}</p>
           </div>
           {/* JOIN DATE DISPLAY IF AVAILABLE */}
@@ -200,14 +200,15 @@ export default function GeneralUserBanner({
               variant={isFollowing ? 'secondary' : 'default'}
               onClick={handleFollowClick}
             >
-              <FontAwesomeIcon icon={isFollowing ? faMinus : faPlus} className="text-3xl text-navy" />
-              {isFollowing ? 'Following' : 'Follow'}
+              <FontAwesomeIcon icon={isFollowing ? faUserMinus : faPlus} className="text-3xl text-navy" />
+              {isFollowing ? 'Unfollow' : 'Follow'}
             </Button>
           )}
         </div>
+        {/* profile stats */}
         <div className="transparent">
           {iconStats.map((stat, i) => (
-            <ProfileStat key={i} statNum={stat.statNum} stat={stat} />
+            <ProfileStat key={i} statNum={stat.statNum} stat={stat} idx={i} />
           ))}
         </div>
       </GridCustomCols>
@@ -296,7 +297,8 @@ export default function GeneralUserBanner({
   );
 }
 
-function ProfileStat({ statNum, stat }) {
+function ProfileStat({ statNum, stat, idx }) {
+  const statColours = ['#56e4be', '#ffb300', '#ffdcbe', '#80c001'];
   return (
     <div className="flex items-center gap-3 pt-1 pb-2">
       <div>
@@ -306,7 +308,7 @@ function ProfileStat({ statNum, stat }) {
             stat.iconColour != 'brand-yellow' ? 'border-' + stat.iconColour : 'border-yellow-500'
           } w-12 h-12  flex justify-center items-center`}
         >
-          <FontAwesomeIcon icon={stat.icon} className={`text-3xl ${'text-' + stat.iconColour}`} />
+          <FontAwesomeIcon icon={stat.icon} className={`text-3xl`} style={{ color: statColours[idx] }} />
         </div>
       </div>
       <div>

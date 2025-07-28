@@ -122,7 +122,7 @@ export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png'
       ? "url('/img/greenOnYellowBG.png')"
       : step === SECOND_STEP
       ? "url('/img/peachOnAquaBG.png')"
-      : "url('/img/yellowOnBlueBG.png')";
+      : "url('/img/yellowOnBlueBG.png')"; //yellowOnBlueBG.png
 
   return (
     <div className="grid grid-cols-[55%_45%] h-screen relative overflow-y-hidden">
@@ -259,8 +259,9 @@ function PreferencesSelector({ config, picked, setPicked, options, setOptions })
 }
 
 function Scale({ value, setValue }) {
-  const SELECTED_OPTION_STYLING = 'bg-[#56e4be] h-[28px] w-[28px] rounded-full z-10 shadow-md cursor-pointer';
-  const UNSELECTED_OPTION_STYLING = 'bg-[#ffdcbe] h-[28px] w-[12px] rounded-xl z-10 cursor-pointer hover:scale-120';
+  const SELECTED_OPTION_STYLING = 'bg-[#56e4be] h-[28px] w-[28px] rounded-full z-10 shadow-md cursor-pointer relative';
+  const UNSELECTED_OPTION_STYLING =
+    'bg-[#ffdcbe] h-[28px] w-[12px] rounded-xl z-10 cursor-pointer hover:scale-120 relative';
   const buttons = [];
   for (let i = 1; i <= 5; i++) {
     buttons.push(
@@ -272,7 +273,9 @@ function Scale({ value, setValue }) {
           console.log(e.target.value);
           setValue(Number(e.target.value));
         }}
-      />
+      >
+        <span className="absolute -bottom-6 right-[2px] font-primary font-semibold text-sm text-brand-navy">{i}</span>
+      </button>
     );
   }
   return (

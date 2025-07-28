@@ -28,7 +28,7 @@ export default function SearchBar() {
         <input
           type="text"
           placeholder="Search for restaurants, blog posts, or users"
-          className="w-full pl-8"
+          className="w-full pl-8 font-primary rounded-full"
           value={searchInput}
           onChange={e => setSearchInput(e.target.value)}
           onKeyDown={handleKeyDown}

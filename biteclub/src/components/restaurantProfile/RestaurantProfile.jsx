@@ -18,6 +18,7 @@ import MentionedTab from './MentionedTab';
 import MasonryReviewGrid from './MasonryReviewGrid';
 import EventsAndAnnounce from './EventsAndAnnounce';
 import Spinner from '@/components/shared/Spinner';
+import FavouriteButton from '../shared/FavouriteButton';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
@@ -27,6 +28,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value when adding a review
   const [numOfFavourites, setNumOfFavourites] = useState(0);
+  const [hasFavourited, setHasFavourited] = useState(false);
 
   // stores the MongoDB user ID of the logged-in user, or restaurantId if owner
   const [userId, setUserId] = useState(isOwner ? restaurantId : null); // If the user is the owner, we can use restaurantId directly as userId.
@@ -132,6 +134,8 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     } catch (err) {
       console.error('Error toggling favourite:', err.message);
     }
+
+    setHasFavourited(prev => !prev); // NEEDS TO BE CHANGED TO CONNECT TO BACKEND
   };
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
@@ -161,15 +165,21 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
             />
           </>
         ) : (
-          <>
-            <SingleTabWithIcon
+          <div className="flex items-center ">
+            {/*<SingleTabWithIcon
               icon={faHeart}
               detailText={numOfFavourites ?? 0}
               onClick={handleFavouriteRestaurantClick}
+            />*/}
+            <FavouriteButton
+              handleFavouriteToggle={handleFavouriteRestaurantClick}
+              hasFavourited={hasFavourited}
+              numOfFavourites={numOfFavourites}
+              forRestaurant={true}
             />
             <SingleTabWithIcon icon={faPen} detailText="Write a Review" onClick={() => setShowAddReviewForm(true)} />
-            <SingleTabWithIcon icon={faUtensils} detailText="Reserve Table" />
-          </>
+            {/*<SingleTabWithIcon icon={faUtensils} detailText="Reserve Table" />*/}
+          </div>
         )}
       </InfoBanner>
 

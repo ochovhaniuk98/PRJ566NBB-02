@@ -18,6 +18,7 @@ import {
   faHeart as faHeartSolid,
   faFlag,
 } from '@fortawesome/free-solid-svg-icons';
+import FavouriteButton from '../shared/FavouriteButton';
 
 export default function BlogPost({ id }) {
   const [blogPost, setBlogPost] = useState(null);
@@ -33,6 +34,8 @@ export default function BlogPost({ id }) {
   const [hasLiked, setHasLiked] = useState(false);
   const [hasDisliked, setHasDisliked] = useState(false);
   const [hasFavourited, setHasFavourited] = useState(false);
+
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
 
   useEffect(() => {
     if (!id) return;
@@ -165,13 +168,18 @@ export default function BlogPost({ id }) {
               0
             </div>
             {/* favourite */}
-            <div className="flex items-center w-10" onClick={handleFavouriteToggle}>
+            <FavouriteButton
+              handleFavouriteToggle={handleFavouriteToggle}
+              hasFavourited={hasFavourited}
+              numOfFavourites={numOfFavourites}
+            />
+            {/*<div className="flex items-center w-10" onClick={handleFavouriteToggle}>
               <FontAwesomeIcon
                 icon={hasFavourited ? faHeartSolid : faHeartRegular}
                 className={`icon-lg mr-1 ${hasFavourited ? 'text-brand-red' : 'text-brand-navy'}`}
               />
               {numOfFavourites ?? 0}
-            </div>
+            </div>*/}
             {/* 
             <SingleTabWithIcon
               icon={faHeart}
