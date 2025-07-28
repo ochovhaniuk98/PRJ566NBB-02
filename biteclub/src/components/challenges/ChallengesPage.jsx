@@ -1,17 +1,22 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MainBaseContainer from '../shared/MainBaseContainer';
 import ActiveChallengeDetailModal from './ActiveChallengeDetailModal';
 import Leaderboard from './Leaderboard';
 import AllActiveChallenges from './AllActiveChallenges';
 import { fakeChallenges, fakeActivatedChallengeDetail } from '@/app/data/fakeData';
+import { useUserData } from '@/context/UserDataContext';
 
 export default function ChallengesPage() {
   const USER_ID = '664abc1234567890fedcba98'; // Porfile Owner's ID
   const MAX_ACTIVE = 3; // users can only have MAX 3 active challenges
   const [showChallengeDetailModal, setShowChallengeDetailModal] = useState(false); // opens/closes modal showing selected challenge details
   const [selectedChallenge, setSelectedChallenge] = useState(null); // ensures modal opens with correct challenge details
-  const [activeChallenges, setActiveChallenges] = useState([fakeActivatedChallengeDetail]); // list of user's active challenges
+
+  const [activeChallenges, setActiveChallenges] = useState([]); // list of user's active challenges
+  const [fetchedActivatedChallenges, setFetchedActivatedChallenges] = useState(false);
+
+  const { userData } = useUserData(); // Current logged-in user's MongoDB data
 
   // Creates "active" challenge data and adds it to user's active challenges array (created for DEMO purposes)
   function handleActivateChallenge(challenge) {
@@ -21,42 +26,78 @@ export default function ChallengesPage() {
     setActiveChallenges(prev => [...prev, newActivated]);
   }
 
-  return (
-    <MainBaseContainer>
-      <div className="main-side-padding w-full flex flex-col items-center m-16">
-        {/* PLACEHOLDER for main progress bar and general user header */}
-        <div className="w-full bg-gray-100 p-3 text-center">
-          <h2>Placeholder for main progress bar and general user header</h2>
-          <a href="/challenges/redeem">Redeem</a>
-        </div>
-        <div className="flex w-full min-h-96 my-4 gap-x-4">
-          {/* Active Challenges */}
-          <AllActiveChallenges
-            setShowChallengeDetailModal={setShowChallengeDetailModal}
-            setSelectedChallenge={setSelectedChallenge}
-            activeChallenges={activeChallenges}
-          />
-          {/* Leaderboard */}
-          <Leaderboard />
-        </div>
-        {/* PLACEHOLDER for AI-generated challenges */}
-        <div className="w-full bg-gray-100 p-3 text-center">
-          <h2 className="uppercase">Placeholder for AI-generated challenges</h2>
-          {/* DEMO for adding/activating challenges */}
-          <DemoAddingChallenge onActivate={handleActivateChallenge} />
-        </div>
+  useEffect(() => {
+    // get user's activated challenges
+    async function fetchActivatedChallenges() {
+      if (!userData) return;
+      try {
+        const res = await fetch(`api/challenges/active-challenges/get-by-userId/${userData._id}`);
+        const data = await res.json();
 
-        {/* When active challenge card is clicked, show MODAL */}
-        {showChallengeDetailModal && (
-          <ActiveChallengeDetailModal
-            onClose={setShowChallengeDetailModal}
-            selectedActiveChallenge={selectedChallenge}
-            setActiveChallenges={setActiveChallenges}
-            activeChallenges={activeChallenges}
-          />
-        )}
-      </div>
-    </MainBaseContainer>
+        const inProgressChallenges = data.filter(challenge => challenge.completionStatus === 'in-progress');
+        // console.log('Activated inProgressChallenges:', inProgressChallenges[0]);
+        setActiveChallenges(inProgressChallenges);
+
+        // console.log('Active challenges: ', activeChallenges);
+      } catch (err) {
+        console.error('Failed to load activated challenges:', err);
+      }
+      setFetchedActivatedChallenges(true);
+    }
+    fetchActivatedChallenges();
+  }, [userData]);
+
+  // remove active challenge from the board if user completes the challenge
+  useEffect(() => {
+    const filtered = activeChallenges.filter(challenge => challenge.completionStatus !== 'completed');
+    if (filtered.length !== activeChallenges.length) {
+      setActiveChallenges(filtered);
+    }
+  }, [activeChallenges]);
+
+  return (
+    <>
+      {userData && (
+        <MainBaseContainer>
+          <div className="main-side-padding w-full flex flex-col items-center m-16">
+            {/* PLACEHOLDER for main progress bar and general user header */}
+            <div className="w-full bg-gray-100 p-3 text-center">
+              <h2>Placeholder for main progress bar and general user header</h2>
+              <a href="/challenges/redeem">Redeem</a>
+            </div>
+            <div className="flex w-full min-h-96 my-4 gap-x-4">
+              {/* Active Challenges */}
+              {fetchedActivatedChallenges && (
+                <AllActiveChallenges
+                  setShowChallengeDetailModal={setShowChallengeDetailModal}
+                  setSelectedChallenge={setSelectedChallenge}
+                  activeChallenges={activeChallenges}
+                />
+              )}
+
+              {/* Leaderboard */}
+              <Leaderboard />
+            </div>
+            {/* PLACEHOLDER for AI-generated challenges */}
+            <div className="w-full bg-gray-100 p-3 text-center">
+              <h2 className="uppercase">Placeholder for AI-generated challenges</h2>
+              {/* DEMO for adding/activating challenges */}
+              <DemoAddingChallenge onActivate={handleActivateChallenge} />
+            </div>
+
+            {/* When active challenge card is clicked, show MODAL */}
+            {showChallengeDetailModal && (
+              <ActiveChallengeDetailModal
+                onClose={setShowChallengeDetailModal}
+                selectedActiveChallenge={selectedChallenge}
+                setActiveChallenges={setActiveChallenges}
+                activeChallenges={activeChallenges}
+              />
+            )}
+          </div>
+        </MainBaseContainer>
+      )}
+    </>
   );
 }
 

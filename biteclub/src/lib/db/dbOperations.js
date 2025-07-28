@@ -1165,3 +1165,81 @@ export async function getPostComment({ commentId }) {
     throw error;
   }
 }
+
+// CHALLENGES
+// Get Active Challenges by User Id
+export async function getActiveChallengesByUserId({ userId }) {
+  try {
+    await dbConnect();
+
+    const activeChallenges = (await ActivateChallengeDetail.find({ userId })) || [];
+
+    if (activeChallenges.length === 0) {
+      console.log(`No active challenges found for userId: ${userId}`);
+    }
+
+    return activeChallenges;
+  } catch (error) {
+    console.error('Error retrieving active challenges:', error);
+    throw error;
+  }
+}
+
+// Get Active Challenge Detail by Challenge Id and User ID
+export async function getActiveChallengeDetailByIds({ challengeId, userId }) {
+  try {
+    await dbConnect();
+
+    const activeChallengeDetail = await ActivateChallengeDetail.findOne({ challengeId: challengeId, userId: userId });
+
+    if (activeChallengeDetail.length === 0) {
+      console.log(`No active challenge found for ids: Challenge: ${challengeId} User: ${userId}`);
+    }
+
+    return activeChallengeDetail;
+  } catch (error) {
+    console.error('Error retrieving active challenge:', error);
+    throw error;
+  }
+}
+
+// Get Challenge by Challenge Id
+export async function getChallengeByChallengeId({ challengeId }) {
+  try {
+    await dbConnect();
+
+    const challenge = await Challenge.findById(challengeId);
+
+    if (!challenge) {
+      throw new Error(`Could not find challenge by id: ${challengeId}`);
+    }
+
+    return challenge;
+  } catch (error) {
+    console.error('Error finding a challenge by challenge id:', error);
+    throw error;
+  }
+}
+
+// Update Active Challenge Detail (Challenge Step)
+export async function updateActiveChallengeDetail({ activeChallengeDetailId, challengeSteps, completionStatus }) {
+  try {
+    await dbConnect();
+
+    const updatedChallenge = await ActivateChallengeDetail.findByIdAndUpdate(
+      activeChallengeDetailId,
+      { challengeSteps, completionStatus },
+      { new: true } // return the updated document
+    );
+
+    if (!updatedChallenge) {
+      throw new Error('ActiveChallengeDetail not found');
+    }
+    console.log('updatedChallenge', updatedChallenge);
+
+    return updatedChallenge;
+  } catch (error) {
+    console.error('Error updating active challenge detail:', error);
+    throw error;
+  }
+}

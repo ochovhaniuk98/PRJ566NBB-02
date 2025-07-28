@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGamepad, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import ActiveChallengeCard from './ActiveChallengeCard';
