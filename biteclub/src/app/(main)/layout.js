@@ -2,12 +2,15 @@
 
 import { KoHo, Jaro, Roboto } from 'next/font/google';
 import { config } from '@fortawesome/fontawesome-svg-core';
+import { Providers } from './providers';
+import { useUser } from '@/context/UserContext';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import './../styles/globals.css';
-import MainMenu from '../../components/shared/MainMenu';
-import SearchBar from '../../components/shared/SearchBar';
-import { UserProvider } from '@/context/UserContext';
-import { UserDataProvider } from '@/context/UserDataContext';
+// import MainMenu from '../../components/shared/MainMenu';
+// import SearchBar from '../../components/shared/SearchBar';
+// import BusinessControl from '@/components/restaurantProfile/BusinessControl';
+import LayoutContent from '@/components/shared/LayoutContent';
+
 config.autoAddCss = false;
 
 const koho = KoHo({
@@ -37,6 +40,9 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // const { user } = useUser(); // Current logged-in user's Supabase info
+  // const userType = user?.user_metadata?.user_type || null;
+
   return (
     <html
       lang="en"
@@ -44,16 +50,9 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning={true}
     >
       <body className="flex" suppressHydrationWarning={true}>
-        <UserProvider>
-          <UserDataProvider>
-            <MainMenu />
-            <div className="flex-1 relative">
-              {/* overflow-y-auto */}
-              <SearchBar />
-              <main className="main-side-padding">{children}</main>
-            </div>
-          </UserDataProvider>
-        </UserProvider>
+        <Providers>
+          <LayoutContent>{children}</LayoutContent>
+        </Providers>
       </body>
     </html>
   );
