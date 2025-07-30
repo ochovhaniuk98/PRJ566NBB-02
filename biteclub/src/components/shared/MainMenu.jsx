@@ -60,7 +60,7 @@ export default function MainMenu() {
             setIsHovered(true);
           }}
         >
-          <nav className="space-y-6 flex flex-col items-center text-brand-navy">
+          <nav className="space-y-6 flex flex-col items-center text-brand-navy font-primary">
             {menuLinks.map((link, idx) => {
               const isSelected = pathname === link;
               return (
