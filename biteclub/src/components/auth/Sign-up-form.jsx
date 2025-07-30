@@ -95,7 +95,7 @@ export function SignUpForm({ className, ...props }) {
       <Card>
         <CardHeader>
           <CardTitle className="text-center">
-            <h2>Sign up</h2>
+            <h1 className="font-normal">Sign Up</h1>
           </CardTitle>
           <CardDescription>
             <h3 className="text-center">Create a new account</h3>

@@ -15,14 +15,15 @@ const buttonVariants = cva(
         secondary: 'bg-brand-peach rounded-sm',
         ghost: 'hover:bg-accent rounded-sm hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 rounded-sm hover:underline',
-        googlebtn: 'border bg-brand-google text-white rounded-sm',
+        googlebtn: ' bg-brand-google text-white rounded-sm',
         danger: 'bg-brand-red text-white uppercase rounded-sm',
         third: 'bg-brand-blue-lite border border-brand-blue rounded-sm',
         roundTab:
           'bg-brand-blue-lite rounded-full border border-brand-blue-lite hover:bg-brand-aqua-lite hover:border-brand-aqua',
         roundTabActive:
           'bg-brand-aqua-lite rounded-full border border-brand-aqua hover:bg-brand-aqua-lite hover:border-brand-aqua',
-        resolvedTab: 'bg-brand-yellow-lite rounded-full border border-amber-200 hover:bg-amber-100 hover:border-amber-200',
+        resolvedTab:
+          'bg-brand-yellow-lite rounded-full border border-amber-200 hover:bg-amber-100 hover:border-amber-200',
         resolvedTabActive: 'bg-amber-100 rounded-full border border-amber-300 ',
       },
       size: {

@@ -79,9 +79,9 @@ export function LoginForm({ className, ...props }) {
       <Card>
         <CardHeader>
           <CardTitle className="text-center">
-            <h2>Login</h2>
+            <h1 className="text-black font-normal">Login</h1>
           </CardTitle>
-              <CardDescription>
+          <CardDescription>
             <h3 className="text-center">Welcome Back</h3>
           </CardDescription>
         </CardHeader>
