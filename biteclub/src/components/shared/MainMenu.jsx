@@ -10,7 +10,7 @@ import { useUser } from '@/context/UserContext';
 export default function MainMenu() {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const userType = user?.user_metadata?.user_type || null;
-  
+
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
@@ -60,7 +60,7 @@ export default function MainMenu() {
             setIsHovered(true);
           }}
         >
-          <nav className="space-y-6 flex flex-col items-center text-brand-navy">
+          <nav className="space-y-6 flex flex-col items-center text-brand-navy font-primary">
             {menuLinks.map((link, idx) => {
               const isSelected = pathname === link;
               return (

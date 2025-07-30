@@ -40,8 +40,9 @@ export default function ReviewCard({
       onMouseEnter={() => setCardHovered(true)}
       onMouseLeave={() => setCardHovered(false)}
     >
-      <div className="p-4 pt-2">
+      <div className="p-4 pt-4">
         {/* show link to open Report form when ... icon is clicked */}
+        {/*
         <FontAwesomeIcon
           icon={faEllipsis}
           className={`icon-lg text-brand-navy invisible`} // temporarily made elipsis for reporting invisible
@@ -49,7 +50,7 @@ export default function ReviewCard({
             e.stopPropagation();
             setShowReportFormLink(prev => !prev);
           }}
-        />
+        /> */}
         <div className="flex justify-between">
           <StarRating colour={'text-brand-green'} iconSize={'icon-lg'} ratingNum={review.rating} />
           <div>

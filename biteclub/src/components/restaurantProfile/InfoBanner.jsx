@@ -8,7 +8,7 @@ export default function InfoBanner({ name, avgRating, numReviews, cuisine, addre
     // bg-brand-yellow-extralite
     <div className="bg-brand-white flex justify-between main-side-padding pt-8 w-full">
       <div className="flex flex-col gap-y-1">
-        <h1 className="text-3xl font-bold">{name}</h1>
+        <span className="text-3xl font-bold font-primary mb-1">{name}</span>
         <div className="flex items-center gap-x-2">
           <h2 className="font-semibold">{avgRating}</h2>
           <StarRating colour={'text-brand-green'} iconSize={'icon-xl'} ratingNum={avgRating} />

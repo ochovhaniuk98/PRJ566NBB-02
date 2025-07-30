@@ -1,14 +1,24 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Button } from './Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown, faComment } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
+import { Button } from './Button';
 // import { createClient } from '@/lib/auth/client';
 import { useUserData } from '@/context/UserDataContext';
-import { faTrashCan, faFlag } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import ReportForm from '../shared/ReportForm';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faThumbsUp as faThumbsUpRegular,
+  faThumbsDown as faThumbsDownRegular,
+  faComment,
+} from '@fortawesome/free-regular-svg-icons';
+
+import {
+  faThumbsUp as faThumbsUpSolid,
+  faThumbsDown as faThumbsDownSolid,
+  faTrashCan,
+  faFlag,
+} from '@fortawesome/free-solid-svg-icons';
 
 //////////////// COMMENT THREAD FOR *** BLOG POST *** ONLY! ///////////////
 
@@ -283,6 +293,10 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
   const [showReplyBtn, setShowReplyBtn] = useState(false);
   const [replyContent, setReplyContent] = useState('');
 
+  // track if User thumbsUped or Down (like/dislike)
+  const [hasLiked, setHasLiked] = useState(false);
+  const [hasDisliked, setHasDisliked] = useState(false);
+
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
 
@@ -337,6 +351,19 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
     }
   };
 
+  // handle LIKE or DISLIKE (change icons if liked by USER)
+  const handleLike = () => {
+    onLike(setLikes, comment);
+    setHasLiked(true);
+    setHasDisliked(false);
+  };
+
+  const handleDislike = () => {
+    onDislike(setDislikes, comment, setLikes);
+    setHasLiked(false);
+    setHasDisliked(true);
+  };
+
   return (
     <>
       <div className="flex mb-6">
@@ -356,14 +383,18 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
 
           {/* like, dislike, reply */}
           <div className="flex gap-4 text-gray-500 text-sm">
-            <button onClick={() => onLike(setLikes, comment)} className="hover:text-brand-navy cursor-pointer">
-              <FontAwesomeIcon icon={faThumbsUp} className={`icon-md text-brand-navy`} /> {likes}
+            <button onClick={handleLike} className="hover:text-brand-navy cursor-pointer">
+              <FontAwesomeIcon
+                icon={hasLiked ? faThumbsUpSolid : faThumbsUpRegular}
+                className={`icon-md text-brand-navy`}
+              />{' '}
+              {likes}
             </button>
-            <button
-              onClick={() => onDislike(setDislikes, comment, setLikes)}
-              className="hover:text-brand-navy cursor-pointer"
-            >
-              <FontAwesomeIcon icon={faThumbsDown} className={`icon-md text-brand-navy`} />
+            <button onClick={handleDislike} className="hover:text-brand-navy cursor-pointer">
+              <FontAwesomeIcon
+                icon={hasDisliked ? faThumbsDownSolid : faThumbsDownRegular}
+                className={`icon-md text-brand-navy`}
+              />
             </button>
 
             {/* show Report form when flag icon is clicked */}
@@ -375,17 +406,6 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
             >
               <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy mr-3 cursor-pointer`} />
             </div>
-
-            {openReportForm && (
-              <ReportForm
-                onClose={() => setOpenReportForm(false)}
-                contentTitle={comment.content}
-                contentType="CommentPost"
-                contentId={comment._id}
-                reportedUser={reportedUser}
-                // reporter={reporter}
-              />
-            )}
 
             {showReplyBtn && (
               <button onClick={() => setShowReplyInput(!showReplyInput)} className="hover:text-black cursor-pointer">
@@ -436,6 +456,16 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
           </div>
         </div>
       </div>
+      {openReportForm && (
+        <ReportForm
+          onClose={() => setOpenReportForm(false)}
+          contentTitle={comment.content}
+          contentType="CommentPost"
+          contentId={comment._id}
+          reportedUser={reportedUser}
+          // reporter={reporter}
+        />
+      )}
     </>
   );
 };
