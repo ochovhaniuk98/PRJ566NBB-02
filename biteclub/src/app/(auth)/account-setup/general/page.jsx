@@ -60,6 +60,7 @@ export default function GeneralSetupForm() {
         <h2 className="text-center">Welcome to Biteclub!</h2>
         <div>
           {/* Show avatar image upload if USER */}
+
           {user ? (
             <Avatar
               uid={user.id}
@@ -70,7 +71,14 @@ export default function GeneralSetupForm() {
               }}
             />
           ) : (
-            <Spinner message="Loading User..." />
+            <Avatar
+              uid={''}
+              url={''}
+              size={150}
+              onUpload={url => {
+                setAvatarUrl(url);
+              }}
+            />
           )}
 
           <div>
