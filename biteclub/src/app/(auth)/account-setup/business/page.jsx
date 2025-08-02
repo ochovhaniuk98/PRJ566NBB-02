@@ -1,10 +1,7 @@
 'use client';
 
-// src/app/(auth)/account-setup/business/page.jsx
-
 import { useEffect, useState } from 'react';
-import { useUser } from '@/context/UserContext';
-
+import { createClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/shared/Input';
 import { Button } from '@/components/shared/Button';
@@ -15,9 +12,7 @@ import { faCloudArrowUp, faUtensils } from '@fortawesome/free-solid-svg-icons';
 
 export default function BusinessSetupForm() {
   const router = useRouter();
-  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-
-  // const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState('');
 
@@ -32,6 +27,16 @@ export default function BusinessSetupForm() {
   // --- License upload states ---
   const [uploadedLicenseInfo, setUploadedLicenseInfo] = useState(null);
   const [licenseDownloadUrl, setLicenseDownloadUrl] = useState(null);
+
+  // --- Fetch user from Supabase on component mount ---
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+      if (!error) setUser(data.user);
+    };
+    fetchUser();
+  }, []);
 
   // --- Autocomplete logic: fetch results based on user input (debounced) ---
   useEffect(() => {
@@ -83,7 +88,7 @@ export default function BusinessSetupForm() {
         if (!licenseResponse.ok) {
           throw new Error(licenseResult.error || 'Failed to upload license');
         }
-        console.log('✅ License URL saved to MongoDB:', licenseResult);
+        console.log('License URL saved to MongoDB:', licenseResult);
 
         // --- 2. Link restaurant ID to business user in /update-id-linkage ---
         const idResponse = await fetch('/api/business-user/update-id-linkage', {
@@ -115,7 +120,7 @@ export default function BusinessSetupForm() {
 
   return (
     <div
-      className="h-full min-h-screen flex bg-cover bg-[length:100%]"
+      className="h-full min-h-screen flex bg-cover"
       style={{
         backgroundImage: "url('/img/greenOnYellowBG.png')",
         backgroundPosition: '-2rem',
