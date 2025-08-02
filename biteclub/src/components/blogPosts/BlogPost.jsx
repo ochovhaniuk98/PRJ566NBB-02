@@ -26,6 +26,10 @@ export default function BlogPost({ id }) {
   const [postTitle, setPostTitle] = useState(null);
   const [numOfFavourites, setNumOfFavourites] = useState(0);
 
+  // likes/dislikes
+  const [likes, setLikes] = useState(0);
+  const [dislikes, setDislikes] = useState(0);
+
   // for reporting a post
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
@@ -58,6 +62,24 @@ export default function BlogPost({ id }) {
         setPostTitle(postData?.title || null);
         setNumOfFavourites(favouritesData.numOfFavourites);
         setBlogPost(postData);
+
+        // set likes
+        setLikes(postData?.likes?.count || 0);
+        console.log('Likes count: ', postData?.likes?.count || 0);
+
+        // Check if current user has liked the post
+        if (postData?.likes?.users?.includes(postData.user_id)) {
+          setHasLiked(true);
+        } else {
+          setHasLiked(false);
+        }
+
+        // Check if current user has disliked the post
+        if (postData?.dislikes?.users?.includes(postData.user_id)) {
+          setHasDisliked(true);
+        } else {
+          setHasDisliked(false);
+        }
 
         // for reporting a post
         fetchReportedUser(postData.user_id);
@@ -116,17 +138,54 @@ export default function BlogPost({ id }) {
     }
   };
 
+  // TODO: Make filled if already liked/disliked
   // handle like/dislike/favourite
-  const handleLike = () => {
-    setHasLiked(prev => !prev);
+  const handleLike = async () => {
+    const res = await fetch('/api/blog-posts/add-like-dislike', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        postId: blogPost._id,
+        like: true,
+        dislike: false,
+        userId: blogPost.user_id,
+      }),
+    });
+    if (!res.ok) throw new Error(`Could not add like to a post ${res.status}`);
+
+    const data = await res.json();
+
+    setLikes(data.comment.likes.count);
+    setDislikes(data.comment.dislikes.count);
+
+    setHasLiked(true);
     setHasDisliked(false);
-    // NOT CONNECTED TO BACKEND YET
   };
 
-  const handleDislike = () => {
-    setHasDisliked(prev => !prev);
+  const handleDislike = async () => {
+    const res = await fetch('/api/blog-posts/add-like-dislike', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        postId: blogPost._id,
+        like: false,
+        dislike: true,
+        userId: blogPost.user_id,
+      }),
+    });
+    if (!res.ok) throw new Error(`Could not add dislike to a post ${res.status}`);
+
+    const data = await res.json();
+
+    setLikes(data.comment.likes.count);
+    setDislikes(data.comment.dislikes.count);
+
+    setHasDisliked(true);
     setHasLiked(false);
-    // NOT CONNECTED TO BACKEND YET
   };
 
   const handleFavouriteToggle = async () => {
@@ -157,7 +216,7 @@ export default function BlogPost({ id }) {
                 icon={hasLiked ? faThumbsUpSolid : faThumbsUpRegular}
                 className="icon-lg text-brand-navy mr-1"
               />
-              0
+              {likes}
             </div>
             {/* thumbs down */}
             <div className="flex items-center w-10" onClick={handleDislike}>
@@ -165,7 +224,6 @@ export default function BlogPost({ id }) {
                 icon={hasDisliked ? faThumbsDownSolid : faThumbsDownRegular}
                 className="icon-lg text-brand-navy mr-1"
               />
-              0
             </div>
             {/* favourite */}
             <FavouriteButton
