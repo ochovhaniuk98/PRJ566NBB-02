@@ -240,7 +240,7 @@ export default function BusinessSetupForm() {
           </div>
 
           {/* --- Submit Button --- */}
-          <Button className="w-60 m-auto mt-12" onClick={handleSubmit} variant="default" disabled={loading}>
+          <Button className="w-60 m-auto mt-6" onClick={handleSubmit} variant="default" disabled={loading}>
             {loading ? 'Saving...' : 'Confirm'}
           </Button>
 
