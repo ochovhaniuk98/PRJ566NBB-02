@@ -323,7 +323,22 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
     if (comment.user == userId) {
       setIsOwner(true);
     }
-    console.log('Reporting user id: ', userId);
+
+    // Check if current user has liked the comment
+    if (comment?.likes?.users?.includes(userId)) {
+      setHasLiked(true);
+    } else {
+      setHasLiked(false);
+    }
+
+    // Check if current user has disliked the comment
+    if (comment?.dislikes?.users?.includes(userId)) {
+      setHasDisliked(true);
+    } else {
+      setHasDisliked(false);
+    }
+
+    // console.log('Reporting user id: ', userId);
     // for reporting a comment
     fetchReportedUser(comment.user);
   }, []);
@@ -344,7 +359,7 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
         const reportedUser = await res.json();
 
         setReportedUser(reportedUser);
-        console.log('reportedUser', reportedUser);
+        // console.log('reportedUser', reportedUser);
       }
     } catch (error) {
       console.error('Failed to fetch reported User:', error);

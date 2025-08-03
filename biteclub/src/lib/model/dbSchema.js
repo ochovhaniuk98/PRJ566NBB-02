@@ -117,11 +117,11 @@ const BlogPostSchema = new mongoose.Schema({
   title: String,
   date_posted: Date,
   likes: {
-    count: Number,
+    count: { type: Number, default: 0 },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
   dislikes: {
-    count: Number,
+    count: { type: Number, default: 0 },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CommentPost' }], // comments will be stored separately in CommentPost collection
