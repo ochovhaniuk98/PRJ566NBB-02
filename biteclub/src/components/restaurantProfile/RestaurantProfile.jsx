@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import { faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
@@ -22,6 +23,8 @@ import FavouriteButton from '../shared/FavouriteButton';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+  const { refreshUserData } = useUserData();  
+
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
@@ -144,6 +147,8 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
+      setIsFavourited(result.isFavourited);
+      refreshUserData();
 
       // Re-fetch the updated Favourite count immediately from backend
       const countRes = await fetch(`/api/restaurants/num-of-favourites/${restaurantId}`);
@@ -153,7 +158,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
 
       const countData = await countRes.json();
       setNumOfFavourites(countData.numOfFavourites);
-      setIsFavourited(result.isFavourited);
     } catch (err) {
       console.error('Error toggling favourite:', err.message);
     }

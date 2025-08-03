@@ -37,8 +37,8 @@ export default function BlogPost({ id }) {
   const [isFavourited, setIsFavourited] = useState(false);
 
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const userType = user?.user_metadata.user_type;
-  const { refreshUserData } = useUserData();
+  const userType = user?.user_metadata.user_type; // Check userType, Business users should not see or interact with blog post
+  const { refreshUserData } = useUserData();  // e.g. refresh after Favouriting the post
 
   useEffect(() => {
     if (!id) return;
