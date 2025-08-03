@@ -52,7 +52,7 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
       icon: faFeather,
       bgColour: 'white',
       iconColour: 'brand-peach',
-      statNum: 456 || 0, // [TO FIX: NEED CALCULATION] blogPostsCount
+      statNum: generalUserData?.myBlogPosts?.length || 0, 
     },
     {
       label: 'Challenges',
