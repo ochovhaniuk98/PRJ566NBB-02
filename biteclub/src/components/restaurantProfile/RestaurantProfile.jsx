@@ -104,6 +104,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     if (!isOwner && !userId) fetchMongoUserId();
   }, [user?.id]);
 
+
   // Check if this restaurant is favourited by current user
   useEffect(() => {
     const checkFavouriteStatus = async () => {
@@ -123,6 +124,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
 
     checkFavouriteStatus();
   }, [restaurantId, user?.id]);
+
 
   if (!restaurantData || !reviewsData) return <Spinner message="Loading..." />;
 
@@ -151,11 +153,11 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
 
       const countData = await countRes.json();
       setNumOfFavourites(countData.numOfFavourites);
+      setIsFavourited(result.isFavourited);
     } catch (err) {
       console.error('Error toggling favourite:', err.message);
     }
 
-    setIsFavourited(result.isFavourited);
   };
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
