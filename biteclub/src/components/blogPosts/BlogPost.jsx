@@ -26,6 +26,11 @@ export default function BlogPost({ id }) {
   const [postTitle, setPostTitle] = useState(null);
   const [numOfFavourites, setNumOfFavourites] = useState(0);
 
+  // author details
+  const [username, setUsername] = useState(null);
+  const [profilePic, setProfilePic] = useState(null);
+  const [fetchedAuthor, setFetchedAuthor] = useState(false);
+
   // likes/dislikes
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
@@ -43,6 +48,22 @@ export default function BlogPost({ id }) {
 
   useEffect(() => {
     if (!id) return;
+
+    const fetchUserDetails = async id => {
+      try {
+        if (id) {
+          const res = await fetch(`/api/users/get-general-user-by-MgId?id=${id}`);
+          if (!res.ok) throw new Error(`Status ${res.status}`);
+          const userFromDb = await res.json();
+
+          setUsername(userFromDb.username);
+          setProfilePic(userFromDb.userProfilePicture);
+          setFetchedAuthor(true);
+        }
+      } catch (error) {
+        console.error('Failed to fetch reported User:', error);
+      }
+    };
 
     const fetchAll = async () => {
       try {
@@ -80,6 +101,8 @@ export default function BlogPost({ id }) {
         } else {
           setHasDisliked(false);
         }
+
+        fetchUserDetails(postData.user_id);
 
         // for reporting a post
         fetchReportedUser(postData.user_id);
@@ -131,7 +154,7 @@ export default function BlogPost({ id }) {
         const reportedUser = await res.json();
 
         setReportedUser(reportedUser);
-        console.log('reportedUser', reportedUser);
+        // console.log('reportedUser', reportedUser);
       }
     } catch (error) {
       console.error('Failed to fetch reported User:', error);
@@ -194,82 +217,82 @@ export default function BlogPost({ id }) {
   };
 
   return (
-    <div className="flex w-full">
-      <div className="flex-3/8 mt-20">
-        <div className="w-full text-center">
-          {postTitle && (
-            <div className="simple-editor-content align-center font-primary text-4xl font-medium">{postTitle}</div>
-          )}
-        </div>
-        {/* author + engagement icons*/}
-        <div className="m-auto mt-8 border-b-1 border-brand-peach py-1 w-xl flex justify-between items-center cursor-pointer">
-          {/* author */}
-          <AuthorDateBlurb
-            authorPic={'https://i.pravatar.cc/80?u=placeholder'}
-            authorName={'Blogpost Authorname'}
-            date={blogPost?.date_posted}
-          />
-          <div className="flex flex-row gap-x-2 font-primary font-medium text-brand-grey">
-            {/* thumbs up */}
-            <div className="flex items-center w-10" onClick={handleLike}>
-              <FontAwesomeIcon
-                icon={hasLiked ? faThumbsUpSolid : faThumbsUpRegular}
-                className="icon-lg text-brand-navy mr-1"
-              />
-              {likes}
+    <>
+      {fetchedAuthor && (
+        <div className="flex w-full">
+          <div className="flex-3/8 mt-20">
+            <div className="w-full text-center">
+              {postTitle && (
+                <div className="simple-editor-content align-center font-primary text-4xl font-medium">{postTitle}</div>
+              )}
             </div>
-            {/* thumbs down */}
-            <div className="flex items-center w-10" onClick={handleDislike}>
-              <FontAwesomeIcon
-                icon={hasDisliked ? faThumbsDownSolid : faThumbsDownRegular}
-                className="icon-lg text-brand-navy mr-1"
-              />
-            </div>
-            {/* favourite */}
-            <FavouriteButton
-              handleFavouriteToggle={handleFavouriteToggle}
-              hasFavourited={hasFavourited}
-              numOfFavourites={numOfFavourites}
-            />
-            {/*<div className="flex items-center w-10" onClick={handleFavouriteToggle}>
+            {/* author + engagement icons*/}
+            <div className="m-auto mt-8 border-b-1 border-brand-peach py-1 w-xl flex justify-between items-center cursor-pointer">
+              {/* author */}
+              <AuthorDateBlurb authorPic={profilePic.url} authorName={username} date={blogPost?.date_posted} />
+              <div className="flex flex-row gap-x-2 font-primary font-medium text-brand-grey">
+                {/* thumbs up */}
+                <div className="flex items-center w-10" onClick={handleLike}>
+                  <FontAwesomeIcon
+                    icon={hasLiked ? faThumbsUpSolid : faThumbsUpRegular}
+                    className="icon-lg text-brand-navy mr-1"
+                  />
+                  {likes}
+                </div>
+                {/* thumbs down */}
+                <div className="flex items-center w-10" onClick={handleDislike}>
+                  <FontAwesomeIcon
+                    icon={hasDisliked ? faThumbsDownSolid : faThumbsDownRegular}
+                    className="icon-lg text-brand-navy mr-1"
+                  />
+                </div>
+                {/* favourite */}
+                <FavouriteButton
+                  handleFavouriteToggle={handleFavouriteToggle}
+                  hasFavourited={hasFavourited}
+                  numOfFavourites={numOfFavourites}
+                />
+                {/*<div className="flex items-center w-10" onClick={handleFavouriteToggle}>
               <FontAwesomeIcon
                 icon={hasFavourited ? faHeartSolid : faHeartRegular}
                 className={`icon-lg mr-1 ${hasFavourited ? 'text-brand-red' : 'text-brand-navy'}`}
               />
               {numOfFavourites ?? 0}
             </div>*/}
-            {/* 
+                {/* 
             <SingleTabWithIcon
               icon={faHeart}
               detailText={numOfFavourites ?? 0}
             />*/}
-            {/* show Report form when flag icon is clicked */}
-            <FontAwesomeIcon
-              icon={faFlag}
-              className={`icon-lg text-brand-navy`}
-              onClick={e => {
-                setOpenReportForm(prev => !prev);
-              }}
-            />
+                {/* show Report form when flag icon is clicked */}
+                <FontAwesomeIcon
+                  icon={faFlag}
+                  className={`icon-lg text-brand-navy`}
+                  onClick={e => {
+                    setOpenReportForm(prev => !prev);
+                  }}
+                />
+              </div>
+            </div>
+            {postContent && <ReadOnlyEditor content={postContent} />}
+
+            {/* Report Content Form */}
+            {openReportForm && (
+              <ReportForm
+                onClose={() => setOpenReportForm(false)}
+                contentTitle={postTitle}
+                contentType="BlogPost"
+                contentId={blogPost._id}
+                reportedUser={reportedUser}
+              />
+            )}
+          </div>
+          {/* comments thread for blog post */}
+          <div className="flex-[1]">
+            <CommentThread post={blogPost} />
           </div>
         </div>
-        {postContent && <ReadOnlyEditor content={postContent} />}
-
-        {/* Report Content Form */}
-        {openReportForm && (
-          <ReportForm
-            onClose={() => setOpenReportForm(false)}
-            contentTitle={postTitle}
-            contentType="BlogPost"
-            contentId={blogPost._id}
-            reportedUser={reportedUser}
-          />
-        )}
-      </div>
-      {/* comments thread for blog post */}
-      <div className="flex-[1]">
-        <CommentThread post={blogPost} />
-      </div>
-    </div>
+      )}
+    </>
   );
 }
