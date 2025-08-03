@@ -57,7 +57,7 @@ export default function CommentThread({ post }) {
     };
 
     fetchUser();
-  }, [post]);
+  }, [post, userData._id]);
 
   // nest replies within parent comments (parent comment -> [reply 1, reply 2 ...])
   function nestComments(comments) {
