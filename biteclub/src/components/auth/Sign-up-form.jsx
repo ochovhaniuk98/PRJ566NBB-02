@@ -10,6 +10,7 @@ import { Switch } from '@/components/shared/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export function SignUpForm({ className, ...props }) {
   const [email, setEmail] = useState('');
@@ -90,27 +91,38 @@ export function SignUpForm({ className, ...props }) {
     // Use the defined function to CREATE USER IN MONGODB
   };
 
+  const iconImageLink = userType ? '/img/chefHat.png' : '/img/pointsCoin.png';
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card>
+      <Card forBusinessUser={userType}>
+        <div className="relative size-15 self-center">
+          <Image src={iconImageLink} alt={'chef hat'} className="object-contain" fill={true} />
+        </div>
         <CardHeader>
           <CardTitle className="text-center">
             <h1 className="font-normal">Sign Up</h1>
           </CardTitle>
-          <CardDescription>
-            <h3 className="text-center">Create a new account</h3>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
           {/* User Type Switch -- Ignore label text for now, Not sure what it should say yet. */}
-
-          <div className="flex items-center justify-center gap-6 mb-4">
+          <div
+            className={`flex items-center justify-center gap-6 mt-2 mb-4 py-2 rounded-full ${
+              userType ? 'text-black bg-brand-blue' : 'text-brand-grey bg-brand-yellow-lite'
+            }`}
+          >
             <label htmlFor="user-role">
-              <h5>I am a restaurant business.</h5>
+              <h3>I am a restaurant business.</h3>
             </label>
             <Switch id="user-role" checked={userType} onCheckedChange={setUserType} />
           </div>
 
+          <CardDescription className={'border-t-2 border-brand-yellow-lite pt-6 '}>
+            <h3 className="text-center">
+              {userType
+                ? "Serve up your restaurant's success with a Business Account."
+                : 'Expand your palate, one bite at a time.'}
+            </h3>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <div className="flex flex-col gap-4 items-center">
             <Button
               // It's the first button inside the form, browsers might treat it as the default submit button when pressing Enter in a form input.
@@ -153,7 +165,7 @@ export function SignUpForm({ className, ...props }) {
               </div>
               <div className="grid">
                 <Label htmlFor="email">
-                  <h4>Email</h4>
+                  <h4>{`${userType ? 'Business ' : ''}Email`}</h4>
                 </Label>
                 <Input
                   id="email"

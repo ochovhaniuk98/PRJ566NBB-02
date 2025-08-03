@@ -2,14 +2,12 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-function Card({ className, ...props }) {
+function Card({ className, forBusinessUser = true, ...props }) {
+  const styling = forBusinessUser ? 'bg-brand-blue-lite' : 'bg-brand-yellow-extralite';
   return (
     <div
       data-slot="card"
-      className={cn(
-        'bg-brand-yellow-extralite text-black flex flex-col gap-1 rounded-xl border border-brand-yellow-lite px-8 py-16 w-md',
-        className
-      )}
+      className={cn(`${styling} text-black flex flex-col gap-1 rounded-xl px-8 py-8 w-md`, className)}
       {...props}
     />
   );
