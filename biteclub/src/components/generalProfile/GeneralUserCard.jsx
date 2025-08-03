@@ -25,21 +25,63 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
 
   const { refreshUserData } = useUserData();
   const generalUserUrl = `/generals/${generalUserData._id}`;
+  const [reviewCount, setReviewCount] = useState(0);
 
   const [showMorePopup, setShowMorePopup] = useState(false);
   const [cardHovered, setCardHovered] = useState(false);
   const [popupHovered, setPopupHovered] = useState(false);
   const shouldHighlight = cardHovered && !popupHovered;
+
   const iconStats = [
-    { icon: faUsers, bgColour: 'white', iconColour: 'brand-aqua' },
-    { icon: faStarHalfStroke, bgColour: 'white', iconColour: 'brand-yellow' },
-    { icon: faFeather, bgColour: 'white', iconColour: 'brand-peach' },
-    { icon: faGamepad, bgColour: 'white', iconColour: 'brand-green' },
+    {
+      label: 'Followers',
+      icon: faUsers,
+      bgColour: 'white',
+      iconColour: 'brand-aqua',
+      statNum: generalUserData?.followers?.length || 0,
+    },
+    {
+      label: 'Reviews',
+      icon: faStarHalfStroke,
+      bgColour: 'white',
+      iconColour: 'brand-yellow',
+      statNum: reviewCount || 0, // uses reviewCount like original
+    },
+    {
+      label: 'Blog Posts',
+      icon: faFeather,
+      bgColour: 'white',
+      iconColour: 'brand-peach',
+      statNum: 456 || 0, // [TO FIX: NEED CALCULATION] blogPostsCount
+    },
+    {
+      label: 'Challenges',
+      icon: faGamepad,
+      bgColour: 'white',
+      iconColour: 'brand-green',
+      statNum: generalUserData?.challenges?.length || 0,
+    },
   ];
+
   const [openReportForm, setOpenReportForm] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [anotherUserId, setAnotherUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchReviewCount = async () => {
+      try {
+        const res = await fetch(`/api/generals/${generalUserData._id}/get-review-count`);
+        const data = await res.json();
+        setReviewCount(data.total || 0);
+      } catch (error) {
+        console.error('Error fetching review count:', error);
+      }
+    };
+
+    if (generalUserData._id) fetchReviewCount();
+  }, [generalUserData._id]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +101,6 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
         console.error('(GeneralUserCard) Error checking user ownership:', error);
       }
     };
-
     fetchData();
   }, [generalUserData._id, user?.id]);
 
@@ -166,8 +207,8 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
         </div>
         {/* !!! General user stats not included in schema !!! */}
         <div className="flex justify-between space-x-7">
-          {iconStats.map((elem, i) => (
-            <IconStat key={i} iconStyles={elem} idx={i} />
+          {iconStats.map((stat, idx) => (
+            <IconStat key={idx} iconStyles={stat} idx={idx} statNum={stat.statNum} />
           ))}
         </div>
       </div>
@@ -185,16 +226,16 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
   );
 }
 
-function IconStat({ iconStyles, idx }) {
+function IconStat({ iconStyles, idx, statNum }) {
   const statColours = ['#56e4be', '#ffb300', '#ffdcbe', '#80c001'];
   return (
     <div className="flex flex-col items-center">
       <div
-        className={`aspect-square w-9 rounded-full bg-${iconStyles.bgColour} border border-transparent flex justify-center items-center `}
+        className={`aspect-square w-9 rounded-full bg-${iconStyles.bgColour} border border-transparent flex justify-center items-center`}
       >
-        <FontAwesomeIcon icon={iconStyles.icon} className={`icon-xl`} style={{ color: statColours[idx] }} />
+        <FontAwesomeIcon icon={iconStyles.icon} className="icon-xl" style={{ color: statColours[idx] }} />
       </div>
-      <h4>1234</h4>
+      <h4>{statNum ?? 0}</h4>
     </div>
   );
 }
