@@ -762,6 +762,48 @@ export async function getBlogPost({ id }) {
   return post;
 }
 
+// Add Likes/Dislikes to a Post
+export async function addLikeOrDislikeToPost({ postId, like = false, dislike = false, userId }) {
+  try {
+    await dbConnect();
+    const post = await BlogPost.findById(postId);
+    if (!post) return null;
+    if (!post.likes.count) post.likes.count = 0;
+    if (!post.dislikes.count) post.dislikes.count = 0;
+
+    const alreadyLiked = post.likes.users.includes(userId);
+    const alreadyDisliked = post.dislikes.users.includes(userId);
+
+    if (like && !alreadyLiked) {
+      // remove dislike if it exists
+      if (alreadyDisliked) {
+        post.dislikes.users.pull(userId);
+        post.dislikes.count -= 1;
+      }
+
+      post.likes.users.push(userId);
+      post.likes.count += 1;
+    }
+
+    if (dislike && !alreadyDisliked) {
+      // remove like if it exists
+      if (alreadyLiked) {
+        post.likes.users.pull(userId);
+        post.likes.count -= 1;
+      }
+
+      post.dislikes.users.push(userId);
+      post.dislikes.count += 1;
+    }
+
+    await post.save();
+    return post;
+  } catch (err) {
+    console.error('Error adding like/dislike:', err);
+    throw err;
+  }
+}
+
 // get Exploring Blog Posts (popular + new)
 export async function getListOfExploringBlogPosts(page = 1, limit = 20) {
   await dbConnect();
