@@ -6,7 +6,7 @@ import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
 export default function FavouriteButton({
   handleFavouriteToggle,
   numOfFavourites,
-  hasFavourited,
+  isFavourited,
   forRestaurant = false,
 }) {
   const btnStyling = forRestaurant
@@ -16,8 +16,8 @@ export default function FavouriteButton({
   return (
     <button className={btnStyling} onClick={handleFavouriteToggle}>
       <FontAwesomeIcon
-        icon={hasFavourited ? faHeartSolid : faHeartRegular}
-        className={`icon-lg mr-1 ${hasFavourited ? 'text-brand-red' : 'text-brand-navy'}`}
+        icon={isFavourited ? faHeartSolid : faHeartRegular}
+        className={`icon-lg mr-1 ${isFavourited ? 'text-brand-red' : 'text-brand-navy'}`}
       />
       {numOfFavourites ?? 0}
     </button>

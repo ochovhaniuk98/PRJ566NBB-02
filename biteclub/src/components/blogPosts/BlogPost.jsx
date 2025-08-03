@@ -33,7 +33,7 @@ export default function BlogPost({ id }) {
   // for changing icons depending on if user liked/disliked/favourited
   const [hasLiked, setHasLiked] = useState(false);
   const [hasDisliked, setHasDisliked] = useState(false);
-  const [hasFavourited, setHasFavourited] = useState(false);
+  const [isFavourited, setIsFavourited] = useState(false);
 
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
 
@@ -68,6 +68,27 @@ export default function BlogPost({ id }) {
 
     fetchAll();
   }, [id]);
+
+
+    useEffect(() => {
+    const checkFavouriteStatus = async () => {
+      try {
+        if (!user?.id) return;
+
+        const res = await fetch(`/api/blog-posts/is-favourited?authId=${user.id}&blogId=${id}`);
+
+        const result = await res.json();
+        if (res.ok) {
+          setIsFavourited(result.isFavourited);
+        }
+      } catch (err) {
+        console.error('Error checking favourite status:', err.message);
+      }
+    };
+    checkFavouriteStatus();
+  }, [id, user?.id]);
+  
+
 
   // When user save blog-post as favourite
   const handleFavouriteBlogPostClick = async () => {
@@ -131,7 +152,7 @@ export default function BlogPost({ id }) {
 
   const handleFavouriteToggle = async () => {
     await handleFavouriteBlogPostClick();
-    setHasFavourited(prev => !prev);
+    setIsFavourited(prev => !prev);
   };
 
   return (
@@ -170,13 +191,13 @@ export default function BlogPost({ id }) {
             {/* favourite */}
             <FavouriteButton
               handleFavouriteToggle={handleFavouriteToggle}
-              hasFavourited={hasFavourited}
+              isFavourited={isFavourited}
               numOfFavourites={numOfFavourites}
             />
             {/*<div className="flex items-center w-10" onClick={handleFavouriteToggle}>
               <FontAwesomeIcon
-                icon={hasFavourited ? faHeartSolid : faHeartRegular}
-                className={`icon-lg mr-1 ${hasFavourited ? 'text-brand-red' : 'text-brand-navy'}`}
+                icon={isFavourited ? faHeartSolid : faHeartRegular}
+                className={`icon-lg mr-1 ${isFavourited ? 'text-brand-red' : 'text-brand-navy'}`}
               />
               {numOfFavourites ?? 0}
             </div>*/}
