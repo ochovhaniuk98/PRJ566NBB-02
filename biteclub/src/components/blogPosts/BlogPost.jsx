@@ -1,6 +1,7 @@
 // src/components/blogPosts/BlogPost.jsx
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import ReadOnlyEditor from '../tiptap-rich-text-editor/ReadOnlyEditor';
 import ReportForm from '../shared/ReportForm';
 import CommentThread from '../shared/CommentThread';
@@ -36,6 +37,8 @@ export default function BlogPost({ id }) {
   const [isFavourited, setIsFavourited] = useState(false);
 
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+  const userType = user?.user_metadata.user_type;
+  const { refreshUserData } = useUserData();
 
   useEffect(() => {
     if (!id) return;
@@ -65,60 +68,23 @@ export default function BlogPost({ id }) {
         console.error('Error fetching blog post or favourites:', error);
       }
     };
-
     fetchAll();
   }, [id]);
 
-
-    useEffect(() => {
+  useEffect(() => {
     const checkFavouriteStatus = async () => {
       try {
         if (!user?.id) return;
 
         const res = await fetch(`/api/blog-posts/is-favourited?authId=${user.id}&blogId=${id}`);
-
         const result = await res.json();
-        if (res.ok) {
-          setIsFavourited(result.isFavourited);
-        }
+        if (res.ok) setIsFavourited(result.isFavourited);
       } catch (err) {
         console.error('Error checking favourite status:', err.message);
       }
     };
     checkFavouriteStatus();
   }, [id, user?.id]);
-  
-
-
-  // When user save blog-post as favourite
-  const handleFavouriteBlogPostClick = async () => {
-    try {
-      if (!user?.id) return;
-
-      const res = await fetch('/api/blog-posts/save-as-favourite', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          blogId: id,
-          supabaseUserId: user.id,
-        }),
-      });
-
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
-
-      // Re-fetch the updated Favourite count immediately from backend
-      const countRes = await fetch(`/api/blog-posts/num-of-favourites/${id}`);
-      if (!countRes.ok) {
-        throw new Error('Failed to fetch updated favourite count');
-      }
-
-      const countData = await countRes.json();
-      setNumOfFavourites(countData.numOfFavourites);
-    } catch (err) {
-      console.error('Error toggling favourite:', err.message);
-    }
-  };
 
   // for reporting a post
   // get reported user object
@@ -150,9 +116,36 @@ export default function BlogPost({ id }) {
     // NOT CONNECTED TO BACKEND YET
   };
 
-  const handleFavouriteToggle = async () => {
-    await handleFavouriteBlogPostClick();
-    setIsFavourited(prev => !prev);
+  // When user save blog-post as favourite
+  const handleFavouriteBlogPostClick = async () => {
+    try {
+      if (!user?.id) return;
+
+      const res = await fetch('/api/blog-posts/save-as-favourite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          blogId: id,
+          supabaseUserId: user.id,
+        }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
+      setIsFavourited(result.isFavourited);
+      if(userType === 'general') refreshUserData();
+
+      // Re-fetch the updated Favourite count immediately from backend
+      const countRes = await fetch(`/api/blog-posts/num-of-favourites/${id}`);
+      if (!countRes.ok) {
+        throw new Error('Failed to fetch updated favourite count');
+      }
+
+      const countData = await countRes.json();
+      setNumOfFavourites(countData.numOfFavourites);
+    } catch (err) {
+      console.error('Error toggling favourite:', err.message);
+    }
   };
 
   return (
@@ -190,7 +183,7 @@ export default function BlogPost({ id }) {
             </div>
             {/* favourite */}
             <FavouriteButton
-              handleFavouriteToggle={handleFavouriteToggle}
+              handleFavouriteToggle={handleFavouriteBlogPostClick}
               isFavourited={isFavourited}
               numOfFavourites={numOfFavourites}
             />

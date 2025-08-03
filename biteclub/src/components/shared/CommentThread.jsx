@@ -46,7 +46,7 @@ export default function CommentThread({ post }) {
 
     // set user
     const fetchUser = async () => {
-      if (!userData._id) return;
+      if (!userData?._id) return;
       try {
         setUser(userData);
         console.log('userData: ', userData);
@@ -57,7 +57,7 @@ export default function CommentThread({ post }) {
     };
 
     fetchUser();
-  }, [post, userData._id]);
+  }, [post, userData?._id]);
 
   // nest replies within parent comments (parent comment -> [reply 1, reply 2 ...])
   function nestComments(comments) {
