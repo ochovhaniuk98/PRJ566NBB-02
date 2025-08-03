@@ -22,6 +22,11 @@ import {
 import FavouriteButton from '../shared/FavouriteButton';
 
 export default function BlogPost({ id }) {
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+  const userType = user?.user_metadata.user_type; // Check userType, Business users should not see or interact with blog post
+  const { userData, refreshUserData } = useUserData(); // e.g. refresh after Favouriting the post
+  const isFavourited = userData?.favouriteBlogs?.includes(id);
+
   const [blogPost, setBlogPost] = useState(null);
   const [postContent, setPostContent] = useState(null);
   const [postTitle, setPostTitle] = useState(null);
@@ -43,11 +48,6 @@ export default function BlogPost({ id }) {
   // for changing icons depending on if user liked/disliked/favourited
   const [hasLiked, setHasLiked] = useState(false);
   const [hasDisliked, setHasDisliked] = useState(false);
-  const [isFavourited, setIsFavourited] = useState(false);
-
-  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const userType = user?.user_metadata.user_type; // Check userType, Business users should not see or interact with blog post
-  const { refreshUserData } = useUserData();  // e.g. refresh after Favouriting the post
 
   useEffect(() => {
     if (!id) return;
@@ -116,20 +116,6 @@ export default function BlogPost({ id }) {
     fetchAll();
   }, [id]);
 
-  useEffect(() => {
-    const checkFavouriteStatus = async () => {
-      try {
-        if (!user?.id) return;
-
-        const res = await fetch(`/api/blog-posts/is-favourited?authId=${user.id}&blogId=${id}`);
-        const result = await res.json();
-        if (res.ok) setIsFavourited(result.isFavourited);
-      } catch (err) {
-        console.error('Error checking favourite status:', err.message);
-      }
-    };
-    checkFavouriteStatus();
-  }, [id, user?.id]);
 
   // for reporting a post
   // get reported user object
@@ -214,8 +200,7 @@ export default function BlogPost({ id }) {
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
-      setIsFavourited(result.isFavourited);
-      if(userType === 'general') refreshUserData();
+      if (userType === 'general') refreshUserData();
 
       // Re-fetch the updated Favourite count immediately from backend
       const countRes = await fetch(`/api/blog-posts/num-of-favourites/${id}`);
