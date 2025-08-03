@@ -19,7 +19,6 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
   const isFavourited = userData?.favouriteRestaurants?.includes(restaurantId);
 
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
-
   // const image = Array.isArray(restaurantData?.images) ? restaurantData.images[0] : null;
 
   const handleFavouriteRestaurantClick = async e => {
@@ -42,7 +41,6 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
 
-      // setIsFavourited(result.isFavourited);
       refreshUserData();
       onFavouriteToggle(result.isFavourited, restaurantId);
     } catch (err) {
