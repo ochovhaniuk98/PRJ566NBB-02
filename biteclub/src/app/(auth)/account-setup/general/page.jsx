@@ -73,7 +73,7 @@ export default function GeneralSetupForm() {
               }}
             />
           ) : (
-            <Spinner message='Loading user...'/>
+            <Spinner message='Loading User...'/>
           )}
 
           <div>

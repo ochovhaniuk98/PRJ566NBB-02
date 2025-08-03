@@ -6,7 +6,7 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <Spinner message='Loading search results...'/>
+        <Spinner message='Loading Search Results...'/>
       }
     >
       <Search />
