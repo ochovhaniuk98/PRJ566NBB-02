@@ -111,7 +111,7 @@ export function SignUpForm({ className, ...props }) {
             <label htmlFor="user-role">
               <h3>I am a restaurant business.</h3>
             </label>
-            <Switch id="user-role" checked={userType} onCheckedChange={setUserType} />
+            <Switch id="user-role" checked={userType} onCheckedChange={setUserType} largeSize={true} />
           </div>
 
           <CardDescription
