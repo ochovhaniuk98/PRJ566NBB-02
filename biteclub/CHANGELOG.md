@@ -159,3 +159,21 @@ Components created:
 - Admin can view the details of the report
 - Admin can approve, reject, approve and ban a user
 - After 5 strikes, user will be permenantly banned
+
+
+# Sprint 4
+## Upgrade for user experience
+### Front-end
+- Added a spinner during loading states
+
+### Performance Improvements
+- Reduced data retrieval time:
+  - Adopted `useContext` for accessing the current user object from Supabase and MongoDB
+    - Greatly reduced API calls:
+      - Replaced repeated calls wherever current user information was needed
+      - Reduced API calls for checking whether an item (BlogPost, Restaurant) is favourited
+
+## Challenges
+### Leader Board
+  - Grouped users by completed active challenges
+  - Display top 5 unique scores, users with tied scores share the same rank
