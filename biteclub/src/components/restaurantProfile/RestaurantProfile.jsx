@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
+import { useUserData } from '@/context/UserDataContext';
 import { faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
@@ -22,13 +23,15 @@ import FavouriteButton from '../shared/FavouriteButton';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+  const { refreshUserData } = useUserData();  
+
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value when adding a review
   const [numOfFavourites, setNumOfFavourites] = useState(0);
-  const [hasFavourited, setHasFavourited] = useState(false);
+  const [isFavourited, setIsFavourited] = useState(false);
 
   // stores the MongoDB user ID of the logged-in user, or restaurantId if owner
   const [userId, setUserId] = useState(isOwner ? restaurantId : null); // If the user is the owner, we can use restaurantId directly as userId.
@@ -104,6 +107,28 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     if (!isOwner && !userId) fetchMongoUserId();
   }, [user?.id]);
 
+
+  // Check if this restaurant is favourited by current user
+  useEffect(() => {
+    const checkFavouriteStatus = async () => {
+      try {
+        if (!user?.id) return;
+
+        const res = await fetch(`/api/restaurants/is-favourited?authId=${user.id}&restaurantId=${restaurantId}`);
+        const result = await res.json();
+
+        if (res.ok) {
+          setIsFavourited(result.isFavourited);
+        }
+      } catch (err) {
+        console.error('Error checking favourite status:', err.message);
+      }
+    };
+
+    checkFavouriteStatus();
+  }, [restaurantId, user?.id]);
+
+
   if (!restaurantData || !reviewsData) return <Spinner message="Loading..." />;
 
   // When user save restaurant as favourite
@@ -122,6 +147,8 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
+      setIsFavourited(result.isFavourited);
+      refreshUserData();
 
       // Re-fetch the updated Favourite count immediately from backend
       const countRes = await fetch(`/api/restaurants/num-of-favourites/${restaurantId}`);
@@ -135,7 +162,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
       console.error('Error toggling favourite:', err.message);
     }
 
-    setHasFavourited(prev => !prev); // NEEDS TO BE CHANGED TO CONNECT TO BACKEND
   };
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
@@ -173,7 +199,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
             />*/}
             <FavouriteButton
               handleFavouriteToggle={handleFavouriteRestaurantClick}
-              hasFavourited={hasFavourited}
+              isFavourited={isFavourited}
               numOfFavourites={numOfFavourites}
               forRestaurant={true}
             />

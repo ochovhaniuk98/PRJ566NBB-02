@@ -28,9 +28,9 @@ export default function BusinessUserRestaurantPage() {
         // If restaurantId is not found (i.e., null), it means the business user has not set up their account.
         // We will redirect them back to the account setup page.
         if (profile?.restaurantId && !verified) {
-          router.push('/account-setup/business');
-        } else if (!verified) {
           router.push('/account-setup/business/awaiting-verification');
+        } else if (!profile?.restaurantId && !verified) {
+          router.push('/account-setup/business/');
         } else {
           setRestaurantId(profile.restaurantId);
         }

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/context/UserContext';
 import Avatar from './avatar';
 import { Input } from '@/components/shared/Input';
 import { Button } from '@/components/shared/Button';
@@ -11,20 +11,23 @@ import Spinner from '@/components/shared/Spinner';
 
 export default function GeneralSetupForm() {
   const router = useRouter();
-  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-
+  const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
+
   useEffect(() => {
-    if (!user?.user_metadata?.name && !user?.email) return;
-    setUsername(user.user_metadata?.name || user.email || '');
-  }, [user?.user_metadata?.name, user?.email]);
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+      if (!error) setUser(data.user);
+      setUsername(data.user.user_metadata?.name || '');
+    };
+    fetchUser();
+  }, []);
 
   const handleSubmit = async () => {
-    if (!user?.id) return;
-
     setLoading(true);
 
     const data = {
@@ -70,7 +73,7 @@ export default function GeneralSetupForm() {
               }}
             />
           ) : (
-            <Spinner message="Loading User..." />
+            <Spinner message='Loading User...'/>
           )}
 
           <div>
@@ -110,4 +113,3 @@ export default function GeneralSetupForm() {
     </div>
   );
 }
-// border border-brand-navy

@@ -85,6 +85,7 @@ export default function BlogPostCard({
     }
   };
 
+  
   return (
     <div
       className={`relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer transition
