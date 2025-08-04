@@ -159,3 +159,12 @@ Components created:
 - Admin can view the details of the report
 - Admin can approve, reject, approve and ban a user
 - After 5 strikes, user will be permenantly banned
+
+# Sprint 4
+### Cuisine-Specific Restaurant List
+- On the home page, a list of restaurants for the specific Cuisine Spotlight was added. The Cuisine Spotlight updates weekly.
+- On the home page, a "Surprise Me" button was added that shows users a list of restaurants from a random cuisine every time they click it.
+
+### Challenges 
+- Users can now progress through challenges by checking in at the restaurants they have visited and viewing their statistics. Progress bar updates dynamically.
+- A check-in verification feature has been added that verifies whether the user's location is within 50 meters of the restaurant.
