@@ -128,7 +128,7 @@ export default function BusinessSetupForm() {
       }}
     >
       <div className="w-1/2 px-12 py-16 h-full min-h-screen ml-auto bg-white flex flex-col overflow-y-auto">
-        <div className="form-widget flex flex-col space-y-4 bg-brand-blue-lite w-lg h-content m-auto px-14 py-16 shadow-md">
+        <div className="form-widget flex flex-col space-y-4 bg-brand-blue-lite w-lg h-content m-auto px-14 py-16">
           {/* */}
           <div className="relative size-15 self-center">
             <Image src={'/img/chefHat.png'} alt={'header image'} className="object-contain" fill={true} />
