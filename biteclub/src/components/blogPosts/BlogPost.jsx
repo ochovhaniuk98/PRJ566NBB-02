@@ -28,6 +28,7 @@ export default function BlogPost({ id }) {
   const isFavourited = userData?.favouriteBlogs?.includes(id);
 
   const [blogPost, setBlogPost] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   const [postContent, setPostContent] = useState(null);
   const [postTitle, setPostTitle] = useState(null);
   const [numOfFavourites, setNumOfFavourites] = useState(0);
@@ -74,6 +75,11 @@ export default function BlogPost({ id }) {
           fetch(`/api/blog-posts/get-post-by-id/${id}`),
           fetch(`/api/blog-posts/num-of-favourites/${id}`),
         ]);
+        
+        if (postRes.status === 404) {
+          setNotFound(true);
+          return;
+        }
 
         if (!postRes.ok || !favouritesRes.ok) {
           throw new Error('Fetch failed');
@@ -115,7 +121,6 @@ export default function BlogPost({ id }) {
     };
     fetchAll();
   }, [id]);
-
 
   // for reporting a post
   // get reported user object
@@ -214,6 +219,16 @@ export default function BlogPost({ id }) {
       console.error('Error toggling favourite:', err.message);
     }
   };
+
+  
+if (notFound) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h1 className="text-3xl font-bold mb-4">Blog post not found</h1>
+      <p>The blog post you are trying to visit has been removed or does not exist.</p>
+    </div>
+  );
+}
 
   return (
     <>

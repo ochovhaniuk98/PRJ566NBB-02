@@ -1,6 +1,7 @@
+// /api/reports/${report._id}
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/dbConnect';
-import { Report, User } from '@/lib/model/dbSchema';
+import { Report, User, BlogPost, CommentPost, InternalReview, ExternalReview } from '@/lib/model/dbSchema';
 
 export async function PATCH(req, { params }) {
   try {
@@ -35,8 +36,30 @@ export async function PATCH(req, { params }) {
       }
     }
 
-    // ***[TODO?]***: (Not required in Sprint 3)
-    // IF APPROVED, REMOVE THE REPORTED CONTENT FROM DB (or add a status for the content e.g. status: reported)
+    // If approved, remove the reported content from DB
+    if (status === 'Approved' || status === 'ApprovedAndBanned') {
+      try {
+        const contentId = report.contentId?._id || report.contentId; // handle populated or raw ID
+        switch (report.contentType) {
+          case 'BlogPost':
+            await BlogPost.findByIdAndDelete(contentId);
+            break;
+          case 'CommentPost':
+            await CommentPost.findByIdAndDelete(contentId);
+            break;
+          case 'InternalReview':
+            await InternalReview.findByIdAndDelete(contentId);
+            break;
+          case 'ExternalReview':
+            await ExternalReview.findByIdAndDelete(contentId);
+            break;
+          default:
+            console.warn(`[WARN] No deletion logic for content type: ${report.contentType}`);
+        }
+      } catch (delErr) {
+        console.error(`[DELETE_CONTENT_ERROR] Failed to delete content ${report.contentId}:`, delErr);
+      }
+    }
 
     return NextResponse.json({ message: 'Report updated', report });
   } catch (error) {
