@@ -166,6 +166,10 @@ Components created:
 ### Front-end
 - Added a spinner during loading states
 
+### Business User UI
+- Business user interface now uses a different menu bar style
+  - Includes 3 main functions: Restaurant Profile Page, Log Out, and Delete Account
+
 ### Performance Improvements
 - Reduced data retrieval time:
   - Adopted `useContext` for accessing the current user object from Supabase and MongoDB
@@ -177,3 +181,4 @@ Components created:
 ### Leader Board
   - Grouped users by completed active challenges
   - Display top 5 unique scores, users with tied scores share the same rank
+
