@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
-import { faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faPenClip } from '@fortawesome/free-solid-svg-icons';
+import { faInstagram } from '@fortawesome/free-brands-svg-icons';
+
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
@@ -23,7 +25,7 @@ import FavouriteButton from '../shared/FavouriteButton';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const { refreshUserData } = useUserData();  
+  const { refreshUserData } = useUserData();
 
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
@@ -107,7 +109,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     if (!isOwner && !userId) fetchMongoUserId();
   }, [user?.id]);
 
-
   // Check if this restaurant is favourited by current user
   useEffect(() => {
     const checkFavouriteStatus = async () => {
@@ -127,7 +128,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
 
     checkFavouriteStatus();
   }, [restaurantId, user?.id]);
-
 
   if (!restaurantData || !reviewsData) return <Spinner message="Loading..." />;
 
@@ -161,7 +161,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     } catch (err) {
       console.error('Error toggling favourite:', err.message);
     }
-
   };
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
@@ -174,7 +173,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         {isOwner ? (
           <>
             <SingleTabWithIcon
-              icon={faHeart}
+              icon={faInstagram}
               detailText={'Add Instagram Post'}
               onClick={() => setShowInstagramPopup(true)}
             />
@@ -185,7 +184,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
             />
 
             <SingleTabWithIcon
-              icon={faHeart}
+              icon={faPenClip}
               detailText={'Edit Profile Details'}
               onClick={() => setShowEditDetailsPopup(true)}
             />
