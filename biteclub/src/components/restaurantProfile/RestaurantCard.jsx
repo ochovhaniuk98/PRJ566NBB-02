@@ -71,8 +71,8 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
 
   return (
     <div className="w-full" onClick={() => router.push(`/restaurants/${restaurantId}`)}>
-      <div className="w-full aspect-square border border-brand-yellow-lite flex flex-col items-center rounded-md cursor-pointer text-black hover:bg-brand-peach-lite">
-        <div className="relative w-full aspect-3/2">
+      <div className="w-full h-72 aspect-square border border-brand-yellow-lite flex flex-col items-center rounded-md cursor-pointer text-black hover:bg-brand-peach-lite">
+        <div className="relative w-full aspect-3/2 border-b-1 border-brand-yellow-lite">
           {restaurantData?.bannerImages[0]?.url && (
             <Image
               src={restaurantData?.bannerImages[0]?.url}
@@ -84,8 +84,10 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
         </div>
         <div className="py-2 px-3 text-left w-full">
           <div className="flex justify-between">
-            {/* limits length of restaurant name that can be displayed */}
-            <h3>{restaurantData.name.length > 30 ? restaurantData.name.slice(0, 30) + '…' : restaurantData.name}</h3>
+            <div className="h-12 overflow-hidden mr-1 mb-1 w-full">
+              {/* limits length of restaurant name that can be displayed */}
+              <h3>{restaurantData.name.length > 30 ? restaurantData.name.slice(0, 30) + '…' : restaurantData.name}</h3>
+            </div>
             {/* changes heart icon's style if owner favourites restaurant*/}
             <div
               onClick={handleFavouriteRestaurantClick}
@@ -99,10 +101,14 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
             </div>
           </div>
           {/* shows only the first 3 cuisines */}
-          <h5>{restaurantData.cuisines.slice(0, 3).join(', ')}</h5>
+          <h5>
+            {restaurantData.cuisines && restaurantData.cuisines.length > 0
+              ? restaurantData.cuisines.slice(0, 3).join(', ')
+              : 'Yummy'}
+          </h5>
           <div className="flex  items-center gap-1">
             <p className="font-medium">{restaurantData.rating}</p>
-            <StarRating colour={'text-brand-green'} iconSize={'icon-md'} ratingNum={restaurantData.rating} />
+            <StarRating colour={'text-brand-green'} iconSize={'icon-sm'} ratingNum={restaurantData.rating} />
             <p>{restaurantData.numReviews}</p>
             {/* price range tag */}
             <div className="bg-brand-blue-lite px-2 rounded-full w-15 flex justify-center text-primary">
