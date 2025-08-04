@@ -9,6 +9,7 @@ import { Label } from '@/components/shared/Label';
 import { CldUploadWidget } from 'next-cloudinary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudArrowUp, faUtensils } from '@fortawesome/free-solid-svg-icons';
+import Image from 'next/image';
 
 export default function BusinessSetupForm() {
   const router = useRouter();
@@ -120,16 +121,17 @@ export default function BusinessSetupForm() {
 
   return (
     <div
-      className="h-full min-h-screen flex bg-cover"
+      className="flex h-screen overflow-hidden bg-cover"
       style={{
         backgroundImage: "url('/img/greenOnYellowBG.png')",
         backgroundPosition: '-2rem',
       }}
     >
-      <div className="w-1/2 px-12 py-16 h-full min-h-screen ml-auto bg-white flex flex-col ">
-        <div className="form-widget flex flex-col space-y-4 bg-brand-yellow-extralite w-lg h-content m-auto px-14 py-16 shadow-md">
-          <div className="aspect-square w-fit p-2 bg-brand-yellow border border-brand-navy rounded-full mx-auto flex flex-col justify-center items-center">
-            <FontAwesomeIcon icon={faUtensils} className={`icon-lg text-brand-navy`} />
+      <div className="w-1/2 px-12 py-16 h-full min-h-screen ml-auto bg-white flex flex-col overflow-y-auto">
+        <div className="form-widget flex flex-col space-y-4 bg-brand-blue-lite w-lg h-content m-auto px-14 py-16 shadow-md">
+          {/* */}
+          <div className="relative size-15 self-center">
+            <Image src={'/img/chefHat.png'} alt={'header image'} className="object-contain" fill={true} />
           </div>
           <h2 className="text-center">Ready to reach new customers?</h2>
 
@@ -175,10 +177,10 @@ export default function BusinessSetupForm() {
 
             {/* --- Confirmed Restaurant Preview --- */}
 
-            <div className="text-sm font-medium font-primary text-center mt-2 text-brand-grey border-2 border-dashed border-brand-yellow-lite py-6 px-3 bg-brand-yellow-extralite cursor-default">
+            <div className="text-sm font-medium font-primary text-center mt-2 text-brand-grey border-2 border-dashed border-brand-blue py-6 px-3 bg-brand-blue-lite cursor-default">
               Selected Restaurant
               <Label>Name</Label>
-              <div className=" w-full border-2 border-brand-yellow-lite rounded-md my-2 mb-4 px-3 py-2 text-center bg-brand-yellow-lite">
+              <div className=" w-full border-2 border-brand-blue-mid rounded-md my-2 mb-4 px-3 py-2 text-center bg-brand-blue-mid">
                 {restaurantName && restaurantLocation ? (
                   <h5 className="uppercase">{restaurantName}</h5>
                 ) : (
@@ -186,7 +188,7 @@ export default function BusinessSetupForm() {
                 )}
               </div>
               <Label>Location</Label>
-              <div className="w-full  border-2 border-brand-yellow-lite rounded-md my-2 px-3 py-2 text-center bg-brand-yellow-lite">
+              <div className="w-full  border-2 border-brand-blue-mid rounded-md my-2 px-3 py-2 text-center bg-brand-blue-mid">
                 {restaurantName && restaurantLocation ? (
                   <h5>{restaurantLocation.length > 43 ? restaurantLocation.slice(0, 43) : restaurantLocation}</h5>
                 ) : (
@@ -211,7 +213,7 @@ export default function BusinessSetupForm() {
                 >
                   {({ open }) => (
                     <>
-                      <Label className="w-full border-t-1 border-brand-grey-lite mt-6 pt-6 leading-normal">
+                      <Label className="w-full border-t-2 border-brand-blue mt-6 pt-6 leading-normal">
                         Please upload a copy of your business license. We will verify your restaurant within 2-3 days.
                       </Label>
                       <button

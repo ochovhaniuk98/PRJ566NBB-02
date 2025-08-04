@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-function Card({ className, forBusinessUser = true, ...props }) {
+function Card({ className, forBusinessUser = false, ...props }) {
   const styling = forBusinessUser ? 'bg-brand-blue-lite' : 'bg-brand-yellow-extralite';
   return (
     <div

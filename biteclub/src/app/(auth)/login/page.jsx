@@ -6,7 +6,7 @@ export default async function Page() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div
-        className="bg-brand-green flex flex-col items-center justify-center"
+        className="bg-brand-green flex flex-col items-center justify-center sticky top-0 h-screen"
         style={{
           backgroundImage: "url('/img/doodleBG.png')",
           backgroundSize: '120%',

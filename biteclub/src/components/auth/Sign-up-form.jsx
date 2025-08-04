@@ -96,7 +96,7 @@ export function SignUpForm({ className, ...props }) {
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card forBusinessUser={userType}>
         <div className="relative size-15 self-center">
-          <Image src={iconImageLink} alt={'chef hat'} className="object-contain" fill={true} />
+          <Image src={iconImageLink} alt={'header image'} className="object-contain" fill={true} />
         </div>
         <CardHeader>
           <CardTitle className="text-center">
@@ -114,7 +114,9 @@ export function SignUpForm({ className, ...props }) {
             <Switch id="user-role" checked={userType} onCheckedChange={setUserType} />
           </div>
 
-          <CardDescription className={'border-t-2 border-brand-yellow-lite pt-6 '}>
+          <CardDescription
+            className={`border-t-2 pt-6 ${userType ? ' border-brand-blue' : 'border-brand-yellow-lite'}`}
+          >
             <h3 className="text-center">
               {userType
                 ? "Serve up your restaurant's success with a Business Account."
@@ -158,8 +160,15 @@ export function SignUpForm({ className, ...props }) {
           </div>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-4">
-              <div className="relative text-center text-sm text-brand-grey-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                <span className="relative z-10 bg-brand-yellow-extralite px-2 text-brand-grey text-xs uppercase font-primary font-semibold">
+              <div
+                className={`relative text-center text-sm text-brand-grey-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t-2 after:border-border ${
+                  userType ? ' after:border-brand-blue' : 'after:border-brand-yellow-lite'
+                }`}
+              >
+                <span
+                  className={`relative z-10 px-2 text-brand-grey text-xs uppercase font-primary font-semibold
+                  ${userType ? ' bg-brand-blue-lite' : 'bg-brand-yellow-extralite'}`}
+                >
                   Or
                 </span>
               </div>
