@@ -160,11 +160,32 @@ Components created:
 - Admin can approve, reject, approve and ban a user
 - After 5 strikes, user will be permenantly banned
 
+
 # Sprint 4
-### Cuisine-Specific Restaurant List
+## Upgrade for user experience
+### Front-end
+- Added a spinner during loading states
+
+### Business User UI
+- Business user interface now uses a different menu bar style
+  - Includes 3 main functions: Restaurant Profile Page, Log Out, and Delete Account
+
+### Performance Improvements
+- Reduced data retrieval time:
+  - Adopted `useContext` for accessing the current user object from Supabase and MongoDB
+    - Greatly reduced API calls:
+      - Replaced repeated calls wherever current user information was needed
+      - Reduced API calls for checking whether an item (BlogPost, Restaurant) is favourited
+
+## Challenges
+- Users can now progress through challenges by checking in at the restaurants they have visited and viewing their statistics. Progress bar updates dynamically.
+- A check-in verification feature has been added that verifies whether the user's location is within 50 meters of the restaurant.
+
+### Leader Board
+  - Grouped users by completed active challenges
+  - Display top 5 unique scores, users with tied scores share the same rank
+
+## Cuisine-Specific Restaurant List
 - On the home page, a list of restaurants for the specific Cuisine Spotlight was added. The Cuisine Spotlight updates weekly.
 - On the home page, a "Surprise Me" button was added that shows users a list of restaurants from a random cuisine every time they click it.
 
-### Challenges 
-- Users can now progress through challenges by checking in at the restaurants they have visited and viewing their statistics. Progress bar updates dynamically.
-- A check-in verification feature has been added that verifies whether the user's location is within 50 meters of the restaurant.

@@ -30,34 +30,15 @@ export default function BlogPostCard({
   onFavouriteToggle = () => {},
 }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const { refreshUserData } = useUserData();
-  const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
-  const [isFavourited, setIsFavourited] = useState(false); // tracks whether post is favourited
+  const { userData, refreshUserData } = useUserData();
   const blogId = blogPostData._id;
-
+  const isFavourited = userData?.favouriteBlogs?.includes(blogId);
+  
   const [showReportFormLink, setShowReportFormLink] = useState(false);
   const [cardHovered, setCardHovered] = useState(false);
   const [popupHovered, setPopupHovered] = useState(false);
   const shouldHighlight = cardHovered && !popupHovered;
-
-  // Check if this restaurant is favourited by current user
-  useEffect(() => {
-    const checkFavouriteStatus = async () => {
-      try {
-        if (!user?.id) return;
-
-        const res = await fetch(`/api/blog-posts/is-favourited?authId=${user.id}&blogId=${blogId}`);
-
-        const result = await res.json();
-        if (res.ok) {
-          setIsFavourited(result.isFavourited);
-        }
-      } catch (err) {
-        console.error('Error checking favourite status:', err.message);
-      }
-    };
-    checkFavouriteStatus();
-  }, [blogId, user?.id]);
+  const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
 
   const handleFavouriteBlogPostClick = async e => {
     e.stopPropagation();
@@ -76,8 +57,7 @@ export default function BlogPostCard({
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
-
-      setIsFavourited(result.isFavourited);
+      
       refreshUserData();
       onFavouriteToggle(result.isFavourited, blogId);
     } catch (err) {

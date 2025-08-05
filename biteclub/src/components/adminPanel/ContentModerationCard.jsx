@@ -16,7 +16,7 @@ function ContentModerationTag({ contentType, status }) {
       className: 'bg-blue-200 text-black',
     },
     CommentPost: {
-      label: 'CommentPost',
+      label: 'Comment Post',
       className: 'bg-purple-200 text-black',
     },
     User: {

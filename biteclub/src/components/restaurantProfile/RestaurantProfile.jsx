@@ -23,7 +23,7 @@ import FavouriteButton from '../shared/FavouriteButton';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const { refreshUserData } = useUserData();  
+  const { userData, refreshUserData } = useUserData();  
 
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
@@ -31,7 +31,8 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value when adding a review
   const [numOfFavourites, setNumOfFavourites] = useState(0);
-  const [isFavourited, setIsFavourited] = useState(false);
+  const isFavourited = userData?.favouriteRestaurants?.includes(restaurantId);
+
 
   // stores the MongoDB user ID of the logged-in user, or restaurantId if owner
   const [userId, setUserId] = useState(isOwner ? restaurantId : null); // If the user is the owner, we can use restaurantId directly as userId.
@@ -108,61 +109,39 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   }, [user?.id]);
 
 
-  // Check if this restaurant is favourited by current user
-  useEffect(() => {
-    const checkFavouriteStatus = async () => {
-      try {
-        if (!user?.id) return;
-
-        const res = await fetch(`/api/restaurants/is-favourited?authId=${user.id}&restaurantId=${restaurantId}`);
-        const result = await res.json();
-
-        if (res.ok) {
-          setIsFavourited(result.isFavourited);
-        }
-      } catch (err) {
-        console.error('Error checking favourite status:', err.message);
-      }
-    };
-
-    checkFavouriteStatus();
-  }, [restaurantId, user?.id]);
-
-
   if (!restaurantData || !reviewsData) return <Spinner message="Loading..." />;
 
   // When user save restaurant as favourite
-  const handleFavouriteRestaurantClick = async () => {
-    try {
-      if (!user?.id) return; // Wait until user is available
+ const handleFavouriteRestaurantClick = async () => {
+  try {
+    if (!user?.id) return;
 
-      const res = await fetch('/api/restaurants/save-as-favourite', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          restaurantId,
-          supabaseUserId: user.id,
-        }),
-      });
+    const res = await fetch('/api/restaurants/save-as-favourite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        restaurantId,
+        supabaseUserId: user.id,
+      }),
+    });
 
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
-      setIsFavourited(result.isFavourited);
-      refreshUserData();
-
-      // Re-fetch the updated Favourite count immediately from backend
-      const countRes = await fetch(`/api/restaurants/num-of-favourites/${restaurantId}`);
-      if (!countRes.ok) {
-        throw new Error('Failed to fetch updated favourite count');
-      }
-
-      const countData = await countRes.json();
-      setNumOfFavourites(countData.numOfFavourites);
-    } catch (err) {
-      console.error('Error toggling favourite:', err.message);
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error?.message || 'Failed to toggle favourite');
     }
 
-  };
+    await refreshUserData(); // update user favourites in context
+
+    // still keep favourite count re-fetch if you want it live-updated
+    const countRes = await fetch(`/api/restaurants/num-of-favourites/${restaurantId}`);
+    if (countRes.ok) {
+      const { numOfFavourites } = await countRes.json();
+      setNumOfFavourites(numOfFavourites);
+    }
+  } catch (err) {
+    console.error('Error toggling favourite:', err.message);
+  }
+};
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
 

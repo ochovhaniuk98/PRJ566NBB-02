@@ -14,32 +14,12 @@ import StarRating from '../shared/StarRating';
 export default function RestaurantCard({ restaurantData, onFavouriteToggle = () => {} }) {
   const router = useRouter();
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-
-  const { refreshUserData } = useUserData();
-  const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
-  const [isFavourited, setIsFavourited] = useState(false);
+  const { userData, refreshUserData } = useUserData();
   const restaurantId = restaurantData._id;
+  const isFavourited = userData?.favouriteRestaurants?.includes(restaurantId);
+
+  const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
   // const image = Array.isArray(restaurantData?.images) ? restaurantData.images[0] : null;
-
-  // Check if this restaurant is favourited by current user
-  useEffect(() => {
-    const checkFavouriteStatus = async () => {
-      try {
-        if (!user?.id) return;
-
-        const res = await fetch(`/api/restaurants/is-favourited?authId=${user.id}&restaurantId=${restaurantId}`);
-        const result = await res.json();
-
-        if (res.ok) {
-          setIsFavourited(result.isFavourited);
-        }
-      } catch (err) {
-        console.error('Error checking favourite status:', err.message);
-      }
-    };
-
-    checkFavouriteStatus();
-  }, [restaurantId, user?.id]);
 
   const handleFavouriteRestaurantClick = async e => {
     e.stopPropagation();
@@ -61,7 +41,6 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
 
-      setIsFavourited(result.isFavourited);
       refreshUserData();
       onFavouriteToggle(result.isFavourited, restaurantId);
     } catch (err) {
