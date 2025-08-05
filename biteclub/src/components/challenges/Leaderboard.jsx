@@ -36,6 +36,7 @@ export default function Leaderboard() {
               u.rank = arr[i - 1].rank + 1; // next unique score = previous rank + 1
             }
           }
+          const bgColour = u.rank <= 3 ? bgColourList[u.rank - 1] : defaultColour;
 
           return (
             <LeaderboardPlaceCard
@@ -43,6 +44,7 @@ export default function Leaderboard() {
               placeNum={u.rank}
               placedUser={u.user}
               numChallengesCompleted={u.numChallengesCompleted}
+              bgColour={bgColour}
             />
           );
         })}
