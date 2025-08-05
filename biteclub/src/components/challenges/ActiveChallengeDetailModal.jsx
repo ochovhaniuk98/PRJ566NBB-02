@@ -18,6 +18,7 @@ import { fakeRestaurants, fakeChallenges } from '@/app/data/fakeData';
 import { useState, useEffect } from 'react';
 import * as geolib from 'geolib'; // https://www.npmjs.com/package/geolib
 import { useUserData } from '@/context/UserDataContext';
+import { dropActiveChallenge } from '@/lib/db/dbOperations';
 
 // DESCRIPTION: Pop-Up MODAL that appears when an active challenge card is clicked
 export default function ActiveChallengeDetailModal({
@@ -189,9 +190,16 @@ export default function ActiveChallengeDetailModal({
   ];
 
   // Drop challenge / Remove from activeChallenges list
-  function handleDropChallenge() {
-    const updated = activeChallenges.filter(challenge => challenge._id !== activeChallengeDetail._id);
-    setActiveChallenges(updated);
+  async function handleDropChallenge() {
+    if (!activeChallengeDetail) return;
+    const res = await dropActiveChallenge(activeChallengeDetail._id);
+    if (res) {
+      const updated = activeChallenges.filter(challenge => challenge._id !== activeChallengeDetail._id);
+      setActiveChallenges(updated);
+      alert('Challenge dropped successfully');
+    } else {
+      alert('Failed to drop the challenge. Please try again later.');
+    }
     onClose(false);
   }
 

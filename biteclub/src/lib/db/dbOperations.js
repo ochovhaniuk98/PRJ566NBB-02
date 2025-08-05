@@ -1285,3 +1285,20 @@ export async function updateActiveChallengeDetail({ activeChallengeDetailId, cha
     throw error;
   }
 }
+
+export async function dropActiveChallenge(activeChallengeId) {
+  try {
+    await dbConnect();
+
+    const deletedChallenge = await ActivateChallengeDetail.findByIdAndDelete(activeChallengeId);
+
+    if (!deletedChallenge) {
+      throw new Error('ActiveChallengeDetail not found');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error deleting active challenge detail:', error);
+    return false;
+  }
+}
