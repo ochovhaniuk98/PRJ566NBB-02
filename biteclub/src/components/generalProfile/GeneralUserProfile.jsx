@@ -656,6 +656,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                           selectedReview={selectedReview}
                           onClose={() => setSelectedReview(null)}
                           isOwner={isOwner}
+                          currentUser={user}
                         />
                       )}
                     </div>
