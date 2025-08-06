@@ -18,6 +18,8 @@ export default function ChallengesPage() {
   const [activeChallenges, setActiveChallenges] = useState([]); // list of user's active challenges
   const [fetchedActivatedChallenges, setFetchedActivatedChallenges] = useState(false);
 
+  const [leaderboardRefreshTrigger, refreshLeaderboard] = useState(false); // used to refresh leaderboard data
+
   const { userData } = useUserData(); // Current logged-in user's MongoDB data
 
   // Creates "active" challenge data and adds it to user's active challenges array (created for DEMO purposes)
@@ -57,6 +59,11 @@ export default function ChallengesPage() {
     }
   }, [activeChallenges]);
 
+  useEffect(() => {
+    // Refresh leaderboard, whenever points are updated
+    refreshLeaderboard(prev => !prev);
+  }, [points]);
+
   // Challenge Completed Modal State
   const [showChallengeCompletedModal, setShowChallengeCompletedModal] = useState(false);
 
@@ -95,7 +102,7 @@ export default function ChallengesPage() {
               )}
 
               {/* Leaderboard */}
-              <Leaderboard />
+              <Leaderboard refreshTrigger={leaderboardRefreshTrigger} />
             </div>
             {/* PLACEHOLDER for AI-generated challenges */}
             <div className="w-full bg-gray-100 p-3 text-center">
