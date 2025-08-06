@@ -1286,6 +1286,25 @@ export async function updateActiveChallengeDetail({ activeChallengeDetailId, cha
   }
 }
 
+export async function addPointsToUser(userId, points) {
+  try {
+    await dbConnect();
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    user.numOfPoints += points;
+    await user.save();
+
+    return user.numOfPoints;
+  } catch (error) {
+    console.error('Error adding points to user:', error);
+    throw error;
+  }
+}
+
 export async function dropActiveChallenge(activeChallengeId) {
   try {
     await dbConnect();
