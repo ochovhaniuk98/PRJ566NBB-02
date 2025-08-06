@@ -12,6 +12,7 @@ export default function ChallengesPage() {
   const USER_ID = '664abc1234567890fedcba98'; // Porfile Owner's ID
   const MAX_ACTIVE = 3; // users can only have MAX 3 active challenges
   const [showChallengeDetailModal, setShowChallengeDetailModal] = useState(false); // opens/closes modal showing selected challenge details
+  const [points, setPoints] = useState(0); // points added after challenge completion
   const [selectedChallenge, setSelectedChallenge] = useState(null); // ensures modal opens with correct challenge details
 
   const [activeChallenges, setActiveChallenges] = useState([]); // list of user's active challenges
@@ -78,7 +79,7 @@ export default function ChallengesPage() {
               {/* Challenge Completed Modal */}
               {showChallengeCompletedModal && (
                 <ChallengeCompletedModal
-                  numPointsWon={123}
+                  numPointsWon={points}
                   setShowChallengeCompletedModal={setShowChallengeCompletedModal}
                 />
               )}
@@ -110,6 +111,8 @@ export default function ChallengesPage() {
                 selectedActiveChallenge={selectedChallenge}
                 setActiveChallenges={setActiveChallenges}
                 activeChallenges={activeChallenges}
+                setPoints={setPoints}
+                setShowChallengeCompletedModal={setShowChallengeCompletedModal}
               />
             )}
           </div>
