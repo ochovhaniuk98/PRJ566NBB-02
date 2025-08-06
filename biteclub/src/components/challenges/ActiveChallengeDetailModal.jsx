@@ -25,6 +25,8 @@ export default function ActiveChallengeDetailModal({
   selectedActiveChallenge,
   activeChallenges,
   setActiveChallenges,
+  setPoints,
+  setShowChallengeCompletedModal,
 }) {
   // challenge
   const [challenge, setChallenge] = useState('');
@@ -296,7 +298,8 @@ export default function ActiveChallengeDetailModal({
         // give points to user
         const resPoints = await addPointsToUser(userData._id, challenge.numberOfPoints);
         if (resPoints) {
-          alert(`Congratulations! You have completed the challenge and earned ${challenge.numberOfPoints} points!`);
+          setPoints(challenge.numberOfPoints);
+          setShowChallengeCompletedModal(true);
         } else {
           alert('Challenge completed but failed to add points to your account. Please contact support.');
         }
