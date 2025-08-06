@@ -6,6 +6,7 @@ import Leaderboard from './Leaderboard';
 import AllActiveChallenges from './AllActiveChallenges';
 import { fakeChallenges, fakeActivatedChallengeDetail } from '@/app/data/fakeData';
 import { useUserData } from '@/context/UserDataContext';
+import ChallengeCompletedModal from './ChallengeCompletedModal';
 
 export default function ChallengesPage() {
   const USER_ID = '664abc1234567890fedcba98'; // Porfile Owner's ID
@@ -55,15 +56,32 @@ export default function ChallengesPage() {
     }
   }, [activeChallenges]);
 
+  // Challenge Completed Modal State
+  const [showChallengeCompletedModal, setShowChallengeCompletedModal] = useState(false);
+
   return (
     <>
       {userData && (
         <MainBaseContainer>
           <div className="main-side-padding w-full flex flex-col items-center m-16">
             {/* PLACEHOLDER for main progress bar and general user header */}
-            <div className="w-full bg-gray-100 p-3 text-center">
+            <div className="w-full bg-gray-100 p-3 text-center flex flex-col gap-y-2">
               <h2>Placeholder for main progress bar and general user header</h2>
               <a href="/challenges/redeem">Redeem</a>
+              {/* button placed here for DEMO PURPOSES ONLY */}
+              <button
+                className="bg-brand-blue w-fit p-1 px-4 rounded-full shadow-md mx-auto cursor-pointer"
+                onClick={() => setShowChallengeCompletedModal(true)}
+              >
+                Open challengeCompletedModal (demo)
+              </button>
+              {/* Challenge Completed Modal */}
+              {showChallengeCompletedModal && (
+                <ChallengeCompletedModal
+                  numPointsWon={123}
+                  setShowChallengeCompletedModal={setShowChallengeCompletedModal}
+                />
+              )}
             </div>
             <div className="flex w-full min-h-96 my-4 gap-x-4">
               {/* Active Challenges */}

@@ -24,6 +24,7 @@
   --color-brand-aqua: #56e4be;
   --color-brand-aqua-lite: #dffbf8;
   --color-brand-blue: #abdef5;
+  --color-brand-blue-mid: #bde5f7;
   --color-brand-blue-lite: #dff2fb;
   --color-brand-grey: #757575;
   --color-brand-grey-lite: #d9d9d9;
@@ -55,7 +56,7 @@
   /* text input field */
   input,
   textarea {
-    @apply appearance-none border bg-white border-brand-aqua rounded-md px-4 pt-2 mt-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-aqua;
+    @apply appearance-none border-2 bg-white border-brand-aqua rounded-md px-4 pt-2 mt-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-aqua;
   }
 
   input {

@@ -57,8 +57,11 @@ function LeaderboardPlaceCard({ placeNum, placedUser, numChallengesCompleted, bg
   return (
     <div className="h-1/5 p-2 flex justify-between items-center font-primary" style={{ backgroundColor: bgColour }}>
       <div className="flex gap-x-4">
-        <div className="relative w-10 h-full bg-brand-yellow text-center">
-          <h1 className="text-brand-navy">{placeNum}</h1>
+        <div className="relative w-20 h-full">
+          <div className="relative w-20 h-12 text-center">
+            <Image src={'/img/trayIcon.png'} alt="" className="object-contain" fill={true} />
+          </div>
+          <h1 className="text-brand-navy absolute top-[2px] left-[40%] text-[2.75rem]">{placeNum}</h1>
         </div>
         <div>
           <h3 className="text-brand-navy m-0">{placedUser.username}</h3>

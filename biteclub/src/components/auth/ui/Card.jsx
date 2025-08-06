@@ -2,14 +2,12 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-function Card({ className, ...props }) {
+function Card({ className, forBusinessUser = false, ...props }) {
+  const styling = forBusinessUser ? 'bg-brand-blue-lite' : 'bg-brand-yellow-extralite';
   return (
     <div
       data-slot="card"
-      className={cn(
-        'bg-brand-yellow-extralite text-black flex flex-col gap-1 rounded-xl border border-brand-yellow-lite px-8 py-16 w-md',
-        className
-      )}
+      className={cn(`${styling} text-black flex flex-col gap-1 rounded-xl px-8 py-8 w-md`, className)}
       {...props}
     />
   );
@@ -20,7 +18,7 @@ function CardHeader({ className, ...props }) {
     <div
       data-slot="card-header"
       className={cn(
-        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-8 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
+        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-4 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
         className
       )}
       {...props}
@@ -33,7 +31,9 @@ function CardTitle({ className, ...props }) {
 }
 
 function CardDescription({ className, ...props }) {
-  return <div data-slot="card-description" className={cn('text-muted-foreground text-sm', className)} {...props} />;
+  return (
+    <div data-slot="card-description" className={cn('text-muted-foreground text-sm mb-4', className)} {...props} />
+  );
 }
 
 function CardAction({ className, ...props }) {

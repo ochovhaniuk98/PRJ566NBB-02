@@ -10,6 +10,7 @@ import { Switch } from '@/components/shared/Switch';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export function SignUpForm({ className, ...props }) {
   const [email, setEmail] = useState('');
@@ -90,27 +91,40 @@ export function SignUpForm({ className, ...props }) {
     // Use the defined function to CREATE USER IN MONGODB
   };
 
+  const iconImageLink = userType ? '/img/chefHatFlat.png' : '/img/spoonAndFork.png';
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card>
+      <Card forBusinessUser={userType}>
+        <div className="relative size-15 self-center">
+          <Image src={iconImageLink} alt={'header image'} className="object-contain" fill={true} />
+        </div>
         <CardHeader>
           <CardTitle className="text-center">
-            <h2>Sign up</h2>
+            <h1 className="font-normal">Sign Up</h1>
           </CardTitle>
-          <CardDescription>
-            <h3 className="text-center">Create a new account</h3>
+          {/* User Type Switch -- Ignore label text for now, Not sure what it should say yet. */}
+          <div
+            className={`flex items-center justify-center gap-6 mt-2 mb-4 py-2 rounded-full ${
+              userType ? 'text-black bg-brand-blue' : 'text-brand-grey bg-brand-yellow-lite'
+            }`}
+          >
+            <label htmlFor="user-role">
+              <h3>I am a restaurant business.</h3>
+            </label>
+            <Switch id="user-role" checked={userType} onCheckedChange={setUserType} largeSize={true} />
+          </div>
+
+          <CardDescription
+            className={`border-t-2 pt-6 ${userType ? ' border-brand-blue' : 'border-brand-yellow-lite'}`}
+          >
+            <h3 className="text-center">
+              {userType
+                ? "Serve up your restaurant's success with a Business Account."
+                : 'Expand your palate, one bite at a time.'}
+            </h3>
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* User Type Switch -- Ignore label text for now, Not sure what it should say yet. */}
-
-          <div className="flex items-center justify-center gap-6 mb-4">
-            <label htmlFor="user-role">
-              <h5>I am a restaurant business.</h5>
-            </label>
-            <Switch id="user-role" checked={userType} onCheckedChange={setUserType} />
-          </div>
-
           <div className="flex flex-col gap-4 items-center">
             <Button
               // It's the first button inside the form, browsers might treat it as the default submit button when pressing Enter in a form input.
@@ -146,14 +160,21 @@ export function SignUpForm({ className, ...props }) {
           </div>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-4">
-              <div className="relative text-center text-sm text-brand-grey-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                <span className="relative z-10 bg-brand-yellow-extralite px-2 text-brand-grey text-xs uppercase font-primary font-semibold">
+              <div
+                className={`relative text-center text-sm text-brand-grey-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t-2 after:border-border ${
+                  userType ? ' after:border-brand-blue' : 'after:border-brand-yellow-lite'
+                }`}
+              >
+                <span
+                  className={`relative z-10 px-2 text-brand-grey text-xs uppercase font-primary font-semibold
+                  ${userType ? ' bg-brand-blue-lite' : 'bg-brand-yellow-extralite'}`}
+                >
                   Or
                 </span>
               </div>
               <div className="grid">
                 <Label htmlFor="email">
-                  <h4>Email</h4>
+                  <h4>{`${userType ? 'Business ' : ''}Email`}</h4>
                 </Label>
                 <Input
                   id="email"

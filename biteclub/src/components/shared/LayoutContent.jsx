@@ -13,7 +13,7 @@ export default function LayoutContent({ children }) {
       <MainMenu />
       <div className="flex-1 relative">
         {userType === 'business' ? <BusinessHeader /> : <SearchBar />}
-        <main className="main-side-padding">{children}</main>
+        <main className="main-side-padding ml-12">{children}</main>
       </div>
     </>
   );

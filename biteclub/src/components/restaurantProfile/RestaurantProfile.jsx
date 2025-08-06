@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
-import { faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faPenClip } from '@fortawesome/free-solid-svg-icons';
+import { faInstagram } from '@fortawesome/free-brands-svg-icons';
+
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
@@ -23,7 +25,7 @@ import FavouriteButton from '../shared/FavouriteButton';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const { userData, refreshUserData } = useUserData();  
+  const { userData, refreshUserData } = useUserData();
 
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
@@ -32,7 +34,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value when adding a review
   const [numOfFavourites, setNumOfFavourites] = useState(0);
   const isFavourited = userData?.favouriteRestaurants?.includes(restaurantId);
-
 
   // stores the MongoDB user ID of the logged-in user, or restaurantId if owner
   const [userId, setUserId] = useState(isOwner ? restaurantId : null); // If the user is the owner, we can use restaurantId directly as userId.
@@ -108,40 +109,39 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     if (!isOwner && !userId) fetchMongoUserId();
   }, [user?.id]);
 
-
   if (!restaurantData || !reviewsData) return <Spinner message="Loading..." />;
 
   // When user save restaurant as favourite
- const handleFavouriteRestaurantClick = async () => {
-  try {
-    if (!user?.id) return;
+  const handleFavouriteRestaurantClick = async () => {
+    try {
+      if (!user?.id) return;
 
-    const res = await fetch('/api/restaurants/save-as-favourite', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        restaurantId,
-        supabaseUserId: user.id,
-      }),
-    });
+      const res = await fetch('/api/restaurants/save-as-favourite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          restaurantId,
+          supabaseUserId: user.id,
+        }),
+      });
 
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error?.message || 'Failed to toggle favourite');
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error?.message || 'Failed to toggle favourite');
+      }
+
+      await refreshUserData(); // update user favourites in context
+
+      // still keep favourite count re-fetch if you want it live-updated
+      const countRes = await fetch(`/api/restaurants/num-of-favourites/${restaurantId}`);
+      if (countRes.ok) {
+        const { numOfFavourites } = await countRes.json();
+        setNumOfFavourites(numOfFavourites);
+      }
+    } catch (err) {
+      console.error('Error toggling favourite:', err.message);
     }
-
-    await refreshUserData(); // update user favourites in context
-
-    // still keep favourite count re-fetch if you want it live-updated
-    const countRes = await fetch(`/api/restaurants/num-of-favourites/${restaurantId}`);
-    if (countRes.ok) {
-      const { numOfFavourites } = await countRes.json();
-      setNumOfFavourites(numOfFavourites);
-    }
-  } catch (err) {
-    console.error('Error toggling favourite:', err.message);
-  }
-};
+  };
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
 
@@ -153,7 +153,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         {isOwner ? (
           <>
             <SingleTabWithIcon
-              icon={faHeart}
+              icon={faInstagram}
               detailText={'Add Instagram Post'}
               onClick={() => setShowInstagramPopup(true)}
             />
@@ -164,7 +164,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
             />
 
             <SingleTabWithIcon
-              icon={faHeart}
+              icon={faPenClip}
               detailText={'Edit Profile Details'}
               onClick={() => setShowEditDetailsPopup(true)}
             />
