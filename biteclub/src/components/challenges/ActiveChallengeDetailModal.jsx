@@ -14,11 +14,10 @@ import {
   faLocationDot,
 } from '@fortawesome/free-solid-svg-icons';
 import { getDaysRemaining } from './Util';
-import { fakeRestaurants, fakeChallenges } from '@/app/data/fakeData';
 import { useState, useEffect } from 'react';
 import * as geolib from 'geolib'; // https://www.npmjs.com/package/geolib
 import { useUserData } from '@/context/UserDataContext';
-import { dropActiveChallenge } from '@/lib/db/dbOperations';
+import { addPointsToUser, dropActiveChallenge } from '@/lib/db/dbOperations';
 
 // DESCRIPTION: Pop-Up MODAL that appears when an active challenge card is clicked
 export default function ActiveChallengeDetailModal({
@@ -165,6 +164,7 @@ export default function ActiveChallengeDetailModal({
     const progressV = numCompletedSteps + '/' + activeChallengeDetail.challengeSteps.length;
     setProgressVal(progressV);
     setFetchedProgressVal(true);
+    setNumCompletedSteps(numCompletedSteps);
   }
 
   // challenge stats data: progress, time left, reward
@@ -262,8 +262,10 @@ export default function ActiveChallengeDetailModal({
     activeChallengeDetail.challengeSteps[stepIndex].verificationStatus = true;
     const nCompletedSteps = activeChallengeDetail.challengeSteps.filter(step => step.verificationStatus).length;
 
+    let challengeCompleted = false;
     if (nCompletedSteps == stepsLength) {
       activeChallengeDetail.completionStatus = 'completed';
+      challengeCompleted = true;
       setActiveChallengeDetail(activeChallengeDetail);
     }
 
@@ -290,7 +292,20 @@ export default function ActiveChallengeDetailModal({
       const data = await res.json();
       setActiveChallengeDetail(data.updatedChallenge);
 
-      alert('You have been successfully checked in.');
+      if (challengeCompleted) {
+        // give points to user
+        const resPoints = await addPointsToUser(userData._id, challenge.numberOfPoints);
+        if (resPoints) {
+          alert(`Congratulations! You have completed the challenge and earned ${challenge.numberOfPoints} points!`);
+        } else {
+          alert('Challenge completed but failed to add points to your account. Please contact support.');
+        }
+        // remove challenge from activeChallenges list
+        const updated = activeChallenges.filter(challenge => challenge._id !== activeChallengeDetail._id);
+        setActiveChallenges(updated);
+        onClose(false);
+        return;
+      } else alert('You have been successfully checked in.');
       setProgress();
     } catch (err) {
       console.error('Error while updating challenge detail:', err);
@@ -358,10 +373,10 @@ export default function ActiveChallengeDetailModal({
         ) : (
           /* CHECK-IN btn */
           <div
-            className="bg-brand-blue-lite p-1 px-3 mt-2 rounded-full uppercase text-brand-navy text-sm font-semibold shadow-md group-hover:bg-brand-aqua-lite group-hover:shadow-none"
+            className="bg-brand-blue-lite p-1 px-3 mt-2 rounded-full uppercase text-brand-navy text-sm font-semibold shadow-md group-hover:bg-brand-aqua-lite group-hover:shadow-none text-center"
             onClick={() => handleCheckIn(restaurant, isVerified)}
           >
-            Check-in
+            {numCompletedSteps === stepsLength - 1 ? 'Complete Challenge' : 'Check-in'}
           </div>
         )}
       </div>
