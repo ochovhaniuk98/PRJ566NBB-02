@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
-import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
-import { Button } from '../shared/Button';
 import ReportForm from '../shared/ReportForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -23,9 +21,10 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
   const router = useRouter();
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
 
-  const { refreshUserData } = useUserData();
+  const { userData, loadingData, refreshUserData } = useUserData();
   const generalUserUrl = `/generals/${generalUserData._id}`;
   const [reviewCount, setReviewCount] = useState(0);
+  const [loadingReviewCount, setLoadingReviewCount] = useState(true);
 
   const [showMorePopup, setShowMorePopup] = useState(false);
   const [cardHovered, setCardHovered] = useState(false);
@@ -52,7 +51,7 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
       icon: faFeather,
       bgColour: 'white',
       iconColour: 'brand-peach',
-      statNum: generalUserData?.myBlogPosts?.length || 0, 
+      statNum: generalUserData?.myBlogPosts?.length || 0,
     },
     {
       label: 'Challenges',
@@ -65,8 +64,16 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
 
   const [openReportForm, setOpenReportForm] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [anotherUserId, setAnotherUserId] = useState(null);
+
+  useEffect(() => {
+    if (!userData || !generalUserData._id) {
+      setIsOwner(false);
+      return;
+    }
+    setIsOwner(userData._id === generalUserData._id);
+  }, [userData, generalUserData._id]);
+
+  const anotherUserId = !isOwner ? generalUserData._id : null;
 
   useEffect(() => {
     const fetchReviewCount = async () => {
@@ -77,56 +84,20 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
       } catch (error) {
         console.error('Error fetching review count:', error);
       }
+      setLoadingReviewCount(false);
     };
 
     if (generalUserData._id) fetchReviewCount();
   }, [generalUserData._id]);
 
+  const isFollowing = useMemo(() => {
+    if (loadingData || isOwner) return true;
+    return userData?.followings?.includes(generalUserData._id) || false;
+  }, [userData, generalUserData._id, isOwner, loadingData]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!generalUserData._id || !user?.id) return;
-
-      try {
-        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
-        console.log(`(generals public profile) current user MONGOID: `, userMongoId);
-
-        console.log(`(generals public profile) mongoId in params: `, generalUserData._id);
-        if (userMongoId && userMongoId === generalUserData._id) {
-          setIsOwner(true);
-        } else {
-          setAnotherUserId(generalUserData._id);
-        }
-      } catch (error) {
-        console.error('(GeneralUserCard) Error checking user ownership:', error);
-      }
-    };
-    fetchData();
-  }, [generalUserData._id, user?.id]);
-
-  useEffect(() => {
-    if (isOwner) return;
-
-    // If we miss Ids, we cannot perform check.
-    if (!anotherUserId) {
-      console.log('(isFollowing) anotherUserId: ', anotherUserId);
-      console.warn('anotherUserId is missing -- skipping check');
-      return;
-    }
-
-    const checkFollowingStatus = async () => {
-      try {
-        if (!user?.id) return;
-        const res = await fetch(`/api/generals/is-following?authId=${user.id}&fId=${anotherUserId}`);
-        const result = await res.json();
-        if (res.ok) setIsFollowing(result.isFollowing);
-      } catch (err) {
-        console.error('Error checking favourite status:', err.message);
-      }
-    };
-
-    checkFollowingStatus();
-  }, [anotherUserId, isOwner, user?.id]);
+  if (loadingData || loadingReviewCount) {
+    return <div className="my-12" />;
+  }
 
   const handleFollowClick = async e => {
     e.stopPropagation();
@@ -142,7 +113,6 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to follow / unfollow user');
 
-      setIsFollowing(result.isFollowing); // Update state
       await refreshUserData();
       onFollowingToggle(result.isFollowing, anotherUserId);
     } catch (err) {
