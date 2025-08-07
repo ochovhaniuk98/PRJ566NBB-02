@@ -131,7 +131,7 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
       >
         <div className="flex flex-col items-center font-primary text-brand-navy relative w-full">
           <div className="text-xl flex justify-between items-center w-full">
-            {generalUserData.username}
+            <span className="text-xl truncate">{generalUserData.username}</span>
             {/* wrapped ... icon in invisible div so it's easier to click */}
             <div
               className="pt-1 pl-4 pr-2 pb-2 absolute -right-2 cursor-pointer"
