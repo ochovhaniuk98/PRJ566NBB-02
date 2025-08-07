@@ -176,14 +176,25 @@ Components created:
     - Greatly reduced API calls:
       - Replaced repeated calls wherever current user information was needed
       - Reduced API calls for checking whether an item (BlogPost, Restaurant) is favourited
+- Optimized database queries:
+  - Created indexes on frequently queried fields in MongoDB reducing query time
+- Optimized API responses:
+  - Reduced the amount of data sent over the network by excluding unnecessary fields in API responses
+  - Used lean queries to improve performance
+
+## Blog Post Refactoring
+- Images in blog posts are now stored in Cloudinary instead of storing them as base64 strings in MongoDB. This change improves performance and reduces the size of the database significantly.
 
 ## Challenges
 - Users can now progress through challenges by checking in at the restaurants they have visited and viewing their statistics. Progress bar updates dynamically.
 - A check-in verification feature has been added that verifies whether the user's location is within 50 meters of the restaurant.
+- Once a users completes check-in on the last step of a challenge, they will be awarded points for the challenge and the challenge will be marked as completed. The users will see a short congratulatory message screen with the points they earned.
+- Users can also drop their challenge progress at any time, which will reset their progress for that challenge and remove the challenge from their active challenges list. They will not earn any points for the challenge if they drop it and their progress will be reset.
 
 ### Leader Board
   - Grouped users by completed active challenges
   - Display top 5 unique scores, users with tied scores share the same rank
+  - Leaderboard is updated dynamically as users complete challenges
 
 ## Cuisine-Specific Restaurant List
 - On the home page, a list of restaurants for the specific Cuisine Spotlight was added. The Cuisine Spotlight updates weekly.
