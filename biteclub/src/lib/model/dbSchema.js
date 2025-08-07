@@ -392,8 +392,7 @@ UserSchema.index({ username: 'text' });
 
 BusinessUserSchema.index({ supabaseId: 1 });
 
-RestaurantSchema.index({ name: 'text' });
-RestaurantSchema.index({ cuisines: 'text' });
+RestaurantSchema.index({ name: 'text', cuisines: 'text' });
 
 BlogPostSchema.index({ title: 'text' });
 BlogPostSchema.index({ user_id: 1 });
