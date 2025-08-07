@@ -1,0 +1,64 @@
+import { Label } from '../shared/Label';
+import { Input } from '../shared/Input';
+import { Button } from '../shared/Button';
+import { useSubmitExternalReview } from '@/hooks/use-submit-external-review';
+import { useState } from 'react';
+
+export default function AddInstagramEmbed({ restaurantId, userId, onClose }) {
+  const [couponCode, setCouponCode] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const submitCoupon = async () => {
+    console.log(couponCode);
+    setLoading(true);
+    const res = await fetch('/api/redeemCoupon', {
+      method: 'POST',
+      body: JSON.stringify({
+        couponCode
+      })
+    })
+    if (res.status == 200) {
+      const data = await res.json();
+      alert(`Coupon successfully redeemed for ${data.value}!`);
+      setError(null);
+    } else {
+      setError("Coupon not found");
+    }
+    setLoading(false);
+  }
+
+  return (
+    <div
+      className="bg-white p-8 rounded-md shadow-md w-md absolute right-0 top-100 border border-brand-yellow-lite"
+    >
+      <h2 className="mb-4">Redeem a coupon</h2>
+
+      <div>
+        <Label htmlFor="couponCode">
+          <h4>Coupon Code</h4>
+        </Label>
+        <Input
+          id="couponCode"
+          name="couponCode"
+          type="text"
+          placeholder="xxxxxxxxxxxxxx"
+          onChange={e => setCouponCode(e.target.value)}
+          required
+          className="w-full"
+          disabled={loading}
+        />
+      </div>
+
+      {error && <p className="text-red-600 mt-2">{error}</p>}
+
+      <div className="flex justify-end gap-2 mt-8">
+        <Button type="submit" className="w-30" variant="default" disabled={loading} onClick={submitCoupon}>
+          {loading ? 'Redeeming...' : 'Redeem'}
+        </Button>
+        <Button type="button" className="w-30" onClick={onClose} variant="secondary" disabled={loading}>
+          Cancel
+        </Button>
+      </div>
+    </div>
+  );
+}
