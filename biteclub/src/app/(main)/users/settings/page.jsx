@@ -46,7 +46,7 @@ export default function Settings() {
     setDisplayFavouriteBlogPosts(userData.displayFavouriteBlogPosts ?? false);
     setDisplayVisitedPlaces(userData.displayVisitedPlaces ?? false);
     setFeedPersonalization(userData.feedPersonalization ?? false);
-    setAvatarUrl(userData.userProfilePicture.url ?? null);
+    setAvatarUrl(userData.userProfilePicture?.url ?? null);
     setLoading(false);
   }, [loadingData, userData]);
 
