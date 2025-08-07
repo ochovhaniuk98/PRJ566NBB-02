@@ -9,34 +9,43 @@ import Spinner from '@/components/shared/Spinner';
 
 const redemption_options = [
   {
-    points_needed: 50,
+    points_needed: 1000,
     value: 5.0,
   },
   {
-    points_needed: 100,
+    points_needed: 1500,
     value: 10.0,
   },
   {
-    points_needed: 200,
+    points_needed: 2000,
+    value: 15.0,
+  },
+  {
+    points_needed: 2500,
     value: 20.0,
   },
+  {
+    points_needed: 2750,
+    value: 25.0,
+  },
 ];
-
-function randomString() {
-  return [...Array(5)].map(value => (Math.random() * 1000000).toString(36).replace('.', '')).join('');
-}
 
 export default function Redeem() {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const { userData, loadingData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [points, setPoints] = useState(0); // not null
   const [loading, setLoading] = useState(true);
+  const [couponCode, setCouponCode] = useState(null);
 
   useEffect(() => {
     // [!] do not set "!userData?.numOfPoints" or it will run forever if the user does not have points yet
     if (loadingData || !userData) return;
     if (userData?.numOfPoints != undefined) {
+      console.log("User: ", userData);
       setPoints(userData.numOfPoints);
+    }
+    if (userData?.coupon?.code) {
+      setCouponCode(userData.coupon.code);
     }
     setLoading(false);
   }, [loadingData, userData]);
@@ -47,17 +56,19 @@ export default function Redeem() {
       return;
     }
 
-    const res = await fetch('/api/points', {
-      method: 'PUT',
+    const res = await fetch('/api/redeem', {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         supabaseId: user.id,
-        numOfPoints: points - option.points_needed,
+        reward: option.value,
       }),
     });
+    const data = await res.json();
 
     if (res.ok) {
-      alert('Points successfully redeemed!\n' + 'Your coupon code is ' + randomString());
+      console.log("Server response: ", data)
+      alert('Points successfully redeemed!\n' + 'Your coupon code is ' + data.couponCode);
     }
   }
 
@@ -93,6 +104,7 @@ export default function Redeem() {
             );
           })}
         </div>
+        {couponCode && <p><span className="font-bold">Current coupon: </span>{couponCode}</p>}
       </div>
     </MainBaseContainer>
   );
