@@ -973,7 +973,11 @@ export async function searchRestaurantsBySearchQuery(
   }
 
   const [restaurants, totalCount] = await Promise.all([
-    Restaurant.find(filter).skip(skip).limit(limit),
+    Restaurant.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .select('-__v -locationCoords -BusinessHours -images -latitude -longitude')
+      .lean(),
     Restaurant.countDocuments(filter),
   ]);
 
@@ -991,13 +995,17 @@ export async function getListOfRestaurants(page = 1, limit = 20) {
     numReviews: { $gte: 100 },
   })
     .skip(skip)
-    .limit(limit / 2);
+    .limit(limit / 2)
+    .select('-__v -locationCoords -BusinessHours -images -latitude -longitude')
+    .lean();
 
   // get new restaurants
   const newRestaurants = await Restaurant.find({})
     .sort({ _id: -1 })
     .skip(skip)
-    .limit(limit / 2);
+    .limit(limit / 2)
+    .select('-__v -locationCoords -BusinessHours -images -latitude -longitude')
+    .lean();
 
   return [...popularRestaurants, ...newRestaurants];
 }
