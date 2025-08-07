@@ -757,7 +757,7 @@ export async function getBlogPosts({ userId }) {
 export async function getBlogPost({ id }) {
   await dbConnect();
 
-  const post = await BlogPost.findOne({ _id: id });
+  const post = await BlogPost.findById(id);
 
   return post;
 }
@@ -823,11 +823,15 @@ export async function getListOfExploringBlogPosts(page = 1, limit = 20) {
   const [popularPosts, newPosts, totalCount] = await Promise.all([
     BlogPost.find(popularFilter)
       .skip(skip)
-      .limit(limit / 2),
+      .limit(limit / 2)
+      .select('-__v -body -mentions -title -comments -images -Instagram_posts')
+      .lean(),
     BlogPost.find({})
       .sort({ _id: -1 })
       .skip(skip)
-      .limit(limit / 2),
+      .limit(limit / 2)
+      .select('-__v -body -mentions -title -comments -images -Instagram_posts')
+      .lean(),
     BlogPost.countDocuments({}),
   ]);
 
@@ -865,7 +869,9 @@ export async function getListOfFollowingBlogPosts(userId, page = 1, limit = 20) 
     BlogPost.find({ user_id: { $in: followings } })
       .sort({ _id: -1 })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .select('-__v -body -mentions -title -comments -images -Instagram_posts')
+      .lean(),
     BlogPost.countDocuments({ user_id: { $in: followings } }),
   ]);
 
@@ -1027,6 +1033,7 @@ export async function searchBlogPostsByQuery(query, { page = 1, limit = 20 } = {
       .skip(skip)
       .limit(limit)
       .populate('user_id', 'username userProfilePicture')
+      .select('-__v -body -mentions -title -comments -images -Instagram_posts')
       .lean(),
     BlogPost.countDocuments({ title: { $regex: query, $options: 'i' } }),
   ]);
@@ -1055,6 +1062,7 @@ export async function getBlogsMentioningRestaurant(restaurantId) {
     mentions: { $in: [new mongoose.Types.ObjectId(`${restaurantId}`)] },
   })
     .populate('user_id', 'username userProfilePicture')
+    .select('-__v -body -mentions -title -comments -images -Instagram_posts')
     .lean();
 
   return JSON.parse(JSON.stringify(blogs));
