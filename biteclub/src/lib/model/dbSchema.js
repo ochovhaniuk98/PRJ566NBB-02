@@ -38,6 +38,14 @@ const UserSchema = new mongoose.Schema({
   userType: String,
   joinedSince: Date, // (sprint 2) newly added. for user dashboard.
   numChallengesCompleted: Number,
+  coupon: {
+    type: {
+      value: Number,
+      code: String
+    },
+    default: null,       // allows the entire coupon field to be null
+    required: false
+  }
 });
 
 // TODO: Review if counts can be removed and be calculated through the users array

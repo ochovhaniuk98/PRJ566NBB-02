@@ -1231,7 +1231,7 @@ export async function getActiveChallengesByUserId({ userId }) {
     await dbConnect();
 
     const activeChallenges = (await ActivateChallengeDetail.find({ userId })) || [];
-
+    console.log("Challenges found: ", activeChallenges);
     if (activeChallenges.length === 0) {
       console.log(`No active challenges found for userId: ${userId}`);
     }
@@ -1335,5 +1335,48 @@ export async function dropActiveChallenge(activeChallengeId) {
   } catch (error) {
     console.error('Error deleting active challenge detail:', error);
     return false;
+  }
+}
+
+// Returns null if insufficient points, else returns the coupon and stores the coupon in the database
+export async function redeemPoints(supabaseId, reward) {
+  let pointsNeeded = null;
+  if (reward == 5) {
+    pointsNeeded = 1000;
+  } else if (reward == 10) {
+    pointsNeeded = 1500;
+  } else if (reward == 15) {
+    pointsNeeded = 2000;
+  } else if (reward == 20) {
+    pointsNeeded = 2500;
+  } else if (reward == 25) {
+    pointsNeeded = 1000;
+  } else {
+    return null
+  }
+
+  // if (!supabaseId || !username) {
+  //   return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+  // }
+  const profile = await getGeneralUserProfileBySupabaseId({ supabaseId });
+  console.log("Profile", profile);
+  if (profile.numOfPoints < pointsNeeded) {
+    return false
+  }
+
+  if (!profile.coupon) {
+    try {
+      const couponCode = [...Array(5)].map(value => (Math.random() * 1000000).toString(36).replace('.', '')).join('');
+      console.log("New coupon code", couponCode)
+      console.log(supabaseId);
+      await User.findOneAndUpdate({ supabaseId }, { "$set": { numOfPoints: profile.numOfPoints - pointsNeeded, coupon: { value: reward, code: couponCode } } }, {new: true})
+      return couponCode;
+    }
+    catch (e) {
+      console.log(e);
+      return null
+    }
+  } else {
+    return null;
   }
 }
