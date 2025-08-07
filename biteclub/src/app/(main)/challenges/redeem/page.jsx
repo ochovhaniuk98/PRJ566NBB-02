@@ -68,7 +68,6 @@ export default function Redeem() {
 
     if (res.ok) {
       console.log("Server response: ", data)
-      alert('Points successfully redeemed!\n' + 'Your coupon code is ' + data.couponCode);
     }
   }
 
