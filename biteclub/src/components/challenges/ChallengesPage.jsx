@@ -124,12 +124,6 @@ export default function ChallengesPage() {
             </div>
 
             <div className="w-full bg-gray-100 p-3 text-center flex flex-col gap-y-2">
-              <button
-                className="bg-brand-blue w-fit p-1 px-4 rounded-full shadow-md mx-auto cursor-pointer"
-                onClick={() => setShowChallengeCompletedModal(true)}
-              >
-                Open challengeCompletedModal (demo)
-              </button>
               {/* Challenge Completed Modal */}
               {showChallengeCompletedModal && (
                 <ChallengeCompletedModal
