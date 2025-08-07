@@ -1,6 +1,5 @@
 import dbConnect from '@/lib/db/dbConnect';
 import { BlogPost } from '@/lib/model/dbSchema';
-import { formatBlogPost } from '@/lib/utils/formatBlogPost';
 
 // GET blog posts by blogblogIds
 // Reason of Using POST over GET:
@@ -19,9 +18,7 @@ export async function POST(req) {
       .select('-__v -body -mentions -title -comments -images -Instagram_posts')
       .lean();
 
-    const formattedPostsWithPreview = posts.map(formatBlogPost);
-
-    return new Response(JSON.stringify(formattedPostsWithPreview), {
+    return new Response(JSON.stringify(posts), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
