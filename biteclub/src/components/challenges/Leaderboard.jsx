@@ -22,7 +22,7 @@ export default function Leaderboard() {
   }, []);
 
   return (
-    <div className="w-2/5 flex flex-col">
+    <div className="w-full md:w-2/5 flex flex-col">
       <h2>Leaderboard</h2>
       {/* <div className="flex-grow bg-brand-aqua flex flex-col gap-y-2 p-4"> */}
       <div className="flex-grow bg-brand-aqua flex flex-col gap-y-2 p-4 overflow-y-auto max-h-[80vh]">

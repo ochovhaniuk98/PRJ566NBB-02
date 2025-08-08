@@ -83,7 +83,7 @@ export default function ChallengesPage() {
                 />
               )}
             </div>
-            <div className="flex w-full min-h-96 my-4 gap-x-4">
+            <div className="flex flex-col md:flex-row w-full min-h-96 my-4 gap-x-4 md:gap-y-0 gap-y-8">
               {/* Active Challenges */}
               {fetchedActivatedChallenges && (
                 <AllActiveChallenges
