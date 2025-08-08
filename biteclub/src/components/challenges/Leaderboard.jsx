@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { fakeUser } from '@/app/data/fakeData';
 
-export default function Leaderboard() {
-  const placedUsers = Array.from({ length: 5 });
+export default function Leaderboard({ refreshTrigger }) {
   const bgColourList = ['#FFDCBE', '#FFF5D8', '#DFF2FB', '#C7E58B'];
   const defaultColour = bgColourList[bgColourList.length - 1];
 
@@ -19,7 +17,7 @@ export default function Leaderboard() {
     fetchLeaderboard();
     const interval = setInterval(fetchLeaderboard, 60 * 60 * 1000); // 1 hour
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshTrigger]);
 
   return (
     <div className="w-full md:w-2/5 flex flex-col">

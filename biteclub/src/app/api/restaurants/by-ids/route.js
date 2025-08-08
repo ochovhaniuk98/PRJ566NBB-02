@@ -8,10 +8,9 @@ export async function POST(req) {
     const { ids } = await req.json();
     await dbConnect();
 
-    const restaurants = await Restaurant.find({
-      _id: { $in: ids },
-    });
-
+    const restaurants = await Restaurant.find({ _id: { $in: ids } })
+      .select('-__v -locationCoords -BusinessHours -images -latitude -longitude')
+      .lean();
     return new Response(JSON.stringify({ restaurants }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

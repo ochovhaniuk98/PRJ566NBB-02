@@ -38,6 +38,14 @@ const UserSchema = new mongoose.Schema({
   userType: String,
   joinedSince: Date, // (sprint 2) newly added. for user dashboard.
   numChallengesCompleted: Number,
+  coupon: {
+    type: {
+      value: Number,
+      code: String
+    },
+    default: null,       // allows the entire coupon field to be null
+    required: false
+  }
 });
 
 // TODO: Review if counts can be removed and be calculated through the users array
@@ -385,6 +393,28 @@ ReportSchema.pre('validate', function (next) {
   }
   next();
 });
+
+// Indexes
+UserSchema.index({ supabaseId: 1 });
+UserSchema.index({ username: 'text' });
+
+BusinessUserSchema.index({ supabaseId: 1 });
+
+RestaurantSchema.index({ name: 'text', cuisines: 'text' });
+
+BlogPostSchema.index({ title: 'text' });
+BlogPostSchema.index({ user_id: 1 });
+
+InternalReviewSchema.index({ restaurant_id: 1 });
+InternalReviewSchema.index({ user_id: 1 });
+
+ExternalReviewSchema.index({ restaurant_id: 1 });
+ExternalReviewSchema.index({ user_id: 1 });
+
+CommentPostSchema.index({ blogPost_id: 1 });
+
+ActivateChallengeDetailSchema.index({ userId: 1 });
+ActivateChallengeDetailSchema.index({ challengeId: 1 });
 
 // Export models
 export const User = mongoose.models?.User || mongoose.model('User', UserSchema);

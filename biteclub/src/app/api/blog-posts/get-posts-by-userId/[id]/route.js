@@ -2,15 +2,13 @@
 // get blog post by user id
 
 import { getBlogPosts } from '@/lib/db/dbOperations';
-import { formatBlogPost } from '@/lib/utils/formatBlogPost';
 
 export async function GET(request, { params }) {
   try {
     const { id } = await params; // user id
     const posts = await getBlogPosts({ userId: id });
-    const formattedPostsWithPreview = posts.map(formatBlogPost);
 
-    return new Response(JSON.stringify(formattedPostsWithPreview), {
+    return new Response(JSON.stringify(posts), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

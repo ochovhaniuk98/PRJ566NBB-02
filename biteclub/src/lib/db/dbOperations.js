@@ -757,7 +757,7 @@ export async function getBlogPosts({ userId }) {
 export async function getBlogPost({ id }) {
   await dbConnect();
 
-  const post = await BlogPost.findOne({ _id: id });
+  const post = await BlogPost.findById(id);
 
   return post;
 }
@@ -823,11 +823,15 @@ export async function getListOfExploringBlogPosts(page = 1, limit = 20) {
   const [popularPosts, newPosts, totalCount] = await Promise.all([
     BlogPost.find(popularFilter)
       .skip(skip)
-      .limit(limit / 2),
+      .limit(limit / 2)
+      .select('-__v -body -mentions -title -comments -images -Instagram_posts')
+      .lean(),
     BlogPost.find({})
       .sort({ _id: -1 })
       .skip(skip)
-      .limit(limit / 2),
+      .limit(limit / 2)
+      .select('-__v -body -mentions -title -comments -images -Instagram_posts')
+      .lean(),
     BlogPost.countDocuments({}),
   ]);
 
@@ -865,7 +869,9 @@ export async function getListOfFollowingBlogPosts(userId, page = 1, limit = 20) 
     BlogPost.find({ user_id: { $in: followings } })
       .sort({ _id: -1 })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .select('-__v -body -mentions -title -comments -images -Instagram_posts')
+      .lean(),
     BlogPost.countDocuments({ user_id: { $in: followings } }),
   ]);
 
@@ -973,7 +979,11 @@ export async function searchRestaurantsBySearchQuery(
   }
 
   const [restaurants, totalCount] = await Promise.all([
-    Restaurant.find(filter).skip(skip).limit(limit),
+    Restaurant.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .select('-__v -locationCoords -BusinessHours -images -latitude -longitude')
+      .lean(),
     Restaurant.countDocuments(filter),
   ]);
 
@@ -991,13 +1001,17 @@ export async function getListOfRestaurants(page = 1, limit = 20) {
     numReviews: { $gte: 100 },
   })
     .skip(skip)
-    .limit(limit / 2);
+    .limit(limit / 2)
+    .select('-__v -locationCoords -BusinessHours -images -latitude -longitude')
+    .lean();
 
   // get new restaurants
   const newRestaurants = await Restaurant.find({})
     .sort({ _id: -1 })
     .skip(skip)
-    .limit(limit / 2);
+    .limit(limit / 2)
+    .select('-__v -locationCoords -BusinessHours -images -latitude -longitude')
+    .lean();
 
   return [...popularRestaurants, ...newRestaurants];
 }
@@ -1019,6 +1033,7 @@ export async function searchBlogPostsByQuery(query, { page = 1, limit = 20 } = {
       .skip(skip)
       .limit(limit)
       .populate('user_id', 'username userProfilePicture')
+      .select('-__v -body -mentions -title -comments -images -Instagram_posts')
       .lean(),
     BlogPost.countDocuments({ title: { $regex: query, $options: 'i' } }),
   ]);
@@ -1047,6 +1062,7 @@ export async function getBlogsMentioningRestaurant(restaurantId) {
     mentions: { $in: [new mongoose.Types.ObjectId(`${restaurantId}`)] },
   })
     .populate('user_id', 'username userProfilePicture')
+    .select('-__v -body -mentions -title -comments -images -Instagram_posts')
     .lean();
 
   return JSON.parse(JSON.stringify(blogs));
@@ -1215,7 +1231,7 @@ export async function getActiveChallengesByUserId({ userId }) {
     await dbConnect();
 
     const activeChallenges = (await ActivateChallengeDetail.find({ userId })) || [];
-
+    console.log("Challenges found: ", activeChallenges);
     if (activeChallenges.length === 0) {
       console.log(`No active challenges found for userId: ${userId}`);
     }
@@ -1286,6 +1302,25 @@ export async function updateActiveChallengeDetail({ activeChallengeDetailId, cha
   }
 }
 
+export async function addPointsToUser(userId, points) {
+  try {
+    await dbConnect();
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    user.numOfPoints += points;
+    await user.save();
+
+    return user.numOfPoints;
+  } catch (error) {
+    console.error('Error adding points to user:', error);
+    throw error;
+  }
+}
+
 export async function dropActiveChallenge(activeChallengeId) {
   try {
     await dbConnect();
@@ -1300,5 +1335,48 @@ export async function dropActiveChallenge(activeChallengeId) {
   } catch (error) {
     console.error('Error deleting active challenge detail:', error);
     return false;
+  }
+}
+
+// Returns null if insufficient points, else returns the coupon and stores the coupon in the database
+export async function redeemPoints(supabaseId, reward) {
+  let pointsNeeded = null;
+  if (reward == 5) {
+    pointsNeeded = 1000;
+  } else if (reward == 10) {
+    pointsNeeded = 1500;
+  } else if (reward == 15) {
+    pointsNeeded = 2000;
+  } else if (reward == 20) {
+    pointsNeeded = 2500;
+  } else if (reward == 25) {
+    pointsNeeded = 1000;
+  } else {
+    return null
+  }
+
+  // if (!supabaseId || !username) {
+  //   return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+  // }
+  const profile = await getGeneralUserProfileBySupabaseId({ supabaseId });
+  console.log("Profile", profile);
+  if (profile.numOfPoints < pointsNeeded) {
+    return false
+  }
+
+  if (!profile.coupon) {
+    try {
+      const couponCode = [...Array(5)].map(value => (Math.random() * 1000000).toString(36).replace('.', '')).join('');
+      console.log("New coupon code", couponCode)
+      console.log(supabaseId);
+      await User.findOneAndUpdate({ supabaseId }, { "$set": { numOfPoints: profile.numOfPoints - pointsNeeded, coupon: { value: reward, code: couponCode } } }, {new: true})
+      return couponCode;
+    }
+    catch (e) {
+      console.log(e);
+      return null
+    }
+  } else {
+    return null;
   }
 }

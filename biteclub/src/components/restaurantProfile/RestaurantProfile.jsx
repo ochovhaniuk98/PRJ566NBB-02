@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
-import { faPen, faPenClip } from '@fortawesome/free-solid-svg-icons';
+import { faGift, faPen, faPenClip } from '@fortawesome/free-solid-svg-icons';
 import { faInstagram } from '@fortawesome/free-brands-svg-icons';
 
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
@@ -15,6 +15,7 @@ import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
+import RedeemCouponEmbed from '@/components/restaurantProfile/RedeemCouponEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
 import AddReviewForm from '../shared/AddReviewForm';
 import MentionedTab from './MentionedTab';
@@ -41,7 +42,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   // states for editing profile
   const [showInstagramPopup, setShowInstagramPopup] = useState(false);
   const [showEditDetailsPopup, setShowEditDetailsPopup] = useState(false);
-
+  const [showRedeemPopup, setShowRedeemPopup] = useState(false);
   const [restaurantData, setRestaurantData] = useState(null);
   const [restaurantImages, setRestaurantImages] = useState([]);
   const [bannerImages, setBannerImages] = useState([]);
@@ -153,6 +154,11 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         {isOwner ? (
           <>
             <SingleTabWithIcon
+              icon={faGift}
+              detailText={'Redeem Coupon'}
+              onClick={() => setShowRedeemPopup(true)}
+            />
+            <SingleTabWithIcon
               icon={faInstagram}
               detailText={'Add Instagram Post'}
               onClick={() => setShowInstagramPopup(true)}
@@ -213,6 +219,9 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
       </div>
       {showInstagramPopup && (
         <AddInstagramEmbed restaurantId={restaurantId} userId={userId} onClose={() => setShowInstagramPopup(false)} />
+      )}
+      {showRedeemPopup && (
+        <RedeemCouponEmbed restaurantId={restaurantId} userId={userId} onClose={() => setShowRedeemPopup(false)} />
       )}
       {showEditDetailsPopup && (
         <EditProfileDetails
