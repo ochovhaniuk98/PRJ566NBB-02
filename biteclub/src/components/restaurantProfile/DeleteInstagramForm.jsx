@@ -38,7 +38,7 @@ export default function DeleteInstagramForm({ restaurantId, setShowDeleteInstaMo
   };
 
   return (
-    <div className="fixed w-screen h-screen bg-black/50 left-0 top-0 z-200 py-12 px-60">
+    <div className="fixed w-screen h-screen bg-transparent left-0 top-0 z-200 py-12 px-60">
       <div className={`box-border bg-white h-full w-full  rounded-lg  z-210 p-8 flex flex-col shadow-lg`}>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Delete Instagram Embeds</h2>
