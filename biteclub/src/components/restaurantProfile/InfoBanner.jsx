@@ -5,7 +5,6 @@ import StarRating from '../shared/StarRating';
 
 export default function InfoBanner({ name, avgRating, numReviews, cuisine, address, children }) {
   return (
-    // bg-brand-yellow-extralite
     <div className="bg-brand-white flex justify-between main-side-padding pt-8 w-full">
       <div className="flex flex-col gap-y-1">
         <span className="text-3xl font-bold font-primary mb-1">{name}</span>
@@ -16,7 +15,10 @@ export default function InfoBanner({ name, avgRating, numReviews, cuisine, addre
             {`${numReviews} `}
             <span className="font-normal text-xl font-primary">reviews</span>
           </div>
+          {/* price range tag */}
+          <div className="bg-brand-blue-lite px-2 rounded-full w-15 h-fit flex justify-center text-primary">$$$$</div>
         </div>
+
         <RestaurantIconDetail icon={faLocationDot} detailText={address} />
         <RestaurantIconDetail icon={faLocationDot} detailText={cuisine.join(', ')} />
       </div>

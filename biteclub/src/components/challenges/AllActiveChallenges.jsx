@@ -6,9 +6,9 @@ import { fakeActivatedChallengeDetail } from '@/app/data/fakeData';
 
 export default function AllActiveChallenges({ activeChallenges, setShowChallengeDetailModal, setSelectedChallenge }) {
   return (
-    <div className="w-3/5">
+    <div className="w-full md:w-3/5">
       <h2>My Active Challenges</h2>
-      <div className="flex gap-x-4">
+      <div className="flex flex-col md:flex-row gap-x-4">
         {[0, 1, 2].map(i =>
           activeChallenges[i] ? (
             <ActiveChallengeCard
@@ -31,7 +31,7 @@ export default function AllActiveChallenges({ activeChallenges, setShowChallenge
 
 function EmptyChallengeSlot() {
   return (
-    <div className="w-1/3 min-h-102 flex items-center justify-center bg-brand-yellow-extralite text-brand-grey shadow-inner rounded p-4 font-primary text-center">
+    <div className="md:w-1/3 md:min-h-102 w-full flex items-center justify-center bg-brand-yellow-extralite text-brand-grey shadow-inner rounded p-4 font-primary text-center">
       <FontAwesomeIcon icon={faGamepad} className={`text-6xl text-brand-yellow-lite mr-3`} />
       <FontAwesomeIcon icon={faQuestion} className={`text-5xl text-brand-yellow-lite`} />
     </div>
