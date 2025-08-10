@@ -50,8 +50,8 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
 
   return (
     <div className="w-full" onClick={() => router.push(`/restaurants/${restaurantId}`)}>
-      <div className="w-full h-72 aspect-square border border-brand-yellow-lite flex flex-col items-center rounded-md cursor-pointer text-black hover:bg-brand-peach-lite">
-        <div className="relative w-full aspect-3/2 border-b-1 border-brand-yellow-lite">
+      <div className="w-full lg:max-h-72 max-h-84  aspect-square border border-brand-yellow-lite flex flex-col items-center rounded-md cursor-pointer text-black hover:bg-brand-peach-lite">
+        <div className="relative w-full aspect-3/2 max-h-60 border-b-1 border-brand-yellow-lite">
           {restaurantData?.bannerImages[0]?.url && (
             <Image
               src={restaurantData?.bannerImages[0]?.url}
@@ -63,7 +63,7 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
         </div>
         <div className="py-2 px-3 text-left w-full">
           <div className="flex justify-between">
-            <div className="h-12 overflow-hidden mr-1 mb-1 w-full">
+            <div className="h-8 overflow-hidden mr-1 mb-1 w-full">
               {/* limits length of restaurant name that can be displayed */}
               <h3>{restaurantData.name.length > 30 ? restaurantData.name.slice(0, 30) + '…' : restaurantData.name}</h3>
             </div>
