@@ -59,7 +59,7 @@ export default function AddInstagramEmbed({ restaurantId, userId, onClose }) {
 
           <div className="flex justify-end gap-2 mt-8">
             <Button type="submit" className="w-30" variant="default" disabled={loading} onClick={submitCoupon}>
-              {loading ? 'Redeeming...' : 'Redeem'}
+              {loading ? 'Confirming...' : 'Confirm'}
             </Button>
             <Button type="button" className="w-30" onClick={onClose} variant="secondary" disabled={loading}>
               Cancel
