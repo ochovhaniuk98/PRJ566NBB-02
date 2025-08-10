@@ -8,6 +8,7 @@ import { Input } from '@/components/shared/Input';
 import { Button } from '@/components/shared/Button';
 import { Label } from '@/components/shared/Label';
 import Spinner from '@/components/shared/Spinner';
+import Image from 'next/image';
 
 export default function GeneralSetupForm() {
   const router = useRouter();
@@ -15,7 +16,6 @@ export default function GeneralSetupForm() {
   const [username, setUsername] = useState('');
   const [avatar_url, setAvatarUrl] = useState('');
   const [loading, setLoading] = useState(false);
-
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -58,57 +58,68 @@ export default function GeneralSetupForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-green-lite">
-      <div className="form-widget max-w-md w-full px-12 py-16 border border-brand-yellow-lite shadow-md rounded-md space-y-4 bg-brand-yellow-extralite flex  flex-col justify-center items-stretch">
-        <h2 className="text-center">Welcome to Biteclub!</h2>
-        <div>
-          {/* Show avatar image upload if USER */}
-          {user ? (
-            <Avatar
-              uid={user.id}
-              url={avatar_url}
-              size={150}
-              onUpload={url => {
-                setAvatarUrl(url);
-              }}
-            />
-          ) : (
-            <Spinner message='Loading User...'/>
-          )}
-
+    <div
+      className="flex h-screen overflow-hidden bg-cover"
+      style={{
+        backgroundImage: "url('/img/greenOnYellowBG.png')",
+        backgroundPosition: '-2rem',
+      }}
+    >
+      <div className="w-1/2 px-12 py-16 h-full min-h-screen ml-auto bg-white flex items-center justify-center flex-col overflow-y-auto">
+        <div className="form-widget max-w-md w-full px-12 py-16 pt-8 border border-brand-yellow-lite  rounded-md space-y-4 bg-brand-yellow-extralite flex  flex-col justify-center items-stretch">
+          <div className="relative size-12 mb-2 self-center">
+            <Image src={'/img/hotdog.png'} alt={'hotdog'} className="object-contain" fill={true} />
+          </div>
+          <h1 className="text-center">Welcome!</h1>
           <div>
-            <Label htmlFor="email" className={'hidden'}>
-              Email
-            </Label>
-            <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
+            {/* Show avatar image upload if USER */}
+            {user ? (
+              <Avatar
+                uid={user.id}
+                url={avatar_url}
+                size={150}
+                onUpload={url => {
+                  setAvatarUrl(url);
+                }}
+              />
+            ) : (
+              <Spinner message="Loading User..." />
+            )}
+
+            <div>
+              <Label htmlFor="email" className={'hidden'}>
+                Email
+              </Label>
+              <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
+            </div>
+
+            <div className="mt-8">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                type="text"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                className="w-full"
+              />
+            </div>
           </div>
 
-          <div className="mt-8">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              type="text"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              className="w-full"
-            />
+          <div className="w-full flex flex-col items-center ">
+            <Button className="w-60" onClick={handleSubmit} variant="default" disabled={loading}>
+              {loading ? 'Saving...' : 'Save'}
+            </Button>
           </div>
-        </div>
 
-        <div>
-          <Button className="w-full" onClick={handleSubmit} variant="default" disabled={loading}>
-            {loading ? 'Submitting...' : 'Update'}
-          </Button>
+          <form action="/signout" method="post" className="relative">
+            <button
+              className="text-sm text-brand-navy font-primary font-medium p-2 rounded-md absolute -left-8 -bottom-15 underline cursor-pointer"
+              type="submit"
+            >
+              Sign out
+            </button>
+          </form>
         </div>
-
-        <form action="/signout" method="post" className="relative">
-          <button
-            className="text-sm text-brand-navy font-primary font-medium p-2 rounded-md absolute -left-8 -bottom-15 underline cursor-pointer"
-            type="submit"
-          >
-            Sign out
-          </button>
-        </form>
       </div>
     </div>
   );

@@ -17,7 +17,10 @@ export default function EngagementIconStat({
           <FontAwesomeIcon
             icon={states[i] || false ? iconArr[i]?.filled || iconArr[i]?.outlined : iconArr[i]?.outlined}
             className={`icon-md ${forBlogPostCard ? 'text-brand-grey cursor-auto' : 'text-brand-navy'}`}
-            onClick={handlers[i] ? handlers[i] : () => {}}
+            onClick={e => {
+              e.stopPropagation();
+              handlers[i]?.();
+            }}
           />
           <h4 className={` ${statNumArr[i] >= 0 && 'ml-1 mr-1 font-primary font-medium'}`}>
             {statNumArr[i] >= 0 ? statNumArr[i] : ''}
@@ -27,3 +30,5 @@ export default function EngagementIconStat({
     </div>
   );
 }
+
+//  { /*onClick={handlers[i] ? handlers[i] : () => {}}*/}

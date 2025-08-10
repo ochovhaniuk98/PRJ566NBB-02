@@ -8,6 +8,7 @@ import { Label } from '@/components/shared/Label';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export function LoginForm({ className, ...props }) {
   const [email, setEmail] = useState('');
@@ -77,11 +78,14 @@ export function LoginForm({ className, ...props }) {
   return (
     <div className={cn('flex flex-col', className)} {...props}>
       <Card>
+        <div className="relative size-12 mb-1 self-center">
+          <Image src={'/img/noodle.png'} alt={'noodle'} className="object-contain" fill={true} />
+        </div>
         <CardHeader>
           <CardTitle className="text-center">
-            <h2>Login</h2>
+            <h1 className="text-black font-normal">Login</h1>
           </CardTitle>
-              <CardDescription>
+          <CardDescription>
             <h3 className="text-center">Welcome Back</h3>
           </CardDescription>
         </CardHeader>

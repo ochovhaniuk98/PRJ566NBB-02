@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
-import { faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faGift, faPen, faPenClip } from '@fortawesome/free-solid-svg-icons';
+import { faInstagram } from '@fortawesome/free-brands-svg-icons';
+
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
 
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
@@ -13,6 +15,7 @@ import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import RestaurantImageUpload from '@/components/restaurantProfile/RestaurantImageUpload';
 import PhotoGallery from '@/components/restaurantProfile/PhotoGallery';
 import AddInstagramEmbed from '@/components/restaurantProfile/AddInstagramEmbed';
+import RedeemCouponEmbed from '@/components/restaurantProfile/RedeemCouponEmbed';
 import EditProfileDetails from '@/components/restaurantProfile/EditProfileDetails';
 import AddReviewForm from '../shared/AddReviewForm';
 import MentionedTab from './MentionedTab';
@@ -23,7 +26,7 @@ import FavouriteButton from '../shared/FavouriteButton';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const { userData, refreshUserData } = useUserData();  
+  const { userData, refreshUserData } = useUserData();
 
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
@@ -33,14 +36,13 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const [numOfFavourites, setNumOfFavourites] = useState(0);
   const isFavourited = userData?.favouriteRestaurants?.includes(restaurantId);
 
-
   // stores the MongoDB user ID of the logged-in user, or restaurantId if owner
   const [userId, setUserId] = useState(isOwner ? restaurantId : null); // If the user is the owner, we can use restaurantId directly as userId.
 
   // states for editing profile
   const [showInstagramPopup, setShowInstagramPopup] = useState(false);
   const [showEditDetailsPopup, setShowEditDetailsPopup] = useState(false);
-
+  const [showRedeemPopup, setShowRedeemPopup] = useState(false);
   const [restaurantData, setRestaurantData] = useState(null);
   const [restaurantImages, setRestaurantImages] = useState([]);
   const [bannerImages, setBannerImages] = useState([]);
@@ -108,40 +110,39 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     if (!isOwner && !userId) fetchMongoUserId();
   }, [user?.id]);
 
-
   if (!restaurantData || !reviewsData) return <Spinner message="Loading..." />;
 
   // When user save restaurant as favourite
- const handleFavouriteRestaurantClick = async () => {
-  try {
-    if (!user?.id) return;
+  const handleFavouriteRestaurantClick = async () => {
+    try {
+      if (!user?.id) return;
 
-    const res = await fetch('/api/restaurants/save-as-favourite', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        restaurantId,
-        supabaseUserId: user.id,
-      }),
-    });
+      const res = await fetch('/api/restaurants/save-as-favourite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          restaurantId,
+          supabaseUserId: user.id,
+        }),
+      });
 
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error?.message || 'Failed to toggle favourite');
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error?.message || 'Failed to toggle favourite');
+      }
+
+      await refreshUserData(); // update user favourites in context
+
+      // still keep favourite count re-fetch if you want it live-updated
+      const countRes = await fetch(`/api/restaurants/num-of-favourites/${restaurantId}`);
+      if (countRes.ok) {
+        const { numOfFavourites } = await countRes.json();
+        setNumOfFavourites(numOfFavourites);
+      }
+    } catch (err) {
+      console.error('Error toggling favourite:', err.message);
     }
-
-    await refreshUserData(); // update user favourites in context
-
-    // still keep favourite count re-fetch if you want it live-updated
-    const countRes = await fetch(`/api/restaurants/num-of-favourites/${restaurantId}`);
-    if (countRes.ok) {
-      const { numOfFavourites } = await countRes.json();
-      setNumOfFavourites(numOfFavourites);
-    }
-  } catch (err) {
-    console.error('Error toggling favourite:', err.message);
-  }
-};
+  };
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
 
@@ -153,7 +154,12 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         {isOwner ? (
           <>
             <SingleTabWithIcon
-              icon={faHeart}
+              icon={faGift}
+              detailText={'Redeem Coupon'}
+              onClick={() => setShowRedeemPopup(true)}
+            />
+            <SingleTabWithIcon
+              icon={faInstagram}
               detailText={'Add Instagram Post'}
               onClick={() => setShowInstagramPopup(true)}
             />
@@ -164,7 +170,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
             />
 
             <SingleTabWithIcon
-              icon={faHeart}
+              icon={faPenClip}
               detailText={'Edit Profile Details'}
               onClick={() => setShowEditDetailsPopup(true)}
             />
@@ -213,6 +219,9 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
       </div>
       {showInstagramPopup && (
         <AddInstagramEmbed restaurantId={restaurantId} userId={userId} onClose={() => setShowInstagramPopup(false)} />
+      )}
+      {showRedeemPopup && (
+        <RedeemCouponEmbed restaurantId={restaurantId} userId={userId} onClose={() => setShowRedeemPopup(false)} />
       )}
       {showEditDetailsPopup && (
         <EditProfileDetails

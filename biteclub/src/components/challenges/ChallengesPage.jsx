@@ -6,24 +6,39 @@ import Leaderboard from './Leaderboard';
 import AllActiveChallenges from './AllActiveChallenges';
 import { fakeChallenges, fakeActivatedChallengeDetail } from '@/app/data/fakeData';
 import { useUserData } from '@/context/UserDataContext';
+import ChallengeCompletedModal from './ChallengeCompletedModal';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
+
+const MAX_POINTS = 2750;
+const BAR_INCOMPLETE_COLOR = '#F8DDC1';
+const BAR_COMPLETE_COLOR = '#8CBF38';
 
 export default function ChallengesPage() {
   const USER_ID = '664abc1234567890fedcba98'; // Porfile Owner's ID
   const MAX_ACTIVE = 3; // users can only have MAX 3 active challenges
   const [showChallengeDetailModal, setShowChallengeDetailModal] = useState(false); // opens/closes modal showing selected challenge details
+  const [points, setPoints] = useState(0); // points added after challenge completion
   const [selectedChallenge, setSelectedChallenge] = useState(null); // ensures modal opens with correct challenge details
-
+  const [percentComplete, setPercentComplete] = useState(0);
+  const [level, setLevel] = useState(0);
   const [activeChallenges, setActiveChallenges] = useState([]); // list of user's active challenges
   const [fetchedActivatedChallenges, setFetchedActivatedChallenges] = useState(false);
 
-  const { userData } = useUserData(); // Current logged-in user's MongoDB data
+  const [leaderboardRefreshTrigger, refreshLeaderboard] = useState(false); // used to refresh leaderboard data
 
+  const { userData } = useUserData(); // Current logged-in user's MongoDB data
   // Creates "active" challenge data and adds it to user's active challenges array (created for DEMO purposes)
   function handleActivateChallenge(challenge) {
     if (activeChallenges.length >= MAX_ACTIVE) return alert('You can only have 3 active challenges.');
     // create active challenge data and add to array
-    const newActivated = createActivatedChallengeDetail(challenge, USER_ID);
-    setActiveChallenges(prev => [...prev, newActivated]);
+    console.log('User data:', userData);
+    fetch('api/challenges/activateChallenge', {
+      method: 'POST',
+      body: JSON.stringify({ userId: userData._id, challenge }),
+    });
+    // setActiveChallenges(prev => [...prev, newActivated]);
   }
 
   useEffect(() => {
@@ -31,6 +46,23 @@ export default function ChallengesPage() {
     async function fetchActivatedChallenges() {
       if (!userData) return;
       try {
+        setPoints(userData.numOfPoints);
+        setPercentComplete(parseInt(((userData.numOfPoints - 1000) / (MAX_POINTS - 1000)) * 100));
+        console.log();
+        if (userData.numOfPoints >= 2750) {
+          setLevel(5);
+        } else if (userData.numOfPoints >= 2500) {
+          setLevel(4);
+        } else if (userData.numOfPoints >= 2000) {
+          setLevel(3);
+        } else if (userData.numOfPoints >= 1500) {
+          setLevel(2);
+        } else if (userData.numOfPoints >= 1000) {
+          setLevel(1);
+        } else {
+          setLevel(0);
+        }
+
         const res = await fetch(`api/challenges/active-challenges/get-by-userId/${userData._id}`);
         const data = await res.json();
 
@@ -55,17 +87,64 @@ export default function ChallengesPage() {
     }
   }, [activeChallenges]);
 
+  useEffect(() => {
+    // Refresh leaderboard, whenever points are updated
+    refreshLeaderboard(prev => !prev);
+  }, [points]);
+
+  // Challenge Completed Modal State
+  const [showChallengeCompletedModal, setShowChallengeCompletedModal] = useState(false);
+
   return (
     <>
       {userData && (
         <MainBaseContainer>
           <div className="main-side-padding w-full flex flex-col items-center m-16">
-            {/* PLACEHOLDER for main progress bar and general user header */}
-            <div className="w-full bg-gray-100 p-3 text-center">
-              <h2>Placeholder for main progress bar and general user header</h2>
-              <a href="/challenges/redeem">Redeem</a>
+            <div className="flex flex-row w-full items-center justify-center">
+              {/* Profile Pic */}
+              <div className="size-24 bg-brand-green rounded-full mr-2 relative border border-brand-grey-lite">
+                <Image
+                  src={'/img/placeholderImg.jpg'}
+                  alt={'profile pic'}
+                  className={`object-cover rounded-full`}
+                  fill={true}
+                />
+              </div>
+              <div className="flex flex-col">
+                {/* Num of Points */}
+                <div className="inline-flex items-baseline justify-center font-primary">
+                  <span className="text-8xl font-secondary font-normal text-brand-green">{points ?? 2200}</span>
+                  <span className="text-lg font-medium">pts</span>
+                </div>
+                {/* Num of Challenges Completed */}
+                <p>
+                  <span className="font-semibold">123</span> Challenges Completed
+                </p>
+              </div>
             </div>
-            <div className="flex w-full min-h-96 my-4 gap-x-4">
+            {/* Redeem Points Link */}
+            <div className="flex items-center gap-2 ml-auto font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
+              <a href="/challenges/redeem" className="text-lg">
+                Redeem Points
+              </a>
+              <FontAwesomeIcon icon={faArrowRight} className="text-2xl text-brand-navy"></FontAwesomeIcon>
+            </div>
+            {/* main progress bar */}
+            <div className="w-[70%] flex flex-row items-center relative mb-2">
+              <div className="absolute bg-brand-peach w-[100%] h-[16px] rounded-full"></div>
+              <div
+                className={`absolute w-[6983%] h-[16px] z-[1] rounded-full`}
+                style={{ width: `${percentComplete}%`, backgroundColor: BAR_COMPLETE_COLOR }}
+              ></div>
+              <div className="flex flex-row justify-between w-full">
+                <Milestone level={level} levelRequired={1} className="z-[2]" pointsNeeded={1000} reward={5} />
+                <Milestone level={level} levelRequired={2} className="z-[2]" pointsNeeded={1500} reward={10} />
+                <Milestone level={level} levelRequired={3} className="z-[2]" pointsNeeded={2000} reward={15} />
+                <Milestone level={level} levelRequired={4} className="z-[2]" pointsNeeded={2500} reward={20} />
+                <Milestone level={level} levelRequired={5} className="z-[2]" pointsNeeded={2750} reward={25} />
+              </div>
+            </div>
+            <div className="flex flex-col md:flex-row w-full min-h-96 my-4 gap-x-4 md:gap-y-0 gap-y-8">
               {/* Active Challenges */}
               {fetchedActivatedChallenges && (
                 <AllActiveChallenges
@@ -76,13 +155,13 @@ export default function ChallengesPage() {
               )}
 
               {/* Leaderboard */}
-              <Leaderboard />
+              <Leaderboard refreshTrigger={leaderboardRefreshTrigger} />
             </div>
             {/* PLACEHOLDER for AI-generated challenges */}
             <div className="w-full bg-gray-100 p-3 text-center">
-              <h2 className="uppercase">Placeholder for AI-generated challenges</h2>
+              <h2 className="uppercase">Add challenges</h2>
               {/* DEMO for adding/activating challenges */}
-              <DemoAddingChallenge onActivate={handleActivateChallenge} />
+              <ChallengeList onActivate={handleActivateChallenge} />
             </div>
 
             {/* When active challenge card is clicked, show MODAL */}
@@ -92,6 +171,8 @@ export default function ChallengesPage() {
                 selectedActiveChallenge={selectedChallenge}
                 setActiveChallenges={setActiveChallenges}
                 activeChallenges={activeChallenges}
+                setPoints={setPoints}
+                setShowChallengeCompletedModal={setShowChallengeCompletedModal}
               />
             )}
           </div>
@@ -100,6 +181,76 @@ export default function ChallengesPage() {
     </>
   );
 }
+
+/*
+  level: Current level of points that the player has reached
+  levelRequired: Required level of points for this milestone
+  pointsNeeded: Number of points needed to redeem this reward
+  reward: Value of the reward in dollars
+*/
+const Milestone = ({ level, levelRequired, pointsNeeded, reward, className }) => {
+  const levelImagesArr = [
+    { img: '/img/lemon.png', caption: 'lemon', scaleSize: 'scale-120', disabledImg: '/img/lemon-disabled.png' },
+    { img: '/img/hotdog.png', caption: 'hotdog', scaleSize: 'scale-120', disabledImg: '/img/hotdog-disabled.png' },
+    { img: '/img/pita.png', caption: 'pita', scaleSize: 'scale-100', disabledImg: '/img/pita-disabled.png' },
+    { img: '/img/noodle.png', caption: 'noodle', scaleSize: 'scale-120', disabledImg: '/img/noodle-disabled.png' },
+    { img: '/img/cake.png', caption: 'cake', scaleSize: 'scale-110', disabledImg: '/img/cake-disabled.png' },
+  ];
+
+  const levelImage =
+    levelImagesArr.length > 0 ? levelImagesArr[levelRequired - 1]?.img || levelImagesArr[0]?.img : undefined;
+
+  const disabledLevelImage =
+    levelImagesArr.length > 0
+      ? levelImagesArr[levelRequired - 1]?.disabledImg || levelImagesArr[0]?.disabledImg
+      : undefined;
+
+  const scaleSize =
+    levelImagesArr.length > 0
+      ? levelImagesArr[levelRequired - 1]?.scaleSize || levelImagesArr[0]?.scaleSize
+      : undefined;
+
+  if (levelRequired == 0) {
+    return <div />;
+  }
+
+  const enabled = level >= levelRequired;
+  //const color = enabled ? BAR_COMPLETE_COLOR : BAR_INCOMPLETE_COLOR;
+
+  return (
+    <div className="flex flex-col justify-center items-center w-fit relative h-[100px] font-primary">
+      <span className="absolute mb-20 font-bold">${reward}</span>
+      <div className={`h-[40px] w-[40px] rounded-3xl ${className}`} style={{ backgroundColor: 'transparent' }} />
+      {enabled ? (
+        <Image src={levelImage} alt={'level image'} className={`object-contain z-20 ${scaleSize}`} fill={true} />
+      ) : (
+        <Image
+          src={disabledLevelImage}
+          alt={'disabled level image'}
+          className={`object-contain z-20 ${scaleSize}`}
+          fill={true}
+        />
+      )}
+
+      <span className="absolute w-[60px] text-center mt-20 text-xs">{pointsNeeded} pts</span>
+    </div>
+  );
+};
+
+const Challenge = ({ challenge }) => {
+  const { title, description, reward, totalSteps, currentStep, totalDays, dateAccepted, infiniteTime } = challenge;
+  const timeLeft =
+    totalDays - Math.floor(infiniteTime ? 'Unlimited' : (new Date() - dateAccepted) / (60 * 60 * 24 * 1000));
+
+  return (
+    <div>
+      {title} {description} {reward}
+      <div>
+        <span>Time left: {timeLeft}</span>
+      </div>
+    </div>
+  );
+};
 
 // Below are functions to DEMO UI for adding challenges ~ feel FREE TO DELETE /////////////////////////////////////////////////////////////////////////////////////////////
 // for UI DEMO (remove at any time)
@@ -140,5 +291,50 @@ function DemoAddingChallenge({ onActivate }) {
         })}
       </ul>
     </>
+  );
+}
+
+function ChallengeList({ onActivate }) {
+  const [challenges, setChallenges] = useState([]);
+  useEffect(() => {
+    (async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_RECOMMENDER_URL}/challenges/recommend`, {
+        method: 'POST',
+      });
+      const recommendations = await res.json();
+      let challenges = [];
+      for (const cuisine in recommendations) {
+        challenges.push({
+          title: `${cuisine} journey`,
+          description: `Try a cuisine from 5 different ${cuisine} restaurants!`,
+          numberOfPoints: 300,
+          thumbnailImage: '/img/placeholderImg.jpg',
+          restaurants: recommendations[cuisine].map(res => res['$oid']),
+          duration: 30,
+        });
+      }
+      console.log('Challenges: ', challenges);
+      setChallenges(challenges);
+    })();
+  }, []);
+
+  return (
+    challenges.length > 0 && (
+      <>
+        <h3>Select your challenge!</h3>
+        <ul className="cursor-pointer text-blue-800 underline space-y-1">
+          {/* FAKE challenges to add */}
+          {challenges.map((challenge, i) => {
+            return (
+              i > 0 && (
+                <li key={i} onClick={() => onActivate(challenge)}>
+                  {challenge.title}
+                </li>
+              )
+            );
+          })}
+        </ul>
+      </>
+    )
   );
 }

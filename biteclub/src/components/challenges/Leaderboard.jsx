@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { fakeUser } from '@/app/data/fakeData';
 
-export default function Leaderboard() {
-  const placedUsers = Array.from({ length: 5 });
+export default function Leaderboard({ refreshTrigger }) {
   const bgColourList = ['#FFDCBE', '#FFF5D8', '#DFF2FB', '#C7E58B'];
   const defaultColour = bgColourList[bgColourList.length - 1];
 
@@ -19,10 +17,10 @@ export default function Leaderboard() {
     fetchLeaderboard();
     const interval = setInterval(fetchLeaderboard, 60 * 60 * 1000); // 1 hour
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshTrigger]);
 
   return (
-    <div className="w-2/5 flex flex-col">
+    <div className="w-full md:w-2/5 flex flex-col">
       <h2>Leaderboard</h2>
       {/* <div className="flex-grow bg-brand-aqua flex flex-col gap-y-2 p-4"> */}
       <div className="flex-grow bg-brand-aqua flex flex-col gap-y-2 p-4 overflow-y-auto max-h-[80vh]">
@@ -36,6 +34,7 @@ export default function Leaderboard() {
               u.rank = arr[i - 1].rank + 1; // next unique score = previous rank + 1
             }
           }
+          const bgColour = u.rank <= 3 ? bgColourList[u.rank - 1] : defaultColour;
 
           return (
             <LeaderboardPlaceCard
@@ -43,6 +42,7 @@ export default function Leaderboard() {
               placeNum={u.rank}
               placedUser={u.user}
               numChallengesCompleted={u.numChallengesCompleted}
+              bgColour={bgColour}
             />
           );
         })}
@@ -55,8 +55,11 @@ function LeaderboardPlaceCard({ placeNum, placedUser, numChallengesCompleted, bg
   return (
     <div className="h-1/5 p-2 flex justify-between items-center font-primary" style={{ backgroundColor: bgColour }}>
       <div className="flex gap-x-4">
-        <div className="relative w-10 h-full bg-brand-yellow text-center">
-          <h1 className="text-brand-navy">{placeNum}</h1>
+        <div className="relative w-20 h-full">
+          <div className="relative w-20 h-12 text-center">
+            <Image src={'/img/trayIcon.png'} alt="" className="object-contain" fill={true} />
+          </div>
+          <h1 className="text-brand-navy absolute top-[2px] left-[40%] text-[2.75rem]">{placeNum}</h1>
         </div>
         <div>
           <h3 className="text-brand-navy m-0">{placedUser.username}</h3>

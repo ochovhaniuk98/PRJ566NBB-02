@@ -2,7 +2,7 @@
 
 import { CldUploadWidget } from 'next-cloudinary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faImage, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import SingleTabWithIcon from '../shared/SingleTabWithIcon';
 
 export default function RestaurantImageUpload({ restaurantId, images, setImages, forBanner = false }) {
@@ -52,7 +52,7 @@ export default function RestaurantImageUpload({ restaurantId, images, setImages,
             />
           ) : (
             <SingleTabWithIcon
-              icon={faHeart}
+              icon={faImage}
               detailText={'Add Photo'}
               onClick={() => {
                 open();

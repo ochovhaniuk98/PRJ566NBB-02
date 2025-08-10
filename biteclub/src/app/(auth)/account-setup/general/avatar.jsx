@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { CldUploadWidget, getCldImageUrl } from 'next-cloudinary';
 import { Button } from '@/components/shared/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faImage } from '@fortawesome/free-solid-svg-icons';
 
 export default function Avatar({ uid, url, size, onUpload }) {
   const [uploading, setUploading] = useState(false);
@@ -131,7 +133,8 @@ export default function Avatar({ uid, url, size, onUpload }) {
           uploading ? (
             <p>Uploading...</p>
           ) : (
-            <Button type="submit" onClick={() => open()} className="w-30" variant="secondary" disabled={false}>
+            <Button type="submit" onClick={() => open()} className="w-40" variant="secondary" disabled={false}>
+              <FontAwesomeIcon icon={faImage} className={`icon-lg text-brand-navy mr-1`} />
               Upload Photo
             </Button>
           )

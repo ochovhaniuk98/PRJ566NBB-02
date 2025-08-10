@@ -46,7 +46,7 @@ export default function Settings() {
     setDisplayFavouriteBlogPosts(userData.displayFavouriteBlogPosts ?? false);
     setDisplayVisitedPlaces(userData.displayVisitedPlaces ?? false);
     setFeedPersonalization(userData.feedPersonalization ?? false);
-    setAvatarUrl(userData.userProfilePicture.url ?? null);
+    setAvatarUrl(userData.userProfilePicture?.url ?? null);
     setLoading(false);
   }, [loadingData, userData]);
 
@@ -152,7 +152,7 @@ export default function Settings() {
                   <h4>Bio</h4>
                 </Label>
                 <textarea
-                  className="w-full p-2 border rounded-md h-32 resize-none"
+                  className="w-full p-2 rounded-md h-32 resize-none"
                   value={userBio}
                   onChange={e => setUserBio(e.target.value)}
                 />
@@ -236,6 +236,7 @@ export default function Settings() {
         </div>
 
         <div className="w-4xl mt-8 py-8 px-12 border-t border-brand-peach">
+          <h2 className="mb-4">Logout</h2>
           <LogoutButton />
         </div>
       </div>

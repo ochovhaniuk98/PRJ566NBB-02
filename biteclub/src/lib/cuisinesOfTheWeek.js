@@ -16,6 +16,8 @@ export const fallbackCuisines = [
   'Japanese',
 ];
 
+const persianCuisine = 'Persian';
+
 // calculates week number of the year
 export function getWeekNumber() {
   const now = new Date();
@@ -51,9 +53,11 @@ export async function getCuisinesOfTheWeek(count = 12) {
   const startIndex = (weekNumber * count) % allCuisines.length; // remainder
 
   const cuisinesOfTheWeek = [];
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < count - 1; i++) {
     cuisinesOfTheWeek.push(allCuisines[(startIndex + i) % allCuisines.length]);
   }
+  // temporarily hardcoding persian cuisine
+  cuisinesOfTheWeek.push(persianCuisine);
   return cuisinesOfTheWeek;
 }
 
