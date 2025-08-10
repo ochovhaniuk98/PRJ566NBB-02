@@ -20,7 +20,7 @@ export default function InfoBanner({ name, avgRating, numReviews, cuisine, addre
         </div>
 
         <RestaurantIconDetail icon={faLocationDot} detailText={address} />
-        <RestaurantIconDetail icon={faLocationDot} detailText={cuisine.join(', ')} />
+        <RestaurantIconDetail icon={faUtensils} detailText={cuisine.join(', ')} />
       </div>
       <div>{children}</div>
     </div>
