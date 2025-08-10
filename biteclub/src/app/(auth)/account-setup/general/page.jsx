@@ -66,11 +66,11 @@ export default function GeneralSetupForm() {
       }}
     >
       <div className="w-1/2 px-12 py-16 h-full min-h-screen ml-auto bg-white flex items-center justify-center flex-col overflow-y-auto">
-        <div className="form-widget max-w-md w-full px-12 py-16 border border-brand-yellow-lite  rounded-md space-y-4 bg-brand-yellow-extralite flex  flex-col justify-center items-stretch">
-          <div className="relative size-15 self-center">
-            <Image src={'/img/spoonAndFork.png'} alt={'points coin'} className="object-contain" fill={true} />
+        <div className="form-widget max-w-md w-full px-12 py-16 pt-8 border border-brand-yellow-lite  rounded-md space-y-4 bg-brand-yellow-extralite flex  flex-col justify-center items-stretch">
+          <div className="relative size-12 mb-2 self-center">
+            <Image src={'/img/hotdog.png'} alt={'hotdog'} className="object-contain" fill={true} />
           </div>
-          <h2 className="text-center">Welcome to Biteclub!</h2>
+          <h1 className="text-center">Welcome!</h1>
           <div>
             {/* Show avatar image upload if USER */}
             {user ? (

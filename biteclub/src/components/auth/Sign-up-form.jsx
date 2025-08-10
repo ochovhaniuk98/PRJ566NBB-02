@@ -91,11 +91,11 @@ export function SignUpForm({ className, ...props }) {
     // Use the defined function to CREATE USER IN MONGODB
   };
 
-  const iconImageLink = userType ? '/img/chefHatFlat.png' : '/img/spoonAndFork.png';
+  const iconImageLink = userType ? '/img/chefHatFlat.png' : '/img/pita.png';
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card forBusinessUser={userType}>
-        <div className="relative size-15 self-center">
+        <div className="relative size-12 self-center mb-1">
           <Image src={iconImageLink} alt={'header image'} className="object-contain" fill={true} />
         </div>
         <CardHeader>

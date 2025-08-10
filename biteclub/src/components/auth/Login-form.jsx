@@ -78,8 +78,8 @@ export function LoginForm({ className, ...props }) {
   return (
     <div className={cn('flex flex-col', className)} {...props}>
       <Card>
-        <div className="relative size-15 self-center">
-          <Image src={'/img/spoonAndFork.png'} alt={'points coin'} className="object-contain" fill={true} />
+        <div className="relative size-12 mb-1 self-center">
+          <Image src={'/img/noodle.png'} alt={'noodle'} className="object-contain" fill={true} />
         </div>
         <CardHeader>
           <CardTitle className="text-center">
