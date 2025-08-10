@@ -100,25 +100,41 @@ export default function ChallengesPage() {
       {userData && (
         <MainBaseContainer>
           <div className="main-side-padding w-full flex flex-col items-center m-16">
-            {/* PLACEHOLDER for main progress bar and general user header */}
-            <div className="flex flex-row w-full justify-between">
-              <div></div>
-              <div className="inline">
-                <span className="text-4xl">{points}</span>
-                <span> Points</span>
+            <div className="flex flex-row w-full items-center justify-center">
+              {/* Profile Pic */}
+              <div className="size-24 bg-brand-green rounded-full mr-2 relative border border-brand-grey-lite">
+                <Image
+                  src={'/img/placeholderImg.jpg'}
+                  alt={'profile pic'}
+                  className={`object-cover rounded-full`}
+                  fill={true}
+                />
               </div>
-              <div className="flex flex-row justify-between w-[75px] items-center">
-                <a href="/challenges/redeem" className="underline">
-                  Redeem
-                </a>
-                <FontAwesomeIcon icon={faArrowRight} className="text-[#213398]"></FontAwesomeIcon>
+              <div className="flex flex-col">
+                {/* Num of Points */}
+                <div className="inline-flex items-baseline justify-center font-primary">
+                  <span className="text-8xl font-secondary font-normal text-brand-green">{points ?? 2200}</span>
+                  <span className="text-lg font-medium">pts</span>
+                </div>
+                {/* Num of Challenges Completed */}
+                <p>
+                  <span className="font-semibold">123</span> Challenges Completed
+                </p>
               </div>
             </div>
-            <div className="w-[80%] flex flex-row items-center relative mb-2">
-              <div className="absolute bg-[#F8DDC1] w-[100%] h-[10px]"></div>
+            {/* Redeem Points Link */}
+            <div className="flex items-center gap-2 ml-auto font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
+              <a href="/challenges/redeem" className="text-lg">
+                Redeem Points
+              </a>
+              <FontAwesomeIcon icon={faArrowRight} className="text-2xl text-brand-navy"></FontAwesomeIcon>
+            </div>
+            {/* main progress bar */}
+            <div className="w-[70%] flex flex-row items-center relative mb-2">
+              <div className="absolute bg-brand-peach w-[100%] h-[16px] rounded-full"></div>
               <div
-                className={`absolute w-[6983%] h-[11px] z-[1]`}
-                style={{ width: `${50}%`, backgroundColor: BAR_COMPLETE_COLOR }}
+                className={`absolute w-[6983%] h-[16px] z-[1] rounded-full`}
+                style={{ width: `${percentComplete}%`, backgroundColor: BAR_COMPLETE_COLOR }}
               ></div>
               <div className="flex flex-row justify-between w-full">
                 <Milestone level={level} levelRequired={1} className="z-[2]" pointsNeeded={1000} reward={5} />
@@ -127,16 +143,6 @@ export default function ChallengesPage() {
                 <Milestone level={level} levelRequired={4} className="z-[2]" pointsNeeded={2500} reward={20} />
                 <Milestone level={level} levelRequired={5} className="z-[2]" pointsNeeded={2750} reward={25} />
               </div>
-            </div>
-
-            <div className="w-full bg-gray-100 p-3 text-center flex flex-col gap-y-2">
-              {/* Challenge Completed Modal */}
-              {showChallengeCompletedModal && (
-                <ChallengeCompletedModal
-                  numPointsWon={points}
-                  setShowChallengeCompletedModal={setShowChallengeCompletedModal}
-                />
-              )}
             </div>
             <div className="flex flex-col md:flex-row w-full min-h-96 my-4 gap-x-4 md:gap-y-0 gap-y-8">
               {/* Active Challenges */}
@@ -184,15 +190,21 @@ export default function ChallengesPage() {
 */
 const Milestone = ({ level, levelRequired, pointsNeeded, reward, className }) => {
   const levelImagesArr = [
-    { img: '/img/lemon.png', caption: 'lemon', scaleSize: 'scale-120' },
-    { img: '/img/hotdog.png', caption: 'hotdog', scaleSize: 'scale-120' },
-    { img: '/img/pita.png', caption: 'pita', scaleSize: 'scale-100' },
-    { img: '/img/noodle.png', caption: 'noodle', scaleSize: 'scale-120' },
-    { img: '/img/cake.png', caption: 'cake', scaleSize: 'scale-110' },
+    { img: '/img/lemon.png', caption: 'lemon', scaleSize: 'scale-120', disabledImg: '/img/lemon-disabled.png' },
+    { img: '/img/hotdog.png', caption: 'hotdog', scaleSize: 'scale-120', disabledImg: '/img/hotdog-disabled.png' },
+    { img: '/img/pita.png', caption: 'pita', scaleSize: 'scale-100', disabledImg: '/img/pita-disabled.png' },
+    { img: '/img/noodle.png', caption: 'noodle', scaleSize: 'scale-120', disabledImg: '/img/noodle-disabled.png' },
+    { img: '/img/cake.png', caption: 'cake', scaleSize: 'scale-110', disabledImg: '/img/cake-disabled.png' },
   ];
 
   const levelImage =
     levelImagesArr.length > 0 ? levelImagesArr[levelRequired - 1]?.img || levelImagesArr[0]?.img : undefined;
+
+  const disabledLevelImage =
+    levelImagesArr.length > 0
+      ? levelImagesArr[levelRequired - 1]?.disabledImg || levelImagesArr[0]?.disabledImg
+      : undefined;
+
   const scaleSize =
     levelImagesArr.length > 0
       ? levelImagesArr[levelRequired - 1]?.scaleSize || levelImagesArr[0]?.scaleSize
@@ -203,13 +215,22 @@ const Milestone = ({ level, levelRequired, pointsNeeded, reward, className }) =>
   }
 
   const enabled = level >= levelRequired;
+  //const color = enabled ? BAR_COMPLETE_COLOR : BAR_INCOMPLETE_COLOR;
 
-  const color = enabled ? BAR_COMPLETE_COLOR : BAR_INCOMPLETE_COLOR;
   return (
     <div className="flex flex-col justify-center items-center w-fit relative h-[100px] font-primary">
       <span className="absolute mb-20 font-bold">${reward}</span>
-      <div className={`h-[40px] w-[40px] rounded-3xl ${className}`} style={{ backgroundColor: color }} />
-      <Image src={levelImage} alt={'header image'} className={`object-contain z-20 ${scaleSize}`} fill={true} />
+      <div className={`h-[40px] w-[40px] rounded-3xl ${className}`} style={{ backgroundColor: 'transparent' }} />
+      {enabled ? (
+        <Image src={levelImage} alt={'level image'} className={`object-contain z-20 ${scaleSize}`} fill={true} />
+      ) : (
+        <Image
+          src={disabledLevelImage}
+          alt={'disabled level image'}
+          className={`object-contain z-20 ${scaleSize}`}
+          fill={true}
+        />
+      )}
 
       <span className="absolute w-[60px] text-center mt-20 text-xs">{pointsNeeded} pts</span>
     </div>
