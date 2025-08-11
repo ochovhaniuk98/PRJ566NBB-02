@@ -6,7 +6,7 @@
 - Implemented TipTap rich text editor 
 
 ### MongoDB
-- Setup Schema for collection as per the SRS. (Collections: User, Photo, Comment, InstagramPost, BlogPost, InternalReview, ExternalReview, ChallengeStep, AvailableChallengeDetail, ActiveChallengeDetail, Challenge, PointValueDetail, Point, Event, Announcement, MenuItem, BusinessHours, Restaurant, BusinessUser, etc.) 
+- Setup Schema for collection as per the SRS. (Collections: User, Photo, Comment, InstagramPost, BlogPost, InternalReview, ExternalReview, ChallengeStep, AvailableChallengeDetail, ActiveChallengeDetail, Challenge, PointValueDetail, Point, Event, Announcement, MenuItem, BusinessHours, Restaurant, BusinessUser, etc.)  
 - Added restaurant data for resturants in Toronto.
 - Added mock data for users and reviews.  
 - Setup MongoDB connection configuration in the backend with basic CRUD operations.
