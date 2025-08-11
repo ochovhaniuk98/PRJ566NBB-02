@@ -33,7 +33,7 @@ export default function BlogPostCard({
   const { userData, refreshUserData } = useUserData();
   const blogId = blogPostData._id;
   const isFavourited = userData?.favouriteBlogs?.includes(blogId);
-  
+
   const [showReportFormLink, setShowReportFormLink] = useState(false);
   const [cardHovered, setCardHovered] = useState(false);
   const [popupHovered, setPopupHovered] = useState(false);
@@ -57,7 +57,7 @@ export default function BlogPostCard({
 
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || 'Failed to toggle favourite');
-      
+
       refreshUserData();
       onFavouriteToggle(result.isFavourited, blogId);
     } catch (err) {
@@ -65,7 +65,6 @@ export default function BlogPostCard({
     }
   };
 
-  
   return (
     <div
       className={`relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer transition
@@ -103,7 +102,7 @@ export default function BlogPostCard({
           <h3>{blogPostData.previewTitle}</h3>
           <p>{blogPostData.previewText}</p>
         </Link>
-        <div className="flex justify-between items-center mb-4">
+        <div className={`flex justify-between items-center mb-0 mt-4`}>
           {writtenByOwner ? (
             <FormattedDate yyyymmdd={blogPostData.date_posted} />
           ) : (
