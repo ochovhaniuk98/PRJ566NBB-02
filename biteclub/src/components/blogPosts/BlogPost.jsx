@@ -75,7 +75,7 @@ export default function BlogPost({ id }) {
           fetch(`/api/blog-posts/get-post-by-id/${id}`),
           fetch(`/api/blog-posts/num-of-favourites/${id}`),
         ]);
-        
+
         if (postRes.status === 404) {
           setNotFound(true);
           return;
@@ -220,15 +220,14 @@ export default function BlogPost({ id }) {
     }
   };
 
-  
-if (notFound) {
-  return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-3xl font-bold mb-4">Blog post not found</h1>
-      <p>The blog post you are trying to visit has been removed or does not exist.</p>
-    </div>
-  );
-}
+  if (notFound) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-3xl font-bold mb-4">Blog post not found</h1>
+        <p>The blog post you are trying to visit has been removed or does not exist.</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -241,7 +240,7 @@ if (notFound) {
               )}
             </div>
             {/* author + engagement icons*/}
-            <div className="m-auto mt-8 border-b-1 border-brand-peach py-1 w-xl flex justify-between items-center cursor-pointer">
+            <div className="m-auto mt-8 border-b-1 border-brand-peach py-1 w-xl flex justify-between items-end cursor-pointer">
               {/* author */}
               <AuthorDateBlurb authorPic={profilePic.url} authorName={username} date={blogPost?.date_posted} />
               <div className="flex flex-row gap-x-2 font-primary font-medium text-brand-grey">
