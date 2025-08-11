@@ -14,7 +14,7 @@ export default function BlogPostsList() {
       <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
         <div className={'w-full h-full'}>
           <div className="flex justify-between">
-            <h2>Recently Posted</h2>
+            <h2>Trending + Recently Posted</h2>
             {/* tabs for selecting blog posts: Explore vs Following */}
             <BlogPostListTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
           </div>
