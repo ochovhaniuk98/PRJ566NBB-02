@@ -12,23 +12,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 
 const MAX_POINTS = 2750;
+const MAX_ACTIVE = 3;
 const BAR_INCOMPLETE_COLOR = '#F8DDC1';
 const BAR_COMPLETE_COLOR = '#8CBF38';
 
 export default function ChallengesPage() {
-  const USER_ID = '664abc1234567890fedcba98'; // Porfile Owner's ID
-  const MAX_ACTIVE = 3; // users can only have MAX 3 active challenges
+  const { userData, loadingData, refreshUserData } = useUserData();
+
   const [showChallengeDetailModal, setShowChallengeDetailModal] = useState(false); // opens/closes modal showing selected challenge details
   const [points, setPoints] = useState(0); // points added after challenge completion
   const [selectedChallenge, setSelectedChallenge] = useState(null); // ensures modal opens with correct challenge details
   const [percentComplete, setPercentComplete] = useState(0);
   const [level, setLevel] = useState(0);
   const [activeChallenges, setActiveChallenges] = useState([]); // list of user's active challenges
+  const [numCompletedChallenges, setNumCompletedChallenges] = useState(0);
+  const [numTotalPoints, setNumTotalPoints] = useState(0);
   const [fetchedActivatedChallenges, setFetchedActivatedChallenges] = useState(false);
 
   const [leaderboardRefreshTrigger, refreshLeaderboard] = useState(false); // used to refresh leaderboard data
 
-  const { userData } = useUserData(); // Current logged-in user's MongoDB data
   // Creates "active" challenge data and adds it to user's active challenges array (created for DEMO purposes)
   function handleActivateChallenge(challenge) {
     if (activeChallenges.length >= MAX_ACTIVE) return alert('You can only have 3 active challenges.');
@@ -42,13 +44,15 @@ export default function ChallengesPage() {
   }
 
   useEffect(() => {
+    if (!userData || loadingData) return;
     // get user's activated challenges
     async function fetchActivatedChallenges() {
       if (!userData) return;
       try {
-        setPoints(userData.numOfPoints);
-        setPercentComplete(parseInt(((userData.numOfPoints - 1000) / (MAX_POINTS - 1000)) * 100));
-        console.log();
+        const cappedPoints = Math.min(userData.numOfPoints, MAX_POINTS);
+        const calculatedPercent = ((cappedPoints - 1000) / (MAX_POINTS - 1000)) * 100;
+        setPercentComplete(Math.max(0, Math.round(calculatedPercent)));
+
         if (userData.numOfPoints >= 2750) {
           setLevel(5);
         } else if (userData.numOfPoints >= 2500) {
@@ -67,17 +71,23 @@ export default function ChallengesPage() {
         const data = await res.json();
 
         const inProgressChallenges = data.filter(challenge => challenge.completionStatus === 'in-progress');
-        // console.log('Activated inProgressChallenges:', inProgressChallenges[0]);
-        setActiveChallenges(inProgressChallenges);
+        const completedChallenges = data.filter(challenge => challenge.completionStatus === 'completed');
 
-        // console.log('Active challenges: ', activeChallenges);
+        setActiveChallenges(inProgressChallenges);
+        setNumCompletedChallenges(completedChallenges.length);
+        setNumTotalPoints(userData.numOfPoints);
+
+        setFetchedActivatedChallenges(true);
       } catch (err) {
         console.error('Failed to load activated challenges:', err);
       }
-      setFetchedActivatedChallenges(true);
     }
     fetchActivatedChallenges();
-  }, [userData]);
+  }, [userData, loadingData]);
+
+  useEffect(() => {
+    refreshUserData();
+  }, [points, refreshUserData]);
 
   // remove active challenge from the board if user completes the challenge
   useEffect(() => {
@@ -104,7 +114,7 @@ export default function ChallengesPage() {
               {/* Profile Pic */}
               <div className="size-24 bg-brand-green rounded-full mr-2 relative border border-brand-grey-lite">
                 <Image
-                  src={'/img/placeholderImg.jpg'}
+                  src={userData?.userProfilePicture.url || '/img/placeholderImg.jpg'}
                   alt={'profile pic'}
                   className={`object-cover rounded-full`}
                   fill={true}
@@ -113,12 +123,12 @@ export default function ChallengesPage() {
               <div className="flex flex-col">
                 {/* Num of Points */}
                 <div className="inline-flex items-baseline justify-center font-primary">
-                  <span className="text-8xl font-secondary font-normal text-brand-green">{points ?? 2200}</span>
+                  <span className="text-8xl font-secondary font-normal text-brand-green">{numTotalPoints || 0}</span>
                   <span className="text-lg font-medium">pts</span>
                 </div>
                 {/* Num of Challenges Completed */}
                 <p>
-                  <span className="font-semibold">123</span> Challenges Completed
+                  <span className="font-semibold">{numCompletedChallenges || 0}</span> Challenges Completed
                 </p>
               </div>
             </div>
