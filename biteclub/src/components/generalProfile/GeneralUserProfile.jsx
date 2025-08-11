@@ -816,7 +816,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
 
       {/* ASK FOR CONFIRMATION: If user would like to use "DELETE ALL" */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-brand-peach/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
             <h2 className="text-lg font-bold mb-2">Confirm Content Deletion</h2>
             <p className="mb-4 text-sm text-gray-700">

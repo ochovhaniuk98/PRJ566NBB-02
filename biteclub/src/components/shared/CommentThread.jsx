@@ -249,7 +249,7 @@ export default function CommentThread({ post }) {
   };
 
   return (
-    <div className="fixed top-20 right-0 w-4/12 h-10/12 p-4 border border-brand-peach bg-white flex flex-col shadow-lg rounded-tl-lg rounded-bl-lg font-primary">
+    <div className="fixed top-20 right-0 w-4/12 h-10/12 p-4 border border-brand-peach bg-white flex flex-col shadow-lg rounded-tl-lg rounded-bl-lg font-primary z-[999]">
       <h3 className="text-lg font-bold mb-4">Comments ({commentsCount})</h3>
 
       {/* scrollable comments area */}
