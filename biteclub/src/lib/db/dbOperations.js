@@ -1231,7 +1231,7 @@ export async function getActiveChallengesByUserId({ userId }) {
     await dbConnect();
 
     const activeChallenges = (await ActivateChallengeDetail.find({ userId })) || [];
-    console.log("Challenges found: ", activeChallenges);
+    console.log('Challenges found: ', activeChallenges);
     if (activeChallenges.length === 0) {
       console.log(`No active challenges found for userId: ${userId}`);
     }
@@ -1352,29 +1352,37 @@ export async function redeemPoints(supabaseId, reward) {
   } else if (reward == 25) {
     pointsNeeded = 1000;
   } else {
-    return null
+    return null;
   }
 
   // if (!supabaseId || !username) {
   //   return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
   // }
   const profile = await getGeneralUserProfileBySupabaseId({ supabaseId });
-  console.log("Profile", profile);
+  console.log('Profile', profile);
   if (profile.numOfPoints < pointsNeeded) {
-    return false
+    return false;
   }
 
   if (!profile.coupon) {
     try {
-      const couponCode = [...Array(5)].map(value => (Math.random() * 1000000).toString(36).replace('.', '')).join('');
-      console.log("New coupon code", couponCode)
+      //const couponCode = [...Array(5)].map(value => (Math.random() * 1000000).toString(36).replace('.', '')).join('');
+      const couponLen = Math.floor(Math.random() * 3) + 8; // shortened coupon length 8 - 10 chars
+      const couponCode = Math.random()
+        .toString(36)
+        .substring(2, 2 + couponLen);
+
+      console.log('New coupon code', couponCode);
       console.log(supabaseId);
-      await User.findOneAndUpdate({ supabaseId }, { "$set": { numOfPoints: profile.numOfPoints - pointsNeeded, coupon: { value: reward, code: couponCode } } }, {new: true})
+      await User.findOneAndUpdate(
+        { supabaseId },
+        { $set: { numOfPoints: profile.numOfPoints - pointsNeeded, coupon: { value: reward, code: couponCode } } },
+        { new: true }
+      );
       return couponCode;
-    }
-    catch (e) {
+    } catch (e) {
       console.log(e);
-      return null
+      return null;
     }
   } else {
     return null;
