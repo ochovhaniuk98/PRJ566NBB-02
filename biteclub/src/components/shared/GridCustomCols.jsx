@@ -8,7 +8,6 @@ export default function GridCustomCols({ children, numOfCols = 3, className = ''
     5: 'lg:grid-cols-5',
     6: 'lg:grid-cols-6',
   };*/
-  console.log(responsiveHeight);
   return (
     <div
       className={`grid lg:grid-cols-${numOfCols} md:grid-cols-2 gap-2 grid-flow-dense w-full auto-rows-[minmax(200px,_auto)] ${className}`}

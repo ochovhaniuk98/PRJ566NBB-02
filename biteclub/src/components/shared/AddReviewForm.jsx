@@ -235,7 +235,10 @@ export default function AddReviewForm({
                     className="w-30"
                     variant="secondary"
                     disabled={externalReviewLoading}
-                    onClick={() => setShowInstagramForm(false)}
+                    onClick={() => {
+                      setShowInstagramForm(false);
+                      onCancel();
+                    }}
                   >
                     Cancel
                   </Button>
