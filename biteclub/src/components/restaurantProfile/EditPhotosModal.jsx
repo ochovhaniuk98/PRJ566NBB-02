@@ -35,7 +35,7 @@ export default function EditPhotosModal({
 
   return (
     showModal && (
-      <div className="fixed w-screen h-screen bg-black/50 left-0 top-0 z-200 py-12 px-60">
+      <div className="fixed w-screen h-screen bg-transparent left-0 top-0 z-200 py-12 px-60">
         <div
           className={`box-border bg-white ${
             forBanner ? 'h-fit' : 'h-full'

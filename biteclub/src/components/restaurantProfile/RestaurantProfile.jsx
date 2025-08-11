@@ -153,11 +153,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
       <InfoBanner name={name} avgRating={rating} numReviews={numReviews} cuisine={cuisines} address={location}>
         {isOwner ? (
           <>
-            <SingleTabWithIcon
-              icon={faGift}
-              detailText={'Redeem Coupon'}
-              onClick={() => setShowRedeemPopup(true)}
-            />
+            <SingleTabWithIcon icon={faGift} detailText={'Confirm Coupon'} onClick={() => setShowRedeemPopup(true)} />
             <SingleTabWithIcon
               icon={faInstagram}
               detailText={'Add Instagram Post'}

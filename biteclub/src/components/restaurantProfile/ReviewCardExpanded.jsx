@@ -183,15 +183,11 @@ export default function ReviewCardExpanded({
     <div className="w-1/3 hidden lg:block">
       <div className="sticky top-14 h-[calc(100vh-4.5rem)] overflow-auto scrollbar-none bg-white border-2 border-brand-peach rounded-md shadow-md">
         <div className="p-4  bg-white w-full flex justify-between">
-          {isOwner ? (
-            <FormattedDate yyyymmdd={selectedReview.date_posted} />
-          ) : (
-            <AuthorDateBlurb
-              authorPic={selectedReview.user_id?.userProfilePicture?.url}
-              authorName={selectedReview.user_id?.username}
-              date={selectedReview.date_posted}
-            />
-          )}
+          <AuthorDateBlurb
+            authorPic={selectedReview.user_id?.userProfilePicture?.url}
+            authorName={selectedReview.user_id?.username}
+            date={selectedReview.date_posted}
+          />
           <div className="text-right">
             <FontAwesomeIcon
               icon={faFlag}

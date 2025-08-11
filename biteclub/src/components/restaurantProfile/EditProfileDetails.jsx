@@ -4,7 +4,9 @@ import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
 import { Switch } from '../shared/Switch';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImages } from '@fortawesome/free-solid-svg-icons';
+import { faImages, faPenClip } from '@fortawesome/free-solid-svg-icons';
+import { faInstagram } from '@fortawesome/free-brands-svg-icons';
+
 import EditPhotosModal from './EditPhotosModal';
 import DeleteInstagramForm from './DeleteInstagramForm';
 
@@ -84,170 +86,178 @@ export default function EditProfileDetails({ onClose, images, setImages, restaur
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-md shadow-md w-fit">
-        <h2 className="mb-8 w-fit mx-auto">Edit Profile Details</h2>
-        <div className="flex space-x-12">
-          <div className="w-xs border-r pr-12 border-brand-peach flex flex-col gap-4">
-            <div>
-              {/* name */}
-              <Label htmlFor="name">
-                <h4>Restaurant Name</h4>
-              </Label>
-              <Input
-                name="name"
-                type="text"
-                placeholder="Enter your restaurant's name."
-                value={name}
-                onChange={e => setName(e.target.value)}
-                required
-                className="w-full"
-              />
-            </div>
-            <div>
-              {/* address */}
-              <Label htmlFor="address">
-                <h4>Address</h4>
-              </Label>
-              <Input
-                name="address"
-                type="text"
-                placeholder="Where can diners find you?"
-                value={address}
-                onChange={e => setAddress(e.target.value)}
-                required
-                className="w-full"
-              />
-            </div>
-            {/* phone */}
-            {/* <div>
+    <div className="fixed inset-0 bg-brand-peach/40 z-[9999]">
+      <div className="flex flex-col min-h-full justify-center items-center sm:items-center p-4">
+        <div className="w-fit">
+          <div className="bg-brand-green-lite w-full font-primary rounded-t-lg flex gap-x-2 cursor-pointer p-3 font-semibold">
+            <FontAwesomeIcon icon={faPenClip} className={`icon-xl text-white`} />
+            Edit Profile Details
+          </div>
+          <form onSubmit={handleSubmit} className="bg-white p-8 rounded-b-md shadow-md w-fit">
+            <div className="font-secondary text-4xl mb-4">Edit Profile Details</div>
+            <div className="flex space-x-12">
+              <div className="w-xs border-r pr-12 border-brand-peach flex flex-col gap-4">
+                <div>
+                  {/* name */}
+                  <Label htmlFor="name">
+                    <h4>Restaurant Name</h4>
+                  </Label>
+                  <Input
+                    name="name"
+                    type="text"
+                    placeholder="Enter your restaurant's name."
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    required
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  {/* address */}
+                  <Label htmlFor="address">
+                    <h4>Address</h4>
+                  </Label>
+                  <Input
+                    name="address"
+                    type="text"
+                    placeholder="Where can diners find you?"
+                    value={address}
+                    onChange={e => setAddress(e.target.value)}
+                    required
+                    className="w-full"
+                  />
+                </div>
+                {/* phone */}
+                {/* <div>
               <Label htmlFor="phone">
                 <h4>Phone Number</h4>
               </Label>
               <Input name="phone" type="tel" placeholder="What's your number? 😏" required className="w-full" />
             </div> */}
-            <div>
-              {/* cuisines */}
-              <Label htmlFor="cusisines">
-                <h4>Cuisines</h4>
-              </Label>
-              <textarea
-                name="cuisines"
-                className="w-full border rounded-md p-2 h-24 resize-none"
-                placeholder="What’s cooking? Canadian, Vegan, Breakfast? 🍁🍃🥞"
-                value={cuisines}
-                onChange={e => setCuisines(e.target.value)}
-                required
-              />
-              <h6 className="m-0 p-0 text-xs font-primary">Separate cusines with a comma.</h6>
-            </div>
-
-            <div>
-              {/* Delete Instagram Embeds */}
-              <Label htmlFor="instagram">
-                <h4>Delete Instagram Embeds</h4>
-              </Label>
-              <Button
-                type="button"
-                className="w-full mt-2"
-                onClick={() => setShowDeleteInstaModal(true)}
-                variant="third"
-                disabled={false}
-              >
-                <FontAwesomeIcon icon={faImages} className="icon-2xl text-brand-navy cursor-pointer" />
-                Instagram Embeds
-              </Button>
-            </div>
-            <div>
-              {/* photos */}
-              <Label htmlFor="cusisines">
-                <h4>Delete Photos</h4>
-              </Label>
-              <Button
-                type="button"
-                className="w-full mt-2"
-                onClick={() => setShowPhotoModal(true)}
-                variant="third"
-                disabled={false}
-              >
-                <FontAwesomeIcon icon={faImages} className="icon-2xl text-brand-navy cursor-pointer" />
-                Photos
-              </Button>
-            </div>
-          </div>
-
-          <div>
-            {/* Business Hours */}
-            <Label htmlFor="hours">
-              <h4>Business Hours</h4>
-            </Label>
-            {['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
-              <div key={day} className="flex items-center gap-2">
-                <Label className="w-16 uppercase">
-                  <h4>{day}</h4>
-                </Label>
-
-                <div className="flex flex-col justify-center items-center mx-4">
-                  <label className="flex items-center gap-2 text-sm">
-                    <h5>Closed</h5>
-                  </label>
-                  <Switch name={day} checked={closedDays[idx]} onCheckedChange={() => handleClosedToggle(idx)} />
+                <div>
+                  {/* cuisines */}
+                  <Label htmlFor="cusisines">
+                    <h4>Cuisines</h4>
+                  </Label>
+                  <textarea
+                    name="cuisines"
+                    className="w-full border-2 rounded-md p-2 h-24 resize-none"
+                    placeholder="What’s cooking? Canadian, Vegan, Breakfast? 🍁🍃🥞"
+                    value={cuisines}
+                    onChange={e => setCuisines(e.target.value)}
+                    required
+                  />
+                  <h6 className="m-0 p-0 text-xs font-primary">Separate cusines with a comma.</h6>
                 </div>
-                <Input
-                  type="time"
-                  name={`${day}-open`}
-                  className="w-32 font-primary"
-                  disabled={closedDays[idx]}
-                  value={businessHours[idx].open}
-                  onChange={e => {
-                    const updated = [...businessHours];
-                    updated[idx].open = e.target.value;
-                    setBusinessHours(updated);
-                  }}
-                />
-                <span>
-                  <h5>to</h5>
-                </span>
-                <Input
-                  type="time"
-                  name={`${day}-close`}
-                  className="w-32 font-primary"
-                  disabled={closedDays[idx]}
-                  value={businessHours[idx].close}
-                  onChange={e => {
-                    const updated = [...businessHours];
-                    updated[idx].close = e.target.value;
-                    setBusinessHours(updated);
-                  }}
-                />
+
+                <div>
+                  {/* Delete Instagram Embeds */}
+                  <Label htmlFor="instagram">
+                    <h4>Delete Instagram Embeds</h4>
+                  </Label>
+                  <Button
+                    type="button"
+                    className="w-full mt-2"
+                    onClick={() => setShowDeleteInstaModal(true)}
+                    variant="third"
+                    disabled={false}
+                  >
+                    <FontAwesomeIcon icon={faInstagram} className="icon-2xl text-brand-navy cursor-pointer" />
+                    Instagram Embeds
+                  </Button>
+                </div>
+                <div>
+                  {/* photos */}
+                  <Label htmlFor="cusisines">
+                    <h4>Delete Photos</h4>
+                  </Label>
+                  <Button
+                    type="button"
+                    className="w-full mt-2"
+                    onClick={() => setShowPhotoModal(true)}
+                    variant="third"
+                    disabled={false}
+                  >
+                    <FontAwesomeIcon icon={faImages} className="icon-2xl text-brand-navy cursor-pointer" />
+                    Photos
+                  </Button>
+                </div>
               </div>
-            ))}
-          </div>
+
+              <div>
+                {/* Business Hours */}
+                <Label htmlFor="hours">
+                  <h4>Business Hours</h4>
+                </Label>
+                {['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
+                  <div key={day} className="flex items-center gap-2">
+                    <Label className="w-16 uppercase">
+                      <h4>{day}</h4>
+                    </Label>
+
+                    <div className="flex flex-col justify-center items-center mx-4">
+                      <label className="flex items-center gap-2 text-sm">
+                        <h5>Closed</h5>
+                      </label>
+                      <Switch name={day} checked={closedDays[idx]} onCheckedChange={() => handleClosedToggle(idx)} />
+                    </div>
+                    <Input
+                      type="time"
+                      name={`${day}-open`}
+                      className="w-32 font-primary"
+                      disabled={closedDays[idx]}
+                      value={businessHours[idx].open}
+                      onChange={e => {
+                        const updated = [...businessHours];
+                        updated[idx].open = e.target.value;
+                        setBusinessHours(updated);
+                      }}
+                    />
+                    <span>
+                      <h5>to</h5>
+                    </span>
+                    <Input
+                      type="time"
+                      name={`${day}-close`}
+                      className="w-32 font-primary"
+                      disabled={closedDays[idx]}
+                      value={businessHours[idx].close}
+                      onChange={e => {
+                        const updated = [...businessHours];
+                        updated[idx].close = e.target.value;
+                        setBusinessHours(updated);
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Buttons */}
+            <div className="flex justify-end gap-2 mt-8">
+              <Button type="submit" className="w-30" variant="default" disabled={false}>
+                Save
+              </Button>
+              <Button type="button" className="w-30" onClick={onClose} variant="secondary" disabled={false}>
+                Cancel
+              </Button>
+            </div>
+          </form>
         </div>
-        {/* Buttons */}
-        <div className="flex justify-end gap-2 mt-8">
-          <Button type="submit" className="w-30" variant="default" disabled={false}>
-            Save
-          </Button>
-          <Button type="button" className="w-30" onClick={onClose} variant="secondary" disabled={false}>
-            Cancel
-          </Button>
-        </div>
-      </form>
-      {/* Edit GALLERY Photos Modal */}
-      {showPhotoModal && (
-        <EditPhotosModal
-          restaurantId={restaurantData._id}
-          photos={images}
-          setImages={setImages}
-          showModal={showPhotoModal}
-          setShowModal={setShowPhotoModal}
-        />
-      )}
-      {/* Delete Instagram Modal */}
-      {showDeleteInstaModal && (
-        <DeleteInstagramForm restaurantId={restaurantData._id} setShowDeleteInstaModal={setShowDeleteInstaModal} />
-      )}
+        {/* Edit GALLERY Photos Modal */}
+        {showPhotoModal && (
+          <EditPhotosModal
+            restaurantId={restaurantData._id}
+            photos={images}
+            setImages={setImages}
+            showModal={showPhotoModal}
+            setShowModal={setShowPhotoModal}
+          />
+        )}
+        {/* Delete Instagram Modal */}
+        {showDeleteInstaModal && (
+          <DeleteInstagramForm restaurantId={restaurantData._id} setShowDeleteInstaModal={setShowDeleteInstaModal} />
+        )}
+      </div>
     </div>
   );
 }

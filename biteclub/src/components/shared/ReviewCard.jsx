@@ -84,7 +84,7 @@ export default function ReviewCard({
               src={photos[0].url}
               alt={photos[0].caption}
               fill
-              className="object-cover rounded-b-md"
+              className="object-cover rounded-b-md  border-t border-brand-yellow-lite"
               sizes="(max-width: 768px) 100vw, 33vw"
             />
           </div>
