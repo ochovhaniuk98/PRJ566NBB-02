@@ -13,8 +13,11 @@ export default function BlogPostsList() {
     <MainBaseContainer className={'bg-brand-yellow'}>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
         <div className={'w-full h-full'}>
-          {/* tabs for selecting blog posts: Explore vs Following */}
-          <BlogPostListTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+          <div className="flex justify-between">
+            <h2>Trending + Recently Posted</h2>
+            {/* tabs for selecting blog posts: Explore vs Following */}
+            <BlogPostListTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+          </div>
           {/* Pass Blog Posts for Exploring */}
           {selectedTab === 'EXPLORE' && <ExploringBlogPosts />}
           {/* Pass Blog Posts of Followed Users */}

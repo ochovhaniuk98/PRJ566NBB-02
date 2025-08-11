@@ -74,6 +74,7 @@ export default function RestaurantResults() {
     <MainBaseContainer className={'bg-brand-yellow'}>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
         <div className={'w-full h-full'}>
+          <h2>Popular And New Restaurants</h2>
           {fetchCompleted && (
             <>
               {/* Restaurant List */}

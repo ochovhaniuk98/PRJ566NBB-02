@@ -66,15 +66,17 @@ export default function ReviewCard({
         {/*TO DO for Cesca: Put word limit in review body preview.
         MISSING DYNAMIC VALUES: author name + pic*/}
         <p>{review.body.length > 600 ? review.body.slice(0, 600) + '…' : review.body}</p>
-        {isOwner ? (
-          <FormattedDate yyyymmdd={review.date_posted} />
-        ) : (
-          <AuthorDateBlurb
-            authorPic={review.user_id?.userProfilePicture?.url}
-            authorName={review.user_id?.username}
-            date={review.date_posted}
-          />
-        )}
+        <div className="mt-4">
+          {isOwner ? (
+            <FormattedDate yyyymmdd={review.date_posted} />
+          ) : (
+            <AuthorDateBlurb
+              authorPic={review.user_id?.userProfilePicture?.url}
+              authorName={review.user_id?.username}
+              date={review.date_posted}
+            />
+          )}
+        </div>
       </div>
 
       {photos?.length > 0 && (
