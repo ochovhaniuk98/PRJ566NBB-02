@@ -198,7 +198,15 @@ export default function ChallengesPage() {
   pointsNeeded: Number of points needed to redeem this reward
   reward: Value of the reward in dollars
 */
-const Milestone = ({ level, levelRequired, pointsNeeded, reward, className }) => {
+export const Milestone = ({
+  level,
+  levelRequired,
+  pointsNeeded,
+  reward,
+  className,
+  largeSize = false,
+  onRedeem = () => {},
+}) => {
   const levelImagesArr = [
     { img: '/img/lemon.png', caption: 'lemon', scaleSize: 'scale-120', disabledImg: '/img/lemon-disabled.png' },
     { img: '/img/hotdog.png', caption: 'hotdog', scaleSize: 'scale-120', disabledImg: '/img/hotdog-disabled.png' },
@@ -228,9 +236,16 @@ const Milestone = ({ level, levelRequired, pointsNeeded, reward, className }) =>
   //const color = enabled ? BAR_COMPLETE_COLOR : BAR_INCOMPLETE_COLOR;
 
   return (
-    <div className="flex flex-col justify-center items-center w-fit relative h-[100px] font-primary">
-      <span className="absolute mb-20 font-bold">${reward}</span>
-      <div className={`h-[40px] w-[40px] rounded-3xl ${className}`} style={{ backgroundColor: 'transparent' }} />
+    <div className="flex flex-col justify-center items-center w-fit relative h-[100px] font-primary my-8">
+      <span
+        className={`absolute font-semibold ${largeSize ? 'text-2xl mb-30' : 'mb-20'} ${!enabled && 'text-brand-grey'}`}
+      >
+        ${reward}
+      </span>
+      <div
+        className={`${largeSize ? 'h-[60px] w-[60px]' : 'h-[40px] w-[40px]'} ${className}`}
+        style={{ backgroundColor: 'transparent' }}
+      />
       {enabled ? (
         <Image src={levelImage} alt={'level image'} className={`object-contain z-20 ${scaleSize}`} fill={true} />
       ) : (
@@ -242,7 +257,17 @@ const Milestone = ({ level, levelRequired, pointsNeeded, reward, className }) =>
         />
       )}
 
-      <span className="absolute w-[60px] text-center mt-20 text-xs">{pointsNeeded} pts</span>
+      <span className={`absolute text-center ${largeSize ? 'w-[80px] text-lg mt-26' : 'w-[60px] text-xs mt-20'}`}>
+        {pointsNeeded} pts
+      </span>
+      {largeSize && enabled && (
+        <button
+          className="absolute mt-48 bg-brand-blue text-brand-navy font-medium py-2 px-6 rounded-full shadow cursor-pointer"
+          onClick={onRedeem}
+        >
+          Redeem
+        </button>
+      )}
     </div>
   );
 };

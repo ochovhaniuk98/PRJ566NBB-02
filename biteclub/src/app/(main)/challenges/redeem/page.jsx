@@ -6,6 +6,11 @@ import { useUserData } from '@/context/UserDataContext';
 import { Button } from '@/components/shared/Button';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import Spinner from '@/components/shared/Spinner';
+import { Milestone } from '@/components/challenges/ChallengesPage';
+import Image from 'next/image';
+
+const BAR_COMPLETE_COLOR = '#8CBF38';
+const MAX_POINTS = 2750;
 
 const redemption_options = [
   {
@@ -41,8 +46,10 @@ export default function Redeem() {
     // [!] do not set "!userData?.numOfPoints" or it will run forever if the user does not have points yet
     if (loadingData || !userData) return;
     if (userData?.numOfPoints != undefined) {
-      console.log("User: ", userData);
+      console.log('User: ', userData);
+
       setPoints(userData.numOfPoints);
+      //setPoints(2200); // FOR TESTING
     }
     if (userData?.coupon?.code) {
       setCouponCode(userData.coupon.code);
@@ -56,6 +63,8 @@ export default function Redeem() {
       return;
     }
 
+    alert('Congrats! Points Redeemed!');
+
     const res = await fetch('/api/redeem', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -67,43 +76,79 @@ export default function Redeem() {
     const data = await res.json();
 
     if (res.ok) {
-      console.log("Server response: ", data)
+      console.log('Server response: ', data);
     }
   }
 
   if (loadingData || loading) return <Spinner />;
 
+  // get point level user reached
+  const level = redemption_options.filter(o => points >= o.points_needed).length;
+
+  // calc progress perc
+  const percentComplete = (() => {
+    const capped = Math.min(points, MAX_POINTS);
+    const percent = ((capped - 1000) / (MAX_POINTS - 1000)) * 100;
+    return Math.max(0, Math.round(percent));
+  })();
+
   return (
     <MainBaseContainer>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center mt-16">
-        <div className="flex flex-col items-start gap-4 w-full m-8">
-          <h1>Get Your Rewards</h1>
-          <p>Complete challenges to earn points, then redeem them here for exclusive food coupons.</p>
-          <p className="text-2xl">Your points: {points}</p>
+      <div className="main-side-padding py-8 w-full flex flex-col items-center justify-center min-h-screen relative">
+        <div className="absolute top-18 left-20">
+          <h2 className="">REDEEM POINTS</h2>
         </div>
-        <div className="flex flex-col gap-6 min-w-full">
-          {redemption_options.map(redemption_option => {
-            return (
-              <div
-                className="flex flex-row w-full justify-between items-center text-[50px]"
-                key={redemption_option.value}
-              >
-                <div className="self-start font-bold text-[50px]">${redemption_option.value}</div>
-                <Button
-                  type="button"
-                  className="w-30"
-                  variant="default"
-                  onClick={() => {
-                    redeemOption(redemption_option);
-                  }}
-                >
-                  {redemption_option.points_needed} points
-                </Button>
+        <div className="flex flex-row w-full items-center justify-center">
+          {/* Num of Points */}
+          <div className="size-28 mb-4 mr-0 relative">
+            <Image src={'/img/coinWithFork.png'} alt={'coin'} className="object-contain" fill={true} />
+          </div>
+          <div className="inline-flex items-baseline justify-center font-primary mb-8">
+            <span className="text-9xl font-secondary font-normal text-brand-green">{points || 0}</span>
+            <span className="text-2xl font-medium">pts</span>
+          </div>
+        </div>
+
+        {/* main progress bar */}
+        <div className="w-[80%] flex flex-row items-center relative mb-32">
+          <div className="absolute bg-brand-peach w-[100%] h-[24px] rounded-full"></div>
+          <div
+            className={`absolute w-[100%] h-[24px] z-[1] rounded-full`}
+            style={{ width: `${percentComplete}%`, backgroundColor: BAR_COMPLETE_COLOR }}
+          ></div>
+          <div className="flex flex-row justify-between w-full">
+            {redemption_options.map((redemption_option, i) => {
+              return (
+                <Milestone
+                  key={i}
+                  level={level}
+                  levelRequired={i + 1}
+                  className="z-[2]"
+                  pointsNeeded={redemption_option.points_needed}
+                  reward={redemption_option.value}
+                  largeSize={true}
+                  onRedeem={() => redeemOption(i)}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="w-full">
+          <h2>Available Coupon Code</h2>
+          {couponCode ? (
+            <div className="bg-brand-aqua-lite border-4 border-brand-aqua h-30 w-xs rounded-md shadow-md p-4 mt-2 flex flex-col items-center justify-center">
+              <div className="font-secondary text-6xl flex items-center gap-x-1 text-brand-aqua">
+                <span className="font-primary text-4xl font-semibold">$</span>20
               </div>
-            );
-          })}
+              <h3 className="uppercase">{couponCode}</h3>
+            </div>
+          ) : (
+            <div className="bg-white border-2 border-brand-aqua border-dashed h-30 w-xs rounded-md p-4 mt-2 flex flex-col items-center justify-center text-6xl font-primary font-medium text-brand-aqua">
+              $0
+            </div>
+          )}
         </div>
-        {couponCode && <p><span className="font-bold">Current coupon: </span>{couponCode}</p>}
       </div>
     </MainBaseContainer>
   );
