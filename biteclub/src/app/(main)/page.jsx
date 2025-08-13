@@ -113,7 +113,7 @@ export default function Home() {
   useEffect(() => {
     setFetchCompleted(false);
     fetchRestaurants(true); // reset = true
-  }, []);
+  }, [user?.id]);
 
   const handleViewAllSubmit = async () => {
     router.push('/restaurants/cuisine');

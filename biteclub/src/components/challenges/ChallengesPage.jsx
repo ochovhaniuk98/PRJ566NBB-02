@@ -7,7 +7,7 @@ import AllActiveChallenges from './AllActiveChallenges';
 import { fakeChallenges, fakeActivatedChallengeDetail } from '@/app/data/fakeData';
 import { useUserData } from '@/context/UserDataContext';
 import ChallengeCompletedModal from './ChallengeCompletedModal';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 
@@ -39,7 +39,18 @@ export default function ChallengesPage() {
     fetch('api/challenges/activateChallenge', {
       method: 'POST',
       body: JSON.stringify({ userId: userData._id, challenge }),
+    }).then(() => {
+      (async () => {
+        const res = await fetch(`api/challenges/active-challenges/get-by-userId/${userData._id}`);
+        const data = await res.json();
+
+        const inProgressChallenges = data.filter(challenge => challenge.completionStatus === 'in-progress');
+
+        setActiveChallenges(inProgressChallenges);
+      })()
     });
+
+
     // setActiveChallenges(prev => [...prev, newActivated]);
   }
 
@@ -114,7 +125,7 @@ export default function ChallengesPage() {
               {/* Profile Pic */}
               <div className="size-24 bg-brand-green rounded-full mr-2 relative border border-brand-grey-lite">
                 <Image
-                  src={userData?.userProfilePicture.url || '/img/placeholderImg.jpg'}
+                  src={userData?.userProfilePicture?.url || '/img/placeholderImg.jpg'}
                   alt={'profile pic'}
                   className={`object-cover rounded-full`}
                   fill={true}
@@ -168,7 +179,7 @@ export default function ChallengesPage() {
               <Leaderboard refreshTrigger={leaderboardRefreshTrigger} />
             </div>
             {/* PLACEHOLDER for AI-generated challenges */}
-            <div className="w-full bg-gray-100 p-3 text-center">
+            <div className="w-full p-3 text-center">
               <h2 className="uppercase">Add challenges</h2>
               {/* DEMO for adding/activating challenges */}
               <ChallengeList onActivate={handleActivateChallenge} />
@@ -357,18 +368,21 @@ function ChallengeList({ onActivate }) {
     challenges.length > 0 && (
       <>
         <h3>Select your challenge!</h3>
-        <ul className="cursor-pointer text-blue-800 underline space-y-1">
+        <div className="flex flex-row justify-around cursor-pointer space-y-1">
           {/* FAKE challenges to add */}
           {challenges.map((challenge, i) => {
             return (
               i > 0 && (
-                <li key={i} onClick={() => onActivate(challenge)}>
-                  {challenge.title}
-                </li>
+                <div className="font-primary border-2 w-[300px] h-[100px] border-red-100 border-dashed font-medium" key={i} onClick={() => onActivate(challenge)}>
+                  <h3 className="text-2xl">{challenge.title}</h3>
+                  <FontAwesomeIcon icon={faClock} className="fa-solid text-yellow-300 inline" />
+                  <span> &nbsp;{challenge.duration} Days</span>
+                  <span className="block">{challenge.numberOfPoints} Points</span>
+                </div>
               )
             );
           })}
-        </ul>
+        </div>
       </>
     )
   );
