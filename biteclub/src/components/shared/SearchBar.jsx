@@ -3,16 +3,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function SearchBar() {
   const [searchInput, setSearchInput] = useState('');
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleKeyDown = e => {
     if (e.key === 'Enter') {
-      router.push(`/search?search=${encodeURIComponent(searchInput)}`);
-      setSearchInput('');
+      if (pathname !== '/restaurants') {
+        router.push(`/search?search=${encodeURIComponent(searchInput)}`);
+        setSearchInput('');
+      }
     }
   };
 
@@ -27,6 +30,7 @@ export default function SearchBar() {
         </span>
         <input
           type="text"
+          id="search-bar-input"
           placeholder="Search for restaurants, blog posts, or users"
           className="w-full pl-8 font-primary rounded-full"
           value={searchInput}

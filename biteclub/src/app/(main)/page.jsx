@@ -162,30 +162,38 @@ export default function Home() {
         </div>
       )}
       {fetchCompleted ? (
-        <div>
-          <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
-            {personalizedRecommendations.length > 0 && (
-              <div>
-                <h2>For you</h2>
-                <div className="overflow-x-scroll">
-                  <div className="w-fit h-full flex flex-row">
-                    {fetchCompleted && (
-                      <>
-                        <GridCustomCols numOfCols={5} className="mt-4">
-                          {personalizedRecommendations.map((restaurant, i) => (
-                            <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
-                          ))}
-                        </GridCustomCols>
-                      </>
-                    )}
+        <div className="mb-16 w-full flex flex-col items-center">
+          <div>
+            <div className="flex items-center justify-between">
+              {personalizedRecommendations.length > 0 && (
+                <div>
+                  <h2>For you</h2>
+                  <div className="overflow-x-scroll">
+                    <div className="w-fit h-full flex flex-row">
+                      {fetchCompleted && (
+                        <>
+                          <GridCustomCols numOfCols={5} className="mt-4">
+                            {personalizedRecommendations.map((restaurant, i) => (
+                              <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
+                            ))}
+                          </GridCustomCols>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-          <div>
-            <h2>Blog posts for you</h2>
-            <ExploringBlogPostsAI />
+          <div className="mb-16 w-full flex flex-col items-center  pt-18 ">
+            <div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2>Blog posts for you</h2>
+                  <ExploringBlogPostsAI />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       ) : (
