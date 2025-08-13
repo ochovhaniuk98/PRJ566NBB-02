@@ -136,12 +136,13 @@ export default function GeneralUserBanner({
         {/*profile pic*/}
         <div className=" flex justify-end">
           <div className="relative max-h-60 aspect-square rounded-full border border-white bg-white mx-4">
+            {generalUserData.userProfilePicture &&
             <Image
               src={generalUserData.userProfilePicture.url}
               alt={generalUserData.userProfilePicture.caption}
               fill={true}
               className="rounded-full object-cover w-full"
-            />
+            />}
           </div>
         </div>
         {/*user name, bio, join date, follow btn*/}
