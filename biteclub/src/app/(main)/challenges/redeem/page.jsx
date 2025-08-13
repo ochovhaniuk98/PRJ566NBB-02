@@ -63,8 +63,6 @@ export default function Redeem() {
       return;
     }
 
-    alert('Congrats! Points Redeemed!');
-
     const res = await fetch('/api/redeem', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -77,6 +75,7 @@ export default function Redeem() {
 
     if (res.ok) {
       console.log('Server response: ', data);
+      alert('Congrats! Points Redeemed!');
     }
   }
 
@@ -127,7 +126,7 @@ export default function Redeem() {
                   pointsNeeded={redemption_option.points_needed}
                   reward={redemption_option.value}
                   largeSize={true}
-                  onRedeem={() => redeemOption(i)}
+                  onRedeem={() => redeemOption(redemption_option)}
                 />
               );
             })}
