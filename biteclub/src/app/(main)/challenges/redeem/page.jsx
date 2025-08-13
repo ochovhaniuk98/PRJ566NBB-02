@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
-import { Button } from '@/components/shared/Button';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import Spinner from '@/components/shared/Spinner';
 import { Milestone } from '@/components/challenges/ChallengesPage';

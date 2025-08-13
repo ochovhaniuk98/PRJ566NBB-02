@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // useRouter instead of next/Link, so we can manually handle the redirection on Clicking the Card (vs Saving the Restaurant as Favourite)
 
 import { useUser } from '@/context/UserContext';

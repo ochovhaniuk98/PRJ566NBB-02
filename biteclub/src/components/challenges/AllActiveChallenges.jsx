@@ -1,8 +1,6 @@
-import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGamepad, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import ActiveChallengeCard from './ActiveChallengeCard';
-import { fakeActivatedChallengeDetail } from '@/app/data/fakeData';
 
 export default function AllActiveChallenges({ activeChallenges, setShowChallengeDetailModal, setSelectedChallenge }) {
   return (

@@ -2,7 +2,7 @@
 // Reference: https://tiptap.dev/docs/ui-components/templates/simple-editor
 'use client';
 import { SimpleEditor } from '@/components/tiptap-rich-text-editor/tiptap-templates/simple/simple-editor';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import ReadOnlyEditor from '@/components/tiptap-rich-text-editor/ReadOnlyEditor';
 
