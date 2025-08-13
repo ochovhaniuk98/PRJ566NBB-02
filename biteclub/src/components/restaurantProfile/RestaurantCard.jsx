@@ -50,7 +50,7 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
 
   return (
     <div className="w-full" onClick={() => router.push(`/restaurants/${restaurantId}`)}>
-      <div className="w-full lg:max-h-72 max-h-84  aspect-square border border-brand-yellow-lite flex flex-col items-center rounded-md cursor-pointer text-black hover:bg-brand-peach-lite">
+      <div className="w-full lg:max-h-88 max-h-84  aspect-square border border-brand-yellow-lite flex flex-col items-center rounded-md cursor-pointer text-black hover:bg-brand-peach-lite">
         <div className="relative w-full aspect-3/2 max-h-60 border-b-1 border-brand-yellow-lite">
           {restaurantData?.bannerImages[0]?.url && (
             <Image
