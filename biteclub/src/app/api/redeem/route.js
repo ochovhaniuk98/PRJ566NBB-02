@@ -5,10 +5,7 @@ export async function POST(req) {
   try {
     const body = await req.json();
 
-    const {
-      supabaseId,
-      reward
-    } = body;
+    const { supabaseId, reward } = body;
 
     let pointsNeeded = null;
     if (reward == 5) {
@@ -27,14 +24,15 @@ export async function POST(req) {
     //   return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     // }
     const profile = await getGeneralUserProfileBySupabaseId({ supabaseId });
-    console.log("Profile", profile);
+    console.log('Profile', profile);
     if (profile.numOfPoints < pointsNeeded) {
       return NextResponse.json({ message: 'Insufficient Points' }, { status: 409 });
     }
 
-    const couponCode = redeemPoints(supabaseId, reward)
-    if(couponCode) {
-      return NextResponse.json({message: "Points successfully redeemed!", couponCode}, {status: 200});
+    const couponCode = await redeemPoints(supabaseId, reward);
+    console.log('Coupon Code received: ', couponCode);
+    if (couponCode) {
+      return NextResponse.json({ message: 'Points successfully redeemed!', couponCode }, { status: 200 });
     } else {
       return NextResponse.json({ message: 'Insufficient Points/Coupon already exists' }, { status: 409 });
     }
