@@ -5,12 +5,13 @@ from typing import Dict, List, Tuple
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
-import tensorflow as tf
+# import tensorflow as tf
 import numpy as np
 import os
 from bson import ObjectId, json_util
 import pandas as pd
-from flask import Flask, request, jsonify, abort
+from flask import Blueprint, request, jsonify
+import tensorflow as tf
 from flask_cors import cross_origin
 
 
@@ -154,10 +155,10 @@ _posts_df = (
 # -------- Flask app -----------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-app = Flask(__name__)
+blogposts_bp = Blueprint('blogposts', __name__)
 
-@app.route("/blogposts/recommend", methods=["POST"])
 @cross_origin()
+@blogposts_bp.route("/blogposts/recommend", methods=["POST"])
 def blogpost_recommend_endpoint():
     supabase_id = request.json["supabaseId"]
     user_id = str(user_collection.find_one({"supabaseId": supabase_id})["_id"])
@@ -178,7 +179,7 @@ def blogpost_recommend_endpoint():
     return json_util.dumps(out)
 
 
-@app.route("/blogposts/posts")
+@blogposts_bp.route("/blogposts/posts")
 @cross_origin()
 def posts_endpoint():
     limit = int(request.args.get("limit", 20))
@@ -214,11 +215,6 @@ def reload_data(new_data: List[dict], *, epochs: int = 5):
 # -----------------------------------------------------------------------------
 # -------- Main guard ----------------------------------------------------------
 # -----------------------------------------------------------------------------
-
-if __name__ == "__main__":
-    # Run Flask dev server
-    app.run(debug=True)
-
 
 # app = Flask(__name__)
 # @app.route("/recommend", methods=["POST"])
