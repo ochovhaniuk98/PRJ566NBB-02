@@ -1,9 +1,7 @@
 'use client';
 import RestaurantCard from '@/components/restaurantProfile/RestaurantCard';
 import GridCustomCols from '@/components/shared/GridCustomCols';
-import MainBaseContainer from '@/components/shared/MainBaseContainer';
-import { Button } from '@/components/shared/Button';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
 import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
 import { useRouter } from 'next/navigation';

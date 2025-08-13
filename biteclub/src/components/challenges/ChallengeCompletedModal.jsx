@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faXmarkCircle, faXmarkSquare } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import { useEffect } from 'react';
 

@@ -1,7 +1,5 @@
 // src/app/api/challenges/active-challenges/detail/get-by-ids/route.js
-import { getActiveChallengeDetailByIds } from '@/lib/db/dbOperations';
-import { ActivateChallengeDetail, Challenge, Restaurant } from '@/lib/model/dbSchema';
-import { now } from 'mongoose';
+import { ActivateChallengeDetail, Challenge } from '@/lib/model/dbSchema';
 
 // Get Active Challenge by ChallengeId and User Id
 export async function POST(request) {

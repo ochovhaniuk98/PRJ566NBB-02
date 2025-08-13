@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import BlogPostListTabs from './BlogPostListTabs';
 import ExploringBlogPosts from './ExploringBlogPosts';

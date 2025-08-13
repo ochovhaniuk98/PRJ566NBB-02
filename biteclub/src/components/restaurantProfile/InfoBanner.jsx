@@ -1,5 +1,5 @@
 //import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot, faHeart, faUtensils, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faUtensils } from '@fortawesome/free-solid-svg-icons';
 import RestaurantIconDetail from '@/components/restaurantProfile/RestaurantIconDetail';
 import StarRating from '../shared/StarRating';
 

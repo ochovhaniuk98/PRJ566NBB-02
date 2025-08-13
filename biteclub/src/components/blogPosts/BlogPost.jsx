@@ -10,13 +10,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faThumbsUp as faThumbsUpRegular,
   faThumbsDown as faThumbsDownRegular,
-  faHeart as faHeartRegular,
 } from '@fortawesome/free-regular-svg-icons';
 
 import {
   faThumbsUp as faThumbsUpSolid,
   faThumbsDown as faThumbsDownSolid,
-  faHeart as faHeartSolid,
   faFlag,
 } from '@fortawesome/free-solid-svg-icons';
 import FavouriteButton from '../shared/FavouriteButton';

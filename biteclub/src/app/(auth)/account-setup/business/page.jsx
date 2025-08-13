@@ -8,7 +8,7 @@ import { Button } from '@/components/shared/Button';
 import { Label } from '@/components/shared/Label';
 import { CldUploadWidget } from 'next-cloudinary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloudArrowUp, faUtensils } from '@fortawesome/free-solid-svg-icons';
+import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 
 export default function BusinessSetupForm() {

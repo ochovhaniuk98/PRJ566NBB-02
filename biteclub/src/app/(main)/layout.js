@@ -3,7 +3,6 @@
 import { KoHo, Jaro, Roboto } from 'next/font/google';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import { Providers } from './providers';
-import { useUser } from '@/context/UserContext';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import './../styles/globals.css';
 // import MainMenu from '../../components/shared/MainMenu';
