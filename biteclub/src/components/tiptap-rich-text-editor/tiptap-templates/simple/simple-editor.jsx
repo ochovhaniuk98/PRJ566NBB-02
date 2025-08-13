@@ -11,8 +11,6 @@ import { TaskList } from '@tiptap/extension-task-list';
 import { TextAlign } from '@tiptap/extension-text-align';
 import { Typography } from '@tiptap/extension-typography';
 import { Highlight } from '@tiptap/extension-highlight';
-import { Subscript } from '@tiptap/extension-subscript';
-import { Superscript } from '@tiptap/extension-superscript';
 import { Underline } from '@tiptap/extension-underline';
 
 // --- Custom Extensions ---
@@ -64,7 +62,6 @@ import { useWindowSize } from '@/hooks/use-window-size';
 import { useCursorVisibility } from '@/hooks/use-cursor-visibility';
 
 // --- Components ---
-import { ThemeToggle } from '@/components/tiptap-rich-text-editor/tiptap-templates/simple/theme-toggle';
 
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE } from '@/lib/tiptap-utils';
@@ -72,7 +69,6 @@ import { handleImageUpload, MAX_FILE_SIZE } from '@/lib/tiptap-utils';
 // --- Styles ---
 import '@/components/tiptap-rich-text-editor/tiptap-templates/simple/simple-editor.scss';
 
-import content from '@/components/tiptap-rich-text-editor/tiptap-templates/simple/data/content.json';
 
 import { InstagramNode } from '../../tiptap-extension/InstagramNode';
 import { RestaurantMention } from '../../tiptap-node/restaurant-mention-node/RestaurantMention';

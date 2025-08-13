@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getGeneralUserProfileBySupabaseId, redeemPoints, updatePoints } from '@/lib/db/dbOperations';
 import { User } from '@/lib/model/dbSchema';
 
 export async function POST(req) {

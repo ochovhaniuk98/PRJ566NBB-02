@@ -1,15 +1,15 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faXmarkCircle, faXmarkSquare } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import { useEffect } from 'react';
 
 // modal that pops up automatically when user completes WHOLE challenge
 export default function ChallengeCompletedModal({ numPointsWon = 123, setShowChallengeCompletedModal }) {
   useEffect(() => {
-    // Automatically close the modal after 3 seconds
+    // Automatically close the modal after 7 seconds
     const timer = setTimeout(() => {
       setShowChallengeCompletedModal(false);
-    }, 3000);
+    }, 7000);
 
     return () => clearTimeout(timer);
   }, [setShowChallengeCompletedModal]);

@@ -150,7 +150,14 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     <MainBaseContainer>
       {/* 4 banner images (can be modified by owner) */}
       <ImageBanner restaurantId={restaurantId} images={bannerImages} setImages={setBannerImages} isOwner={isOwner} />
-      <InfoBanner name={name} avgRating={rating} numReviews={numReviews} cuisine={cuisines} address={location}>
+      <InfoBanner
+        name={name}
+        avgRating={rating}
+        numReviews={numReviews}
+        priceRange={priceRange}
+        cuisine={cuisines}
+        address={location}
+      >
         {isOwner ? (
           <>
             <SingleTabWithIcon icon={faGift} detailText={'Confirm Coupon'} onClick={() => setShowRedeemPopup(true)} />

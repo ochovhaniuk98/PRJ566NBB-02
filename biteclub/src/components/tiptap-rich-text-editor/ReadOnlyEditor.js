@@ -4,7 +4,6 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 // import StarterKit from '@tiptap/starter-kit';
-import { useEffect } from 'react';
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from '@tiptap/starter-kit';

@@ -3,7 +3,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBowlFood, faBowlRice, faCarrot, faSpoon, faUtensils } from '@fortawesome/free-solid-svg-icons';
+import { faCarrot } from '@fortawesome/free-solid-svg-icons';
 import { faCircleRight, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import Image from 'next/image';
 import { Button } from '@/components/shared/Button';

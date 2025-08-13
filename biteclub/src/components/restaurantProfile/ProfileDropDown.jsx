@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faIdCard, faSignIn, faSignOut, faUserTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faSignIn, faSignOut, faUserTimes } from '@fortawesome/free-solid-svg-icons';
 import Spinner from '@/components/shared/Spinner';
 import { Button } from '@/components/shared/Button';
 

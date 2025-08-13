@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import EditModePanel from '../shared/EditModePanel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsis, faFlag } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { ReportContentLink } from '../shared/ReportContentLink';
 
 // instagram embed component
