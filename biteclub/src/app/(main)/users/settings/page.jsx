@@ -12,6 +12,7 @@ import { LogoutButton } from '@/components/auth/Logout-button';
 import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
 import Spinner from '@/components/shared/Spinner';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
+import { createClient } from '@/lib/auth/client';
 
 export default function Settings() {
   // User infomation
@@ -59,6 +60,7 @@ export default function Settings() {
     try {
       if (!user?.id) return;
       if (password !== '') {
+        const supabase = createClient();
         const { error } = await supabase.auth.updateUser({ password });
 
         // Throw an error here if password update fails
