@@ -6,8 +6,6 @@ This repo contains two main applications:
 - **BiteClub**: Our Next.js web application for restaurant reviews, user profiles, blog posts, and more.
 - **Recommender System**: A Python-based microservice for personalized recommendations.
 
----
-
 ## Project Structure
 
 - `biteclub/`  
@@ -17,8 +15,6 @@ This repo contains two main applications:
 - `recommender-system/`  
   The recommendation engine (Python, Flask).  
   See [recommender-system/readme.md](recommender-system/readme.md) for installation and deployment details.
-
----
 
 ## Quick Start
 
@@ -36,8 +32,6 @@ This repo contains two main applications:
    - For Recommender System:  
      See [recommender-system/readme.md](recommender-system/readme.md)
 
----
-
 ## Deployment
 
 - **BiteClub** can be deployed on Vercel or any Node.js hosting platform.
@@ -48,13 +42,11 @@ Refer to the README files listed below for step-by-step deployment instructions:
 - [BiteClub Setup & Usage](biteclub/README.md)
 - [Recommender System Setup & Usage](recommender-system/readme.md)
 
----
-
 ## Documentation & Reports
 
 - **Software Requirements Specification (SRS):**  
   See [`documents/SRS.pdf`](documents/SRS.pdf) for the original project requirements.
 - **Database Models Report:**  
   See [`documents/DatabaseModelsReport/index.html`](documents/DatabaseModelsReport/index.html) for a visual overview of the database schema and relationships. Download the full `documents/DatabaseModelsReport/` folder to ensure all assets and scripts are available for proper rendering.
-
----
+- **Test Credentials & Deviations:**  
+  See [`documents/README.md`](documents/README.md) for test account credentials and a list of deviations from the SRS.
