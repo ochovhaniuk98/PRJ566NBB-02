@@ -5,7 +5,6 @@ import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
-import { Input } from '@/components/shared/Input';
 import { Label } from '@/components/shared/Label';
 import { Switch } from '@/components/shared/Switch';
 import { Button } from '@/components/shared/Button';
@@ -30,7 +29,7 @@ export default function Settings() {
   // Display preference
   const [displayFavouriteRestaurants, setDisplayFavouriteRestaurants] = useState(false);
   const [displayFavouriteBlogPosts, setDisplayFavouriteBlogPosts] = useState(false);
-  const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
+  //const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
   const [feedPersonalization, setFeedPersonalization] = useState(false);
 
   // States
@@ -44,7 +43,7 @@ export default function Settings() {
     setUserBio(userData.userBio || '');
     setDisplayFavouriteRestaurants(userData.displayFavouriteRestaurants ?? false);
     setDisplayFavouriteBlogPosts(userData.displayFavouriteBlogPosts ?? false);
-    setDisplayVisitedPlaces(userData.displayVisitedPlaces ?? false);
+    //setDisplayVisitedPlaces(userData.displayVisitedPlaces ?? false);
     setFeedPersonalization(userData.feedPersonalization ?? false);
     setAvatarUrl(userData.userProfilePicture?.url ?? null);
     setLoading(false);
@@ -77,8 +76,8 @@ export default function Settings() {
           username,
           displayFavouriteRestaurants,
           displayFavouriteBlogPosts,
-          displayVisitedPlaces,
           feedPersonalization,
+          //displayVisitedPlaces,
         }),
       });
 
@@ -189,6 +188,7 @@ export default function Settings() {
                 />
               </div>
 
+              {/* 
               <div className="flex items-center justify-between mb-4">
                 <label htmlFor="user-role">
                   <h4>Visited Places</h4>
@@ -201,6 +201,7 @@ export default function Settings() {
                   }}
                 />
               </div>
+              */}
 
               <h2 className="mb-4">Feed Personalization</h2>
               <div className="flex items-center justify-between mb-4">
