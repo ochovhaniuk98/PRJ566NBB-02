@@ -29,7 +29,6 @@ export default function Settings() {
   // Display preference
   const [displayFavouriteRestaurants, setDisplayFavouriteRestaurants] = useState(false);
   const [displayFavouriteBlogPosts, setDisplayFavouriteBlogPosts] = useState(false);
-  const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
   const [feedPersonalization, setFeedPersonalization] = useState(false);
 
   // States
@@ -43,7 +42,6 @@ export default function Settings() {
     setUserBio(userData.userBio || '');
     setDisplayFavouriteRestaurants(userData.displayFavouriteRestaurants ?? false);
     setDisplayFavouriteBlogPosts(userData.displayFavouriteBlogPosts ?? false);
-    setDisplayVisitedPlaces(userData.displayVisitedPlaces ?? false);
     setFeedPersonalization(userData.feedPersonalization ?? false);
     setAvatarUrl(userData.userProfilePicture?.url ?? null);
     setLoading(false);
@@ -76,7 +74,7 @@ export default function Settings() {
           username,
           displayFavouriteRestaurants,
           displayFavouriteBlogPosts,
-          displayVisitedPlaces,
+          displayVisitedPlaces: false,
           feedPersonalization,
         }),
       });
@@ -184,19 +182,6 @@ export default function Settings() {
                   checked={displayFavouriteBlogPosts}
                   onCheckedChange={checked => {
                     setDisplayFavouriteBlogPosts(checked);
-                  }}
-                />
-              </div>
-
-              <div className="flex items-center justify-between mb-4">
-                <label htmlFor="user-role">
-                  <h4>Visited Places</h4>
-                </label>
-                <Switch
-                  id="user-role"
-                  checked={displayVisitedPlaces}
-                  onCheckedChange={checked => {
-                    setDisplayVisitedPlaces(checked);
                   }}
                 />
               </div>
