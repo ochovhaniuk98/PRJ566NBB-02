@@ -12,6 +12,7 @@ import { LogoutButton } from '@/components/auth/Logout-button';
 import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
 import Spinner from '@/components/shared/Spinner';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
+import { createClient } from '@/lib/auth/client';
 
 export default function Settings() {
   // User infomation
@@ -29,7 +30,6 @@ export default function Settings() {
   // Display preference
   const [displayFavouriteRestaurants, setDisplayFavouriteRestaurants] = useState(false);
   const [displayFavouriteBlogPosts, setDisplayFavouriteBlogPosts] = useState(false);
-  const [displayVisitedPlaces, setDisplayVisitedPlaces] = useState(false);
   const [feedPersonalization, setFeedPersonalization] = useState(false);
 
   // States
@@ -43,7 +43,6 @@ export default function Settings() {
     setUserBio(userData.userBio || '');
     setDisplayFavouriteRestaurants(userData.displayFavouriteRestaurants ?? false);
     setDisplayFavouriteBlogPosts(userData.displayFavouriteBlogPosts ?? false);
-    setDisplayVisitedPlaces(userData.displayVisitedPlaces ?? false);
     setFeedPersonalization(userData.feedPersonalization ?? false);
     setAvatarUrl(userData.userProfilePicture?.url ?? null);
     setLoading(false);
@@ -61,6 +60,7 @@ export default function Settings() {
     try {
       if (!user?.id) return;
       if (password !== '') {
+        const supabase = createClient();
         const { error } = await supabase.auth.updateUser({ password });
 
         // Throw an error here if password update fails
@@ -76,7 +76,7 @@ export default function Settings() {
           username,
           displayFavouriteRestaurants,
           displayFavouriteBlogPosts,
-          displayVisitedPlaces,
+          displayVisitedPlaces: false,
           feedPersonalization,
         }),
       });
@@ -184,19 +184,6 @@ export default function Settings() {
                   checked={displayFavouriteBlogPosts}
                   onCheckedChange={checked => {
                     setDisplayFavouriteBlogPosts(checked);
-                  }}
-                />
-              </div>
-
-              <div className="flex items-center justify-between mb-4">
-                <label htmlFor="user-role">
-                  <h4>Visited Places</h4>
-                </label>
-                <Switch
-                  id="user-role"
-                  checked={displayVisitedPlaces}
-                  onCheckedChange={checked => {
-                    setDisplayVisitedPlaces(checked);
                   }}
                 />
               </div>

@@ -36,10 +36,11 @@ const redemption_options = [
 
 export default function Redeem() {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const { userData, loadingData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
+  const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [points, setPoints] = useState(0); // not null
   const [loading, setLoading] = useState(true);
   const [couponCode, setCouponCode] = useState(null);
+  const [couponValue, setCouponValue] = useState(0);
 
   useEffect(() => {
     // [!] do not set "!userData?.numOfPoints" or it will run forever if the user does not have points yet
@@ -48,13 +49,16 @@ export default function Redeem() {
       console.log('User: ', userData);
 
       setPoints(userData.numOfPoints);
-      //setPoints(2200); // FOR TESTING
     }
-    if (userData?.coupon?.code) {
+    if (userData?.coupon?.code && userData?.coupon?.value) {
       setCouponCode(userData.coupon.code);
+      setCouponValue(userData.coupon.value);
+    } else {
+      setCouponCode(null);
+      setCouponValue(0);
     }
     setLoading(false);
-  }, [loadingData, userData]);
+  }, [loadingData, userData, refreshUserData]);
 
   async function redeemOption(option) {
     if (option.points_needed > points) {
@@ -62,19 +66,29 @@ export default function Redeem() {
       return;
     }
 
-    const res = await fetch('/api/redeem', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        supabaseId: user.id,
-        reward: option.value,
-      }),
-    });
-    const data = await res.json();
+    try {
+      const res = await fetch('/api/redeem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mongoId: userData._id,
+          reward: option.value,
+          pointsNeeded: option.points_needed,
+        }),
+      });
 
-    if (res.ok) {
-      console.log('Server response: ', data);
-      alert('Congrats! Points Redeemed!');
+      const data = await res.json();
+
+      if (res.ok) {
+        console.log('Server response: ', data);
+        alert('Congrats! Points Redeemed!');
+      } else {
+        alert('Failed to redeem points: ' + data.message);
+      }
+    } catch (error) {
+      alert('Failed to redeem points: ' + error.message);
+    } finally {
+      refreshUserData();
     }
   }
 
@@ -102,8 +116,8 @@ export default function Redeem() {
             <Image src={'/img/coinWithFork.png'} alt={'coin'} className="object-contain" fill={true} />
           </div>
           <div className="inline-flex items-baseline justify-center font-primary mb-8">
-            <span className="text-9xl font-secondary font-normal text-brand-green">{points || 0}</span>
-            <span className="text-2xl font-medium">pts</span>
+            <span className={'text-9xl font-secondary font-normal text-brand-green'}>{points || 0}</span>
+            <span className={'text-2xl font-medium'}>pts</span>
           </div>
         </div>
 
@@ -137,7 +151,8 @@ export default function Redeem() {
           {couponCode ? (
             <div className="bg-brand-aqua-lite border-4 border-brand-aqua h-30 w-xs rounded-md shadow-md p-4 mt-2 flex flex-col items-center justify-center">
               <div className="font-secondary text-6xl flex items-center gap-x-1 text-brand-aqua">
-                <span className="font-primary text-4xl font-semibold">$</span>20
+                <span className={'font-primary text-4xl font-semibold'}>$</span>
+                {couponValue}
               </div>
               <h3 className="uppercase">{couponCode}</h3>
             </div>

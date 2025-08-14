@@ -195,7 +195,11 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <h1 className="text-5xl text-center font-primary font-bold text-brand-navy mt-50">This is the homepage.</h1>
+        <h1 className="text-5xl text-center font-primary font-bold text-brand-navy mt-44">
+          No recommendations available at the moment.
+          <br />
+          Please check back later.
+        </h1>
       )}
     </>
   );

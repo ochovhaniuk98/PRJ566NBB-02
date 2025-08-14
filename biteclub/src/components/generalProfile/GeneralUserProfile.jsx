@@ -82,7 +82,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   const profileTabs = [
     'Blog Posts',
     'Reviews',
-    'Visited',
     'Favourite Restaurants',
     'Favourite Blog Posts',
     'Followers', // instead of 'My Followers', the profile might not be yours.
@@ -214,7 +213,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       */
 
         // TAB 3 -- FAVOURITE RESTAURANT
-        if (selectedTab === profileTabs[3]) {
+        if (selectedTab === profileTabs[2]) {
           setLoadingStates(prev => ({ ...prev, favRestaurants: true }));
           try {
             if (!userProfile?.favouriteRestaurants) return;
@@ -247,7 +246,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         }
 
         // TAB 4 -- FAVOURITE BLOG POSTS
-        if (selectedTab === profileTabs[4]) {
+        if (selectedTab === profileTabs[3]) {
           setLoadingStates(prev => ({ ...prev, favBlogs: true }));
           try {
             if (!userProfile?.favouriteBlogs) return;
@@ -279,7 +278,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         }
 
         // TAB 5 -- FOLLOWERS
-        if (selectedTab === profileTabs[5]) {
+        if (selectedTab === profileTabs[4]) {
           setLoadingStates(prev => ({ ...prev, followers: true }));
           try {
             if (!userProfile?.followers) return;
@@ -309,7 +308,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
         }
 
         // TAB 6 -- FOLLOWINGS
-        if (selectedTab === profileTabs[6]) {
+        if (selectedTab === profileTabs[5]) {
           setLoadingStates(prev => ({ ...prev, followings: true }));
           try {
             if (!userProfile?.followings) return;
@@ -503,7 +502,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       return { ...prev, favouriteRestaurants: updatedFavs };
     });
     // If Favourite Restaurants tab is active, refresh list immediately
-    if (selectedTab === profileTabs[3]) setTriggerFavRestaurantsRefresh(prev => !prev);
+    if (selectedTab === profileTabs[2]) setTriggerFavRestaurantsRefresh(prev => !prev);
   };
 
   const handleFavBlogToggle = (isFav, blogId) => {
@@ -513,7 +512,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       return { ...prev, favouriteBlogs: updatedFavs };
     });
     // If Favourite Blog Posts tab is active, refresh list immediately
-    if (selectedTab === profileTabs[4]) setTriggerFavBlogsRefresh(prev => !prev);
+    if (selectedTab === profileTabs[3]) setTriggerFavBlogsRefresh(prev => !prev);
   };
 
   const handleFollowingToggle = (isFollowing, followingsId) => {
@@ -525,7 +524,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
       return { ...prev, followings: updatedFollowing };
     });
 
-    if (selectedTab === profileTabs[6]) setTriggerFollowingsRefresh(prev => !prev);
+    if (selectedTab === profileTabs[5]) setTriggerFollowingsRefresh(prev => !prev);
   };
 
   return (
@@ -689,7 +688,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             )}
 
             {/* Favourite Restaurants */}
-            {selectedTab === profileTabs[3] &&
+            {selectedTab === profileTabs[2] &&
               (loadingStates.favRestaurants ? (
                 <Spinner message="Loading Favourite Restaurants..." />
               ) : favouritedRestaurants.length === 0 ? (
@@ -709,7 +708,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               ))}
 
             {/* Favourite Blog Posts */}
-            {selectedTab === profileTabs[4] &&
+            {selectedTab === profileTabs[3] &&
               (loadingStates.favBlogs ? (
                 <Spinner message="Loading Favourite Blog Posts..." />
               ) : favouritedBlogs.length === 0 ? (
@@ -734,7 +733,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               ))}
 
             {/* My Followers */}
-            {selectedTab === profileTabs[5] &&
+            {selectedTab === profileTabs[4] &&
               (loadingStates.followers ? (
                 <Spinner message="Loading Followers..." />
               ) : followers.length === 0 ? (
@@ -755,7 +754,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               ))}
 
             {/* Followings */}
-            {selectedTab === profileTabs[6] &&
+            {selectedTab === profileTabs[5] &&
               (loadingStates.followings ? (
                 <Spinner message="Loading Followings..." />
               ) : followings.length === 0 ? (
