@@ -40,6 +40,7 @@ export default function Redeem() {
   const [points, setPoints] = useState(0); // not null
   const [loading, setLoading] = useState(true);
   const [couponCode, setCouponCode] = useState(null);
+  const [couponValue, setCouponValue] = useState(null);
 
   useEffect(() => {
     // [!] do not set "!userData?.numOfPoints" or it will run forever if the user does not have points yet
@@ -50,8 +51,9 @@ export default function Redeem() {
       setPoints(userData.numOfPoints);
       //setPoints(2200); // FOR TESTING
     }
-    if (userData?.coupon?.code) {
+    if (userData?.coupon?.code && userData?.coupon?.value) {
       setCouponCode(userData.coupon.code);
+      setCouponValue(userData.coupon.value);
     }
     setLoading(false);
   }, [loadingData, userData]);
@@ -102,8 +104,8 @@ export default function Redeem() {
             <Image src={'/img/coinWithFork.png'} alt={'coin'} className="object-contain" fill={true} />
           </div>
           <div className="inline-flex items-baseline justify-center font-primary mb-8">
-            <span className="text-9xl font-secondary font-normal text-brand-green">{points || 0}</span>
-            <span className="text-2xl font-medium">pts</span>
+            <span className={'text-9xl font-secondary font-normal text-brand-green'}>{points || 0}</span>
+            <span className={'text-2xl font-medium'}>pts</span>
           </div>
         </div>
 
@@ -137,7 +139,8 @@ export default function Redeem() {
           {couponCode ? (
             <div className="bg-brand-aqua-lite border-4 border-brand-aqua h-30 w-xs rounded-md shadow-md p-4 mt-2 flex flex-col items-center justify-center">
               <div className="font-secondary text-6xl flex items-center gap-x-1 text-brand-aqua">
-                <span className="font-primary text-4xl font-semibold">$</span>20
+                <span className={'font-primary text-4xl font-semibold'}>$</span>
+                {couponValue}
               </div>
               <h3 className="uppercase">{couponCode}</h3>
             </div>
