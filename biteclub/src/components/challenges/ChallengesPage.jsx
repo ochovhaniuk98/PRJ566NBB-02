@@ -9,6 +9,7 @@ import { useUserData } from '@/context/UserDataContext';
 import { faArrowRight, faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
+import ChallengeCompletedModal from './ChallengeCompletedModal';
 
 const MAX_POINTS = 2750;
 const MAX_ACTIVE = 3;
@@ -46,9 +47,8 @@ export default function ChallengesPage() {
         const inProgressChallenges = data.filter(challenge => challenge.completionStatus === 'in-progress');
 
         setActiveChallenges(inProgressChallenges);
-      })()
+      })();
     });
-
 
     // setActiveChallenges(prev => [...prev, newActivated]);
   }
@@ -143,6 +143,13 @@ export default function ChallengesPage() {
               </div>
             </div>
             {/* Redeem Points Link */}
+            {/* Challenge Completed Modal */}
+            {showChallengeCompletedModal && (
+              <ChallengeCompletedModal
+                numPointsWon={points}
+                setShowChallengeCompletedModal={setShowChallengeCompletedModal}
+              />
+            )}
             <div className="flex items-center gap-2 ml-auto font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
               <a href="/challenges/redeem" className="text-lg">
                 Redeem Points
@@ -372,7 +379,11 @@ function ChallengeList({ onActivate }) {
           {challenges.map((challenge, i) => {
             return (
               i > 0 && (
-                <div className="font-primary border-2 w-[300px] h-[100px] border-red-100 border-dashed font-medium" key={i} onClick={() => onActivate(challenge)}>
+                <div
+                  className="font-primary border-2 w-[300px] h-[100px] border-red-100 border-dashed font-medium"
+                  key={i}
+                  onClick={() => onActivate(challenge)}
+                >
                   <h3 className="text-2xl">{challenge.title}</h3>
                   <FontAwesomeIcon icon={faClock} className="fa-solid text-yellow-300 inline" />
                   <span> &nbsp;{challenge.duration} Days</span>
