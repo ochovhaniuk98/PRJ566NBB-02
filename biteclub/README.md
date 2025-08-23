@@ -20,6 +20,11 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Additional Dependencies
+
+- [Supabase](https://supabase.com/): Refer to [Supabase Next.js Guide](https://supabase.com/docs/guides/getting-started/quickstarts/nextjs) and [Social Login](https://supabase.com/docs/guides/auth/social-login/auth-google).
+- [Cloudinary](https://cloudinary.com/): Refer to [Cloudinary Documentation](https://next.cloudinary.dev/) for setup and usage instructions.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

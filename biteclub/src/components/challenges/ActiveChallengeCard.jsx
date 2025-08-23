@@ -3,7 +3,6 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faTrophy, faClock } from '@fortawesome/free-solid-svg-icons';
-import { fakeChallenges } from '@/app/data/fakeData';
 import { getDaysRemaining } from './Util';
 import { useState, useEffect } from 'react';
 

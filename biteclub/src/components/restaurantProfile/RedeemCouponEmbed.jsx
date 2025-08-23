@@ -16,13 +16,16 @@ export default function AddInstagramEmbed({ restaurantId, userId, onClose }) {
     const res = await fetch('/api/redeemCoupon', {
       method: 'POST',
       body: JSON.stringify({
-        couponCode,
+        couponCode: couponCode.toLowerCase().trim(),
       }),
     });
     if (res.status == 200) {
       const data = await res.json();
-      alert(`Coupon successfully redeemed for ${data.value}!`);
-      setError(null);
+      setError(`Successfully redeemed $${data.value} coupon!`);
+      setTimeout(() => {
+        setError(null);
+        onClose();
+      }, 5000);
     } else {
       setError('Coupon not found');
     }

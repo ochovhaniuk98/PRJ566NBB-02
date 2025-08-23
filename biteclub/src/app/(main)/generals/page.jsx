@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 
 export default function GeneralUserResults() {

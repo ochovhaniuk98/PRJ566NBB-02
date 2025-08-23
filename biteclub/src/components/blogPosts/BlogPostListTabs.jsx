@@ -1,5 +1,4 @@
 // ('use client');
-import { useState } from 'react';
 
 export default function BlogPostListTabs({ selectedTab, setSelectedTab }) {
   const tabs = ['EXPLORE', 'FOLLOWING'];

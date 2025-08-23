@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/dbConnect';
-import { User, InternalReview, ExternalReview } from '@/lib/model/dbSchema';
+import { InternalReview, ExternalReview } from '@/lib/model/dbSchema';
 
 export async function POST(req) {
   try {

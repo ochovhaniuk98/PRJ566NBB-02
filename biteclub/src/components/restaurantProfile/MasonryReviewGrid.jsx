@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import Masonry from 'react-masonry-css';
-import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
 import { updateReviewEngagement } from '@/lib/db/dbOperations';
 import Spinner from '@/components/shared/Spinner';

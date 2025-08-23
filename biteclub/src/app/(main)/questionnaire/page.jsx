@@ -3,7 +3,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBowlFood, faBowlRice, faCarrot, faSpoon, faUtensils } from '@fortawesome/free-solid-svg-icons';
+import { faCarrot } from '@fortawesome/free-solid-svg-icons';
 import { faCircleRight, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import Image from 'next/image';
 import { Button } from '@/components/shared/Button';
@@ -97,6 +97,7 @@ export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png'
     console.log(restaurantFrequency);
     console.log(decisionDifficulty);
     console.log(openToDiversity);
+    console.log("Id", user.id);
     const res = await fetch('/api/generals/update-profile/questionnaire', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -125,7 +126,7 @@ export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png'
       : "url('/img/yellowOnBlueBG.png')"; //yellowOnBlueBG.png
 
   return (
-    <div className="grid grid-cols-[55%_45%] h-screen relative overflow-y-hidden">
+    <div className="grid grid-cols-[55%_45%] w-screen h-screen relative overflow-y-hidden">
       {/* background image*/}
       <div
         className="bg-cover"

@@ -3,28 +3,15 @@ import dbConnect from './dbConnect';
 
 import {
   User,
-  Photo,
-  Comment,
   CommentPost,
-  InstagramPost,
   BlogPost,
   InternalReview,
   ExternalReview,
-  CreditCard,
-  Payment,
-  ItemDetail,
-  Order,
-  ChallengeStep,
-  AvailableChallengeDetail,
   ActivateChallengeDetail,
   Challenge,
-  PointValueDetail,
-  Point,
   Event,
   Announcement,
-  MenuItem,
   BusinessUser,
-  BusinessHours,
   Restaurant,
   TestCloudinaryImage,
 } from '../../lib/model/dbSchema';
@@ -1339,32 +1326,14 @@ export async function dropActiveChallenge(activeChallengeId) {
 }
 
 // Returns null if insufficient points, else returns the coupon and stores the coupon in the database
-export async function redeemPoints(supabaseId, reward) {
-  let pointsNeeded = null;
-  if (reward == 5) {
-    pointsNeeded = 1000;
-  } else if (reward == 10) {
-    pointsNeeded = 1500;
-  } else if (reward == 15) {
-    pointsNeeded = 2000;
-  } else if (reward == 20) {
-    pointsNeeded = 2500;
-  } else if (reward == 25) {
-    pointsNeeded = 1000;
-  } else {
-    return null;
-  }
+export async function redeemPoints(mongoId, reward, pointsNeeded) {
+  const profile = await getGeneralUserProfileByMongoId(mongoId);
 
-  // if (!supabaseId || !username) {
-  //   return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
-  // }
-  const profile = await getGeneralUserProfileBySupabaseId({ supabaseId });
-  console.log('Profile', profile);
   if (profile.numOfPoints < pointsNeeded) {
-    return false;
-  }
-
-  if (!profile.coupon) {
+    throw new Error('Insufficient Points');
+  } else if (profile.coupon && profile.coupon.code) {
+    throw new Error('Coupon already exists');
+  } else {
     try {
       //const couponCode = [...Array(5)].map(value => (Math.random() * 1000000).toString(36).replace('.', '')).join('');
       const couponLen = Math.floor(Math.random() * 3) + 8; // shortened coupon length 8 - 10 chars
@@ -1373,18 +1342,16 @@ export async function redeemPoints(supabaseId, reward) {
         .substring(2, 2 + couponLen);
 
       console.log('New coupon code', couponCode);
-      console.log(supabaseId);
-      await User.findOneAndUpdate(
-        { supabaseId },
-        { $set: { numOfPoints: profile.numOfPoints - pointsNeeded, coupon: { value: reward, code: couponCode } } },
-        { new: true }
-      );
+
+      profile.numOfPoints -= pointsNeeded;
+      profile.coupon = { value: reward, code: couponCode };
+
+      await profile.save();
+
       return couponCode;
     } catch (e) {
       console.log(e);
       return null;
     }
-  } else {
-    return null;
   }
 }

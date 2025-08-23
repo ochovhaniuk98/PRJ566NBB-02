@@ -8,16 +8,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faXmark,
   faFlag,
-  faArrowLeft,
-  faArrowRight,
   faChevronLeft,
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 import reviewCardIconArr from '@/app/data/iconData';
-import FormattedDate from '../shared/formattedDate';
-import { ChevronLeft } from 'lucide-react';
 import CommentSection from '../shared/CommentSection';
-import { fakeUser, fakeComment } from '@/app/data/fakeData';
 import { addCommentToReview, deleteCommentFromReview, updateReviewCommentEngagement } from '@/lib/db/dbOperations';
 
 export default function ReviewCardExpanded({

@@ -1,6 +1,6 @@
 // src/app/api/images/route.js
 import { v2 as cloudinary } from 'cloudinary';
-import { removeRestaurantImage, postTestCloudinaryImage } from '@/lib/db/dbOperations';
+import { removeRestaurantImage } from '@/lib/db/dbOperations';
 
 // src/app/api/images/route.js
 export async function POST(request) {

@@ -1,9 +1,7 @@
 'use client';
 import RestaurantCard from '@/components/restaurantProfile/RestaurantCard';
 import GridCustomCols from '@/components/shared/GridCustomCols';
-import MainBaseContainer from '@/components/shared/MainBaseContainer';
-import { Button } from '@/components/shared/Button';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
 import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
 import { useRouter } from 'next/navigation';
@@ -113,7 +111,7 @@ export default function Home() {
   useEffect(() => {
     setFetchCompleted(false);
     fetchRestaurants(true); // reset = true
-  }, []);
+  }, [user?.id]);
 
   const handleViewAllSubmit = async () => {
     router.push('/restaurants/cuisine');
@@ -197,7 +195,11 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <h1 className="text-5xl text-center font-primary font-bold text-brand-navy mt-50">This is the homepage.</h1>
+        <h1 className="text-5xl text-center font-primary font-bold text-brand-navy mt-44">
+          No recommendations available at the moment.
+          <br />
+          Please check back later.
+        </h1>
       )}
     </>
   );
