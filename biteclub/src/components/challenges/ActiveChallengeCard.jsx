@@ -50,10 +50,10 @@ export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
       {fetchedChallenge && fetchedNumCompletedSteps >= 0 && (
         <>
           <div
-            className="md:w-1/3 w-full relative flex flex-col items-center gap-y-2 bg-brand-yellow-lite p-4 font-primary cursor-pointer shadow-lg text-center"
+            className="md:w-1/3 w-full relative flex flex-col items-center gap-y-2 bg-brand-yellow-lite p-4 font-primary cursor-pointer shadow-lg text-center md:mb-0 mb-4"
             onClick={onOpen} // opens challenge details modal
           >
-            <div className="flex md:flex-col items-center md:gap-x-0 gap-x-2">
+            <div className="flex md:flex-col items-center md:gap-x-0 gap-x-2 w-full">
               {/* circular progress bar */}
               <CircularProgressBar
                 totalSteps={activeChallengeData.challengeSteps.length}

@@ -29,7 +29,7 @@ export default function AllActiveChallenges({ activeChallenges, setShowChallenge
 
 function EmptyChallengeSlot() {
   return (
-    <div className="md:w-1/3 md:min-h-102 w-full flex items-center justify-center bg-brand-yellow-extralite text-brand-grey shadow-inner rounded p-4 font-primary text-center">
+    <div className="md:w-1/3 md:min-h-102 h-44 w-full flex items-center justify-center bg-brand-yellow-extralite text-brand-grey shadow-inner rounded p-4 font-primary text-center">
       <FontAwesomeIcon icon={faGamepad} className={`text-6xl text-brand-yellow-lite mr-3`} />
       <FontAwesomeIcon icon={faQuestion} className={`text-5xl text-brand-yellow-lite`} />
     </div>
