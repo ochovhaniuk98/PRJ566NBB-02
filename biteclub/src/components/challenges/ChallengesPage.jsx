@@ -119,7 +119,7 @@ export default function ChallengesPage() {
     <>
       {userData && (
         <MainBaseContainer>
-          <div className="main-side-padding w-full flex flex-col items-center m-16">
+          <div className="main-side-padding w-full flex flex-col items-center md:m-16 mt-16">
             <div className="flex flex-row w-full items-center justify-center">
               {/* Profile Pic */}
               <div className="size-24 bg-brand-green rounded-full mr-2 relative border border-brand-grey-lite">
@@ -150,20 +150,20 @@ export default function ChallengesPage() {
                 setShowChallengeCompletedModal={setShowChallengeCompletedModal}
               />
             )}
-            <div className="flex items-center gap-2 ml-auto font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
+            <div className="flex items-center gap-2 ml-auto md:mr-0 mr-4 md:mt-0 mt-4 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
               <a href="/challenges/redeem" className="text-lg">
                 Redeem Points
               </a>
               <FontAwesomeIcon icon={faArrowRight} className="text-2xl text-brand-navy"></FontAwesomeIcon>
             </div>
             {/* main progress bar */}
-            <div className="w-[70%] flex flex-row items-center relative mb-2">
-              <div className="absolute bg-brand-peach w-[100%] h-[16px] rounded-full"></div>
+            <div className="md:w-[70%] w-[92%] flex flex-row items-center relative mb-2">
+              <div className="absolute bg-brand-peach w-[100%] md:h-[16px] h-[12px] rounded-full"></div>
               <div
                 className={`absolute w-[6983%] h-[16px] z-[1] rounded-full`}
                 style={{ width: `${percentComplete}%`, backgroundColor: BAR_COMPLETE_COLOR }}
               ></div>
-              <div className="flex flex-row justify-between w-full">
+              <div className="flex flex-row justify-between w-full md:h-40 h-30">
                 <Milestone level={level} levelRequired={1} className="z-[2]" pointsNeeded={1000} reward={5} />
                 <Milestone level={level} levelRequired={2} className="z-[2]" pointsNeeded={1500} reward={10} />
                 <Milestone level={level} levelRequired={3} className="z-[2]" pointsNeeded={2000} reward={15} />
@@ -225,11 +225,36 @@ export const Milestone = ({
   onRedeem = () => {},
 }) => {
   const levelImagesArr = [
-    { img: '/img/lemon.png', caption: 'lemon', scaleSize: 'scale-120', disabledImg: '/img/lemon-disabled.png' },
-    { img: '/img/hotdog.png', caption: 'hotdog', scaleSize: 'scale-120', disabledImg: '/img/hotdog-disabled.png' },
-    { img: '/img/pita.png', caption: 'pita', scaleSize: 'scale-100', disabledImg: '/img/pita-disabled.png' },
-    { img: '/img/noodle.png', caption: 'noodle', scaleSize: 'scale-120', disabledImg: '/img/noodle-disabled.png' },
-    { img: '/img/cake.png', caption: 'cake', scaleSize: 'scale-110', disabledImg: '/img/cake-disabled.png' },
+    {
+      img: '/img/lemon.png',
+      caption: 'lemon',
+      scaleSize: 'md:scale-120 scale-90',
+      disabledImg: '/img/lemon-disabled.png',
+    },
+    {
+      img: '/img/hotdog.png',
+      caption: 'hotdog',
+      scaleSize: 'md:scale-120 scale-90',
+      disabledImg: '/img/hotdog-disabled.png',
+    },
+    {
+      img: '/img/pita.png',
+      caption: 'pita',
+      scaleSize: 'md:scale-100 scale-80',
+      disabledImg: '/img/pita-disabled.png',
+    },
+    {
+      img: '/img/noodle.png',
+      caption: 'noodle',
+      scaleSize: 'md:scale-120 scale-90',
+      disabledImg: '/img/noodle-disabled.png',
+    },
+    {
+      img: '/img/cake.png',
+      caption: 'cake',
+      scaleSize: 'md:scale-110 scale-90',
+      disabledImg: '/img/cake-disabled.png',
+    },
   ];
 
   const levelImage =
@@ -253,7 +278,7 @@ export const Milestone = ({
   //const color = enabled ? BAR_COMPLETE_COLOR : BAR_INCOMPLETE_COLOR;
 
   return (
-    <div className="flex flex-col justify-center items-center w-fit relative h-[100px] font-primary my-8">
+    <div className="flex flex-col justify-center items-center w-fit relative md:h-[100px] h-[60px]  font-primary my-8">
       <span
         className={`absolute font-semibold ${largeSize ? 'text-2xl mb-30' : 'mb-20'} ${!enabled && 'text-brand-grey'}`}
       >

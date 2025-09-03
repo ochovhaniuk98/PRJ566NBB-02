@@ -50,7 +50,7 @@ export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
       {fetchedChallenge && fetchedNumCompletedSteps >= 0 && (
         <>
           <div
-            className="md:w-1/3 w-full relative flex flex-col items-center gap-y-2 bg-brand-yellow-lite p-4 font-primary cursor-pointer shadow-lg text-center md:mb-0 mb-4"
+            className="md:w-1/3 w-full relative flex flex-col items-center gap-y-2 bg-brand-yellow-lite p-4 font-primary cursor-pointer shadow-lg text-center md:mb-0 mb-2"
             onClick={onOpen} // opens challenge details modal
           >
             <div className="flex md:flex-col items-center md:gap-x-0 gap-x-2 w-full">
@@ -106,7 +106,7 @@ function CircularProgressBar({ totalSteps, numCompletedSteps }) {
         strokeWidth={24}
       />
       {/* inner circle with border stroke */}
-      <div className="absolute top-1/2 left-1/2 md:w-[85px] md:h-[85px] w-[60px] h-[60px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-peach border-2 border-brand-navy text-brand-navy flex items-center justify-center font-secondary md:text-5xl text-4xl">
+      <div className="absolute top-1/2 left-1/2 md:size-[85px] size-[80px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-peach border-2 border-brand-navy text-brand-navy flex items-center justify-center font-secondary md:text-5xl text-4xl">
         {numCompletedSteps}/{totalSteps}
       </div>
     </div>
