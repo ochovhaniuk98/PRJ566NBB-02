@@ -20,8 +20,8 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="fixed w-full flex justify-between z-40 bg-white/50 main-side-padding ">
-      <div className="relative  h-12 size-auto w-60 mt-1">
+    <div className="fixed w-full flex justify-between z-40 bg-white/50 main-side-padding md:space-x-0 space-x-2">
+      <div className="relative  h-12 size-auto md:w-60 w-50 mt-1">
         <Image src="/img/logo_final.png" alt="logo pic" className="object-contain rounded-br-md" fill={true} />
       </div>
       <div className="relative w-128 max-w-full">
