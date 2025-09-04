@@ -106,7 +106,7 @@ function CircularProgressBar({ totalSteps, numCompletedSteps }) {
         strokeWidth={24}
       />
       {/* inner circle with border stroke */}
-      <div className="absolute top-1/2 left-1/2 md:size-[85px] size-[80px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-peach border-2 border-brand-navy text-brand-navy flex items-center justify-center font-secondary md:text-5xl text-4xl">
+      <div className="absolute top-1/2 left-1/2 md:size-[85px] size-[80px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-peach border-2 border-brand-navy text-brand-navy flex items-center justify-center font-secondary text-5xl">
         {numCompletedSteps}/{totalSteps}
       </div>
     </div>

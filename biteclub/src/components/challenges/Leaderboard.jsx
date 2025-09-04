@@ -23,7 +23,7 @@ export default function Leaderboard({ refreshTrigger }) {
     <div className="w-full md:w-2/5 flex flex-col">
       <h2>Leaderboard</h2>
       {/* <div className="flex-grow bg-brand-aqua flex flex-col gap-y-2 p-4"> */}
-      <div className="flex-grow bg-brand-aqua flex flex-col gap-y-2 p-4 overflow-y-auto max-h-[80vh]">
+      <div className="flex-grow bg-brand-aqua flex flex-col gap-y-2 md:p-4 p-2 overflow-y-scroll max-h-[80vh]">
         {users.map((u, i, arr) => {
           if (i === 0) {
             u.rank = 1; // first always 1
@@ -54,12 +54,12 @@ export default function Leaderboard({ refreshTrigger }) {
 function LeaderboardPlaceCard({ placeNum, placedUser, numChallengesCompleted, bgColour }) {
   return (
     <div className="h-1/5 p-2 flex justify-between items-center font-primary" style={{ backgroundColor: bgColour }}>
-      <div className="flex gap-x-4">
-        <div className="relative w-20 h-full">
-          <div className="relative w-20 h-12 text-center">
+      <div className="flex md:gap-x-4 gap-x-2">
+        <div className="relative h-full">
+          <div className="relative md:w-20 w-16 h-12 text-center">
             <Image src={'/img/trayIcon.png'} alt="" className="object-contain" fill={true} />
           </div>
-          <h1 className="text-brand-navy absolute top-[2px] left-[40%] text-[2.75rem]">{placeNum}</h1>
+          <h1 className="text-brand-navy absolute top-[2px] left-[40%] md:text-[2.75rem] text-[2.5rem]">{placeNum}</h1>
         </div>
         <div>
           <h3 className="text-brand-navy m-0">{placedUser.username}</h3>

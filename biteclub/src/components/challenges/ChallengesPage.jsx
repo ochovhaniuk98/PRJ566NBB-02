@@ -119,7 +119,7 @@ export default function ChallengesPage() {
     <>
       {userData && (
         <MainBaseContainer>
-          <div className="main-side-padding w-full flex flex-col items-center md:m-16 mt-16">
+          <div className="main-side-padding w-full flex flex-col items-center md:m-16 mt-16 mb-16">
             <div className="flex flex-row w-full items-center justify-center">
               {/* Profile Pic */}
               <div className="size-24 bg-brand-green rounded-full mr-2 relative border border-brand-grey-lite">
@@ -133,7 +133,9 @@ export default function ChallengesPage() {
               <div className="flex flex-col">
                 {/* Num of Points */}
                 <div className="inline-flex items-baseline justify-center font-primary">
-                  <span className="text-8xl font-secondary font-normal text-brand-green">{numTotalPoints || 0}</span>
+                  <span className="text-9xl font-secondary font-normal text-brand-green">
+                    {numTotalPoints || '000'}
+                  </span>
                   <span className="text-lg font-medium">pts</span>
                 </div>
                 {/* Num of Challenges Completed */}
@@ -150,14 +152,14 @@ export default function ChallengesPage() {
                 setShowChallengeCompletedModal={setShowChallengeCompletedModal}
               />
             )}
-            <div className="flex items-center gap-2 ml-auto md:mr-0 mr-4 md:mt-0 mt-4 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
+            <div className="flex items-center gap-2 ml-auto md:mr-0 mr-4 md:mt-0 mt-4 md:mb-0 mb-4 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
               <a href="/challenges/redeem" className="text-lg">
                 Redeem Points
               </a>
               <FontAwesomeIcon icon={faArrowRight} className="text-2xl text-brand-navy"></FontAwesomeIcon>
             </div>
             {/* main progress bar */}
-            <div className="md:w-[70%] w-[92%] flex flex-row items-center relative mb-2">
+            <div className="md:w-[70%] w-[99%] flex flex-row items-center relative mb-2">
               <div className="absolute bg-brand-peach w-[100%] md:h-[16px] h-[12px] rounded-full"></div>
               <div
                 className={`absolute w-[6983%] h-[16px] z-[1] rounded-full`}
@@ -228,31 +230,31 @@ export const Milestone = ({
     {
       img: '/img/lemon.png',
       caption: 'lemon',
-      scaleSize: 'md:scale-120 scale-90',
+      scaleSize: 'md:scale-120 scale-85',
       disabledImg: '/img/lemon-disabled.png',
     },
     {
       img: '/img/hotdog.png',
       caption: 'hotdog',
-      scaleSize: 'md:scale-120 scale-90',
+      scaleSize: 'md:scale-120 scale-85',
       disabledImg: '/img/hotdog-disabled.png',
     },
     {
       img: '/img/pita.png',
       caption: 'pita',
-      scaleSize: 'md:scale-100 scale-80',
+      scaleSize: 'md:scale-100 scale-75',
       disabledImg: '/img/pita-disabled.png',
     },
     {
       img: '/img/noodle.png',
       caption: 'noodle',
-      scaleSize: 'md:scale-120 scale-90',
+      scaleSize: 'md:scale-120 scale-85',
       disabledImg: '/img/noodle-disabled.png',
     },
     {
       img: '/img/cake.png',
       caption: 'cake',
-      scaleSize: 'md:scale-110 scale-90',
+      scaleSize: 'md:scale-110 scale-85',
       disabledImg: '/img/cake-disabled.png',
     },
   ];
@@ -300,7 +302,8 @@ export const Milestone = ({
       )}
 
       <span className={`absolute text-center ${largeSize ? 'w-[80px] text-lg mt-26' : 'w-[60px] text-xs mt-20'}`}>
-        {pointsNeeded} pts
+        {pointsNeeded}
+        pts
       </span>
       {largeSize && enabled && (
         <button
