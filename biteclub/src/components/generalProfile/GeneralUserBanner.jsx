@@ -131,22 +131,23 @@ export default function GeneralUserBanner({
   };
 
   return (
-    <div className="main-side-padding w-full flex flex-col items-center bg-brand-yellow-extralite relative">
-      <GridCustomCols numOfCols={3} className="pt-14 px-60 pb-8 ">
+    <div className="main-side-padding w-full flex flex-col items-center bg-brand-extralite relative">
+      <GridCustomCols numOfCols={3} className="pt-14" rowMinHeight={'auto'}>
         {/*profile pic*/}
-        <div className=" flex justify-end">
-          <div className="relative max-h-60 aspect-square rounded-full border border-white bg-white mx-4">
-            {generalUserData.userProfilePicture &&
-            <Image
-              src={generalUserData.userProfilePicture.url}
-              alt={generalUserData.userProfilePicture.caption}
-              fill={true}
-              className="rounded-full object-cover w-full"
-            />}
+        <div className=" flex md:flex-row flex-col justify-center md:items-start items-center">
+          <div className="relative md:size-60 size-40 rounded-full border border-white bg-brand-green mx-4">
+            {generalUserData.userProfilePicture && (
+              <Image
+                src={generalUserData.userProfilePicture.url}
+                alt={generalUserData.userProfilePicture.caption}
+                fill={true}
+                className="rounded-full object-cover w-full"
+              />
+            )}
           </div>
         </div>
         {/*user name, bio, join date, follow btn*/}
-        <div className="flex flex-col gap-2 mr-4 pt-4">
+        <div className="flex flex-col lg:items-start items-center gap-2 md:mr-4 mr-0 md:pt-4 pt-0">
           <span className="text-4xl font-bold font-primary mb-1">{generalUserData.username}</span>
           <div className="min-h-20 py-4 px-2 rounded-lg">
             <p>{generalUserData.userBio}</p>
@@ -177,7 +178,7 @@ export default function GeneralUserBanner({
           )}
         </div>
         {/* profile stats */}
-        <div className="transparent">
+        <div className=" flex lg:flex-col flex-wrap lg:justify-normal lg:gap-x-0 gap-x-4 justify-center">
           {iconStats.map((stat, i) => (
             <ProfileStat key={i} statNum={stat.statNum} stat={stat} idx={i} />
           ))}
@@ -186,7 +187,7 @@ export default function GeneralUserBanner({
       {/*'Write a blog post' button*/}
       {/*only shown when not editing and not writing */}
       {!showTextEditor && isOwner && (
-        <div className="flex gap-0 absolute bottom-0 right-20">
+        <div className="flex gap-0 lg:absolute lg:bottom-0 lg:right-20 lg:mt-0 mt-4">
           {!editMode && (
             <SingleTabWithIcon
               className=""
@@ -271,7 +272,7 @@ export default function GeneralUserBanner({
 function ProfileStat({ statNum, stat, idx }) {
   const statColours = ['#56e4be', '#ffb300', '#ffdcbe', '#80c001'];
   return (
-    <div className="flex items-center gap-3 pt-1 pb-2">
+    <div className="flex items-center gap-3 pt-1 pb-2 min-w-36">
       <div>
         {/* Note: having issues displaying custom yellow colour on border. Ignore temporary fix below. */}
         <div

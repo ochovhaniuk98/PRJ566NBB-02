@@ -22,9 +22,7 @@ export default function ProfileTabBar({ onTabChange, tabs }) {
               : 'border-white text-brand-navy hover:border-brand-blue-lite font-medium'
           }`}
         >
-          <h4 className={`${tab === 'Events and Announcements' || tab === 'Business Info' ? 'whitespace-nowrap' : ''}`}>
-            {tab}
-          </h4>
+          <h4 className="whitespace-nowrap">{tab}</h4>
         </button>
       ))}
     </div>
