@@ -126,37 +126,28 @@ export default function Home() {
     <>
       {fetchedCuisineRestaurants && (
         <div className="mb-16 w-full flex flex-col items-center pt-18 ">
-          <div>
-            <div className="flex items-center justify-between">
-              <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
-              {/* 
+          <div className="flex items-center justify-between w-full">
+            <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
+            {/* 
               <Button variant="link" size="lg" onClick={handleSurpriseMeSubmit}>
                 <h3>Surprise Me →</h3>
               </Button>*/}
-              <button
-                onClick={handleSurpriseMeSubmit}
-                className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110"
-              >
-                Surprise Me <FontAwesomeIcon icon={faArrowRight} className={`text-2xl text-brand-navy`} />
-              </button>
+            <button
+              onClick={handleSurpriseMeSubmit}
+              className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110"
+            >
+              Surprise Me <FontAwesomeIcon icon={faArrowRight} className={`text-2xl text-brand-navy`} />
+            </button>
 
-              <button
-                className="font-primary font-semibold text-brand-navy cursor-pointer"
-                onClick={handleViewAllSubmit}
-              >
-                View All
-              </button>
-            </div>
-            <div className="overflow-x-scroll scrollbar-hide">
-              <div className="w-fit h-full flex flex-row">
-                <GridCustomCols numOfCols={5} className="mt-4">
-                  {restaurants.map((restaurant, i) => (
-                    <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
-                  ))}
-                </GridCustomCols>
-              </div>
-            </div>
+            <button className="font-primary font-semibold text-brand-navy cursor-pointer" onClick={handleViewAllSubmit}>
+              View All
+            </button>
           </div>
+          <GridCustomCols numOfCols={5} className="mt-4">
+            {restaurants.map((restaurant, i) => (
+              <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
+            ))}
+          </GridCustomCols>
         </div>
       )}
       {fetchCompleted ? (

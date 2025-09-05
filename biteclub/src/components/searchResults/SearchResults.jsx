@@ -293,8 +293,8 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     640: 1,
   };
   return (
-    <MainBaseContainer className={'bg-brand-yellow'}>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
+    <MainBaseContainer>
+      <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
         <div className={'w-full h-full'}>
           <div className="flex justify-between mb-4 ">
             {/* tabs for selecting search type: restaurants, blog posts or users */}
