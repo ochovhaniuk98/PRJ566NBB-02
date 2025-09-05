@@ -99,7 +99,7 @@ export default function Settings() {
 
   return (
     <MainBaseContainer>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center m-16 bg-white">
+      <div className="main-side-padding mb-16 w-full flex flex-col items-center lg:m-16 mt-16 bg-white">
         {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
         {user && (
           <Avatar
@@ -112,9 +112,9 @@ export default function Settings() {
           />
         )}
 
-        <form className="w-4xl mt-8" onSubmit={handleSubmit}>
+        <form className="lg:w-4xl md:w-3xl w-full mt-8" onSubmit={handleSubmit}>
           <GridCustomCols numOfCols={2}>
-            <div className="py-1 px-12 flex flex-col gap-2">
+            <div className="py-1 lg:px-12 flex flex-col gap-2">
               <h2 className="mb-4">Account Details</h2>
 
               <div>
@@ -159,7 +159,7 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="py-1 px-12 flex flex-col gap-2">
+            <div className="py-1 lg:px-12 flex flex-col gap-2 w-full">
               <h2 className="mb-4">Display Preferences</h2>
               <p className="mb-4">You can modify what page to show the public.</p>
 
@@ -216,13 +216,13 @@ export default function Settings() {
           </div>
         </form>
 
-        <div className="w-4xl mt-8 py-8 px-12 border-t border-brand-peach">
+        <div className="lg:w-4xl md:w-3xl w-full mt-8 py-8 lg:px-12 border-t border-brand-peach">
           <h2 className="mb-4">Delete Account</h2>
           <p className="mb-4">Once you delete your account, there is no going back. Please be certain.</p>
           <DeleteAccountButton user={user} />
         </div>
 
-        <div className="w-4xl mt-8 py-8 px-12 border-t border-brand-peach">
+        <div className="lg:w-4xl md:w-3xl w-full mt-8 py-8 lg:px-12 border-t border-brand-peach">
           <h2 className="mb-4">Logout</h2>
           <LogoutButton />
         </div>
