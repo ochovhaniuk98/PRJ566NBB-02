@@ -50,7 +50,7 @@ export default function FilterMenu({
   };
 
   return (
-    <div className=" bg-brand-yellow-extralite w-md h-fit absolute right-0 mt-2 rounded-md px-4 pb-4 pt-6 shadow-md z-10">
+    <div className=" bg-brand-yellow-extralite md:w-md w-full h-fit absolute right-0 md:mt-2 mt-12 rounded-md px-4 pb-4 pt-6 shadow-md z-200">
       <h3 className="uppercase mb-4">Filters</h3>
       <form
         className="flex flex-col gap-y-4"
@@ -63,7 +63,7 @@ export default function FilterMenu({
         {/* Price */}
         <div>
           <h4>Price</h4>
-          <div className="flex gap-x-2 w-full justify-center">
+          <div className="flex flex-wrap gap-2 w-full md:justify-center justify-start">
             {Array.from({ length: 5 }).map((_, i) => {
               const price = i + 1;
               const isSelected = selectedPrice === price;
@@ -75,7 +75,7 @@ export default function FilterMenu({
                     setSelectedPrice(price);
                     console.log('SELECTED PRICE: ', price);
                   }}
-                  className={`priceTab ${isSelected ? 'bg-brand-yellow' : 'bg-brand-yellow-lite'}`}
+                  className={`priceTab ${isSelected ? 'bg-brand-yellow' : 'bg-brand-yellow-lite'} md:text-base text-sm`}
                 >
                   {'$'.repeat(i + 1)}
                 </button>

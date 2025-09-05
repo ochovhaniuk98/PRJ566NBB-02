@@ -90,7 +90,7 @@ export function CustomCheckboxes({ title, itemLabels, selectedItems, setSelected
                 {/* show circle checkmark when user clicks checkbox */}
                 {isChecked && <div className="custom-checkmark"></div>}
               </div>
-              <p>{label}</p>
+              <p className="capitalize">{label}</p>
             </div>
           );
         })}

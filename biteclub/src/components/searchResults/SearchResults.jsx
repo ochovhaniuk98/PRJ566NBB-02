@@ -296,11 +296,11 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     <MainBaseContainer>
       <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
         <div className={'w-full h-full'}>
-          <div className="flex justify-between mb-4 ">
+          <div className="flex md:flex-row flex-col justify-between mb-4 ">
             {/* tabs for selecting search type: restaurants, blog posts or users */}
             <SearchResultsTabBar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
             {selectedTab === 0 && (
-              <div className="relative">
+              <div className="relative flex justify-end mt-4 md:mt-0 md:block">
                 <Button
                   type="submit"
                   className="w-30"
