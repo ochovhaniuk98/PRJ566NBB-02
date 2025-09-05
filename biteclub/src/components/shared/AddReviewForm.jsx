@@ -112,7 +112,7 @@ export default function AddReviewForm({
   return (
     <>
       <div className="fixed inset-0 bg-brand-peach/40 flex justify-center  z-[200]  overflow-scroll scrollbar-hide">
-        <div className="relative bg-transparent p-8 w-2xl min-h-fit ">
+        <div className="relative bg-transparent md:p-8 pt-8 p-0 md:w-2xl w-full min-h-fit ">
           {/* Toggle Switch -- Allows users to select "Write a review" OR "Add Instagram Post" if adding NEW review (non-edit mode) */}
           <div className="bg-brand-green-lite w-full font-secondary uppercase rounded-t-lg flex justify-between cursor-pointer">
             <div
@@ -139,19 +139,19 @@ export default function AddReviewForm({
             {/* EDIT or WRITE a Reveiw form */}
             <form
               onSubmit={handleInternalSubmit}
-              className=" w-full min-h-full bg-white rounded-b-lg shadow-md flex flex-col items-center pb-8"
+              className="w-full min-h-full bg-white rounded-b-lg shadow-md flex flex-col items-center pb-8"
             >
               <div className="w-full p-6 flex flex-col gap-3">
                 <div>
                   <div className="font-secondary text-4xl mb-4">
                     {editReviewMode ? 'Edit Review' : 'Write a Review'}
                   </div>
-                  <Label>Rating</Label>
+                  <Label className="mb-2">Rating</Label>
                   <div className="flex items-center gap-6">
                     {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
                 Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
                     <StarRating
-                      iconSize="text-4xl cursor-pointer"
+                      iconSize="md:text-4xl text-3xl cursor-pointer"
                       interactive={true}
                       ratingNum={reviewRating.value}
                       onChange={(val, msg) => setReviewRating({ value: val, message: msg })}
@@ -181,11 +181,14 @@ export default function AddReviewForm({
                     required
                   />
                 </div>
-                <ReviewImageUpload
-                  reviewImages={reviewImages}
-                  setReviewImages={setReviewImages}
-                  onUploadClick={() => setShowPhotoPlaceholder(false)}
-                />
+                <div className="flex justify-between items-end">
+                  <Label>Photos</Label>
+                  <ReviewImageUpload
+                    reviewImages={reviewImages}
+                    setReviewImages={setReviewImages}
+                    onUploadClick={() => setShowPhotoPlaceholder(false)}
+                  />
+                </div>
                 {
                   /* The div below is just a PLACEHOLDER/for styling puposes so that the form stays the same height when the "Add Photos" button is clicked.
                 Do NOT use for backend logic. The "real" photo div is inside ReviewImageUpload.*/ showPhotoPlaceholder &&
