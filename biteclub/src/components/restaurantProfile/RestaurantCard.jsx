@@ -79,19 +79,20 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
               />
             </div>
           </div>
-          {/* shows only the first 3 cuisines */}
+          {/* shows only the first cuisine */}
           <h5>
             {restaurantData.cuisines && restaurantData.cuisines.length > 0
-              ? restaurantData.cuisines.slice(0, 3).join(', ')
-              : 'Yummy'}
+              ? restaurantData.cuisines[0]
+              : 'Cuisine Unavailable'}
           </h5>
-          <div className="flex  items-center gap-1">
+          <div className="flex flex-wrap items-center gap-1">
             <p className="font-medium">{restaurantData.rating}</p>
             <StarRating colour={'text-brand-green'} iconSize={'icon-sm'} ratingNum={restaurantData.rating} />
             <p>{restaurantData.numReviews}</p>
+
             {/* price range tag */}
-            <div className="bg-brand-blue-lite px-2 rounded-full w-15 flex justify-center text-primary">
-              {restaurantData.priceRange}
+            <div className="bg-brand-blue-lite px-2 rounded-full w-15 flex justify-center font-primary text-sm">
+              {restaurantData.priceRange || '$'}
             </div>
           </div>
         </div>
