@@ -294,9 +294,9 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
   };
   return (
     <MainBaseContainer>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
+      <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-16 ">
         <div className={'w-full h-full'}>
-          <div className="flex md:flex-row flex-col justify-between mb-4 ">
+          <div className="flex md:flex-row flex-col justify-between mb-4">
             {/* tabs for selecting search type: restaurants, blog posts or users */}
             <SearchResultsTabBar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
             {selectedTab === 0 && (

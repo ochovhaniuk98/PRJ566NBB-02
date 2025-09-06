@@ -131,7 +131,7 @@ export default function GeneralUserBanner({
   };
 
   return (
-    <div className="main-side-padding w-full flex flex-col items-center bg-brand-extralite relative">
+    <div className="main-side-padding w-full flex flex-col items-center bg-brand-yellow-extralite relative">
       <GridCustomCols numOfCols={3} className="pt-14" rowMinHeight={'auto'}>
         {/*profile pic*/}
         <div className=" flex md:flex-row flex-col justify-center md:items-start items-center">

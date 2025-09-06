@@ -15,6 +15,7 @@ export default function FilterMenu({
   setIsOpenNow,
   onApply,
   onClose, // close the menu after applying
+  forRestaurantList = false,
 }) {
   // cuisines of the week, dynamic array, changes weekly
   const [cuisinesOfTheWeekArr, setCuisinesOfTheWeekArr] = useState([]);
@@ -50,7 +51,11 @@ export default function FilterMenu({
   };
 
   return (
-    <div className=" bg-brand-yellow-extralite md:w-md w-full h-fit absolute right-0 md:mt-2 mt-12 rounded-md px-4 pb-4 pt-6 shadow-md z-200">
+    <div
+      className={`bg-brand-yellow-extralite md:w-md w-full h-fit absolute right-0 md:mt-2 ${
+        forRestaurantList ? 'mt-14' : 'mt-12'
+      } rounded-md px-4 pb-4 pt-6 shadow-md z-200`}
+    >
       <h3 className="uppercase mb-4">Filters</h3>
       <form
         className="flex flex-col gap-y-4"

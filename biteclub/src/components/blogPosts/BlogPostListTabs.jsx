@@ -8,7 +8,7 @@ export default function BlogPostListTabs({ selectedTab, setSelectedTab }) {
   };
 
   return (
-    <div className="flex gap-x-2 justify-end">
+    <div className="flex gap-x-2 md:justify-end justify-center md:mt-0 mt-4">
       {tabs.map(tab => (
         <button
           key={tab}

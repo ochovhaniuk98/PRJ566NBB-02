@@ -184,13 +184,18 @@ export default function RestaurantResults() {
   };
 
   return (
-    <MainBaseContainer className={'bg-brand-yellow'}>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
+    <MainBaseContainer>
+      <div className="main-side-padding mb-16 w-full flex flex-col items-center py-18">
         <div className={'w-full h-full'}>
           <h2>Popular And New Restaurants</h2>
           <div className="flex justify-end mb-4">
-            <div className="relative">
-              <Button type="button" className="w-30" variant="default" onClick={() => setShowFilterMenu(prev => !prev)}>
+            <div className="relative w-full flex justify-end">
+              <Button
+                type="button"
+                className="w-30 md:mt-0 mt-4 mb-4"
+                variant="default"
+                onClick={() => setShowFilterMenu(prev => !prev)}
+              >
                 Filter
               </Button>
               {showFilterMenu && (
@@ -207,6 +212,7 @@ export default function RestaurantResults() {
                   setIsOpenNow={setIsOpenNow}
                   onApply={handleApplyFilters}
                   onClose={() => setShowFilterMenu(false)}
+                  forRestaurantList={true}
                 />
               )}
             </div>

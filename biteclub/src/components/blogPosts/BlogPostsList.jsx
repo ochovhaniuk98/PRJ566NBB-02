@@ -10,10 +10,10 @@ export default function BlogPostsList() {
   const [selectedTab, setSelectedTab] = useState('EXPLORE');
 
   return (
-    <MainBaseContainer className={'bg-brand-yellow'}>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
+    <MainBaseContainer>
+      <div className="main-side-padding mb-16 w-full flex flex-col items-center py-18">
         <div className={'w-full h-full'}>
-          <div className="flex justify-between">
+          <div className="flex md:flex-row flex-col justify-between">
             <h2>Trending + Recently Posted</h2>
             {/* tabs for selecting blog posts: Explore vs Following */}
             <BlogPostListTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
