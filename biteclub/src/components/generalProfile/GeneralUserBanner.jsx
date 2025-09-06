@@ -187,7 +187,7 @@ export default function GeneralUserBanner({
       {/*'Write a blog post' button*/}
       {/*only shown when not editing and not writing */}
       {!showTextEditor && isOwner && (
-        <div className="flex gap-0 lg:absolute lg:bottom-0 lg:right-20 lg:mt-0 mt-4">
+        <div className="flex  gap-0 lg:absolute lg:bottom-0 lg:right-20 lg:mt-0 mt-4">
           {!editMode && (
             <SingleTabWithIcon
               className=""
@@ -222,7 +222,7 @@ export default function GeneralUserBanner({
               {/* delete All */}
               <SingleTabWithIcon
                 icon={faTrashCan}
-                detailText="DELETE ALL"
+                detailText="Delete All"
                 bgColour="bg-brand-red"
                 textColour="text-white"
                 onClick={() => {

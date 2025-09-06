@@ -18,8 +18,8 @@ export default function SingleTabWithIcon({
         detailText == 'Add Photos' ? 'mb-0' : 'mb-2'
       } ml-2 py-2 px-3 rounded-full cursor-pointer border ${borderColour} ${className} ${bgColour}`}
     >
-      <FontAwesomeIcon icon={icon} className={`icon-lg ${textColour}`} />
-      <h4 className={`text-md ${textColour}`}>{detailText}</h4>
+      <FontAwesomeIcon icon={icon} className={`md:icon-lg icon-md ${textColour}`} />
+      <h4 className={`md:text-md text-sm ${textColour}`}>{detailText}</h4>
     </div>
   );
 }
