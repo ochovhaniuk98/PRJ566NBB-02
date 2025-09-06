@@ -3,25 +3,21 @@ import Image from 'next/image';
 
 export default function Page() {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2 pink-test">
+    <div className="flex lg:flex-row flex-col  h-screen">
       <div
-        className="bg-brand-green flex flex-col items-center justify-center sticky top-0 h-screen"
+        className="bg-brand-green flex flex-col items-center justify-center top-0 lg:h-screen h-40 lg:w-1/2"
         style={{
           backgroundImage: "url('/img/doodleBG.png')",
-          backgroundSize: '120%',
+          backgroundSize: '70rem',
           backgroundPosition: '0rem',
         }}
       >
-        <div className="relative h-30 w-md bg-transparent">
-          <Image src={'/img/logo_final.png'} alt={'BiteClub logo'} className="object-cover" fill={true} />
+        <div className="relative lg:h-40 h-30 lg:w-md w-sm bg-transparent">
+          <Image src={'/img/logo_final.png'} alt={'BiteClub logo'} className="object-contain" fill={true} />
         </div>
       </div>
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
-            <SignUpForm />
-          </div>
-        </div>
+      <div className="flex flex-col justify-center items-center gap-4 p-0 lg:p-10 lg:w-1/2 flex-grow ">
+        <SignUpForm />
       </div>
     </div>
   );
