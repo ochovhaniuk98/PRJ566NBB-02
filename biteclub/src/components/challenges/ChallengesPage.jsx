@@ -280,40 +280,48 @@ export const Milestone = ({
   //const color = enabled ? BAR_COMPLETE_COLOR : BAR_INCOMPLETE_COLOR;
 
   return (
-    <div className="flex flex-col justify-center items-center w-fit relative md:h-[100px] h-[60px]  font-primary my-8">
-      <span
-        className={`absolute font-semibold ${largeSize ? 'text-2xl mb-30' : 'mb-20'} ${!enabled && 'text-brand-grey'}`}
-      >
-        ${reward}
-      </span>
-      <div
-        className={`${largeSize ? 'h-[60px] w-[60px]' : 'h-[40px] w-[40px]'} ${className}`}
-        style={{ backgroundColor: 'transparent' }}
-      />
-      {enabled ? (
-        <Image src={levelImage} alt={'level image'} className={`object-contain z-20 ${scaleSize}`} fill={true} />
-      ) : (
-        <Image
-          src={disabledLevelImage}
-          alt={'disabled level image'}
-          className={`object-contain z-20 ${scaleSize}`}
-          fill={true}
-        />
-      )}
-
-      <span className={`absolute text-center ${largeSize ? 'w-[80px] text-lg mt-26' : 'w-[60px] text-xs mt-20'}`}>
-        {pointsNeeded}
-        pts
-      </span>
-      {largeSize && enabled && (
-        <button
-          className="absolute mt-48 bg-brand-blue text-brand-navy font-medium py-2 px-6 rounded-full shadow cursor-pointer"
-          onClick={onRedeem}
+    <>
+      <div className="flex flex-col justify-center items-center w-fit relative md:h-[100px] h-[60px]  font-primary my-8">
+        <span
+          className={`absolute font-semibold ${largeSize ? 'md:text-2xl md:mb-30 mb-20' : 'mb-20'} ${
+            !enabled && 'text-brand-grey'
+          }`}
         >
-          Redeem
-        </button>
-      )}
-    </div>
+          ${reward}
+        </span>
+        <div
+          className={`${largeSize ? 'md:h-[60px] md:w-[60px] h-[40px] w-[40px]' : 'h-[40px] w-[40px]'} ${className}`}
+          style={{ backgroundColor: 'transparent' }}
+        />
+        {enabled ? (
+          <Image src={levelImage} alt={'level image'} className={`object-contain z-20 ${scaleSize}`} fill={true} />
+        ) : (
+          <Image
+            src={disabledLevelImage}
+            alt={'disabled level image'}
+            className={`object-contain z-20 ${scaleSize}`}
+            fill={true}
+          />
+        )}
+
+        <span
+          className={`absolute text-center ${
+            largeSize ? 'md:w-[80px] md:text-lg md:mt-26 w-[60px] text-xs mt-20' : 'w-[60px] text-xs mt-20'
+          }`}
+        >
+          {pointsNeeded}
+          pts
+        </span>
+        {largeSize && enabled && (
+          <button
+            className="md:hidden absolute mt-48 bg-brand-blue text-brand-navy font-medium py-2 px-6 rounded-full shadow cursor-pointer"
+            onClick={onRedeem}
+          >
+            Redeem
+          </button>
+        )}
+      </div>
+    </>
   );
 };
 
