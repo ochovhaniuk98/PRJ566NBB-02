@@ -119,7 +119,7 @@ export default function ChallengesPage() {
     <>
       {userData && (
         <MainBaseContainer>
-          <div className="main-side-padding w-full flex flex-col items-center md:m-16 mt-16 mb-16">
+          <div className="main-side-padding w-full flex flex-col items-center mt-16 mb-16">
             <div className="flex flex-row w-full items-center justify-center">
               {/* Profile Pic */}
               <div className="size-24 bg-brand-green rounded-full mr-2 relative border border-brand-grey-lite">
@@ -152,7 +152,7 @@ export default function ChallengesPage() {
                 setShowChallengeCompletedModal={setShowChallengeCompletedModal}
               />
             )}
-            <div className="flex items-center gap-2 ml-auto md:mr-0 mr-4 md:mt-0 mt-4 md:mb-0 mb-4 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
+            <div className="flex items-center gap-2 ml-auto mr-0 md:mt-0 mt-4 md:mb-0 mb-4 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
               <a href="/challenges/redeem" className="text-lg">
                 Redeem Points
               </a>
@@ -173,7 +173,7 @@ export default function ChallengesPage() {
                 <Milestone level={level} levelRequired={5} className="z-[2]" pointsNeeded={2750} reward={25} />
               </div>
             </div>
-            <div className="flex flex-col md:flex-row w-full min-h-96 my-4 gap-x-4 md:gap-y-0 gap-y-8">
+            <div className="flex flex-col lg:flex-row w-full lg:h-124 my-4 gap-x-4 md:gap-y-0 gap-y-8">
               {/* Active Challenges */}
               {fetchedActivatedChallenges && (
                 <AllActiveChallenges
@@ -186,8 +186,8 @@ export default function ChallengesPage() {
               {/* Leaderboard */}
               <Leaderboard refreshTrigger={leaderboardRefreshTrigger} />
             </div>
-            {/* PLACEHOLDER for AI-generated challenges */}
-            <div className="w-full p-3 text-center">
+            {/* AI-generated challenges -- HIDDEN for demo due to AI fees*/}
+            <div className="w-full p-3 text-left hidden">
               <h2 className="uppercase">Add challenges</h2>
               {/* DEMO for adding/activating challenges */}
               <ChallengeList onActivate={handleActivateChallenge} />
