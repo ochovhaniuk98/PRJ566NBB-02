@@ -390,7 +390,7 @@ export default function ActiveChallengeDetailModal({
     <>
       {fetchedChallenge && fetchedRestaurants && fetchedActiveChallengeDetail && (
         <div className="fixed inset-0  bg-brand-peach/40 flex justify-center md:items-center z-[100]  overflow-scroll scrollbar-hide">
-          <div className="bg-transparent md:p-8">
+          <div className="bg-transparent md:p-8 pt-8">
             <div className="lg:w-5xl min-h-120  shadow-lg rounded-lg pb-3 relative bg-white">
               <div className="bg-brand-green-lite flex items-center font-primary font-semibold text-md capitalize py-3 px-3 rounded-t-lg w-full justify-between">
                 <div>
