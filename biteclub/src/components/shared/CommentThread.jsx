@@ -18,12 +18,13 @@ import {
   faThumbsDown as faThumbsDownSolid,
   faTrashCan,
   faFlag,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
 //////////////// COMMENT THREAD FOR *** BLOG POST *** ONLY! ///////////////
 
 // *** Entire comment thread / container ***
-export default function CommentThread({ post }) {
+export default function CommentThread({ post, setShowComments }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
   const { userData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
@@ -249,11 +250,18 @@ export default function CommentThread({ post }) {
   };
 
   return (
-    <div className="fixed top-20 right-0 w-4/12 h-10/12 p-4 border border-brand-peach bg-white flex flex-col shadow-lg rounded-tl-lg rounded-bl-lg font-primary z-[999]">
-      <h3 className="text-lg font-bold mb-4">Comments ({commentsCount})</h3>
+    <div className="fixed xl:top-20 right-0  bottom-0 xl:w-1/4 md:w-lg w-full h-2/3 xl:h-10/12 p-4 xl:mb-8 border bg-white border-brand-peach flex flex-col shadow-lg rounded-tl-lg rounded-bl-lg font-primary z-[999] overflow-y-scroll scrollbar-hide">
+      <div className="flex justify-between items-center pb-4">
+        <h3 className="text-lg font-bold">Comments ({commentsCount})</h3>
+        <FontAwesomeIcon
+          icon={faXmark}
+          className={`icon-xl text-brand-navy cursor-pointer`}
+          onClick={() => setShowComments(false)}
+        />
+      </div>
 
       {/* scrollable comments area */}
-      <div className="flex-1 overflow-y-auto pr-1 pb-28 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto pr-1 xl:pb-28 pb-8 scrollbar-hide border-t-2 border-brand-peach pt-4">
         {fetchedComments &&
           fetchedPostUser &&
           comments.map(comment => (
@@ -271,7 +279,7 @@ export default function CommentThread({ post }) {
       </div>
 
       {/* main textarea input + "post" button */}
-      <div className="absolute bottom-4 left-0 right-0 bg-white pt-2 px-4 border-t-1 border-brand-peach">
+      <div className="xl:absolute xl:bottom-4 xl:left-0 xl:right-0 bg-white pt-2 px-4 border-t-1 border-brand-peach">
         <textarea
           rows={3}
           placeholder="Write a comment..."
@@ -428,15 +436,17 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
               </button>
             )}
             {isOwner && (
-              <SingleTabWithIcon
-                icon={faTrashCan}
+              <button onClick={() => onDelete(comment)} className="cursor-pointer ml-auto">
+                <FontAwesomeIcon icon={faTrashCan} className={`icon-md text-brand-red`} />
+              </button>
+            )}
+            {/*<SingleTabWithIcon icon={faTrashCan}
                 detailText="X"
                 bgColour="bg-white"
                 textColour="text-brand-red"
                 borderColour="border-brand-red"
                 onClick={() => onDelete(comment)}
-              />
-            )}
+              />*/}
           </div>
 
           {/* reply input field + button */}

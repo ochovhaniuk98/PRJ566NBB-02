@@ -1,4 +1,5 @@
 // src/components/blogPosts/BlogPost.jsx
+import { useMediaQuery } from 'react-responsive';
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
@@ -18,6 +19,7 @@ import {
   faFlag,
 } from '@fortawesome/free-solid-svg-icons';
 import FavouriteButton from '../shared/FavouriteButton';
+import { Button } from '../shared/Button';
 
 export default function BlogPost({ id }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
@@ -30,6 +32,7 @@ export default function BlogPost({ id }) {
   const [postContent, setPostContent] = useState(null);
   const [postTitle, setPostTitle] = useState(null);
   const [numOfFavourites, setNumOfFavourites] = useState(0);
+  const [showComments, setShowComments] = useState(false);
 
   // author details
   const [username, setUsername] = useState(null);
@@ -227,18 +230,22 @@ export default function BlogPost({ id }) {
     );
   }
 
+  // limit comments btn visibility to large devices or smaller
+  const isLg = useMediaQuery({ maxWidth: 1279 });
   return (
     <>
       {fetchedAuthor && (
-        <div className="flex w-full">
-          <div className="flex-3/8 mt-20">
+        <div className="flex xl:flex-row flex-col w-content pb-24">
+          <div className="xl:flex-3/8 w-full mt-20">
             <div className="w-full text-center">
               {postTitle && (
-                <div className="simple-editor-content align-center font-primary text-4xl font-medium">{postTitle}</div>
+                <div className="simple-editor-content align-center font-primary md:text-4xl text-3xl font-medium">
+                  {postTitle}
+                </div>
               )}
             </div>
             {/* author + engagement icons*/}
-            <div className="m-auto mt-8 border-b-1 border-brand-peach py-1 w-xl flex justify-between items-end cursor-pointer">
+            <div className="m-auto mt-8 border-b-1 border-brand-peach py-1 md:w-xl flex justify-between items-end cursor-pointer">
               {/* author */}
               <AuthorDateBlurb authorPic={profilePic.url} authorName={username} date={blogPost?.date_posted} />
               <div className="flex flex-row gap-x-2 font-primary font-medium text-brand-grey">
@@ -299,9 +306,20 @@ export default function BlogPost({ id }) {
             )}
           </div>
           {/* comments thread for blog post */}
-          <div className="flex-[1]">
-            <CommentThread post={blogPost} />
-          </div>
+          {isLg && !showComments ? (
+            <Button
+              className="w-full max-w-144 m-auto mt-6"
+              variant="default"
+              disabled={false}
+              onClick={() => setShowComments(prev => !prev)}
+            >
+              See Comments
+            </Button>
+          ) : (
+            <div className="md:flex-[1]">
+              <CommentThread post={blogPost} setShowComments={setShowComments} />
+            </div>
+          )}
         </div>
       )}
     </>
