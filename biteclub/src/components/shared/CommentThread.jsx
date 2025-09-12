@@ -250,7 +250,7 @@ export default function CommentThread({ post, setShowComments }) {
   };
 
   return (
-    <div className="fixed xl:top-20 right-0  bottom-0 xl:w-1/4 md:w-lg w-full h-2/3 xl:h-10/12 p-4 xl:mb-8 border bg-white border-brand-peach flex flex-col shadow-lg rounded-tl-lg rounded-bl-lg font-primary z-[999] overflow-y-scroll scrollbar-hide">
+    <div className="fixed xl:top-20 right-0  bottom-0 md:w-md w-full h-2/3 xl:h-10/12 p-4 xl:mb-8 border bg-white border-brand-peach flex flex-col shadow-lg rounded-tl-lg rounded-bl-lg font-primary z-[999] overflow-y-scroll scrollbar-hide">
       <div className="flex justify-between items-center pb-4">
         <h3 className="text-lg font-bold">Comments ({commentsCount})</h3>
         <FontAwesomeIcon
