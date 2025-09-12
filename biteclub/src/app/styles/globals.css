@@ -77,7 +77,7 @@
   }
 
   h1 {
-    @apply font-secondary text-5xl;
+    @apply font-secondary md:text-5xl text-4xl;
   }
 
   h2 {
