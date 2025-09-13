@@ -293,111 +293,104 @@ export default function SearchResults({ searchType = 0, searchQuery = '' }) {
     640: 1,
   };
   return (
-    <MainBaseContainer>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-16 ">
-        <div className={'w-full h-full'}>
-          <div className="flex md:flex-row flex-col justify-between mb-4">
-            {/* tabs for selecting search type: restaurants, blog posts or users */}
-            <SearchResultsTabBar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-            {selectedTab === 0 && (
-              <div className="relative flex justify-end mt-4 md:mt-0 md:block">
-                <Button
-                  type="submit"
-                  className="w-30"
-                  variant="default"
-                  onClick={() => setShowFilterMenu(prev => !prev)}
-                >
-                  Filter
-                </Button>
-                {/* Filter Menu */}
-                {showFilterMenu && (
-                  <FilterMenu
-                    selectedPrice={selectedPrice}
-                    ratingRange={ratingRange}
-                    distanceRange={distanceRange}
-                    selectedItems={selectedItems}
-                    isOpenNow={isOpenNow}
-                    setSelectedPrice={setSelectedPrice}
-                    setRatingRange={setRatingRange}
-                    setDistanceRange={setDistanceRange}
-                    setSelectedItems={setSelectedItems}
-                    setIsOpenNow={setIsOpenNow}
-                    onApply={({ clearFilters = false } = {}) => {
-                      setPage(1);
+    <div className="md:pl-12 mt-16 mb-16 w-full flex flex-col items-center">
+      <div className={'w-full h-full'}>
+        <div className="flex md:flex-row flex-col justify-between mb-4">
+          {/* tabs for selecting search type: restaurants, blog posts or users */}
+          <SearchResultsTabBar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+          {selectedTab === 0 && (
+            <div className="relative flex justify-end mt-4 md:mt-0 md:block">
+              <Button type="submit" className="w-30" variant="default" onClick={() => setShowFilterMenu(prev => !prev)}>
+                Filter
+              </Button>
+              {/* Filter Menu */}
+              {showFilterMenu && (
+                <FilterMenu
+                  selectedPrice={selectedPrice}
+                  ratingRange={ratingRange}
+                  distanceRange={distanceRange}
+                  selectedItems={selectedItems}
+                  isOpenNow={isOpenNow}
+                  setSelectedPrice={setSelectedPrice}
+                  setRatingRange={setRatingRange}
+                  setDistanceRange={setDistanceRange}
+                  setSelectedItems={setSelectedItems}
+                  setIsOpenNow={setIsOpenNow}
+                  onApply={({ clearFilters = false } = {}) => {
+                    setPage(1);
 
-                      // reset filters in state if needed
-                      if (clearFilters) {
-                        setSelectedPrice(null);
-                        setRatingRange(3);
-                        setDistanceRange(10);
-                        setSelectedItems([]);
-                        setIsOpenNow(false);
-                      }
-                      fetchRestaurants(true, clearFilters);
-                    }}
-                    onClose={() => setShowFilterMenu(false)}
-                  />
-                )}
-              </div>
-            )}
-          </div>
-          {/* Restaurant Results */}
-          {selectedTab === 0 && fetchCompleted && (
-            <>
-              {/* shows message depending on search results */}
-              <SearchResultsNumMessage
-                searchTypeNum={selectedTab}
-                numResults={restaurantsCount}
-                searchString={searchQuery}
-              />
-              <GridCustomCols numOfCols={5} className="mt-4">
-                {/* isFavourited is false by default */}
-                {restaurants.map((restaurant, i) => (
-                  //  isFavourited={false}
-                  <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
-                ))}
-              </GridCustomCols>
-              {hasMore && (
-                <div className="mt-6 flex justify-center">
-                  <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
-                </div>
+                    // reset filters in state if needed
+                    if (clearFilters) {
+                      setSelectedPrice(null);
+                      setRatingRange(3);
+                      setDistanceRange(10);
+                      setSelectedItems([]);
+                      setIsOpenNow(false);
+                    }
+                    fetchRestaurants(true, clearFilters);
+                  }}
+                  onClose={() => setShowFilterMenu(false)}
+                />
               )}
-            </>
-          )}
-          {/* Blog Post Results */}
-          {selectedTab === 1 && fetchCompleted && (
-            <>
-              <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={postsCount} searchString={searchQuery} />
-              <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2 mt-4" columnClassName="space-y-2">
-                {blogPosts.map((post, i) => (
-                  <BlogPostCard key={post._id || i} blogPostData={post} />
-                ))}
-              </Masonry>
-              {hasMore && (
-                <div className="mt-6 flex justify-center">
-                  <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
-                </div>
-              )}
-            </>
-          )}
-          {/* User Results */}
-          {selectedTab === 2 && (
-            <>
-              <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={usersCount} searchString={searchQuery} />
-              <GridCustomCols numOfCols={5} className="mt-4">
-                {users.map((user, i) => (
-                  <GeneralUserCard key={user._id || i} generalUserData={user} isFollowing={false} />
-                ))}
-              </GridCustomCols>
-              {hasMore && (
-                <div className="mt-6 flex justify-center">
-                  <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
-                </div>
-              )}
-            </>
+            </div>
           )}
         </div>
+        {/* Restaurant Results */}
+        {selectedTab === 0 && fetchCompleted && (
+          <>
+            {/* shows message depending on search results */}
+            <SearchResultsNumMessage
+              searchTypeNum={selectedTab}
+              numResults={restaurantsCount}
+              searchString={searchQuery}
+            />
+            <GridCustomCols numOfCols={5} className="mt-4">
+              {/* isFavourited is false by default */}
+              {restaurants.map((restaurant, i) => (
+                //  isFavourited={false}
+                <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
+              ))}
+            </GridCustomCols>
+            {hasMore && (
+              <div className="mt-6 flex justify-center">
+                <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
+              </div>
+            )}
+          </>
+        )}
+        {/* Blog Post Results */}
+        {selectedTab === 1 && fetchCompleted && (
+          <>
+            <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={postsCount} searchString={searchQuery} />
+            <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2 mt-4" columnClassName="space-y-2">
+              {blogPosts.map((post, i) => (
+                <BlogPostCard key={post._id || i} blogPostData={post} />
+              ))}
+            </Masonry>
+            {hasMore && (
+              <div className="mt-6 flex justify-center">
+                <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
+              </div>
+            )}
+          </>
+        )}
+        {/* User Results */}
+        {selectedTab === 2 && (
+          <>
+            <SearchResultsNumMessage searchTypeNum={selectedTab} numResults={usersCount} searchString={searchQuery} />
+            <GridCustomCols numOfCols={5} className="mt-4">
+              {users.map((user, i) => (
+                <GeneralUserCard key={user._id || i} generalUserData={user} isFollowing={false} />
+              ))}
+            </GridCustomCols>
+            {hasMore && (
+              <div className="mt-6 flex justify-center">
+                <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
+              </div>
+            )}
+          </>
+        )}
       </div>
-    </MainBaseContainer>
+    </div>
   );
 }

@@ -184,8 +184,8 @@ export default function RestaurantResults() {
   };
 
   return (
-    <MainBaseContainer>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center py-18">
+    <>
+      <div className=" mb-16 w-full flex flex-col items-center py-18">
         <div className={'w-full h-full'}>
           <h2>Popular And New Restaurants</h2>
           <div className="flex justify-end mb-4">
@@ -239,6 +239,6 @@ export default function RestaurantResults() {
           )}
         </div>
       </div>
-    </MainBaseContainer>
+    </>
   );
 }

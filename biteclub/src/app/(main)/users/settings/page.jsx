@@ -98,8 +98,8 @@ export default function Settings() {
   };
 
   return (
-    <MainBaseContainer>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center lg:m-16 mt-16 bg-white">
+    <div className="md:p-12">
+      <div className="mb-16 w-full flex flex-col items-center md:m-8 mt-16 bg-white">
         {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
         {user && (
           <Avatar
@@ -216,17 +216,17 @@ export default function Settings() {
           </div>
         </form>
 
-        <div className="lg:w-4xl md:w-3xl w-full mt-8 py-8 lg:px-12 border-t border-brand-peach">
+        <div className="lg:w-4xl w-full mt-8 py-8 lg:px-12 border-t border-brand-peach">
           <h2 className="mb-4">Delete Account</h2>
           <p className="mb-4">Once you delete your account, there is no going back. Please be certain.</p>
           <DeleteAccountButton user={user} />
         </div>
 
-        <div className="lg:w-4xl md:w-3xl w-full mt-8 py-8 lg:px-12 border-t border-brand-peach">
+        <div className="lg:w-4xl w-full mt-8 py-8 lg:px-12 border-t border-brand-peach">
           <h2 className="mb-4">Logout</h2>
           <LogoutButton />
         </div>
       </div>
-    </MainBaseContainer>
+    </div>
   );
 }

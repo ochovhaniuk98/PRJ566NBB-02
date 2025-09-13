@@ -528,7 +528,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   };
 
   return (
-    <MainBaseContainer>
+    <div className="absolute md:left-12 right-0 top-0">
       <GeneralUserBanner
         showTextEditor={showTextEditor}
         setShowTextEditor={setShowTextEditor}
@@ -858,6 +858,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           </div>
         </div>
       )}
-    </MainBaseContainer>
+    </div>
   );
 }

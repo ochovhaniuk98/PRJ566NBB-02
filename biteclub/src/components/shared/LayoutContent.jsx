@@ -18,7 +18,7 @@ export default function LayoutContent({ children }) {
       <MainMenu />
       <div className="flex-1 relative">
         {userType === 'business' ? <BusinessHeader /> : <SearchBar />}
-        <main className="main-side-padding md:ml-12">{children}</main>
+        <main className={`${path === '/' ? '' : 'main-side-padding  w-full'}`}>{children}</main>
       </div>
     </>
   ) : (

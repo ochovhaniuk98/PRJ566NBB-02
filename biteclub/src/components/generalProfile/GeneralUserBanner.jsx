@@ -131,7 +131,7 @@ export default function GeneralUserBanner({
   };
 
   return (
-    <div className="main-side-padding w-full flex flex-col items-center bg-brand-yellow-extralite relative">
+    <div className="flex flex-col items-center bg-brand-yellow-extralite relative">
       <div className="pt-14 flex xl:flex-row flex-col">
         {/*profile pic*/}
         <div className=" flex md:flex-row flex-col justify-center md:items-start items-center">

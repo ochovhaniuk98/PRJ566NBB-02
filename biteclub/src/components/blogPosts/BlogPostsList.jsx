@@ -10,8 +10,8 @@ export default function BlogPostsList() {
   const [selectedTab, setSelectedTab] = useState('EXPLORE');
 
   return (
-    <MainBaseContainer>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center py-18">
+    <>
+      <div className="mb-16 w-full flex flex-col items-center py-18">
         <div className={'w-full h-full'}>
           <div className="flex md:flex-row flex-col justify-between">
             <h2>Trending + Recently Posted</h2>
@@ -24,6 +24,6 @@ export default function BlogPostsList() {
           {selectedTab === 'FOLLOWING' && <FollowingBlogPosts />}
         </div>
       </div>
-    </MainBaseContainer>
+    </>
   );
 }
