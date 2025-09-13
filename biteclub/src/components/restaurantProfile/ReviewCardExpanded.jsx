@@ -5,12 +5,7 @@ import StarRating from '../shared/StarRating';
 import AuthorDateBlurb from '../shared/AuthorDateBlurb';
 import ReportForm from '../shared/ReportForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faXmark,
-  faFlag,
-  faChevronLeft,
-  faChevronRight,
-} from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faFlag, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import reviewCardIconArr from '@/app/data/iconData';
 import CommentSection from '../shared/CommentSection';
 import { addCommentToReview, deleteCommentFromReview, updateReviewCommentEngagement } from '@/lib/db/dbOperations';
@@ -175,9 +170,9 @@ export default function ReviewCardExpanded({
   };
 
   return (
-    <div className="w-1/3 hidden lg:block">
-      <div className="sticky top-14 h-[calc(100vh-4.5rem)] overflow-auto scrollbar-none bg-white border-2 border-brand-peach rounded-md shadow-md">
-        <div className="p-4  bg-white w-full flex justify-between">
+    <div className="xl:w-1/3 lg:w-2/3 w-full fixed left-0 right-0 bottom-0 top-8 md:static z-100 h-screen">
+      <div className="sticky top-14 h-full overflow-auto scrollbar-none bg-white md:border-2 md:border-t-0 border-t-2 border-brand-peach rounded-md shadow-lg">
+        <div className="p-4 bg-white w-full flex justify-between">
           <AuthorDateBlurb
             authorPic={selectedReview.user_id?.userProfilePicture?.url}
             authorName={selectedReview.user_id?.username}
