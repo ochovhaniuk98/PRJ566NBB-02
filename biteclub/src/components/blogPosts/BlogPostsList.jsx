@@ -10,7 +10,7 @@ export default function BlogPostsList() {
   const [selectedTab, setSelectedTab] = useState('EXPLORE');
 
   return (
-    <>
+    <div className="md:pl-12">
       <div className="mb-16 w-full flex flex-col items-center py-18">
         <div className={'w-full h-full'}>
           <div className="flex md:flex-row flex-col justify-between">
@@ -24,6 +24,6 @@ export default function BlogPostsList() {
           {selectedTab === 'FOLLOWING' && <FollowingBlogPosts />}
         </div>
       </div>
-    </>
+    </div>
   );
 }
