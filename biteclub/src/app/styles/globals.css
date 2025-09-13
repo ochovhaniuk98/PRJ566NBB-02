@@ -142,7 +142,7 @@
   }
 
   .open-hours-style {
-    @apply flex flex-row justify-between py-1 px-6;
+    @apply flex flex-row justify-between py-1 md:px-6 px-2;
   }
 
   .open-hours-selected {

@@ -10,10 +10,10 @@ export default function GridCustomCols({ children, numOfCols = 3, className = ''
   };*/
   return (
     <div
-      className={`grid lg:grid-cols-${numOfCols} grid-cols-1 gap-2 grid-flow-dense ${
+      className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5   gap-2 grid-flow-dense ${
         rowMinHeight
           ? `md:w-4xl w-full lg:auto-rows-[minmax(200px,_auto)] auto-rows-[minmax(${rowMinHeight},_auto)]`
-          : 'w-full auto-rows-[minmax(200px,_auto)]'
+          : 'w-full auto-rows-[minmax(200px,_auto)] auto-cols-[minmax(200px,_auto)]'
       } ${className}`}
       style={responsiveHeight ? { gridAutoRows: `${'315'}px` } : {}}
     >
