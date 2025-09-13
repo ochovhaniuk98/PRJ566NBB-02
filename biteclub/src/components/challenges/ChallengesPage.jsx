@@ -116,10 +116,10 @@ export default function ChallengesPage() {
   const [showChallengeCompletedModal, setShowChallengeCompletedModal] = useState(false);
 
   return (
-    <>
+    <div className="md:pl-12">
       {userData && (
-        <MainBaseContainer>
-          <div className="main-side-padding w-full flex flex-col items-center mt-16 mb-16">
+        <>
+          <div className="w-full flex flex-col items-center mt-16 mb-16">
             <div className="flex flex-row w-full items-center justify-center">
               {/* Profile Pic */}
               <div className="size-24 bg-brand-green rounded-full mr-2 relative border border-brand-grey-lite">
@@ -205,9 +205,9 @@ export default function ChallengesPage() {
               />
             )}
           </div>
-        </MainBaseContainer>
+        </>
       )}
-    </>
+    </div>
   );
 }
 
