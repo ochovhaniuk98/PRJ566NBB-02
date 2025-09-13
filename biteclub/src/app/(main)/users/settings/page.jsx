@@ -112,9 +112,9 @@ export default function Settings() {
           />
         )}
 
-        <form className="lg:w-4xl md:w-3xl w-full mt-8" onSubmit={handleSubmit}>
-          <GridCustomCols numOfCols={2}>
-            <div className="py-1 lg:px-12 flex flex-col gap-2">
+        <form className="lg:w-4xl w-full mt-8" onSubmit={handleSubmit}>
+          <div className="flex gap-x-8 md:flex-row flex-col">
+            <div className="md:w-1/2 w-full py-1 flex flex-col gap-2">
               <h2 className="mb-4">Account Details</h2>
 
               <div>
@@ -159,7 +159,7 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="py-1 lg:px-12 flex flex-col gap-2 w-full">
+            <div className="md:w-1/2 w-full py-1 flex flex-col gap-2">
               <h2 className="mb-4">Display Preferences</h2>
               <p className="mb-4">You can modify what page to show the public.</p>
 
@@ -203,7 +203,7 @@ export default function Settings() {
                 />
               </div>
             </div>
-          </GridCustomCols>
+          </div>
 
           <div className="flex justify-end gap-x-2">
             <Button type="submit" className="w-30" variant="default">
