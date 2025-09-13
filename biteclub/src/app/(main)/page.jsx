@@ -7,6 +7,8 @@ import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import Image from 'next/image';
+import MainBaseContainer from '@/components/shared/MainBaseContainer';
 
 export default function Home() {
   const [personalizedRecommendations, setPersonalizedRecommendations] = useState([]);
@@ -123,35 +125,9 @@ export default function Home() {
   };
 
   return (
-    <>
-      {fetchedCuisineRestaurants && (
-        <div className="mb-16 w-full flex flex-col items-center pt-18 ">
-          <div className="flex items-center justify-between w-full">
-            <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
-            {/* 
-              <Button variant="link" size="lg" onClick={handleSurpriseMeSubmit}>
-                <h3>Surprise Me →</h3>
-              </Button>*/}
-            <button
-              onClick={handleSurpriseMeSubmit}
-              className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110"
-            >
-              Surprise Me <FontAwesomeIcon icon={faArrowRight} className={`text-2xl text-brand-navy`} />
-            </button>
-
-            <button className="font-primary font-semibold text-brand-navy cursor-pointer" onClick={handleViewAllSubmit}>
-              View All
-            </button>
-          </div>
-          <GridCustomCols numOfCols={5} className="mt-4">
-            {restaurants.map((restaurant, i) => (
-              <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
-            ))}
-          </GridCustomCols>
-        </div>
-      )}
+    <div className="md:pl-12 pb-12">
       {fetchCompleted ? (
-        <div className="mb-16 w-full flex flex-col items-center">
+        <div className="main-side-padding mb-16 w-full flex flex-col items-center">
           <div>
             <div className="flex items-center justify-between">
               {personalizedRecommendations.length > 0 && (
@@ -174,7 +150,7 @@ export default function Home() {
               )}
             </div>
           </div>
-          <div className="mb-16 w-full flex flex-col items-center  pt-18 ">
+          <div className="mb-16 w-full flex flex-col items-center pt-18 ">
             <div>
               <div className="flex items-center justify-between">
                 <div>
@@ -186,12 +162,40 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <h1 className="text-5xl text-center font-primary font-bold text-brand-navy mt-44">
-          No recommendations available at the moment.
-          <br />
-          Please check back later.
-        </h1>
+        /* Placeholder if recommendations are unavailable */
+        <div
+          className=" bg-brand-green w-full h-156 mb-4"
+          style={{
+            backgroundImage: '',
+            backgroundSize: 'cover', // try 80%, 100%, 120% to increase size
+            backgroundPosition: '0rem -5rem',
+            backgroundRepeat: 'no-repeat',
+          }}
+        ></div>
       )}
-    </>
+      {/* Cuisine Spotlight */}
+      {fetchedCuisineRestaurants && (
+        <div className="main-side-padding mb-16 flex flex-col items-center w-full">
+          <div className="flex items-center justify-between w-full">
+            <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
+            <button
+              onClick={handleSurpriseMeSubmit}
+              className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110"
+            >
+              Surprise Me <FontAwesomeIcon icon={faArrowRight} className={`text-2xl text-brand-navy`} />
+            </button>
+
+            <button className="font-primary font-semibold text-brand-navy cursor-pointer" onClick={handleViewAllSubmit}>
+              View All
+            </button>
+          </div>
+          <GridCustomCols numOfCols={5} className="mt-4">
+            {restaurants.map((restaurant, i) => (
+              <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
+            ))}
+          </GridCustomCols>
+        </div>
+      )}
+    </div>
   );
 }
