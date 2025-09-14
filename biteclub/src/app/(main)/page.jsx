@@ -164,7 +164,7 @@ export default function Home() {
       ) : (
         /* Placeholder if recommendations are unavailable */
         <div
-          className=" bg-brand-yellow w-full h-156 mb-4 relative"
+          className=" bg-brand-yellow w-full h-176 mb-4 relative"
           style={{
             backgroundImage: '',
             backgroundSize: 'cover', // try 80%, 100%, 120% to increase size
@@ -172,7 +172,7 @@ export default function Home() {
             backgroundRepeat: 'no-repeat',
           }}
         >
-          <div className="absolute top-24 xl:left-40 lg:left-12 left-4 font-secondary leading-20 uppercase w-lg h-128">
+          <div className="absolute top-36 xl:left-40 lg:left-12 left-4 font-secondary leading-20 uppercase w-lg h-128 cursor-default">
             <div className="">
               <div className="absolute text-[6rem] text-center">
                 Level Up
