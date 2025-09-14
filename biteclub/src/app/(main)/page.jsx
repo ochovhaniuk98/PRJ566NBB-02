@@ -6,7 +6,7 @@ import { useUser } from '@/context/UserContext';
 import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faArrowRightToBracket, faGamepad } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 
@@ -164,14 +164,31 @@ export default function Home() {
       ) : (
         /* Placeholder if recommendations are unavailable */
         <div
-          className=" bg-brand-green w-full h-156 mb-4"
+          className=" bg-brand-green w-full h-156 mb-4 relative"
           style={{
             backgroundImage: '',
             backgroundSize: 'cover', // try 80%, 100%, 120% to increase size
             backgroundPosition: '0rem -5rem',
             backgroundRepeat: 'no-repeat',
           }}
-        ></div>
+        >
+          <div className="absolute bottom-4 left-4 flex gap-4">
+            <button
+              onClick={() => router.push('/sign-up')}
+              className=" bg-brand-aqua uppercase flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-brand-navy border-1 rounded-sm shadow-lg py-2 px-4 transform transition-transform duration-200 hover:scale-110"
+            >
+              <FontAwesomeIcon icon={faGamepad} className={`text-2xl`} />
+              Join to Play
+            </button>
+            <button
+              onClick={() => router.push('/login')}
+              className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-1 border-brand-navy py-2 px-4 rounded-sm"
+            >
+              <FontAwesomeIcon icon={faArrowRightToBracket} className={`text-2xl text-brand-navy`} />
+              Login
+            </button>
+          </div>
+        </div>
       )}
       {/* Cuisine Spotlight */}
       {fetchedCuisineRestaurants && (
