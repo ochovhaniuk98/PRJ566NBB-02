@@ -13,6 +13,7 @@ import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
 import Spinner from '@/components/shared/Spinner';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
 import { createClient } from '@/lib/auth/client';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
 
 export default function Settings() {
   // User infomation
@@ -99,19 +100,21 @@ export default function Settings() {
 
   return (
     <div className="md:p-12">
-      <div className="mb-16 w-full flex flex-col items-center md:m-8 mt-16 bg-white">
-        {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
-        {user && (
-          <Avatar
-            uid={user.id}
-            url={avatar_url}
-            size={150}
-            onUpload={url => {
-              setAvatarUrl(url);
-            }}
-          />
-        )}
-
+      <div className="relative mb-16 w-full flex flex-col items-center md:mt-4 mt-20 bg-white">
+        <div className="mt-8">
+          <StyledPageTitle textString="Settings"></StyledPageTitle>
+          {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
+          {user && (
+            <Avatar
+              uid={user.id}
+              url={avatar_url}
+              size={150}
+              onUpload={url => {
+                setAvatarUrl(url);
+              }}
+            />
+          )}
+        </div>
         <form className="lg:w-4xl w-full mt-8" onSubmit={handleSubmit}>
           <div className="flex gap-x-8 md:flex-row flex-col">
             <div className="md:w-1/2 w-full py-1 flex flex-col gap-2">

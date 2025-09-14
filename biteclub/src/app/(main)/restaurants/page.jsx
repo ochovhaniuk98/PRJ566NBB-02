@@ -185,7 +185,7 @@ export default function RestaurantResults() {
   };
 
   return (
-    <>
+    <div className="md:pl-12">
       <div className="mb-16 w-full flex flex-col items-center py-18">
         <div className={'w-full h-full relative'}>
           <StyledPageTitle textString="Popular and New Restaurants"></StyledPageTitle>
@@ -241,6 +241,6 @@ export default function RestaurantResults() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

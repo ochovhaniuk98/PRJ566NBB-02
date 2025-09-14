@@ -7,6 +7,7 @@ import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import Spinner from '@/components/shared/Spinner';
 import { Milestone } from '@/components/challenges/ChallengesPage';
 import Image from 'next/image';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
 
 const BAR_COMPLETE_COLOR = '#8CBF38';
 const MAX_POINTS = 2750;
@@ -105,12 +106,10 @@ export default function Redeem() {
   })();
 
   return (
-    <MainBaseContainer>
-      <div className="main-side-padding mt-16 w-full flex flex-col items-center min-h-screen relative">
-        <div className="">
-          <h2 className="">REDEEM POINTS</h2>
-        </div>
-        <div className="flex flex-row w-full items-center justify-center">
+    <div className="md:pl-12">
+      <div className="md:mt-16 mt-20 w-full flex flex-col items-center min-h-screen relative">
+        <StyledPageTitle textString="Redeem Points" />
+        <div className="flex flex-row w-full items-center justify-center mt-8">
           {/* Num of Points */}
           <div className="md:size-28 size-24 mb-4 mr-0 relative">
             <Image src={'/img/coinWithFork.png'} alt={'coin'} className="object-contain" fill={true} />
@@ -147,7 +146,7 @@ export default function Redeem() {
         </div>
         <RedeemButtonsOnMobile redemptionOptions={redemption_options} level={level} />
         <div className="w-full flex justify-center">
-          <div>
+          <div className="mt-8">
             <h2 className="text-center">Available Coupon Code</h2>
             {couponCode ? (
               <div className="bg-brand-aqua-lite border-4 border-brand-aqua h-30 w-xs rounded-md shadow-md p-4 mt-2 flex flex-col items-center justify-center">
@@ -167,7 +166,7 @@ export default function Redeem() {
           </div>
         </div>
       </div>
-    </MainBaseContainer>
+    </div>
   );
 }
 
