@@ -164,7 +164,7 @@ export default function Home() {
       ) : (
         /* Placeholder if recommendations are unavailable */
         <div
-          className=" bg-brand-green w-full h-156 mb-4 relative"
+          className=" bg-brand-yellow w-full h-156 mb-4 relative"
           style={{
             backgroundImage: '',
             backgroundSize: 'cover', // try 80%, 100%, 120% to increase size
@@ -172,21 +172,46 @@ export default function Home() {
             backgroundRepeat: 'no-repeat',
           }}
         >
-          <div className="absolute bottom-4 left-4 flex gap-4">
-            <button
-              onClick={() => router.push('/sign-up')}
-              className=" bg-brand-aqua uppercase flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-brand-navy border-1 rounded-sm shadow-lg py-2 px-4 transform transition-transform duration-200 hover:scale-110"
-            >
-              <FontAwesomeIcon icon={faGamepad} className={`text-2xl`} />
-              Join to Play
-            </button>
-            <button
-              onClick={() => router.push('/login')}
-              className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-1 border-brand-navy py-2 px-4 rounded-sm"
-            >
-              <FontAwesomeIcon icon={faArrowRightToBracket} className={`text-2xl text-brand-navy`} />
-              Login
-            </button>
+          <div className="absolute top-24 xl:left-40 lg:left-12 left-4 font-secondary leading-20 uppercase w-lg h-128">
+            <div className="">
+              <div className="absolute text-[6rem] text-center">
+                Level Up
+                <br />
+                Your
+                <br />
+                <span className="text-[10rem] leading-28">Taste</span>
+              </div>
+              <div className="absolute left-1 top-1 text-brand-aqua text-[6rem] text-center  [-webkit-text-stroke:1px_black]">
+                Level Up
+                <br />
+                Your
+                <br />
+                <span className="text-[10rem] leading-28 text-white">Taste</span>
+              </div>
+            </div>
+            <div className="absolute bottom-36 left-22 w-xs">
+              <p className="normal-case">
+                Turn every meal into an adventure.
+                <br />
+                Explore, taste, and collect points for discounts as you level up your palate with BiteClub
+              </p>
+            </div>
+            <div className="absolute bottom-4 left-8 flex gap-4">
+              <button
+                onClick={() => router.push('/sign-up')}
+                className=" bg-brand-aqua uppercase flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-brand-navy border-1 rounded-sm shadow-lg py-2 px-4 transform transition-transform duration-200 hover:scale-110"
+              >
+                <FontAwesomeIcon icon={faGamepad} className={`text-2xl`} />
+                Join to Play
+              </button>
+              <button
+                onClick={() => router.push('/login')}
+                className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-1 border-brand-navy py-2 px-4 rounded-sm"
+              >
+                <FontAwesomeIcon icon={faArrowRightToBracket} className={`text-2xl text-brand-navy`} />
+                Login
+              </button>
+            </div>
           </div>
         </div>
       )}
