@@ -5,6 +5,7 @@ import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Button } from '@/components/shared/Button';
 import FilterMenu from '@/components/searchResults/FilterMenu';
 import { useState, useEffect, useRef } from 'react';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
 
 const dietaryPreferencesArr = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Halal', 'Kosher', 'Dairy-Free'];
 
@@ -185,14 +186,15 @@ export default function RestaurantResults() {
 
   return (
     <>
-      <div className=" mb-16 w-full flex flex-col items-center py-18">
-        <div className={'w-full h-full'}>
-          <h2>Popular And New Restaurants</h2>
-          <div className="flex justify-end mb-4">
+      <div className="mb-16 w-full flex flex-col items-center py-18">
+        <div className={'w-full h-full relative'}>
+          <StyledPageTitle textString="Popular and New Restaurants"></StyledPageTitle>
+
+          <div className="flex justify-end md:mt-4 mt-12">
             <div className="relative w-full flex justify-end">
               <Button
                 type="button"
-                className="w-30 md:mt-0 mt-4 mb-4"
+                className="w-30 md:mt-0 mt-4 mb-0"
                 variant="default"
                 onClick={() => setShowFilterMenu(prev => !prev)}
               >

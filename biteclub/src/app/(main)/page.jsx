@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faArrowRightToBracket, faGamepad } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
+import ExploringBlogPosts from '@/components/blogPosts/ExploringBlogPosts';
 
 export default function Home() {
   const [personalizedRecommendations, setPersonalizedRecommendations] = useState([]);
@@ -218,8 +220,9 @@ export default function Home() {
       {/* Cuisine Spotlight */}
       {fetchedCuisineRestaurants && (
         <div className="main-side-padding mb-16 flex flex-col items-center w-full">
-          <div className="flex items-center justify-between w-full">
-            <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
+          <div className="flex items-center justify-between w-full relative h-12">
+            <StyledPageTitle textString={cuisine} />
+
             <button
               onClick={handleSurpriseMeSubmit}
               className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110"
@@ -231,11 +234,12 @@ export default function Home() {
               View All
             </button>
           </div>
-          <GridCustomCols numOfCols={5} className="mt-4">
+          <GridCustomCols numOfCols={5} className="md:mt-4 mt-0">
             {restaurants.map((restaurant, i) => (
               <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
             ))}
           </GridCustomCols>
+          <ExploringBlogPosts />
         </div>
       )}
     </div>

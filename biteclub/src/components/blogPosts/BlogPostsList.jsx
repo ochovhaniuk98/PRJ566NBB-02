@@ -4,6 +4,7 @@ import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import BlogPostListTabs from './BlogPostListTabs';
 import ExploringBlogPosts from './ExploringBlogPosts';
 import FollowingBlogPosts from './FollowingBlogPosts';
+import StyledPageTitle from '../shared/StyledPageTitle';
 
 // check if blog posts are in exploring or following section
 export default function BlogPostsList() {
@@ -13,8 +14,8 @@ export default function BlogPostsList() {
     <div className="md:pl-12">
       <div className="mb-16 w-full flex flex-col items-center py-18">
         <div className={'w-full h-full'}>
-          <div className="flex md:flex-row flex-col justify-between">
-            <h2>Trending + Recently Posted</h2>
+          <div className="flex lg:flex-row flex-col justify-between items-end relative md:h-20 h-24">
+            <StyledPageTitle textString="Trending And Recently Posted"></StyledPageTitle>
             {/* tabs for selecting blog posts: Explore vs Following */}
             <BlogPostListTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
           </div>
