@@ -165,70 +165,85 @@ export default function Home() {
         </div>
       ) : (
         /* Placeholder if recommendations are unavailable */
-        <div
-          className=" bg-brand-yellow w-full h-176 mb-4 relative"
-          style={{
-            backgroundImage: '',
-            backgroundSize: 'cover', // try 80%, 100%, 120% to increase size
-            backgroundPosition: '0rem -5rem',
-            backgroundRepeat: 'no-repeat',
-          }}
-        >
-          <div className="absolute top-36 xl:left-40 lg:left-12 left-4 font-secondary leading-20 uppercase w-lg h-128 cursor-default">
-            <div className="">
-              <div className="absolute text-[6rem] text-center">
-                Level Up
-                <br />
-                Your
-                <br />
-                <span className="text-[10rem] leading-28">Taste</span>
-              </div>
-              <div className="absolute left-1 top-1 text-brand-aqua text-[6rem] text-center  [-webkit-text-stroke:1px_black]">
-                Level Up
-                <br />
-                Your
-                <br />
-                <span className="text-[10rem] leading-28 text-white">Taste</span>
-              </div>
+        <>
+          <div className="xl:bg-brand-yellow lg:bg-brand-green md:bg-brand-peach bg-pink-400 w-full  max-h-200 min-h-[350px] xl:h-[100vw] lg:h-[38rem] md:h-[30rem] h-[26rem] relative overflow-hidden">
+            <div className="absolute xl:size-[55vw] lg:size-[43vw] md:size-[43vw] size-[60vw] xl:left-[40vw] left-[50vw] xl:-bottom-40 md:bottom-0 -bottom-15">
+              <Image
+                src={'/img/foodPlatesCoin.png'}
+                alt={'food plates'}
+                quality={100}
+                unoptimized={true}
+                className="object-contain"
+                fill={true}
+              />
             </div>
-            <div className="absolute bottom-36 left-22 w-xs">
-              <p className="normal-case">
-                Turn every meal into an adventure.
-                <br />
-                Explore, taste, and collect points for discounts as you level up your palate with BiteClub
-              </p>
-            </div>
-            <div className="absolute bottom-4 left-8 flex gap-4">
-              <button
-                onClick={() => router.push('/sign-up')}
-                className=" bg-brand-aqua uppercase flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-brand-navy border-1 rounded-sm shadow-lg py-2 px-4 transform transition-transform duration-200 hover:scale-110"
-              >
-                <FontAwesomeIcon icon={faGamepad} className={`text-2xl`} />
-                Join to Play
-              </button>
-              <button
-                onClick={() => router.push('/login')}
-                className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-1 border-brand-navy py-2 px-4 rounded-sm"
-              >
-                <FontAwesomeIcon icon={faArrowRightToBracket} className={`text-2xl text-brand-navy`} />
-                Login
-              </button>
+            {/*<div className="relative size-168 w-full -left-140 -bottom-16">
+              <Image src={'/img/spilledBottle.png'} alt={'spilled bottle'} className="object-contain" fill={true} />
+            </div>*/}
+            <div
+              className="absolute -top-2 left-[10%] font-secondary xl:leading-24 lg:leading-20 md:leading-17 leading-14 uppercase w-[50%] h-full cursor-default "
+              style={{
+                backgroundImage: '', // url('/img/spilledBottle.png')
+                backgroundSize: '40vw', // try 80%, 100%, 120% to increase size
+                backgroundPosition: '0rem 7rem',
+                backgroundRepeat: 'no-repeat',
+              }}
+            >
+              <div className="landingContainer">
+                <div className="landingTitle">
+                  Level Up Your
+                  <br />
+                  <span className="landingTitleSpan">Taste</span>
+                </div>
+                <div className="landingTitle md:left-1 md:top-1 left-[2px] top-[2px] text-brand-green md:[-webkit-text-stroke:1px_black] [-webkit-text-stroke:0.75px_black]">
+                  Level Up Your
+                  <br />
+                  <span className="landingTitleSpan text-white">Taste</span>
+                </div>
+                <div className="landingText">
+                  Turn every meal into an adventure.
+                  <br />
+                  Explore, taste, and collect points for discounts as you level up your palate with BiteClub
+                </div>
+                <div className="landingButtons">
+                  <button
+                    onClick={() => router.push('/sign-up')}
+                    className="landingButtonSingle bg-brand-aqua transform transition-transform duration-200 hover:scale-110"
+                  >
+                    <FontAwesomeIcon icon={faGamepad} className={`text-2xl`} />
+                    Join to Play
+                  </button>
+                  <button onClick={() => router.push('/login')} className="landingButtonSingle">
+                    <FontAwesomeIcon icon={faArrowRightToBracket} className={`text-2xl text-brand-navy`} />
+                    Login
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-      {/* Cuisine Spotlight */}
-      {fetchedCuisineRestaurants && (
-        <div className="main-side-padding mb-16 flex flex-col items-center w-full">
-          <div className="flex items-center justify-between w-full relative h-12">
-            <StyledPageTitle textString={cuisine} />
-
+          {/*<div className="flex gap-4 items-center justify-center w-full h-20 bg-brand-green font-secondary text-4xl text-brand-navy">
+            Can't decide what to eat?
             <button
               onClick={handleSurpriseMeSubmit}
               className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110"
             >
               Surprise Me <FontAwesomeIcon icon={faArrowRight} className={`text-2xl text-brand-navy`} />
             </button>
+            <button
+              onClick={handleSurpriseMeSubmit}
+              className=" bg-brand-green uppercase flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-brand-navy border-1 rounded-sm shadow-lg py-2 px-4 transform transition-transform duration-200 hover:scale-110"
+            >
+              Surprise Me
+              <FontAwesomeIcon icon={faArrowRight} className={`text-2xl`} />
+            </button>
+          </div> */}
+        </>
+      )}
+      {/* Cuisine Spotlight */}
+      {fetchedCuisineRestaurants && (
+        <div className="main-side-padding mb-16 flex flex-col items-center w-full">
+          <div className="flex items-center justify-between w-full relative h-12">
+            <StyledPageTitle textString={cuisine} />
 
             <button className="font-primary font-semibold text-brand-navy cursor-pointer" onClick={handleViewAllSubmit}>
               View All
