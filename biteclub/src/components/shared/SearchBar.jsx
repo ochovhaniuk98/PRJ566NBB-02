@@ -22,9 +22,16 @@ export default function SearchBar() {
   return (
     <div className="fixed w-full flex justify-between z-40 bg-white/50 main-side-padding md:space-x-0 space-x-2">
       <div className="relative  h-12 size-auto md:w-60 w-50 mt-1">
-        <Image src="/img/logo_final.png" alt="logo pic" className="object-contain rounded-br-md" fill={true} />
+        <Image
+          src="/img/logo_final.png"
+          alt="logo pic"
+          quality={100}
+          unoptimized={true}
+          className="object-contain rounded-br-md"
+          fill={true}
+        />
       </div>
-      <div className="relative w-128 max-w-full">
+      <div className="relative w-148 max-w-full">
         <span className="absolute inset-y-0 left-3 flex items-center text-brand-grey">
           <FontAwesomeIcon icon={faMagnifyingGlass} />
         </span>
