@@ -93,8 +93,8 @@ export default function BlogPostCard({
         >
           <FontAwesomeIcon
             icon={isHovered || isFavourited ? solidHeart : strokedHeart}
-            className={`icon-xl absolute right-3 hover:text-brand-red ${
-              isFavourited ? 'text-brand-red' : 'text-brand-navy'
+            className={`icon-xl absolute right-3 hover:text-brand-aqua ${
+              isFavourited ? 'text-brand-aqua' : 'text-brand-navy'
             }`}
           />
         </div>

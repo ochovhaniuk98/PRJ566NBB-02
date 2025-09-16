@@ -17,7 +17,7 @@ export default function FavouriteButton({
     <button className={btnStyling} onClick={handleFavouriteToggle}>
       <FontAwesomeIcon
         icon={isFavourited ? faHeartSolid : faHeartRegular}
-        className={`icon-lg mr-1 ${isFavourited ? 'text-brand-red' : 'text-brand-navy'}`}
+        className={`icon-lg mr-1 ${isFavourited ? 'text-brand-aqua' : 'text-brand-navy'}`}
       />
       {numOfFavourites ?? 0}
     </button>

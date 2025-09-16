@@ -75,7 +75,7 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
             >
               <FontAwesomeIcon
                 icon={isHovered || isFavourited ? solidHeart : strokedHeart}
-                className={`icon-lg hover:text-brand-red ${isFavourited ? 'text-brand-red' : 'text-brand-navy'}`}
+                className={`icon-lg hover:text-brand-aqua ${isFavourited ? 'text-brand-aqua' : 'text-brand-navy'}`}
               />
             </div>
           </div>
