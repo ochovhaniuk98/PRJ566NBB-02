@@ -54,7 +54,7 @@ export default function MainMenu() {
     <>
       {userType !== 'business' && (
         <aside
-          className="group fixed md:top-0 bottom-0 left-0 z-50 bg-white md:p-2 md:pt-8 p-4 px-2 md:h-screen md:w-12 w-full md:shadow-lg shadow-brand-grey/50 shadow-[0_-4px_6px_-1px]  md:hover:w-fit"
+          className="group fixed md:top-0 bottom-0 left-0 z-50 bg-brand-green-lite md:p-2 md:pt-8 p-4 px-2 md:h-screen md:w-12 w-full md:shadow-lg shadow-brand-grey/50 shadow-[0_-4px_6px_-1px]  md:hover:w-fit"
           onMouseLeave={() => setIsHovered(false)}
           onMouseEnter={() => {
             setIsHovered(true);
@@ -67,7 +67,7 @@ export default function MainMenu() {
                 <div key={idx} className={`group flex flex-col items-center gap-y-1 cursor-pointer  md:w-fit w-12`}>
                   <div
                     className={`${
-                      isSelected ? 'bg-brand-yellow' : 'bg-brand-green-extralite'
+                      isSelected ? 'bg-brand-yellow' : 'bg-brand-green-lite'
                     } rounded-full aspect-square w-8 h-8 flex items-center justify-center outline outline-brand-navy transition-transform duration-200 group-hover:scale-115`}
                     key={idx}
                   >
