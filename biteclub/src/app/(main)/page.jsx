@@ -11,6 +11,7 @@ import Image from 'next/image';
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import StyledPageTitle from '@/components/shared/StyledPageTitle';
 import ExploringBlogPosts from '@/components/blogPosts/ExploringBlogPosts';
+import { Button } from '@/components/shared/Button';
 
 export default function Home() {
   const [personalizedRecommendations, setPersonalizedRecommendations] = useState([]);
@@ -206,7 +207,7 @@ export default function Home() {
                 <div className="landingText">
                   Turn every meal into an adventure.
                   <br />
-                  Explore, taste, and collect points for discounts as you level up your palate with BiteClub
+                  Explore, taste, and collect points for discounts as you level up your palate with BiteClub.
                 </div>
                 <div className="landingButtons">
                   <button
@@ -224,28 +225,45 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {/*<div className="flex gap-4 items-center justify-center w-full h-20 bg-brand-green font-secondary text-4xl text-brand-navy">
-            Can't decide what to eat?
-            <button
+          <div
+            className=" flex flex-col gap-4 items-center justify-center w-full h-full md:p-8 p-2 md:py-8 py-4 bg-brand-aqua text-center
+    bg-no-repeat
+    sm:bg-[url('/img/lightSpoonFork.png')] sm:bg-[length:12rem] sm:bg-[position:10%_8rem]
+    md:bg-[url('/img/lightSpoonFork.png')] md:bg-[length:12rem] md:bg-[position:5%_6rem]
+    lg:bg-[url('/img/lightSpoonFork.png')] lg:bg-[length:12rem] lg:bg-[position:5%_6rem]
+    xl:bg-[url('/img/lightSpoonFork.png')] xl:bg-[length:15rem] xl:bg-[position:18%_4rem]"
+          >
+            <div className="relative lg:w-3xl w-sm lg:h-17 h-8">
+              <StyledPageTitle
+                textString="Can't decide what to eat?"
+                p_fontSize="lg:text-7xl text-4xl"
+                txtColour="text-white"
+                outlineWidth="lg:[-webkit-text-stroke:1px_black] [-webkit-text-stroke:0.75px_black]"
+                shadowPos="lg:top-[3px] top-[1.25px]"
+              />
+            </div>
+            <p className="w-sm">
+              When everything looks good, choosing can be the hardest part. Let chance decide. Discover a cuisine you
+              didn’t know you were craving.
+            </p>
+            {/*<button
               onClick={handleSurpriseMeSubmit}
-              className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110"
-            >
-              Surprise Me <FontAwesomeIcon icon={faArrowRight} className={`text-2xl text-brand-navy`} />
-            </button>
-            <button
-              onClick={handleSurpriseMeSubmit}
-              className=" bg-brand-green uppercase flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-brand-navy border-1 rounded-sm shadow-lg py-2 px-4 transform transition-transform duration-200 hover:scale-110"
+              className=" bg-brand-peach uppercase flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-brand-navy border-1 rounded-sm shadow-lg py-2 px-4 transform transition-transform duration-200 hover:scale-110 [-webkit-text-stroke:0px_black]"
             >
               Surprise Me
               <FontAwesomeIcon icon={faArrowRight} className={`text-2xl`} />
-            </button>
-          </div> */}
+            </button>*/}
+            <Button className="m-auto" onClick={handleSurpriseMeSubmit} variant="secondary" disabled={false}>
+              Surprise Me
+              <FontAwesomeIcon icon={faArrowRight} className={`text-xl`} />
+            </Button>
+          </div>
         </>
       )}
       {/* Cuisine Spotlight */}
       {fetchedCuisineRestaurants && (
         <div className="main-side-padding mb-16 flex flex-col items-center w-full">
-          <div className="flex items-center justify-between w-full relative h-12">
+          <div className="flex items-center justify-between w-full relative h-12 mt-8">
             <StyledPageTitle textString={cuisine} />
 
             <button className="font-primary font-semibold text-brand-navy cursor-pointer" onClick={handleViewAllSubmit}>
