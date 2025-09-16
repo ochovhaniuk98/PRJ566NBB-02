@@ -167,8 +167,8 @@ export default function Home() {
         /* Placeholder if recommendations are unavailable */
         /* lg:bg-brand-green md:bg-brand-peach bg-pink-400 */
         <>
-          <div className="bg-brand-yellow  w-full min-h-[350px] xl:h-[48vw] lg:h-[52vw] md:h-[64vw] h-[31rem] relative overflow-hidden">
-            <div className="absolute xl:size-[48vw] lg:size-[46vw] md:size-[50vw] size-[64vw] xl:left-[40vw] lg:left-[44vw] md:left-[40vw] left-[32vw] xl:-bottom-27 lg:-bottom-16 md:-bottom-15 -bottom-13">
+          <div className="bg-gradient-to-br from-brand-yellow to-[#ffc94c]  w-full min-h-[350px] xl:h-[48vw] lg:h-[52vw] md:h-[64vw] h-[31rem] relative overflow-hidden">
+            <div className="absolute xl:size-[48vw] lg:size-[46vw] md:size-[50vw] size-[66vw] xl:left-[40vw] lg:left-[44vw] md:left-[40vw] left-[32vw] xl:-bottom-27 lg:-bottom-16 md:-bottom-15 -bottom-14">
               <Image
                 src={'/img/foodPlatesCoin.png'}
                 alt={'food plates'}
@@ -191,12 +191,12 @@ export default function Home() {
               }}
             >
               <div className="landingContainer">
-                <div className="landingTitle">
+                <div className="landingTitle absolute">
                   Level Up Your
                   <br />
                   <span className="landingTitleSpan">Taste</span>
                 </div>
-                <div className="landingTitle md:left-1 md:top-1 left-[2px] top-[2px] text-brand-green md:[-webkit-text-stroke:1px_black] [-webkit-text-stroke:0.75px_black]">
+                <div className="landingTitle absolute md:top-1 top-[2px] text-brand-green md:[-webkit-text-stroke:1px_black] [-webkit-text-stroke:0.75px_black]">
                   Level Up Your
                   <br />
                   <span className="landingTitleSpan text-white">Taste</span>
@@ -209,12 +209,12 @@ export default function Home() {
                 <div className="landingButtons">
                   <button
                     onClick={() => router.push('/sign-up')}
-                    className="landingButtonSingle bg-brand-aqua transform transition-transform duration-200 hover:scale-110"
+                    className="landingButtonSingle bg-brand-green transform transition-transform duration-200 hover:scale-110"
                   >
                     <FontAwesomeIcon icon={faGamepad} className={`text-2xl`} />
                     Join to Play
                   </button>
-                  <button onClick={() => router.push('/login')} className="landingButtonSingle bg-brand-yellow">
+                  <button onClick={() => router.push('/login')} className="landingButtonSingle bg-brand-peach">
                     <FontAwesomeIcon icon={faArrowRightToBracket} className={`text-2xl text-brand-navy`} />
                     Login
                   </button>

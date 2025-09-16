@@ -186,11 +186,11 @@
   }
 
   .landingContainer {
-    @apply absolute xl:top-[22%] lg:top-[18%] md:top-[16%] top-[18%] lg:left-[-4rem] md:left-[-4rem] -left-7 lg:w-md md:w-sm w-sm bg-pink-200/0 xl:h-[36rem] lg:h-[30rem] md:h-[25rem] h-full;
+    @apply absolute xl:top-[22%] lg:top-[18%] md:top-[16%] top-[18%] lg:left-[-4rem] md:left-[-4rem] -left-7 md:w-md  w-sm bg-pink-200/0 xl:h-[36rem] lg:h-[30rem] md:h-[25rem] h-full;
   }
 
   .landingTitle {
-    @apply absolute w-full xl:text-[7rem] lg:text-[6rem] md:text-[4.5rem] text-[3rem] md:text-center md:left-1/2 md:-translate-x-1/2;
+    @apply w-full xl:text-[7rem] lg:text-[6rem] md:text-[4.5rem] text-[3rem] md:text-center md:left-1/2 md:-translate-x-1/2;
   }
 
   .landingTitleSpan {
@@ -202,10 +202,10 @@
   }
 
   .landingButtons {
-    @apply absolute flex md:flex-row flex-col gap-4 w-auto xl:bottom-[6rem] xl:top-auto lg:bottom-[3.25rem] md:-bottom-[0.5rem] bottom-42 lg:left-1/6 md:left-15 left-0;
+    @apply absolute flex md:flex-row flex-col gap-4 w-auto xl:bottom-[6rem] xl:top-auto lg:bottom-[3.25rem] md:-bottom-[0.5rem] bottom-48 lg:left-1/6 md:left-15 left-0;
   }
   .landingButtonSingle {
-    @apply flex items-center gap-2 font-primary font-semibold text-brand-navy cursor-pointer border-1 border-brand-navy py-2 px-4 rounded-sm lg:text-lg text-base;
+    @apply flex items-center gap-2 font-primary font-semibold text-brand-navy cursor-pointer border-1 border-brand-navy py-2 px-4 rounded-sm lg:text-lg text-base shadow-lg;
   }
 }
 
