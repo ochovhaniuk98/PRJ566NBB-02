@@ -111,7 +111,9 @@ export default function FollowingBlogPosts() {
           </Masonry>
           {hasMore && (
             <div className="mt-6 flex justify-center">
-              <Button onClick={loadMore}>Load More</Button>
+              <Button onClick={loadMore} variant="secondary">
+                View More
+              </Button>
             </div>
           )}
         </>

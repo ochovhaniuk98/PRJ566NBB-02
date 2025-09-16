@@ -110,7 +110,9 @@ export default function CuisinePage() {
       {hasMore && (
         <>
           <div className="mt-6 flex justify-center">
-            <Button onClick={() => setPage(prev => prev + 1)}>Load More</Button>
+            <Button onClick={() => setPage(prev => prev + 1)} variant="secondary">
+              View More
+            </Button>
           </div>
           <br />
         </>

@@ -232,8 +232,8 @@ export default function RestaurantResults() {
               </GridCustomCols>
               {hasMore && (
                 <div className="mt-6 flex justify-center">
-                  <Button type="button" onClick={loadMore}>
-                    Load More
+                  <Button type="button" onClick={loadMore} variant="secondary">
+                    View More
                   </Button>
                 </div>
               )}
