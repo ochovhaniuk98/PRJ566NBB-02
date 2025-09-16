@@ -165,9 +165,10 @@ export default function Home() {
         </div>
       ) : (
         /* Placeholder if recommendations are unavailable */
+        /* lg:bg-brand-green md:bg-brand-peach bg-pink-400 */
         <>
-          <div className="xl:bg-brand-yellow lg:bg-brand-green md:bg-brand-peach bg-pink-400 w-full  max-h-200 min-h-[350px] xl:h-[100vw] lg:h-[38rem] md:h-[30rem] h-[26rem] relative overflow-hidden">
-            <div className="absolute xl:size-[55vw] lg:size-[43vw] md:size-[43vw] size-[60vw] xl:left-[40vw] left-[50vw] xl:-bottom-40 md:bottom-0 -bottom-15">
+          <div className="bg-brand-yellow  w-full min-h-[350px] xl:h-[48vw] lg:h-[52vw] md:h-[64vw] h-[31rem] relative overflow-hidden">
+            <div className="absolute xl:size-[48vw] lg:size-[46vw] md:size-[50vw] size-[64vw] xl:left-[40vw] lg:left-[44vw] md:left-[40vw] left-[32vw] xl:-bottom-27 lg:-bottom-16 md:-bottom-15 -bottom-13">
               <Image
                 src={'/img/foodPlatesCoin.png'}
                 alt={'food plates'}
@@ -213,7 +214,7 @@ export default function Home() {
                     <FontAwesomeIcon icon={faGamepad} className={`text-2xl`} />
                     Join to Play
                   </button>
-                  <button onClick={() => router.push('/login')} className="landingButtonSingle">
+                  <button onClick={() => router.push('/login')} className="landingButtonSingle bg-brand-yellow">
                     <FontAwesomeIcon icon={faArrowRightToBracket} className={`text-2xl text-brand-navy`} />
                     Login
                   </button>
