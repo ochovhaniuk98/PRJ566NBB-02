@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import GridCustomCols from '@/components/shared/GridCustomCols';
 import RestaurantCard from '@/components/restaurantProfile/RestaurantCard';
 import { Button } from '@/components/shared/Button';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
 
 export default function RandomCuisinePage() {
   // random cuisine restaurants
@@ -98,20 +99,18 @@ export default function RandomCuisinePage() {
   }, [cuisine, page]);
 
   return (
-    <>
+    <div className="md:pl-12 pb-12">
       {fetchedCuisineRestaurants && (
-        <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18 ">
-          <div>
-            <h2>SURPRISE CUISINE: {cuisine}</h2>
-            <div className="overflow-x-scroll">
-              <div className="w-fit h-full flex flex-row">
-                <GridCustomCols numOfCols={5} className="mt-4">
-                  {restaurants.map((restaurant, i) => (
-                    <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
-                  ))}
-                </GridCustomCols>
-              </div>
-            </div>
+        <div className="mb-16 w-full flex flex-col items-center pt-18 ">
+          <div className="relative flex justify-start w-full h-13">
+            <StyledPageTitle textString={cuisine} />
+          </div>
+          <div className="overflow-x-hidden w-full">
+            <GridCustomCols numOfCols={5} className="mt-4">
+              {restaurants.map((restaurant, i) => (
+                <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
+              ))}
+            </GridCustomCols>
           </div>
         </div>
       )}
@@ -123,6 +122,6 @@ export default function RandomCuisinePage() {
           <br />
         </>
       )}
-    </>
+    </div>
   );
 }
