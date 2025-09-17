@@ -207,6 +207,14 @@
   .landingButtonSingle {
     @apply flex items-center gap-2 font-primary font-semibold text-brand-navy cursor-pointer border-1 border-brand-navy py-2 px-4 rounded-sm lg:text-lg text-base shadow-lg;
   }
+
+  .onboardingScaleText {
+    @apply md:w-[70%] w-full text-center mb-4;
+  }
+
+  .customTopShadow {
+    @apply drop-shadow-[0_-4px_6px_rgba(0,0,0,0.1)];
+  }
 }
 
 /*AUTH CSS (NICOLE ADDED) all tailwind css*/
