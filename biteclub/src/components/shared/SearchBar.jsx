@@ -21,7 +21,7 @@ export default function SearchBar() {
 
   return (
     <div className="fixed w-full flex justify-between z-40 bg-white/50 main-side-padding md:space-x-0 space-x-2">
-      <div className="relative  h-12 size-auto md:w-60 w-50 mt-1">
+      <div className="relative  h-12 size-auto md:w-60 w-50 mt-1 cursor-pointer" onClick={() => router.push('/')}>
         <Image
           src="/img/logo_final.png"
           alt="logo pic"
