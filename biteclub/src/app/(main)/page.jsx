@@ -263,7 +263,7 @@ export default function Home() {
       {/* Cuisine Spotlight */}
       {fetchedCuisineRestaurants && (
         <div className="main-side-padding mb-16 flex flex-col items-center w-full">
-          <div className="flex items-center justify-between w-full relative h-12 mt-8">
+          <div className="flex items-baseline-last justify-between w-full relative h-12 mt-8">
             <StyledPageTitle textString={cuisine} />
 
             <button className="font-primary font-semibold text-brand-navy cursor-pointer" onClick={handleViewAllSubmit}>
@@ -275,6 +275,9 @@ export default function Home() {
               <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
             ))}
           </GridCustomCols>
+          <div className="relative w-full lg:h-12 h-8 mt-8">
+            <StyledPageTitle textString="Trending And Recently Posted" />
+          </div>
           <ExploringBlogPosts />
         </div>
       )}

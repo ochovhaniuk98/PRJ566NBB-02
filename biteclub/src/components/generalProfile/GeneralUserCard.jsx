@@ -154,7 +154,7 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
 
           <div
             className={`relative aspect-square w-30 rounded-full bg-brand-grey my-2 border-3 ${
-              isFollowing ? 'border-white' : 'border-brand-green'
+              isFollowing ? 'border-white' : 'border-brand-aqua'
             }`}
           >
             <Image
@@ -165,7 +165,7 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
             />
             {!isOwner && !isFollowing && (
               <div
-                className="aspect-square w-10 rounded-full bg-brand-green absolute top-0 -right-3 flex justify-center items-center shadow-sm cursor-pointer hover:w-12"
+                className="aspect-square w-10 rounded-full bg-brand-aqua absolute top-0 -right-3 flex justify-center items-center shadow-sm cursor-pointer hover:w-12"
                 onClick={e => {
                   e.stopPropagation(); // Prevent redirect
                   handleFollowClick(e);
