@@ -19,6 +19,8 @@ import StarRating from '../shared/StarRating';
 import TextEditorStyled from '@/components/generalProfile/TextEditorStyled';
 import Spinner from '@/components/shared/Spinner';
 import { Button } from '../shared/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenClip } from '@fortawesome/free-solid-svg-icons';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
@@ -355,8 +357,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // Masonry breakpoints for internal reviews and expanded review side panel
   const breakpointColumnsObj = useMemo(() => {
     return selectedReview
-      ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
-      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
+      ? { default: 2, 1280: 1, 640: 1 } // 2 column + expanded panel view
+      : { default: 3, 1280: 2, 640: 1 }; // 3 column default view
   }, [selectedReview]);
 
   // Masonry breakpoints for external reviews (Instagram) and blog posts
@@ -528,7 +530,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   };
 
   return (
-    <div className="absolute md:left-12 right-0 top-0">
+    <MainBaseContainer>
       <GeneralUserBanner
         showTextEditor={showTextEditor}
         setShowTextEditor={setShowTextEditor}
@@ -564,7 +566,10 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                 <Spinner message="Loading Blog Posts..." />
               ) : myBlogPosts?.length === 0 ? (
                 <div className="col-span-3 text-center">
-                  <p>No blog posts yet.</p>
+                  <div className="border-2 border-white py-8 px-4 w-sm m-auto rounded-md text-brand-grey">
+                    <FontAwesomeIcon icon={faPenClip} className={`text-4xl text-brand-blue`} />
+                    <h2 className="normal-case">No posts yet</h2>
+                  </div>
                 </div>
               ) : (
                 <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
@@ -858,6 +863,6 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
           </div>
         </div>
       )}
-    </div>
+    </MainBaseContainer>
   );
 }

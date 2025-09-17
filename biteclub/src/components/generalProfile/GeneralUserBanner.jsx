@@ -131,11 +131,11 @@ export default function GeneralUserBanner({
   };
 
   return (
-    <div className="flex flex-col items-center bg-brand-yellow-extralite relative">
+    <div className="w-full flex flex-col items-center bg-brand-yellow-extralite relative">
       <div className="pt-14 flex xl:flex-row flex-col">
         {/*profile pic*/}
         <div className=" flex md:flex-row flex-col justify-center md:items-start items-center">
-          <div className="relative lg:size-60 md:size-50 size-40 rounded-full border border-white bg-brand-green mx-4">
+          <div className="relative lg:size-50 size-40 rounded-full border border-white bg-brand-green mx-4">
             {generalUserData.userProfilePicture && (
               <Image
                 src={generalUserData.userProfilePicture.url}

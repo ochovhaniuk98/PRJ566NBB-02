@@ -121,8 +121,8 @@ export default function MasonryReviewGrid({
   const breakpointColumnsObj = useMemo(() => {
     const isInternal = selectedReview && !selectedReview?.content?.embedLink;
     return isInternal
-      ? { default: 2, 1024: 1, 640: 1 } // 2 column + expanded panel view
-      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
+      ? { default: 2, 1280: 1, 640: 1 } // 2 column + expanded panel view
+      : { default: 3, 1280: 2, 640: 1 }; // 3 column default view
   }, [selectedReview]);
 
   // Exit early if no reviews
@@ -186,7 +186,7 @@ export default function MasonryReviewGrid({
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 w-full">
       {/* Masonry columns */}
       <div className="flex-1">
         <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">

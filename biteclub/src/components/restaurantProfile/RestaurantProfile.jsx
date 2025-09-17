@@ -197,7 +197,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
         )}
       </InfoBanner>
 
-      <div className="main-side-padding mb-16 w-screen">
+      <div className="main-side-padding mb-16 w-full">
         <ProfileTabBar onTabChange={setSelectedTab} tabs={restaurantTabs} />
 
         {/* Reviews */}
