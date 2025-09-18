@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Masonry from 'react-masonry-css';
 import BlogPostCard from '../shared/BlogPostCard';
 import Spinner from '@/components/shared/Spinner';
+import NoContentPlaceholder from '../shared/NoContentPlaceholder';
 
 export default function MentionedTab({ restaurantId }) {
   const [blogPosts, setBlogPosts] = useState(null);
@@ -28,12 +29,10 @@ export default function MentionedTab({ restaurantId }) {
     fetchBlogPosts();
   }, [restaurantId]);
 
-  if (loading) return <Spinner message='Loading...' />;
+  if (loading) return <Spinner message="Loading..." />;
 
   if (error) return <div className="text-red-500">{error}</div>;
-  if (!blogPosts || blogPosts.length === 0) return (      <div className="col-span-3 text-center">
-        <p>No mentions found.</p>
-      </div>);
+  if (!blogPosts || blogPosts.length === 0) return <NoContentPlaceholder contentType={'mentions'} iconImgNum={1} />;
 
   // for blog posts' Masonry grid
   const breakpointColumnsObj = {

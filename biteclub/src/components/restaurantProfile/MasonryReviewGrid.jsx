@@ -6,6 +6,7 @@ import Spinner from '@/components/shared/Spinner';
 import ReviewCard from '../shared/ReviewCard';
 import InstagramEmbed from './InstagramEmbed';
 import ReviewCardExpanded from './ReviewCardExpanded';
+import NoContentPlaceholder from '../shared/NoContentPlaceholder';
 
 export default function MasonryReviewGrid({
   selectedReview,
@@ -127,11 +128,7 @@ export default function MasonryReviewGrid({
 
   // Exit early if no reviews
   if (!reviewList || (!reviewList?.internalReviews?.length && !reviewList?.externalReviews?.length)) {
-    return (
-      <div className="col-span-3 text-center">
-        <p>No reviews available.</p>
-      </div>
-    );
+    return <NoContentPlaceholder contentType="reviews" iconImgNum={1} />;
   }
 
   if (loadingData || loading) return <Spinner />;
