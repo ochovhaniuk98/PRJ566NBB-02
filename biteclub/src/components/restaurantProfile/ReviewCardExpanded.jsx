@@ -170,8 +170,8 @@ export default function ReviewCardExpanded({
   };
 
   return (
-    <div className="xl:w-1/3 lg:w-2/3 w-full fixed left-0 right-0 bottom-0 top-8 md:static z-100 h-screen">
-      <div className="sticky top-14 h-full overflow-auto scrollbar-none bg-white md:border-2 md:border-t-0 border-t-2 border-brand-peach rounded-md shadow-lg">
+    <div className="xl:w-1/3 lg:w-2/3 w-full fixed left-0 right-0 bottom-0 top-16 md:static md:z-20 z-100 h-screen md:pb-0 pb-16">
+      <div className="sticky top-14 h-full overflow-auto scrollbar-none bg-white md:border-2 border-t-2 border-brand-peach rounded-md shadow-lg">
         <div className="p-4 bg-white w-full flex justify-between">
           <AuthorDateBlurb
             authorPic={selectedReview.user_id?.userProfilePicture?.url}
@@ -184,7 +184,7 @@ export default function ReviewCardExpanded({
               className={`icon-md text-brand-navy mr-3 cursor-pointer`}
               onClick={() => setOpenReportForm(true)}
             />
-            <FontAwesomeIcon icon={faXmark} className={`icon-md text-brand-navy`} onClick={onClose} />
+            <FontAwesomeIcon icon={faXmark} className={`icon-lg text-brand-navy cursor-pointer`} onClick={onClose} />
           </div>
         </div>
         {selectedReview?.photos?.length > 0 && (

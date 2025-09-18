@@ -104,8 +104,8 @@ export default function ReportForm({
       onClick={e => e.stopPropagation()}
     >
       <div className="relative bg-transparent md:p-8 mt-8 w-2xl md:min-h-fit">
-        <div className="bg-brand-green-lite w-full font-primary rounded-t-lg flex gap-x-2 cursor-pointer p-3 font-semibold">
-          <FontAwesomeIcon icon={faFlag} className={`icon-xl text-white`} />
+        <div className="bg-brand-green-lite w-full font-primary rounded-t-lg flex items-center gap-x-2 cursor-pointer p-3 font-semibold md:text-md text-sm">
+          <FontAwesomeIcon icon={faFlag} className={`text-2xl text-white`} />
           Report {reportType === 'user' ? 'User' : 'Content'}
         </div>
         <form className=" w-full md:min-h-content h-full bg-white rounded-b-lg shadow-md flex flex-col items-center pb-8">

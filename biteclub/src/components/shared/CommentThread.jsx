@@ -19,6 +19,7 @@ import {
   faTrashCan,
   faFlag,
   faXmark,
+  faReply,
 } from '@fortawesome/free-solid-svg-icons';
 
 //////////////// COMMENT THREAD FOR *** BLOG POST *** ONLY! ///////////////
@@ -250,18 +251,18 @@ export default function CommentThread({ post, setShowComments }) {
   };
 
   return (
-    <div className="fixed xl:top-20 right-0  bottom-0 md:w-md w-full h-2/3 xl:h-10/12 p-4 xl:mb-8 border bg-white border-brand-peach flex flex-col shadow-lg customTopShadow rounded-tl-lg rounded-bl-lg font-primary z-[999] overflow-y-scroll scrollbar-hide">
+    <div className="fixed xl:top-20 right-0  bottom-0 md:w-md w-full h-2/3 xl:h-10/12 p-4 xl:mb-8 border bg-white border-brand-peach flex flex-col shadow-lg rounded-tl-lg rounded-bl-lg font-primary z-[999] overflow-y-scroll scrollbar-hide">
       <div className="flex justify-between items-center pb-4">
         <h3 className="text-lg font-bold">Comments ({commentsCount})</h3>
         <FontAwesomeIcon
           icon={faXmark}
-          className={`icon-xl text-brand-navy cursor-pointer`}
+          className={`icon-lg text-brand-navy cursor-pointer`}
           onClick={() => setShowComments(false)}
         />
       </div>
 
       {/* scrollable comments area */}
-      <div className="flex-1 overflow-y-auto pr-1 xl:pb-28 pb-8 scrollbar-hide border-t-2 border-brand-peach pt-4">
+      <div className="flex-1 overflow-y-auto pr-1 xl:pb-28 pb-8 scrollbar-hide border-t-1 border-brand-peach pt-4">
         {fetchedComments &&
           fetchedPostUser &&
           comments.map(comment => (
@@ -285,7 +286,7 @@ export default function CommentThread({ post, setShowComments }) {
           placeholder="Write a comment..."
           value={newComment}
           onChange={e => setNewComment(e.target.value)}
-          className="w-full border rounded-md p-2 mb-2"
+          className="w-full border-2 rounded-md p-2 mb-2"
         />
         <Button type="submit" variant="default" className="block min-w-30" onClick={addComment}>
           Post
@@ -389,7 +390,7 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
 
   return (
     <>
-      <div className="flex mb-6">
+      <div className="flex mb-4">
         <div className="relative w-10 h-10 rounded-full mr-3">
           <Image
             src={comment.avatarURL}
@@ -399,8 +400,9 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
           />
         </div>
         <div className="flex-1">
-          <div className="text-sm font-semibold">
-            {comment.author} <span className="text-gray-500 text-xs">{formatTimeAgo(comment.date_posted)}</span>
+          <div className="flex justify-between text-sm font-semibold">
+            {comment.author}{' '}
+            <span className="text-gray-500 text-xs font-normal">{formatTimeAgo(comment.date_posted)}</span>
           </div>
           <div className="mt-1 mb-2">{comment.content}</div>
 
@@ -427,12 +429,15 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
                 setOpenReportForm(prev => !prev);
               }}
             >
-              <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy mr-3 cursor-pointer`} />
+              <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy cursor-pointer`} />
             </div>
 
             {showReplyBtn && (
-              <button onClick={() => setShowReplyInput(!showReplyInput)} className="hover:text-black cursor-pointer">
-                <FontAwesomeIcon icon={faComment} className={`icon-md text-brand-navy`} /> Reply
+              <button
+                onClick={() => setShowReplyInput(!showReplyInput)}
+                className="hover:text-brand-navy text-xs cursor-pointer flex justify-center items-center"
+              >
+                <FontAwesomeIcon icon={faReply} className={`icon-md text-brand-navy mr-1`} /> Reply
               </button>
             )}
             {isOwner && (

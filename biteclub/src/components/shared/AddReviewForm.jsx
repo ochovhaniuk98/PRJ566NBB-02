@@ -114,9 +114,9 @@ export default function AddReviewForm({
       <div className="fixed inset-0 bg-brand-peach/40 flex justify-center  z-[200]  overflow-scroll scrollbar-hide">
         <div className="relative bg-transparent md:p-8 pt-8 p-0 md:w-2xl w-full min-h-fit ">
           {/* Toggle Switch -- Allows users to select "Write a review" OR "Add Instagram Post" if adding NEW review (non-edit mode) */}
-          <div className="bg-brand-green-lite w-full font-secondary uppercase rounded-t-lg flex justify-between cursor-pointer">
+          <div className="bg-brand-green-lite w-full font-secondary rounded-t-lg flex justify-between cursor-pointer">
             <div
-              className={`flex items-center font-primary font-semibold text-md capitalize py-3 px-3 rounded-tl-lg ${
+              className={`flex items-center font-primary font-semibold md:text-md text-sm capitalize py-3 px-3 rounded-tl-lg ${
                 editReviewMode ? 'w-full' : 'w-[50%]'
               } hover:bg-brand-aqua bg-brand-aqua`}
               onClick={() => setShowInstagramForm(false)}
@@ -127,7 +127,7 @@ export default function AddReviewForm({
             </div>
             {!editReviewMode && (
               <div
-                className="flex items-center font-primary font-semibold text-md capitalize py-3 px-3 w-[50%] rounded-tr-lg hover:bg-brand-aqua shadow-md"
+                className="flex items-center font-primary font-semibold md:text-md text-sm capitalize py-3 px-3 w-[50%] rounded-tr-lg hover:bg-brand-aqua shadow-md"
                 onClick={() => setShowInstagramForm(true)}
               >
                 <FontAwesomeIcon icon={faInstagram} className={`text-2xl text-white mr-2`} />

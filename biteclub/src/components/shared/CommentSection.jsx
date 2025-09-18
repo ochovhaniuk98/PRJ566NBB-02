@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from './Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import {
   faThumbsUp as faThumbsUpRegular,
   faThumbsDown as faThumbsDownRegular,
@@ -44,10 +44,10 @@ export default function CommentSection({
   };
 
   return (
-    <div className="w-full mt-4 py-4 border-t border-brand-peach">
-      <h3 className="text-lg font-semibold mb-4 uppercase">Comments ({comments.length})</h3>
+    <div className="w-full mt-4 pt-4 border-t border-brand-peach">
+      <h3 className="text-lg font-semibold mb-4 capitalize">Comments ({comments.length})</h3>
 
-      <ul className="space-y-2">
+      <ul className="space-y-2 border-t-1 border-brand-peach pt-4">
         {comments.map(comment => (
           <Comment
             key={comment._id}
@@ -65,15 +65,15 @@ export default function CommentSection({
 
       {/* Comment input form */}
       {isOwner || isAuthor ? (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-y-2 mb-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-y-2 mb-0 border-t-1 border-brand-peach w-full">
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
             type="text"
             placeholder="Write a comment..."
-            className="w-full mt-4"
+            className="w-full mt-4 min-h-20"
           />
-          <Button type="submit" variant="secondary" className="w-30 ml-auto">
+          <Button type="submit" variant="default" className="w-30 mr-auto">
             Post
           </Button>
         </form>
@@ -94,7 +94,7 @@ function Comment({ comment, currentUser, isOwner, restaurantId, engagementData, 
   const hasDisliked = engagementData?.userDisliked || false;
 
   return (
-    <li className="p-2 text-sm flex gap-x-2 font-primary">
+    <li className="p-2 text-sm flex gap-x-2 font-primary w-full">
       <div className="relative h-10 aspect-square rounded-full border border-brand-grey-lite bg-white">
         <Image
           src={avatarURL || 'https://freesvg.org/img/chef-restaurant-logo-publicdomainvectors.png'}
@@ -104,7 +104,7 @@ function Comment({ comment, currentUser, isOwner, restaurantId, engagementData, 
         />
       </div>
 
-      <div>
+      <div className="w-full">
         <div className="flex justify-between items-center mb-1">
           <div className="font-semibold font-primary text-sm">{author_name}</div>
           <div className="text-xs text-brand-grey">{formatTimeAgo(date_posted)}</div>
@@ -112,10 +112,10 @@ function Comment({ comment, currentUser, isOwner, restaurantId, engagementData, 
 
         <p className="mb-2">{content}</p>
 
-        <div className="flex gap-4 text-xs text-black font-primary mt-4">
+        <div className="flex gap-4 text-sm text-gray-500 font-primary mt-4]">
           <button
             onClick={onLike}
-            className={`hover:text-green-600 ${hasLiked ? 'text-green-600 font-semibold' : ''} mb-1`}
+            className={`hover:text-brand-navy ${hasLiked ? 'text-gray-500' : ''} mb-1 cursor-pointer`}
           >
             <FontAwesomeIcon icon={hasLiked ? faThumbsUp : faThumbsUpRegular} className="icon-md text-brand-navy" />{' '}
             {engagementData?.likes?.count || 0}
@@ -123,7 +123,7 @@ function Comment({ comment, currentUser, isOwner, restaurantId, engagementData, 
 
           <button
             onClick={onDislike}
-            className={`hover:text-red-500 ${hasDisliked ? 'text-red-500 font-semibold' : ''}`}
+            className={`hover:text-brand-navy ${hasDisliked ? 'text-brand-navy font-semibold' : ''} cursor-pointer`}
           >
             <FontAwesomeIcon
               icon={hasDisliked ? faThumbsDown : faThumbsDownRegular}
@@ -132,8 +132,8 @@ function Comment({ comment, currentUser, isOwner, restaurantId, engagementData, 
           </button>
 
           {author_id === (isOwner ? restaurantId : currentUser._id) ? (
-            <button onClick={onDelete} className="text-xs text-red-600">
-              Delete
+            <button onClick={onDelete} className="cursor-pointer ml-auto">
+              <FontAwesomeIcon icon={faTrashCan} className={`icon-md text-brand-red`} />
             </button>
           ) : null}
         </div>
