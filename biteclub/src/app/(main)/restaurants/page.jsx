@@ -190,7 +190,7 @@ export default function RestaurantResults() {
         <div className={'w-full h-full relative'}>
           <StyledPageTitle textString="Popular and New Restaurants"></StyledPageTitle>
 
-          <div className="flex justify-end md:mt-4 mt-12">
+          <div className="flex justify-end md:mt-4 mt-0">
             <div className="relative w-full flex justify-end">
               <Button
                 type="button"

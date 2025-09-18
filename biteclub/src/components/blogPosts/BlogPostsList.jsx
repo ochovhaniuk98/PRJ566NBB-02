@@ -14,7 +14,7 @@ export default function BlogPostsList() {
     <div className="md:pl-12">
       <div className="mb-16 w-full flex flex-col items-center py-18">
         <div className={'w-full h-full'}>
-          <div className="flex lg:flex-row flex-col justify-between items-end relative md:h-20 h-24">
+          <div className="flex lg:flex-row flex-col lg:justify-between lg:items-baseline relative">
             <StyledPageTitle textString="Trending And Recently Posted"></StyledPageTitle>
             {/* tabs for selecting blog posts: Explore vs Following */}
             <BlogPostListTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />

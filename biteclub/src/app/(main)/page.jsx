@@ -168,7 +168,7 @@ export default function Home() {
         /* Placeholder if recommendations are unavailable */
         /* lg:bg-brand-green md:bg-brand-peach bg-pink-400 */
         <>
-          <div className="bg-gradient-to-br from-brand-yellow to-[#ffc94c]  w-full min-h-[350px] xl:h-[48vw] lg:h-[52vw] md:h-[64vw] h-[31rem] relative overflow-hidden">
+          <div className="bg-gradient-to-br from-brand-yellow to-[#ffce5d]  w-full min-h-[350px] xl:h-[48vw] lg:h-[52vw] md:h-[64vw] h-[31rem] relative overflow-hidden">
             <div className="absolute xl:size-[48vw] lg:size-[46vw] md:size-[56vw] size-[66vw] xl:left-[40vw] lg:left-[44vw] md:left-[40vw] left-[32vw] xl:-bottom-27 lg:-bottom-17 md:-bottom-16 -bottom-14">
               <Image
                 src={'/img/foodPlatesCoin.png'}
@@ -233,13 +233,14 @@ export default function Home() {
     lg:bg-[url('/img/lightSpoonFork.png')] lg:bg-[length:12rem] lg:bg-[position:5%_6rem]
     xl:bg-[url('/img/lightSpoonFork.png')] xl:bg-[length:15rem] xl:bg-[position:18%_4rem]"
           >
-            <div className="relative lg:w-3xl w-sm lg:h-17 h-8">
+            <div className="relative lg:w-3xl md:w-lg w-sm lg:h-17 h-8">
               <StyledPageTitle
                 textString="Can't decide what to eat?"
-                p_fontSize="lg:text-7xl text-4xl"
+                p_fontSize="lg:text-7xl md:text-5xl text-4xl"
                 txtColour="text-white"
                 outlineWidth="lg:[-webkit-text-stroke:1px_black] [-webkit-text-stroke:0.75px_black]"
-                shadowPos="lg:top-[3px] top-[1.25px]"
+                shadowPos="lg:top-[3px] top-[2px]"
+                textAlign="text-center"
               />
             </div>
             <p className="w-sm">
@@ -263,7 +264,7 @@ export default function Home() {
       {/* Cuisine Spotlight */}
       {fetchedCuisineRestaurants && (
         <div className="main-side-padding mb-16 flex flex-col items-center w-full">
-          <div className="flex items-baseline-last justify-between w-full relative h-12 mt-8">
+          <div className="flex items-baseline-last justify-between w-full relative h-auto mt-8 md:mb-0 mb-4">
             <StyledPageTitle textString={cuisine} />
 
             <button className="font-primary font-semibold text-brand-navy cursor-pointer" onClick={handleViewAllSubmit}>
@@ -275,7 +276,7 @@ export default function Home() {
               <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
             ))}
           </GridCustomCols>
-          <div className="relative w-full lg:h-12 h-8 mt-8">
+          <div className="relative w-full lg:h-12 h-auto mt-12">
             <StyledPageTitle textString="Trending And Recently Posted" />
           </div>
           <ExploringBlogPosts />

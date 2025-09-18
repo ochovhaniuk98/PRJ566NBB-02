@@ -7,9 +7,10 @@ import { faCarrot } from '@fortawesome/free-solid-svg-icons';
 import { faCircleRight, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import Image from 'next/image';
 import { Button } from '@/components/shared/Button';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
 
 const DIETARY_CONFIG = {
-  title: 'DIETARY PREFERENCES',
+  title: 'Diet Preferences',
   instructions: 'Select any dietary preferences and allergies you may have.',
   customSection: {
     missingPrompt: 'Missing something?',
@@ -20,7 +21,7 @@ const DIETARY_CONFIG = {
 };
 
 const CUISINE_CONFIG = {
-  title: 'FAVOURITE CUISINES',
+  title: 'Favourite Food',
   instructions: 'Select your favourite cuisines.',
   customSection: {
     missingPrompt: 'Missing your favourites?',
@@ -221,7 +222,9 @@ function PreferencesSelector({ config, picked, setPicked, options, setOptions })
 
   return (
     <div className="flex flex-col mt-4">
-      <h2 className="self-center mb-2">{config.title}</h2>
+      <div className="relative w-fit flex items-center self-center mb-4">
+        <StyledPageTitle textString={config.title} textAlign="text-center" />
+      </div>
       <div className="mb-[70px]">
         <p className="mb-2 text-center">{config.instructions}</p>
         <div className="flex flex-wrap gap-2 p-2 px-0 mt-6 rounded-2xl">
@@ -313,7 +316,9 @@ function LikertScale({
 }) {
   return (
     <div className="flex flex-col items-left h-fit mt-4 text-center">
-      <h2 className="self-center mb-2">Know Your Zone</h2>
+      <div className="relative h-12 w-fit flex items-center self-center mb-4">
+        <StyledPageTitle textString="Know Your Zone" />
+      </div>
       <p>Complete the following to help us understand how comfortable you are trying new foods and cuisines.</p>
       <div className="flex flex-col items-center w-full justify-between lg:gap-20 gap-16 py-8">
         <div className="flex flex-col items-center w-full">

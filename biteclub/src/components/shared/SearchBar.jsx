@@ -20,7 +20,7 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="fixed w-full flex justify-between z-40 bg-white/50 main-side-padding md:space-x-0 space-x-2">
+    <div className="fixed w-full flex justify-between z-40 bg-white/30 main-side-padding md:space-x-0 space-x-2">
       <div className="relative  h-12 size-auto md:w-60 w-50 mt-1 cursor-pointer" onClick={() => router.push('/')}>
         <Image
           src="/img/logo_final.png"
@@ -38,7 +38,7 @@ export default function SearchBar() {
         <input
           type="text"
           id="search-bar-input"
-          placeholder="Search for restaurants, blog posts, or users"
+          placeholder="Search restaurants, blog posts, or users"
           className="w-full pl-8 font-primary rounded-full"
           value={searchInput}
           onChange={e => setSearchInput(e.target.value)}
