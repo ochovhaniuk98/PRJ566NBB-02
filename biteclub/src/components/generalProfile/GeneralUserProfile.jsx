@@ -21,6 +21,7 @@ import Spinner from '@/components/shared/Spinner';
 import { Button } from '../shared/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenClip } from '@fortawesome/free-solid-svg-icons';
+import NoContentPlaceholder from '../shared/NoContentPlaceholder';
 
 // GENERAL USER DASHBOARD
 export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
@@ -565,12 +566,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (loadingStates.blogs ? (
                 <Spinner message="Loading Blog Posts..." />
               ) : myBlogPosts?.length === 0 ? (
-                <div className="col-span-3 text-center">
-                  <div className="border-2 border-white py-8 px-4 w-sm m-auto rounded-md text-brand-grey">
-                    <FontAwesomeIcon icon={faPenClip} className={`text-4xl text-brand-blue`} />
-                    <h2 className="normal-case">No posts yet</h2>
-                  </div>
-                </div>
+                <NoContentPlaceholder contentType="blog posts" />
               ) : (
                 <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
                   {myBlogPosts.map((post, i) => {
@@ -617,9 +613,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                   <Spinner message="Loading Reviews..." />
                 ) : !showInstaReview ? (
                   myReviews?.internalReviews.length === 0 ? (
-                    <div className="col-span-3 text-center">
-                      <p>No internal reviews yet.</p>
-                    </div>
+                    <NoContentPlaceholder contentType="reviews" />
                   ) : (
                     <div className="flex gap-2">
                       <div className="flex-1">
@@ -666,9 +660,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
                     </div>
                   )
                 ) : myReviews?.externalReviews.length === 0 ? (
-                  <div className="col-span-3 text-center">
-                    <p>No Instagram reviews yet.</p>
-                  </div>
+                  <NoContentPlaceholder contentType="Instagram embeds" />
                 ) : (
                   <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
                     {myReviews?.externalReviews.map((review, i) => (
@@ -697,9 +689,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (loadingStates.favRestaurants ? (
                 <Spinner message="Loading Favourite Restaurants..." />
               ) : favouritedRestaurants.length === 0 ? (
-                <div className="col-span-3 text-center">
-                  <p>No favourite restaurants yet.</p>
-                </div>
+                <NoContentPlaceholder contentType="favourite restaurants" iconImgNum={2} />
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {favouritedRestaurants.map(restaurant => (
@@ -717,9 +707,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (loadingStates.favBlogs ? (
                 <Spinner message="Loading Favourite Blog Posts..." />
               ) : favouritedBlogs.length === 0 ? (
-                <div className="col-span-3 text-center">
-                  <p>No favourite blog posts yet.</p>
-                </div>
+                <NoContentPlaceholder contentType="favourite blog posts" iconImgNum={2} />
               ) : (
                 <Masonry breakpointCols={breakpointColumnsObjInsta} className="flex gap-2" columnClassName="space-y-2">
                   {favouritedBlogs.map((post, i) => (
@@ -742,9 +730,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (loadingStates.followers ? (
                 <Spinner message="Loading Followers..." />
               ) : followers.length === 0 ? (
-                <div className="col-span-3 text-center">
-                  <p>No followers yet.</p>
-                </div>
+                <NoContentPlaceholder contentType="followers" iconImgNum={3} />
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {followers.map((follower, i) => (
@@ -763,9 +749,7 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
               (loadingStates.followings ? (
                 <Spinner message="Loading Followings..." />
               ) : followings.length === 0 ? (
-                <div className="col-span-3 text-center">
-                  <p>No followings yet.</p>
-                </div>
+                <NoContentPlaceholder contentType="followings" iconImgNum={3} />
               ) : (
                 <GridCustomCols numOfCols={5}>
                   {followings.map((following, i) => (
