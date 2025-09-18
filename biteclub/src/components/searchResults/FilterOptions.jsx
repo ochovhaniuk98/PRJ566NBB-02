@@ -76,7 +76,7 @@ export function CustomCheckboxes({ title, itemLabels, selectedItems, setSelected
         {itemLabels.map((label, i) => {
           const isChecked = selectedItems.includes(label);
           return (
-            <div key={i} className="flex gap-x-2 items-center">
+            <div key={i} className="flex gap-x-2 items-center h-8">
               {/*checkbox */}
               <div
                 className={`custom-checkbox transition-transform hover:scale-110 cursor-pointer ${
@@ -90,7 +90,8 @@ export function CustomCheckboxes({ title, itemLabels, selectedItems, setSelected
                 {/* show circle checkmark when user clicks checkbox */}
                 {isChecked && <div className="custom-checkmark"></div>}
               </div>
-              <p className="capitalize">{label}</p>
+              {/* remove characters before and including colon (e.g. Chinese: Cantonese --> Cantonese) */}
+              <p className="capitalize"> {label.split(':').pop().trim()}</p>
             </div>
           );
         })}

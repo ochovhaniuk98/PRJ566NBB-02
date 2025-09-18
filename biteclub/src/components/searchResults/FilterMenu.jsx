@@ -52,7 +52,7 @@ export default function FilterMenu({
 
   return (
     <div
-      className={`bg-brand-yellow-extralite md:w-md w-full h-fit absolute right-0 md:mt-2 ${
+      className={`bg-brand-yellow-extralite md:w-md w-full h-fit absolute right-0 overflow-auto md:mt-2 ${
         forRestaurantList ? 'mt-14' : 'mt-12'
       } rounded-md px-4 pb-4 pt-6 shadow-md z-200`}
     >
@@ -69,7 +69,7 @@ export default function FilterMenu({
         <div>
           <h4>Price</h4>
           <div className="flex flex-wrap gap-2 w-full md:justify-center justify-start">
-            {Array.from({ length: 5 }).map((_, i) => {
+            {Array.from({ length: 4 }).map((_, i) => {
               const price = i + 1;
               const isSelected = selectedPrice === price;
               return (
