@@ -1,9 +1,9 @@
 // Note: 'reverseDirection' is for the resturant rating option (NOT distance) since the green progress bar should start from the right-end of the slider
 export function Slider({ value, setValue, reverseDirection = false }) {
-  const SELECTED_OPTION_STYLING = 'bg-[#80c001] h-[20px] w-[8px] rounded-xl z-10 cursor-pointer translate-y-2';
+  const SELECTED_OPTION_STYLING = 'bg-brand-aqua h-[20px] w-[8px] rounded-xl z-10 cursor-pointer translate-y-2';
   const UNSELECTED_OPTION_STYLING = 'bg-[#ffdcbe] h-[20px] w-[8px] rounded-xl z-10 cursor-pointer translate-y-2';
   const THUMB_STYLING =
-    'bg-[#80c001] h-[24px] w-[24px] rounded-full z-10 cursor-pointer shadow-md absolute translate-y-1 transition-all duration-200';
+    'bg-brand-aqua h-[24px] w-[24px] rounded-full z-10 cursor-pointer shadow-md absolute translate-y-1 transition-all duration-200';
 
   const SLIDER_RANGE = reverseDirection ? [3, 5] : [2, 10]; // range of slider for RATING or DISTANCE
   const NUM_TICKS = 5;
@@ -22,7 +22,7 @@ export function Slider({ value, setValue, reverseDirection = false }) {
 
       {/* green progress fill */}
       <div
-        className={`absolute top-1/2 -translate-y-4 h-[7px] bg-[#80c001] rounded-full transition-all duration-200 ${
+        className={`absolute top-1/2 -translate-y-4 h-[7px] bg-brand-aqua rounded-full transition-all duration-200 ${
           reverseDirection ? 'right-0' : 'left-0'
         }`}
         style={{ width: `${progressPercent}%` }}
@@ -107,7 +107,7 @@ export function OpenNowSwitch({ isOpenNow, setIsOpenNow }) {
         type="button"
         onClick={() => setIsOpenNow(!isOpenNow)}
         className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out transition-colors cursor-pointer ${
-          isOpenNow ? 'bg-[#80c001]' : 'bg-gray-300'
+          isOpenNow ? 'bg-brand-aqua' : 'bg-brand-grey'
         }`}
       >
         <div

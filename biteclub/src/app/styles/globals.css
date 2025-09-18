@@ -142,7 +142,7 @@
   }
 
   .open-hours-style {
-    @apply flex flex-row justify-between py-1 md:px-6 px-2;
+    @apply flex flex-row justify-between py-1 md:px-6;
   }
 
   .open-hours-selected {
@@ -178,11 +178,11 @@
   }
 
   .custom-checkmark {
-    @apply w-4 h-4 bg-brand-yellow rounded-full;
+    @apply w-4 h-4 bg-brand-aqua rounded-full;
   }
 
   .priceTab {
-    @apply font-primary py-1 px-3 rounded-full min-w-18 hover:bg-brand-yellow cursor-pointer;
+    @apply font-primary py-1 px-3 rounded-full min-w-18 hover:bg-brand-aqua cursor-pointer;
   }
 
   .landingContainer {

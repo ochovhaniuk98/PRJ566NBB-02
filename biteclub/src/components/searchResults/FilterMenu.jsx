@@ -80,7 +80,7 @@ export default function FilterMenu({
                     setSelectedPrice(price);
                     console.log('SELECTED PRICE: ', price);
                   }}
-                  className={`priceTab ${isSelected ? 'bg-brand-yellow' : 'bg-brand-yellow-lite'} md:text-base text-sm`}
+                  className={`priceTab ${isSelected ? 'bg-brand-aqua' : 'bg-brand-yellow-lite'} md:text-base text-sm`}
                 >
                   {'$'.repeat(i + 1)}
                 </button>
