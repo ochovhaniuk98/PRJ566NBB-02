@@ -23,6 +23,7 @@ export default function AddReviewForm({
 }) {
   const [showPhotoPlaceholder, setShowPhotoPlaceholder] = useState(true);
   const [showInstagramForm, setShowInstagramForm] = useState(false);
+  const isWriteReviewSelected = !showInstagramForm;
 
   console.log(userId);
 
@@ -47,7 +48,7 @@ export default function AddReviewForm({
     'I regret everything.',
     'Ehh, at least I tried it.',
     'It was fine, nothing special.',
-    'Good, met all my expectations!',
+    'Met my expectations, wow!',
     'Chef’s kiss 👨‍🍳💋',
   ];
 
@@ -116,9 +117,11 @@ export default function AddReviewForm({
           {/* Toggle Switch -- Allows users to select "Write a review" OR "Add Instagram Post" if adding NEW review (non-edit mode) */}
           <div className="bg-brand-green-lite w-full font-secondary rounded-t-lg flex justify-between cursor-pointer">
             <div
-              className={`flex items-center font-primary font-semibold md:text-md text-sm capitalize py-3 px-3 rounded-tl-lg ${
+              className={`flex items-center font-primary md:text-md text-sm capitalize py-3 px-3 rounded-tl-lg ${
                 editReviewMode ? 'w-full' : 'w-[50%]'
-              } hover:bg-brand-aqua bg-brand-aqua`}
+              } hover:bg-brand-green  ${
+                isWriteReviewSelected ? 'bg-brand-aqua font-semibold' : 'bg-brand-green-lite font-medium'
+              }`}
               onClick={() => setShowInstagramForm(false)}
             >
               <FontAwesomeIcon icon={faPenClip} className={`text-2xl text-white mr-2`} />
@@ -127,7 +130,9 @@ export default function AddReviewForm({
             </div>
             {!editReviewMode && (
               <div
-                className="flex items-center font-primary font-semibold md:text-md text-sm capitalize py-3 px-3 w-[50%] rounded-tr-lg hover:bg-brand-aqua shadow-md"
+                className={`flex items-center font-primary md:text-md text-sm capitalize py-3 px-3 w-[50%] rounded-tr-lg hover:bg-brand-green shadow-md  ${
+                  showInstagramForm ? 'bg-brand-aqua font-semibold' : 'bg-brand-green-lite font-medium'
+                }`}
                 onClick={() => setShowInstagramForm(true)}
               >
                 <FontAwesomeIcon icon={faInstagram} className={`text-2xl text-white mr-2`} />
@@ -151,12 +156,14 @@ export default function AddReviewForm({
                     {/* StarRating also has two modes: STATIC (for just viewing on review cards) and INTERACTIVE for inputting ratings in the AddReviewForm.
                 Parameters "interactive" and "onChange" are false or empty by default, but need values when StarRating is being used for rating input.*/}
                     <StarRating
-                      iconSize="md:text-4xl text-3xl cursor-pointer"
+                      iconSize="md:text-4xl text-2xl cursor-pointer"
                       interactive={true}
                       ratingNum={reviewRating.value}
                       onChange={(val, msg) => setReviewRating({ value: val, message: msg })}
                     />
-                    {reviewRating.value > 0 && <p>{reviewRating.message}</p>}
+                    {reviewRating.value > 0 && (
+                      <p className="w-40 h-10 md:text-base text-sm flex items-center">{reviewRating.message}</p>
+                    )}
                   </div>
                 </div>
                 <div>
