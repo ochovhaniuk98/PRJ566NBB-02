@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
+import StyledPageTitle from '../shared/StyledPageTitle';
 
 export function LoginForm({ className, ...props }) {
   const [email, setEmail] = useState('');
@@ -82,9 +83,9 @@ export function LoginForm({ className, ...props }) {
           <Image src={'/img/noodle.png'} alt={'noodle'} className="object-contain" fill={true} />
         </div>
         <CardHeader>
-          <CardTitle className="text-center">
-            <h1 className="text-black font-normal">Login</h1>
-          </CardTitle>
+          <div className="text-center">
+            <StyledPageTitle textString="Login" txtColour="text-brand-green" textAlign="text-center" />
+          </div>
           <CardDescription>
             <h3 className="text-center">Welcome Back</h3>
           </CardDescription>
