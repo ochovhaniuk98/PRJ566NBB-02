@@ -54,7 +54,7 @@ export default function MainMenu() {
     <>
       {userType !== 'business' && (
         <aside
-          className="group fixed md:top-0 bottom-0 left-0 z-50 bg-brand-green-lite md:p-2 md:pt-8 p-4 px-2 md:h-screen md:w-12 w-full md:shadow-lg shadow-brand-grey/50 shadow-[0_-4px_6px_-1px]  md:hover:w-fit"
+          className="group fixed md:top-0 bottom-0 left-0 z-50 bg-brand-green-lite md:p-2 md:pt-8 p-4 px-2 md:h-screen md:w-12 w-full md:shadow-lg shadow-brand-grey/50 shadow-[0_-4px_6px_-1px]  md:hover:w-24"
           onMouseLeave={() => setIsHovered(false)}
           onMouseEnter={() => {
             setIsHovered(true);

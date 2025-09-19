@@ -258,10 +258,10 @@ export default function BlogPost({ id }) {
                   {likes}
                 </div>
                 {/* thumbs down */}
-                <div className="flex items-center w-10" onClick={handleDislike}>
+                <div className="flex items-center w-6" onClick={handleDislike}>
                   <FontAwesomeIcon
                     icon={hasDisliked ? faThumbsDownSolid : faThumbsDownRegular}
-                    className="icon-lg text-brand-navy mr-1"
+                    className="icon-lg text-brand-navy"
                   />
                 </div>
                 {/* favourite */}

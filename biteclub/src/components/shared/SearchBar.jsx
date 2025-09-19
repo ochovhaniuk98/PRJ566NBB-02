@@ -14,7 +14,7 @@ export default function SearchBar() {
     if (e.key === 'Enter') {
       if (pathname !== '/restaurants') {
         router.push(`/search?search=${encodeURIComponent(searchInput)}`);
-        setSearchInput('');
+        //setSearchInput('');
       }
     }
   };
@@ -41,7 +41,7 @@ export default function SearchBar() {
           placeholder="Search restaurants, blog posts, or users"
           className="w-full pl-8 font-primary rounded-full"
           value={searchInput}
-          onChange={e => setSearchInput(e.target.value)}
+          onChange={e => setSearchInput(e.target.value.toLowerCase())}
           onKeyDown={handleKeyDown}
         />
       </div>

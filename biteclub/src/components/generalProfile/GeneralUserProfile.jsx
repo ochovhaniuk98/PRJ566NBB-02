@@ -602,10 +602,20 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
             {selectedTab === profileTabs[1] && (
               <>
                 <div className="flex gap-x-2 mb-4">
-                  <Button onClick={() => setShowInstaReview(false)} type="button" className="w-30" variant={'roundTab'}>
+                  <Button
+                    onClick={() => setShowInstaReview(false)}
+                    type="button"
+                    className={`w-30`}
+                    variant={`${!showInstaReview ? 'roundTabActive' : 'roundTab'}`}
+                  >
                     From BiteClub
                   </Button>
-                  <Button onClick={() => setShowInstaReview(true)} type="button" className="w-30" variant={'roundTab'}>
+                  <Button
+                    onClick={() => setShowInstaReview(true)}
+                    type="button"
+                    className="w-30"
+                    variant={`${showInstaReview ? 'roundTabActive' : 'roundTab'}`}
+                  >
                     From Instagram
                   </Button>
                 </div>

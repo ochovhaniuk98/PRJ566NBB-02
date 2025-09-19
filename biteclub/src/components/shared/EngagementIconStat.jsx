@@ -22,7 +22,11 @@ export default function EngagementIconStat({
               handlers[i]?.();
             }}
           />
-          <h4 className={` ${statNumArr[i] >= 0 && 'ml-1 mr-1 font-primary font-medium'}`}>
+          <h4
+            className={` ${statNumArr[i] >= 0 && 'ml-1 mr-1 font-primary font-medium'} ${
+              forBlogPostCard && 'text-brand-grey'
+            }`}
+          >
             {statNumArr[i] >= 0 ? statNumArr[i] : ''}
           </h4>
         </span>

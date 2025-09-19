@@ -16,9 +16,9 @@ export default function BusinessInfo({ restaurant }) {
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
-      <div className="flex flex-col gap-4 md:p-4 p-0 pt-4">
-        <div className="md:px-6 px-2">
-          <h2>{restaurant.name}</h2>
+      <div className="flex flex-col gap-2 p-0 md:pt-0 pt-4">
+        <div className="md:px-6 flex flex-col gap-1">
+          <h3>{restaurant.name}</h3>
           <p>{restaurant.location}</p>
           <p>(416) 921-7557</p>
         </div>

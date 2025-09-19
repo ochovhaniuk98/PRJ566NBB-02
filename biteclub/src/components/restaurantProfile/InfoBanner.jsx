@@ -7,17 +7,17 @@ export default function InfoBanner({ name, avgRating, numReviews, priceRange, cu
   return (
     <div className="bg-brand-white flex md:flex-row flex-col justify-between main-side-padding pt-8 w-full">
       <div className="flex flex-col gap-y-1">
-        <span className="md:text-3xl text-2xl font-bold font-primary mb-1">{name}</span>
+        <span className="md:text-3xl text-xl font-bold font-primary mb-1">{name}</span>
         <div className="flex items-center gap-x-2">
           <h2 className="font-semibold">{avgRating}</h2>
-          <StarRating colour={'text-brand-green'} iconSize={'icon-xl'} ratingNum={avgRating} />
+          <StarRating colour={'text-brand-green'} iconSize={'md:icon-xl icon-lg'} ratingNum={avgRating} />
           <div className="font-normal text-xl font-primary">
             {`${numReviews} `}
             <span className="font-normal text-xl font-primary">reviews</span>
           </div>
           {/* price range tag */}
           <div className="bg-brand-blue-lite px-2 rounded-full w-15 h-fit flex justify-center text-primary">
-            {priceRange}
+            <p>{priceRange}</p>
           </div>
         </div>
 
