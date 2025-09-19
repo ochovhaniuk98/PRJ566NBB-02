@@ -6,18 +6,20 @@ export default function SearchResultsNumMessage({ numResults, searchTypeNum = 0,
   const pluralType = numResults === 1 ? searchTypes[searchTypeNum] : searchTypes[searchTypeNum] + 's';
 
   return (
-    <p>
+    <>
       {numResults > 0 ? (
-        <>
+        <p>
           <span className="font-semibold">{numResults}</span> {pluralType} {numResults === 1 ? 'matches ' : 'match '}
           <span className="font-semibold italic">{searchString}</span>
-        </>
+        </p>
       ) : (
         <>
-          No results found for <span className="font-semibold italic">{searchString}</span>
+          <p>
+            No results found for <span className="font-semibold italic">{searchString}</span>
+          </p>
           <NoContentPlaceholder contentType={searchString} iconImgNum={5} forSearchResults={true} />;
         </>
       )}
-    </p>
+    </>
   );
 }
