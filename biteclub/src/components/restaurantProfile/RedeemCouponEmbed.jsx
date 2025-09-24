@@ -34,7 +34,7 @@ export default function AddInstagramEmbed({ restaurantId, userId, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-brand-peach/40 flex items-center justify-center z-[9999] overflow-scroll scrollbar-hide w-full h-full ">
-      <div className="relative bg-transparent p-8 w-2xl min-h-fit ">
+      <div className="relative bg-transparent md:p-8 p-2 w-2xl min-h-fit ">
         <div className="bg-brand-green-lite w-full font-primary rounded-t-lg flex gap-x-2 cursor-pointer p-3 font-semibold shadow-md">
           <FontAwesomeIcon icon={faGift} className={`icon-xl text-white`} />
           Confirm Coupon
