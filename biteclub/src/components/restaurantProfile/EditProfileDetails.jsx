@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
 import { Button } from '../shared/Button';
@@ -17,6 +17,15 @@ export default function EditProfileDetails({ onClose, images, setImages, restaur
   const [name, setName] = useState(restaurantData.name);
   const [address, setAddress] = useState(restaurantData.location);
   const [cuisines, setCuisines] = useState(restaurantData.cuisines.join(', '));
+
+  useEffect(() => {
+    document.documentElement.classList.add('overflow-hidden');
+    // optional: prevent scroll chaining
+    document.documentElement.classList.add('[overscroll-behavior:none]');
+    return () => {
+      document.documentElement.classList.remove('overflow-hidden', '[overscroll-behavior:none]');
+    };
+  }, []);
 
   const [businessHours, setBusinessHours] = useState(() => {
     return restaurantData.BusinessHours.map(day => ({
@@ -87,16 +96,16 @@ export default function EditProfileDetails({ onClose, images, setImages, restaur
 
   return (
     <div className="fixed inset-0 bg-brand-peach/40 z-[9999]">
-      <div className="flex flex-col min-h-full justify-center items-center sm:items-center p-4">
-        <div className="w-fit">
+      <div className="flex flex-col items-center lg:justify-center md:p-8 pt-8 lg:min-h-screen lg:max-h-none max-h-screen overflow-y-scroll scrollbar-hide">
+        <div className="md:w-fit w-full">
           <div className="bg-brand-green-lite w-full font-primary rounded-t-lg flex gap-x-2 cursor-pointer p-3 font-semibold">
             <FontAwesomeIcon icon={faPenClip} className={`icon-xl text-white`} />
             Edit Profile Details
           </div>
-          <form onSubmit={handleSubmit} className="bg-white p-8 rounded-b-md shadow-md w-fit">
+          <form onSubmit={handleSubmit} className="bg-white p-8 rounded-b-md shadow-md md:w-fit w-full">
             <div className="font-secondary text-4xl mb-4">Edit Profile Details</div>
-            <div className="flex space-x-12">
-              <div className="w-xs border-r pr-12 border-brand-peach flex flex-col gap-4">
+            <div className="flex lg:space-x-12 space-x-6 md:flex-row flex-col">
+              <div className="md:w-xs w-full md:border-r md:pr-12 border-brand-peach flex flex-col gap-4">
                 <div>
                   {/* name */}
                   <Label htmlFor="name">
@@ -184,50 +193,54 @@ export default function EditProfileDetails({ onClose, images, setImages, restaur
                 </div>
               </div>
 
-              <div>
+              <div className="md:mt-0 mt-4">
                 {/* Business Hours */}
                 <Label htmlFor="hours">
                   <h4>Business Hours</h4>
                 </Label>
-                {['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
-                  <div key={day} className="flex items-center gap-2">
-                    <Label className="w-16 uppercase">
-                      <h4>{day}</h4>
-                    </Label>
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
+                  <div key={day} className="flex items-center gap-2 md:mb-0 mb-2">
+                    <div className="min-w-12">
+                      <h3 className="uppercase">{day}</h3>
+                    </div>
 
-                    <div className="flex flex-col justify-center items-center mx-4">
+                    <div className="flex flex-col justify-center md:items-center mr-2">
                       <label className="flex items-center gap-2 text-sm">
                         <h5>Closed</h5>
                       </label>
                       <Switch name={day} checked={closedDays[idx]} onCheckedChange={() => handleClosedToggle(idx)} />
                     </div>
-                    <Input
-                      type="time"
-                      name={`${day}-open`}
-                      className="w-32 font-primary"
-                      disabled={closedDays[idx]}
-                      value={businessHours[idx].open}
-                      onChange={e => {
-                        const updated = [...businessHours];
-                        updated[idx].open = e.target.value;
-                        setBusinessHours(updated);
-                      }}
-                    />
-                    <span>
-                      <h5>to</h5>
-                    </span>
-                    <Input
-                      type="time"
-                      name={`${day}-close`}
-                      className="w-32 font-primary"
-                      disabled={closedDays[idx]}
-                      value={businessHours[idx].close}
-                      onChange={e => {
-                        const updated = [...businessHours];
-                        updated[idx].close = e.target.value;
-                        setBusinessHours(updated);
-                      }}
-                    />
+                    <div className="flex md:flex-row flex-wrap items-center md:w-fit w-48  gap-x-2">
+                      <Input
+                        type="time"
+                        name={`${day}-open`}
+                        className={`md:w-32 w-40 font-primary p-2 md:mb-2 mb-0 ${
+                          closedDays[idx] ? 'border-brand-grey-lite' : ''
+                        }`}
+                        disabled={closedDays[idx]}
+                        value={businessHours[idx].open}
+                        onChange={e => {
+                          const updated = [...businessHours];
+                          updated[idx].open = e.target.value;
+                          setBusinessHours(updated);
+                        }}
+                      />
+                      <span className={`${closedDays[idx] ? 'text-brand-grey-lite' : ''}`}>
+                        <h4>to</h4>
+                      </span>
+                      <Input
+                        type="time"
+                        name={`${day}-close`}
+                        className={`md:w-32 w-40 font-primary p-2 ${closedDays[idx] ? 'border-brand-grey-lite' : ''}`}
+                        disabled={closedDays[idx]}
+                        value={businessHours[idx].close}
+                        onChange={e => {
+                          const updated = [...businessHours];
+                          updated[idx].close = e.target.value;
+                          setBusinessHours(updated);
+                        }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
