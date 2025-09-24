@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { createClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/shared/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 export function DeleteAccountButton({ user }) {
   const [showModal, setShowModal] = useState(false);
@@ -25,6 +27,7 @@ export function DeleteAccountButton({ user }) {
   return (
     <>
       <Button variant="danger" className="w-40" onClick={() => setShowModal(true)}>
+        <FontAwesomeIcon icon={faTrashCan} className="icon-md text-white" />
         Delete Account
       </Button>
 
