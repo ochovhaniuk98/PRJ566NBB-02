@@ -112,8 +112,8 @@ export default function ProfileDropdown() {
               }}
               className="px-3 py-2 hover:bg-brand-blue-mid flex items-center gap-2 text-gray-600 hover:text-brand-red  rounded-sm"
             >
-              <FontAwesomeIcon icon={faUserTimes} />
-              <span className="text-sm">Delete Account</span>
+              <FontAwesomeIcon icon={faUserTimes} className="text-brand-red" />
+              <span className="text-sm text-brand-red">Delete Account</span>
             </Link>
           </div>
         </div>
