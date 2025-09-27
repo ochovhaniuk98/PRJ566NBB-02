@@ -6,7 +6,6 @@ import StyledPageTitle from '@/components/shared/StyledPageTitle';
 import { Button } from '@/components/shared/Button';
 import StarRating from '@/components/shared/StarRating';
 import RotatingGallery from './RotatingGallery';
-import { POME_IMAGES } from '@/app/data/fakeData';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../shared/Spinner';
@@ -15,7 +14,16 @@ import Spinner from '../shared/Spinner';
 // (so they can see a full profile demo)
 export default function PomegranateRestaurantHighlight() {
   const POMEGRANATE_ID = '682a2ecf70221a179b693583'; // Pomegranate Restaurant's ID
-
+  const POMEG_IMAGES = [
+    { src: '/img/pom-8.jpg', alt: 'Exterior of The Pomegranate' },
+    { src: '/img/pom-10.jpg', alt: 'Photo Wall of The Pomegranate' },
+    { src: '/img/pom-2.jpg', alt: 'Interior of The Pomegranate' },
+    { src: '/img/pom-3.jpg', alt: 'Dishes of The Pomegranate' },
+    { src: '/img/pom-4.jpg', alt: 'Dish of The Pomegranate 1 (close-up)' },
+    { src: '/img/pom-5.jpg', alt: 'Dish of The Pomegranate 2 (close-up)' },
+    { src: '/img/pom-6.jpg', alt: 'Dish of The Pomegranate 3 (close-up)' },
+    { src: '/img/pom-7.jpg', alt: 'Dish of The Pomegranate 4 (close-up)' },
+  ];
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -47,7 +55,7 @@ export default function PomegranateRestaurantHighlight() {
   return (
     <div className=" bg-white mt-12 flex md:flex-row flex-col justify-center items-center gap-y-4 gap-x-6 w-full min-h-96 border border-brand-yellow-lite md:p-3 p-0">
       <div className="md:w-4/7 w-full">
-        <RotatingGallery images={POME_IMAGES} />
+        <RotatingGallery images={POMEG_IMAGES} />
       </div>
       <div className="md:w-3/7 w-full flex justify-center items-center relative lg:p-8 p-4 pl-0">
         <div className="flex flex-col gap-y-4 items-center">

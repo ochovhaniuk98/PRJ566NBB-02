@@ -126,6 +126,7 @@ export default function Home() {
   };
 
   return (
+    /* personalized recommendations */
     <div className="md:pl-12 pb-12">
       {fetchCompleted ? (
         <div className="main-side-padding mb-16 w-full flex flex-col items-center">
@@ -163,7 +164,7 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        /* Placeholder if recommendations are unavailable: Banners */
+        /* placeholder if perosnalized recommendations are unavailable: Banners */
         <>
           <HomeBanner />
           <SurpriseBanner onSurprise={handleSurpriseMeSubmit} />
@@ -189,13 +190,8 @@ export default function Home() {
             </GridCustomCols>
           </>
         )}
-        {/* The Pomegranate Reaturant Highlight (so employers and HR can easily view a *full* restaurant profile demo) */}
+        {/* The Pomegranate Reaturant Highlight section (so employers and HR can easily view a *full* restaurant profile demo) */}
         <PomegranateRestaurantHighlight />
-        {/* Blog Posts */}
-        <div className="relative w-full lg:h-12 h-auto mt-12">
-          <StyledPageTitle textString="Trending And Recently Posted" />
-        </div>
-        <ExploringBlogPosts />
       </div>
     </div>
   );
