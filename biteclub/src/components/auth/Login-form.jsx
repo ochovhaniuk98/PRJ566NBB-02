@@ -123,7 +123,7 @@ export function LoginForm({ className, ...props }) {
           </div>
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-4">
-              <div className="relative text-center text-sm text-brand-grey-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+              <div className="relative text-center text-sm text-brand-yellow-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t-2 after:border-border">
                 <span className="relative z-10 bg-brand-yellow-extralite px-2 text-brand-grey text-xs uppercase font-primary font-semibold">
                   Or
                 </span>

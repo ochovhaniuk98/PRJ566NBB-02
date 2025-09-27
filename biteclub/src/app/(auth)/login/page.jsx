@@ -4,9 +4,9 @@ import Image from 'next/image';
 export default async function Page() {
   // If not logged in, show the login form
   return (
-    <div className="flex lg:flex-row flex-col not-last:lg:h-screen h-full">
+    <div className="flex lg:flex-row flex-col min-h-screen h-full">
       <div
-        className="bg-brand-green flex flex-col items-center justify-center top-0 lg:h-screen h-40 lg:w-1/2"
+        className="bg-brand-green flex flex-1 flex-col items-center justify-center lg:basis-1/2 lg:max-h-none max-h-40"
         style={{
           backgroundImage: "url('/img/doodleBG.png')",
           backgroundSize: '70rem',
@@ -17,7 +17,7 @@ export default async function Page() {
           <Image src={'/img/logo_final.png'} alt={'BiteClub logo'} className="object-contain" fill={true} />
         </div>
       </div>
-      <div className="flex flex-col justify-center items-center gap-4 p-0 lg:p-10 lg:w-1/2 flex-grow ">
+      <div className="flex flex-col justify-center items-center gap-4 p-0 lg:p-10 lg:basis-1/2 flex-grow">
         <LoginForm />
       </div>
     </div>

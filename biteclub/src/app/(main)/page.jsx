@@ -6,7 +6,6 @@ import { useUser } from '@/context/UserContext';
 import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
 import { useRouter } from 'next/navigation';
 import StyledPageTitle from '@/components/shared/StyledPageTitle';
-import ExploringBlogPosts from '@/components/blogPosts/ExploringBlogPosts';
 import HomeBanner from '@/components/homepage/HomeBanner';
 import SurpriseBanner from '@/components/homepage/SurpriseBanner';
 import PomegranateRestaurantHighlight from '@/components/homepage/PomegranateRestaurantHighlight';
