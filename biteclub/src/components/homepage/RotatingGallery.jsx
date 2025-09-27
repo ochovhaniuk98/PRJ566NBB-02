@@ -48,7 +48,6 @@ export default function RotatingGallery({
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 50vw"
             priority={i === 0} // avoids initial flash
-            // optional: placeholder="blur" blurDataURL="data:image/..."
           />
         </div>
       ))}

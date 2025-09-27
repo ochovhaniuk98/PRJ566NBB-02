@@ -17,7 +17,7 @@ function Sparkle({ className = '', delay = 0, size, src = '/img/sparkle.svg' }) 
       style={size ? { width: size, height: size, transformOrigin: 'center' } : { transformOrigin: 'center' }}
       initial={{ scale: 0, rotate: 0, opacity: 0 }}
       animate={{ scale: [0, 0.4, 1, 1.15, 0], rotate: [0, 60, 180, 300, 360], opacity: [0, 1, 1, 0.6, 0] }}
-      transition={{ duration: 1.6, ease: 'easeOut', delay, repeat: Infinity, repeatType: 'loop', repeatDelay: 0.2 }}
+      transition={{ duration: 1.8, ease: 'easeOut', delay, repeat: Infinity, repeatType: 'loop', repeatDelay: 0.3 }}
     />
   );
 }

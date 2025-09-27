@@ -1,3 +1,8 @@
+export const POME_IMAGES = [
+  { src: '/img/pom-1.png', alt: 'Dining room' },
+  { src: '/img/pom-2.jpg', alt: 'Signature dish' },
+  { src: '/img/pom-3.jpg', alt: 'Patio seating' },
+];
 export const fakeRestaurantData = {
   name: 'The Pomegranate Restaurant',
   cuisines: ['Persian', 'Middle Eastern'],

@@ -2,7 +2,7 @@ export default function StyledPageTitle({
   textString,
   p_fontSize = 'md:text-5xl text-4xl',
   shadowPos = 'md:top-[2px] top-[1.25px]',
-  outlineWidth = 'md:[-webkit-text-stroke:0.75px_black] [-webkit-text-stroke:0.5px_black]',
+  outlineWidth = 'md:[-webkit-text-stroke:0.5px_black] [-webkit-text-stroke:0.5px_black]',
   txtColour = 'text-brand-green',
   textAlign = 'text-left',
   className = '',
