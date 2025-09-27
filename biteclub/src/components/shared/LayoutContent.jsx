@@ -4,6 +4,7 @@ import MainMenu from '../../components/shared/MainMenu';
 import SearchBar from '../../components/shared/SearchBar';
 import BusinessHeader from '../../components/restaurantProfile/BusinessHeader';
 import { usePathname } from 'next/navigation';
+import { Suspense } from 'react';
 
 export default function LayoutContent({ children }) {
   const { user } = useUser();
@@ -17,7 +18,13 @@ export default function LayoutContent({ children }) {
       {' '}
       <MainMenu />
       <div className="flex-1 relative">
-        {userType === 'business' ? <BusinessHeader /> : <SearchBar />}
+        {userType === 'business' ? (
+          <BusinessHeader />
+        ) : (
+          <Suspense fallback={null}>
+            <SearchBar />
+          </Suspense>
+        )}
         <main className={`${path === '/' ? '' : 'main-side-padding  w-full'}`}>{children}</main>
       </div>
     </>
