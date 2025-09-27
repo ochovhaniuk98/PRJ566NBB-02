@@ -81,9 +81,9 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
 
   return (
     <>
-      <GridCustomCols numOfCols={2} className="gap-x-6">
+      <div className="flex md:flex-row flex-col gap-x-4 gap-y-8 pb-16">
         {/* Events */}
-        <div className="w-full h-full">
+        <div className="md:w-1/2 h-full">
           <div className="flex mb-3 justify-between">
             <h2 className="text-xl font-semibold mb-2">Events</h2>
             {/* add event icon */}
@@ -120,7 +120,7 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
         </div>
 
         {/* Announcements */}
-        <div className="w-full h-full">
+        <div className="md:w-1/2 h-full">
           <div className="flex mb-3 justify-between">
             <h2 className="text-xl font-semibold mb-2">Announcements</h2>
             {/* make announchment icon */}
@@ -153,7 +153,7 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
             ))}
           </div>
         </div>
-      </GridCustomCols>
+      </div>
 
       {/* events and announcements modal (shared) */}
       {showForm && (
@@ -347,9 +347,9 @@ function AddAnnouncementForm({ onAddAnnouncement, onCancel }) {
 // card for added events
 function EventCard({ name, date, description, onDelete, isOwner = false }) {
   return (
-    <div className="border rounded-md border-brand-yellow-lite p-4 flex bg-white shadow-sm relative">
-      <div className="h-30 aspect-square bg-white flex items-center justify-center text-white font-bold">
-        <FontAwesomeIcon icon={faCalendarAlt} className="text-7xl text-brand-green" />
+    <div className="border rounded-md border-brand-yellow-extralite p-4 flex bg-brand-yellow-extralite shadow-sm relative">
+      <div className="h-30 aspect-square bg-brand-yellow-lite flex items-center justify-center font-bold rounded-2xl">
+        <FontAwesomeIcon icon={faCalendarAlt} className="text-7xl text-brand-yellow" />
       </div>
       <div className="flex flex-col gap-y-1 ml-4">
         <h3 className="capitalize">{name}</h3>
@@ -379,16 +379,21 @@ function EventCard({ name, date, description, onDelete, isOwner = false }) {
 // card for added announcements
 function AnnouncementCard({ title, text, onDelete, isOwner = false }) {
   return (
-    <div className="border border-brand-yellow-lite rounded-md p-4 bg-white shadow-sm relative">
-      <h3 className="font-semibold">{title}</h3>
-      <p>{text}</p>
-      {isOwner && (
-        <FontAwesomeIcon
-          icon={faTrashAlt}
-          onClick={onDelete}
-          className="text-2xl text-brand-red absolute top-2 right-2 cursor-pointer"
-        />
-      )}
+    <div className="border border-brand-yellow-extralite rounded-md p-4 bg-brand-yellow-extralite shadow-sm relative flex">
+      <div className="h-30 aspect-square bg-brand-yellow-lite flex items-center justify-center font-bold rounded-2xl">
+        <FontAwesomeIcon icon={faBullhorn} className="text-7xl text-brand-yellow" />
+      </div>
+      <div className="ml-4">
+        <h3 className="font-semibold">{title}</h3>
+        <p>{text}</p>
+        {isOwner && (
+          <FontAwesomeIcon
+            icon={faTrashAlt}
+            onClick={onDelete}
+            className="text-2xl text-brand-red absolute top-2 right-2 cursor-pointer"
+          />
+        )}
+      </div>
     </div>
   );
 }

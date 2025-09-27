@@ -23,9 +23,9 @@ export default function MasonryReviewGrid({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (loadingData || !userData) return;
+    if (loadingData) return; // omitted " || !userData" from clause to allow unauthorized users to view profiles (public access)
     setLoading(false);
-  }, [loadingData, userData]);
+  }, [loadingData]);
 
   useEffect(() => {
     const fetchReportedReviews = async () => {

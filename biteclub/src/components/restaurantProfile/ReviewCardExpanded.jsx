@@ -235,7 +235,7 @@ export default function ReviewCardExpanded({
               restaurantId={restaurantId}
               restaurantName={restaurantName}
               isOwner={isOwner}
-              isAuthor={authorId === (isOwner ? restaurantId : currentUser._id)}
+              isAuthor={authorId === (isOwner ? restaurantId : currentUser?._id)}
               comments={comments}
               commentEngagementData={commentEngagementData}
               setCommentEngagementData={setCommentEngagementData}

@@ -147,6 +147,8 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     }
   };
 
+  // Show alert if "Write a Review" btn clicked and do NOT open form
+  // if any user is NOT logged in
   const handleWriteReviewClick = () => {
     if (!user?.id) {
       alert('Please login to write a review.');
