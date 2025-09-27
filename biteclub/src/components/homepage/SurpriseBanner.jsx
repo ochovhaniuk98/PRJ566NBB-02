@@ -23,7 +23,7 @@ export default function SurpriseBanner({ onSurprise }) {
           textAlign="text-center"
         />
       </div>
-      <p className="w-sm">
+      <p className="w-sm md:text-lg text-base">
         When everything looks good, choosing can be the hardest part. Let chance decide. Discover a cuisine you didn’t
         know you were craving.
       </p>

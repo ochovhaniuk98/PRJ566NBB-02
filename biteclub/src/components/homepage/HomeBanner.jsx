@@ -1,10 +1,19 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightToBracket, faGamepad } from '@fortawesome/free-solid-svg-icons';
+'use client';
+import { useUser } from '@/context/UserContext';
 import Image from 'next/image';
-
+import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRightToBracket, faGamepad, faTrophy } from '@fortawesome/free-solid-svg-icons';
 import Sparkles from '@/components/homepage/Sparkles';
 
 export default function HomeBanner() {
+  // Change button link depending on user type (authorized vs unauthorized)
+  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
+  const primaryBtnHref = user ? '/challenges' : '/sign-up';
+  const primaryBtnLabel = user ? 'Play Now' : 'Join to Play';
+  const secondaryBtnHref = user ? '/challenges/redeem' : '/login';
+  const secondaryBtnLabel = user ? 'Redeem Points' : 'Login';
+
   return (
     <div className="bg-gradient-to-br from-brand-yellow to-[#ffce5d]  w-full min-h-[350px] xl:h-[48vw] lg:h-[52vw] md:h-[64vw] h-[31rem] min-w-[20rem] relative overflow-hidden">
       <div className="absolute xl:size-[50vw] lg:size-[46vw] md:size-[56vw] sm:size-[66vw] size-[20rem] xl:left-[40vw] lg:left-[44vw] md:left-[38vw] sm:left-[32vw] left-[8rem] xl:-bottom-28 lg:-bottom-17 md:-bottom-16 sm:-bottom-15 -bottom-11 min-h-72">
@@ -38,17 +47,14 @@ export default function HomeBanner() {
             Explore, taste, and collect points for discounts as you level up your palate with BiteClub.
           </div>
           <div className="landingButtons">
-            <button
-              onClick={() => router.push('/sign-up')}
-              className="landingButtonSingle bg-brand-green transform transition-transform duration-200 hover:scale-110"
-            >
+            <Link href={primaryBtnHref} className={`landingButtonSingle bg-brand-green-lite hover:bg-brand-green`}>
               <FontAwesomeIcon icon={faGamepad} className={`text-2xl`} />
-              Join to Play
-            </button>
-            <button onClick={() => router.push('/login')} className="landingButtonSingle bg-brand-peach">
-              <FontAwesomeIcon icon={faArrowRightToBracket} className={`text-2xl text-brand-navy`} />
-              Login
-            </button>
+              {primaryBtnLabel}
+            </Link>
+            <Link href={secondaryBtnHref} className="landingButtonSingle bg-brand-peach hover:bg-[#ffcea5]">
+              <FontAwesomeIcon icon={user ? faTrophy : faArrowRightToBracket} className={`text-2xl text-brand-navy`} />
+              {secondaryBtnLabel}
+            </Link>
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ import ActiveChallengeCard from './ActiveChallengeCard';
 export default function AllActiveChallenges({ activeChallenges, setShowChallengeDetailModal, setSelectedChallenge }) {
   return (
     <div className="w-full lg:w-3/5">
-      <h2>My Active Challenges</h2>
+      <h2 className="mb-2">My Active Challenges</h2>
       <div className="flex flex-col md:flex-row gap-x-4">
         {[0, 1, 2].map(i =>
           activeChallenges[i] ? (

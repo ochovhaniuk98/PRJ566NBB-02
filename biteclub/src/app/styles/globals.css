@@ -198,14 +198,14 @@
   }
 
   .landingText {
-    @apply absolute xl:top-[21rem] lg:top-[17.5rem] md:top-[15rem] top-[7rem] md:left-4 left-0 lg:w-xs w-70  font-primary normal-case leading-normal md:text-base text-sm;
+    @apply absolute xl:top-[21rem] lg:top-[17.5rem] md:top-[15rem] top-[7rem] md:left-4 left-0 lg:w-90 w-80  font-primary normal-case leading-normal md:text-lg text-base;
   }
 
   .landingButtons {
     @apply absolute flex md:flex-row flex-col gap-4 w-auto xl:bottom-[6rem] xl:top-auto lg:bottom-[3.25rem] md:-bottom-[0.5rem] bottom-48 md:left-4 left-0; /* lg:left-1/6 md:left-15 left-0 */
   }
   .landingButtonSingle {
-    @apply flex items-center gap-2 font-primary font-semibold text-brand-navy cursor-pointer border-1 border-brand-navy py-2 px-4 rounded-sm lg:text-lg text-base shadow-lg;
+    @apply flex items-center gap-2 font-primary font-semibold text-brand-navy cursor-pointer border-1 border-brand-navy py-2 px-4 rounded-sm lg:text-lg text-base shadow-lg capitalize transform transition-transform duration-200 hover:scale-110;
   }
 
   .onboardingScaleText {

@@ -21,7 +21,7 @@ export default function Leaderboard({ refreshTrigger }) {
 
   return (
     <div className="w-full lg:w-2/5 flex flex-col">
-      <h2>Leaderboard</h2>
+      <h2 className="mb-2">Leaderboard</h2>
       {/* <div className="flex-grow bg-brand-aqua flex flex-col gap-y-2 p-4"> */}
       <div className="flex-grow bg-brand-aqua flex flex-col gap-y-2 md:p-4 p-2 overflow-y-scroll scrollbar-hide">
         {users.map((u, i, arr) => {

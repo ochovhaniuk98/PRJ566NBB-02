@@ -6,7 +6,7 @@ import Leaderboard from './Leaderboard';
 import AllActiveChallenges from './AllActiveChallenges';
 import { fakeChallenges } from '@/app/data/fakeData';
 import { useUserData } from '@/context/UserDataContext';
-import { faArrowRight, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faClock, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 import ChallengeCompletedModal from './ChallengeCompletedModal';
@@ -173,7 +173,7 @@ export default function ChallengesPage() {
                 <Milestone level={level} levelRequired={5} className="z-[2]" pointsNeeded={2750} reward={25} />
               </div>
             </div>
-            <div className="flex flex-col lg:flex-row w-full lg:h-124 my-4 gap-x-4 md:gap-y-0 gap-y-8">
+            <div className="flex flex-col lg:flex-row w-full lg:h-124 my-4 gap-x-4 lg:gap-y-0 gap-y-8">
               {/* Active Challenges */}
               {fetchedActivatedChallenges && (
                 <AllActiveChallenges
@@ -186,11 +186,18 @@ export default function ChallengesPage() {
               {/* Leaderboard */}
               <Leaderboard refreshTrigger={leaderboardRefreshTrigger} />
             </div>
-            {/* AI-generated challenges -- HIDDEN for demo due to AI fees*/}
-            <div className="w-full p-3 text-left hidden">
+            {/* AI-generated challenges*/}
+            <div className="w-full p-3 text-left">
               <h2 className="uppercase">Add challenges</h2>
+              <div className="bg-brand-grey-lite/50 md:p-6 p-4 rounded-xl my-2 flex items-center justify-center gap-4">
+                <FontAwesomeIcon icon={faTriangleExclamation} className="text-3xl text-brand-grey" />
+                <i className="text-base text-brand-grey font-primary">
+                  This feature depends on a paid third-party AI service, so it’s disabled in the public demo to avoid
+                  charges.
+                </i>
+              </div>
               {/* DEMO for adding/activating challenges */}
-              <ChallengeList onActivate={handleActivateChallenge} />
+              {/* <ChallengeList onActivate={handleActivateChallenge} -- !!!! HIDDEN due to AI fees !!!! /> */}
             </div>
 
             {/* When active challenge card is clicked, show MODAL */}
