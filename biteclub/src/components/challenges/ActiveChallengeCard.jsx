@@ -62,7 +62,7 @@ export default function ActiveChallengeCard({ onOpen, activeChallengeData }) {
               <div className="md::pt-4">
                 <div className="md:text-center text-left">
                   {/* title */}
-                  <div className="md:h-12">
+                  <div className="md:h-12 capitalize">
                     <h3>{challenge.title}</h3>
                   </div>
 
