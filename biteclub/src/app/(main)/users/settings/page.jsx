@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
-import GridCustomCols from '@/components/shared/GridCustomCols';
-import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Label } from '@/components/shared/Label';
 import { Switch } from '@/components/shared/Switch';
 import { Button } from '@/components/shared/Button';
@@ -100,8 +98,8 @@ export default function Settings() {
 
   return (
     <div className="md:p-12">
-      <div className="relative mb-16 w-full flex flex-col items-center md:mt-4 mt-20 bg-white">
-        <div className="mt-8">
+      <div className="relative mb-16 w-full flex flex-col items-center md:mt-4 mt-10 bg-white">
+        <div className="mt-8 flex flex-col gap-4 w-full">
           <StyledPageTitle textString="Settings"></StyledPageTitle>
           {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
           {user && (

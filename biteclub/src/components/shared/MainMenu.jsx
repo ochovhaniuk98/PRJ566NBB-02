@@ -54,7 +54,7 @@ export default function MainMenu() {
     <>
       {userType !== 'business' && (
         <aside
-          className="group fixed md:top-0 bottom-0 left-0 z-50 bg-brand-green-lite md:p-2 md:pt-8 p-4 px-2 md:h-screen md:w-12 w-full md:shadow-lg shadow-brand-grey/50 shadow-[0_-4px_6px_-1px]  md:hover:w-24"
+          className="group fixed md:top-0 bottom-0 left-0 z-50 bg-white md:p-2 md:pt-8 p-2 px-2 md:h-screen md:w-12 w-full md:min-w-12 min-w-[380px] md:shadow-lg shadow-brand-grey/50 shadow-[0_-4px_6px_-1px] md:hover:w-24"
           onMouseLeave={() => setIsHovered(false)}
           onMouseEnter={() => {
             setIsHovered(true);
@@ -64,11 +64,16 @@ export default function MainMenu() {
             {menuLinks.map((link, idx) => {
               const isSelected = pathname === link;
               return (
-                <div key={idx} className={`group flex flex-col items-center gap-y-1 cursor-pointer  md:w-fit w-12`}>
+                <div
+                  key={idx}
+                  className={`group flex flex-col items-center md:gap-y-2 gap-y-1 cursor-pointer  md:w-fit w-12`}
+                >
                   <div
-                    className={`${
-                      isSelected ? 'bg-brand-yellow' : 'bg-brand-green-lite'
-                    } rounded-full aspect-square w-8 h-8 flex items-center justify-center outline outline-brand-navy transition-transform duration-200 group-hover:scale-115`}
+                    className={` outline-2 ${
+                      isSelected
+                        ? 'bg-brand-yellow outline-brand-yellow'
+                        : 'bg-brand-green-lite outline-brand-green-lite'
+                    } rounded-full aspect-square w-8 h-8 flex items-center justify-center  transition-transform duration-200 hover:scale-125`}
                     key={idx}
                   >
                     <Link

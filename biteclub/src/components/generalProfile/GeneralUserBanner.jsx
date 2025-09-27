@@ -131,7 +131,7 @@ export default function GeneralUserBanner({
   };
 
   return (
-    <div className="w-full flex flex-col items-center bg-brand-yellow-extralite relative">
+    <div className="w-full flex flex-col items-center bg-brand-yellow-extralite relative pb-4">
       <div className="pt-14 flex xl:flex-row flex-col">
         {/*profile pic*/}
         <div className=" flex md:flex-row flex-col justify-center md:items-start items-center">
@@ -147,10 +147,10 @@ export default function GeneralUserBanner({
           </div>
         </div>
         {/*user name, bio, join date, follow btn*/}
-        <div className="flex flex-col xl:items-start items-center gap-2 md:mr-4 mr-0 md:pt-4 pt-0">
+        <div className="flex flex-col xl:items-start items-center gap-4 md:mr-4 mr-0 md:pt-4 pt-0">
           <span className="text-4xl font-bold font-primary mb-1">{generalUserData.username}</span>
-          <div className="min-h-20 py-4 px-2 rounded-lg">
-            <p>{generalUserData.userBio}</p>
+          <div className="min-h-24 py-4 px-4 mb-4 rounded-xl bg-brand-yellow-lite/40 w-full max-w-sm">
+            <p className="md:text-lg text-md text-center">{generalUserData.userBio}</p>
           </div>
           {/* JOIN DATE DISPLAY IF AVAILABLE */}
           {generalUserData?.joinedSince && (
