@@ -115,7 +115,10 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   // When user save restaurant as favourite
   const handleFavouriteRestaurantClick = async () => {
     try {
-      if (!user?.id) return;
+      if (!user?.id) {
+        alert('Please login to favourite the restaurant.');
+        return;
+      }
 
       const res = await fetch('/api/restaurants/save-as-favourite', {
         method: 'POST',
@@ -142,6 +145,14 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     } catch (err) {
       console.error('Error toggling favourite:', err.message);
     }
+  };
+
+  const handleWriteReviewClick = () => {
+    if (!user?.id) {
+      alert('Please login to write a review.');
+      return;
+    }
+    setShowAddReviewForm(true);
   };
 
   const { name, cuisines, rating, numReviews, priceRange, dietaryOptions, BusinessHours, location } = restaurantData;
@@ -191,7 +202,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
               numOfFavourites={numOfFavourites}
               forRestaurant={true}
             />
-            <SingleTabWithIcon icon={faPen} detailText="Write a Review" onClick={() => setShowAddReviewForm(true)} />
+            <SingleTabWithIcon icon={faPen} detailText="Write a Review" onClick={handleWriteReviewClick} />
             {/*<SingleTabWithIcon icon={faUtensils} detailText="Reserve Table" />*/}
           </div>
         )}

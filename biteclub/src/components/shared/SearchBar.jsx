@@ -1,14 +1,25 @@
 'use client';
+import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
-import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 export default function SearchBar() {
   const [searchInput, setSearchInput] = useState('');
   const router = useRouter();
   const pathname = usePathname();
+  const params = useSearchParams();
+
+  // clears search input field when navigating to new page,
+  // but query string remains when on /search page
+  useEffect(() => {
+    if (pathname === '/search') {
+      setSearchInput(params.get('search') ?? '');
+    } else {
+      setSearchInput('');
+    }
+  }, [pathname, params]);
 
   const handleKeyDown = e => {
     if (e.key === 'Enter') {
