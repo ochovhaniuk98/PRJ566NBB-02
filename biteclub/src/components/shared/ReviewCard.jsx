@@ -54,9 +54,9 @@ export default function ReviewCard({
           <div>
             <EngagementIconStat
               iconArr={reviewCardIconArr}
-              statNumArr={[reviewEngagementStats?.likes || 0, reviewEngagementStats?.comments || 0]}
-              handlers={[onLike, () => {}, onDislike]}
-              states={[reviewEngagementStats?.userLiked, false, reviewEngagementStats?.userDisliked]}
+              statNumArr={[reviewEngagementStats?.likes || 0, null, reviewEngagementStats?.comments || 0]}
+              handlers={[onLike, onDislike, () => {}]}
+              states={[reviewEngagementStats?.userLiked, reviewEngagementStats?.userDisliked, false]}
             />
           </div>
         </div>

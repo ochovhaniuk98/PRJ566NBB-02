@@ -7,6 +7,7 @@ import ReviewCard from '../shared/ReviewCard';
 import InstagramEmbed from './InstagramEmbed';
 import ReviewCardExpanded from './ReviewCardExpanded';
 import NoContentPlaceholder from '../shared/NoContentPlaceholder';
+import LoginAlertModal from '../shared/LoginAlertModal';
 
 export default function MasonryReviewGrid({
   selectedReview,
@@ -21,6 +22,21 @@ export default function MasonryReviewGrid({
   const [reportedReviewIds, setReportedReviewIds] = useState([]);
   const [engagementData, setEngagementData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
+
+  // check current viewer of profile (logged in or not)
+  const viewerId = userData?._id ?? null;
+
+  // only allow viewer to continue if they are logged in
+  const requireViewerId = () => {
+    if (!viewerId) {
+      setShowLoginAlert(true);
+      return null;
+    }
+
+    console.log('VIEWER ID: ', viewerId);
+    return viewerId;
+  };
 
   useEffect(() => {
     if (loadingData) return; // omitted " || !userData" from clause to allow unauthorized users to view profiles (public access)
@@ -103,15 +119,16 @@ export default function MasonryReviewGrid({
   }, [combinedList, reportedReviewIds]);
 
   useEffect(() => {
-    if (!userData || !filteredCombinedList.length) return;
+    //if (!userData || !filteredCombinedList.length) return;
+    if (!filteredCombinedList.length) return; // set engagement data even when user is not logged-in
 
     const newEngagementData = filteredCombinedList.reduce((acc, review) => {
       acc[review._id] = {
         likes: review.likes?.count || 0,
         dislikes: review.dislikes?.count || 0,
         comments: review.comments?.length || 0,
-        userLiked: review.likes?.users?.includes(userData?._id) || false,
-        userDisliked: review.dislikes?.users?.includes(userData?._id) || false,
+        userLiked: viewerId ? review.likes?.users?.includes(viewerId) : false,
+        userDisliked: viewerId ? review.dislikes?.users?.includes(viewerId) : false,
       };
       return acc;
     }, {});
@@ -143,8 +160,8 @@ export default function MasonryReviewGrid({
         ...prev[reviewId],
         likes: resData.likes.count,
         dislikes: resData.dislikes.count,
-        userLiked: resData.likes.users.includes(userData._id),
-        userDisliked: resData.dislikes.users.includes(userData._id),
+        userLiked: viewerId ? resData.likes.users.includes(viewerId) : false,
+        userDisliked: viewerId ? resData.dislikes.users.includes(viewerId) : false,
         comments: resData.comments.length,
       },
     }));
@@ -152,6 +169,10 @@ export default function MasonryReviewGrid({
 
   const handleLike = reviewId => {
     return async () => {
+      // prevent unauthorized user from liking
+      const id = requireViewerId();
+      if (!id) return;
+
       try {
         const resData = await updateReviewEngagement(reviewId, userData._id, true, false);
         updateEngagementState(reviewId, resData);
@@ -163,9 +184,17 @@ export default function MasonryReviewGrid({
 
   const handleDislike = reviewId => {
     return async () => {
+      // prevent unauthorized user from disliking
+      const id = requireViewerId();
+      if (!id) {
+        console.log('Unauthorized User cannot dislike.');
+        return;
+      }
+
       try {
         const resData = await updateReviewEngagement(reviewId, userData._id, false, true);
         updateEngagementState(reviewId, resData);
+        console.log('User successfully disliked.');
       } catch (error) {
         console.error('Failed to update dislike engagement:', error);
       }
@@ -228,6 +257,8 @@ export default function MasonryReviewGrid({
           updateCommentCount={updateCommentCount}
         />
       )}
+
+      {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </div>
   );
 }

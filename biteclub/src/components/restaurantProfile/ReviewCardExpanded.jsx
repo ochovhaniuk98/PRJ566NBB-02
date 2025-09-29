@@ -9,6 +9,7 @@ import { faXmark, faFlag, faChevronLeft, faChevronRight } from '@fortawesome/fre
 import reviewCardIconArr from '@/app/data/iconData';
 import CommentSection from '../shared/CommentSection';
 import { addCommentToReview, deleteCommentFromReview, updateReviewCommentEngagement } from '@/lib/db/dbOperations';
+import LoginAlertModal from '../shared/LoginAlertModal';
 
 export default function ReviewCardExpanded({
   currentUser,
@@ -24,6 +25,8 @@ export default function ReviewCardExpanded({
 }) {
   const [authorProfile, setAuthorProfile] = useState(null);
   const authorId = selectedReview.user_id?._id;
+  const isLoggedIn = !!currentUser?._id;
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
 
   // Fetch review author
   useEffect(() => {
@@ -70,10 +73,10 @@ export default function ReviewCardExpanded({
             dislikes: { count: comment.dislikes?.count || 0, users: comment.dislikes?.users || [] },
             userLiked: isOwner
               ? comment.likes?.users?.includes(restaurantId) || false
-              : comment.likes?.users?.includes(currentUser._id) || false,
+              : comment.likes?.users?.includes(currentUser?._id) || false,
             userDisliked: isOwner
               ? comment.dislikes?.users?.includes(restaurantId) || false
-              : comment.dislikes?.users?.includes(currentUser._id) || false,
+              : comment.dislikes?.users?.includes(currentUser?._id) || false,
           };
           return acc;
         }, {})
@@ -182,7 +185,13 @@ export default function ReviewCardExpanded({
             <FontAwesomeIcon
               icon={faFlag}
               className={`icon-md text-brand-navy mr-3 cursor-pointer`}
-              onClick={() => setOpenReportForm(true)}
+              onClick={() => {
+                if (!isLoggedIn) {
+                  setShowLoginAlert(true);
+                  return;
+                }
+                setOpenReportForm(true);
+              }}
             />
             <FontAwesomeIcon icon={faXmark} className={`icon-lg text-brand-navy cursor-pointer`} onClick={onClose} />
           </div>
@@ -221,9 +230,9 @@ export default function ReviewCardExpanded({
             <div>
               <EngagementIconStat
                 iconArr={reviewCardIconArr}
-                statNumArr={[reviewEngagementStats?.likes || 0, reviewEngagementStats?.comments || 0]}
-                handlers={[onLike, () => {}, onDislike]}
-                states={[reviewEngagementStats?.userLiked, false, reviewEngagementStats?.userDisliked]}
+                statNumArr={[reviewEngagementStats?.likes || 0, null, reviewEngagementStats?.comments || 0]}
+                handlers={[onLike, onDislike, () => {}]}
+                states={[reviewEngagementStats?.userLiked, reviewEngagementStats?.userDisliked, false]}
               />
             </div>
           </div>
@@ -248,7 +257,7 @@ export default function ReviewCardExpanded({
         </div>
       </div>
       {/* Report form */}
-      {openReportForm && (
+      {openReportForm && isLoggedIn && (
         <ReportForm
           onClose={() => setOpenReportForm(false)}
           reportType="Content"
@@ -258,6 +267,7 @@ export default function ReviewCardExpanded({
           reportedUser={authorProfile}
         />
       )}
+      {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </div>
   );
 }

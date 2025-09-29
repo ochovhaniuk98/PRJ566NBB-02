@@ -7,6 +7,7 @@ import {
   faThumbsDown as faThumbsDownRegular,
 } from '@fortawesome/free-regular-svg-icons';
 import Image from 'next/image';
+import LoginAlertModal from '../shared/LoginAlertModal';
 
 export default function CommentSection({
   currentUser,
@@ -22,16 +23,31 @@ export default function CommentSection({
   onDislike = () => {},
 }) {
   const [input, setInput] = useState('');
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
+
+  // ---- for preventing unauthorized user from engaging with comments  ----
+  const viewerId = isOwner ? restaurantId : currentUser?._id ?? null;
+  const requireViewerId = () => {
+    if (!viewerId) {
+      setShowLoginAlert(true);
+      return null;
+    }
+    return viewerId;
+  };
+  // ----------------------------------------------------------
 
   const handleSubmit = e => {
     e.preventDefault();
     if (!input.trim()) return;
 
+    const id = requireViewerId();
+    if (!id) return;
+
     onAddComment(
       {
         content: input,
         user_type: isOwner ? 'Restaurant' : 'User', // if owner, user_type is 'Restaurant', otherwise 'User'
-        author_id: isOwner ? restaurantId : currentUser._id,
+        author_id: isOwner ? restaurantId : currentUser?._id,
         author_name: isOwner ? restaurantName : currentUser.username,
         avatarURL: isOwner
           ? 'https://freesvg.org/img/chef-restaurant-logo-publicdomainvectors.png'
@@ -56,9 +72,21 @@ export default function CommentSection({
             currentUser={currentUser}
             isOwner={isOwner}
             restaurantId={restaurantId}
-            onDelete={() => onDeleteComment(comment._id, isOwner ? restaurantId : currentUser._id)}
-            onLike={() => onLike(comment._id, isOwner ? restaurantId : currentUser._id)}
-            onDislike={() => onDislike(comment._id, isOwner ? restaurantId : currentUser._id)}
+            onDelete={() => {
+              const id = requireViewerId();
+              if (!id) return;
+              onDeleteComment(comment._id, isOwner ? restaurantId : currentUser?._id);
+            }}
+            onLike={() => {
+              const id = requireViewerId();
+              if (!id) return;
+              onLike(comment._id, isOwner ? restaurantId : currentUser?._id);
+            }}
+            onDislike={() => {
+              const id = requireViewerId();
+              if (!id) return;
+              onDislike(comment._id, isOwner ? restaurantId : currentUser?._id);
+            }}
           />
         ))}
       </ul>
@@ -82,6 +110,7 @@ export default function CommentSection({
           You must be the restaurant owner or the author of this review to comment.
         </p>
       )}
+      {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </div>
   );
 }
@@ -112,7 +141,7 @@ function Comment({ comment, currentUser, isOwner, restaurantId, engagementData, 
 
         <p className="mb-2">{content}</p>
 
-        <div className="flex gap-4 text-sm text-gray-500 font-primary mt-4]">
+        <div className="flex gap-3 text-sm text-brand-grey font-primary mt-4]">
           <button
             onClick={onLike}
             className={`hover:text-brand-navy ${hasLiked ? 'text-gray-500' : ''} mb-1 cursor-pointer`}
@@ -131,7 +160,7 @@ function Comment({ comment, currentUser, isOwner, restaurantId, engagementData, 
             />{' '}
           </button>
 
-          {author_id === (isOwner ? restaurantId : currentUser._id) ? (
+          {author_id === (isOwner ? restaurantId : currentUser?._id) ? (
             <button onClick={onDelete} className="cursor-pointer ml-auto">
               <FontAwesomeIcon icon={faTrashCan} className={`icon-md text-brand-red`} />
             </button>

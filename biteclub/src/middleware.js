@@ -20,6 +20,6 @@ export const config = {
 
     // $: excludes the empty string path (i.e. localhost:3000/)
     // If public, we need to update the below, or Auth Session will be null somehow...
-    '/((?!_next/|favicon.ico|img/|login|sign-up|sign-up-success|callback|auth-error|forgot-password|update-password|confirm|signout|restaurants(?:/|$)|api/restaurants|api/restaurant-reviews|api/restaurants/num-of-favourites|blog-posts|api/blog-posts|api/blog-posts/num-of-favourites|api/blog-posts/comments|api/users/get-general-user-by-MgId|api/users/search|search(?:/|$)|$).*)',
+    '/((?!_next/|favicon.ico|img/|login|sign-up|sign-up-success|callback|auth-error|forgot-password|update-password|confirm|signout|restaurants(?:/|$)|api/restaurants|api/restaurant-reviews|api/restaurants/num-of-favourites|api/generals/get-profile-by-dbId(?:/|$)|blog-posts|api/blog-posts|api/blog-posts/num-of-favourites|api/blog-posts/comments|api/users/get-general-user-by-MgId|api/users/search|search(?:/|$)|$).*)',
   ],
 };
