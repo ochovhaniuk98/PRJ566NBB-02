@@ -3,9 +3,7 @@ import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
 import { faGift, faPen, faPenClip } from '@fortawesome/free-solid-svg-icons';
 import { faInstagram } from '@fortawesome/free-brands-svg-icons';
-
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
-
 import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import ImageBanner from '@/components/restaurantProfile/ImageBanner';
 import BusinessInfo from '@/components/restaurantProfile/BusinessInfo';
@@ -23,10 +21,12 @@ import MasonryReviewGrid from './MasonryReviewGrid';
 import EventsAndAnnounce from './EventsAndAnnounce';
 import Spinner from '@/components/shared/Spinner';
 import FavouriteButton from '../shared/FavouriteButton';
+import LoginAlertModal from '../shared/LoginAlertModal';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const { userData, refreshUserData } = useUserData();
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
 
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
   const [selectedReview, setSelectedReview] = useState(null);
@@ -116,7 +116,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   const handleFavouriteRestaurantClick = async () => {
     try {
       if (!user?.id) {
-        alert('Please login to favourite the restaurant.');
+        setShowLoginAlert(true);
         return;
       }
 
@@ -151,7 +151,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   // if any user is NOT logged in
   const handleWriteReviewClick = () => {
     if (!user?.id) {
-      alert('Please login to write a review.');
+      setShowLoginAlert(true);
       return;
     }
     setShowAddReviewForm(true);
@@ -204,7 +204,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
               numOfFavourites={numOfFavourites}
               forRestaurant={true}
             />
-            <SingleTabWithIcon icon={faPen} detailText="Write a Review" onClick={handleWriteReviewClick} />
+            <SingleTabWithIcon icon={faPen} detailText="Post a Review" onClick={handleWriteReviewClick} />
             {/*<SingleTabWithIcon icon={faUtensils} detailText="Reserve Table" />*/}
           </div>
         )}
@@ -258,6 +258,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
           onCancel={() => setShowAddReviewForm(false)}
         ></AddReviewForm>
       )}
+      {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </MainBaseContainer>
   );
 }

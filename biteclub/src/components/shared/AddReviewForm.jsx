@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenClip } from '@fortawesome/free-solid-svg-icons';
+import { faFrown, faPenClip } from '@fortawesome/free-solid-svg-icons';
 import { faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { Label } from '../shared/Label';
 import { Input } from '../shared/Input';
@@ -173,7 +173,7 @@ export default function AddReviewForm({
                     className={'w-full'}
                     value={reviewTitle}
                     onChange={e => setReviewTitle(e.target.value)}
-                    placeholder="Enter a catchy headline for your review"
+                    placeholder="Enter a catchy headline"
                     required
                   />
                 </div>
@@ -183,13 +183,12 @@ export default function AddReviewForm({
                     type="text"
                     className={'w-full rounded-md p-2 h-50 resize-none'}
                     onChange={e => setReviewContent(e.target.value)}
-                    placeholder="Write your review here..."
+                    placeholder="Write your review"
                     value={reviewContent}
                     required
                   />
                 </div>
-                <div className="flex justify-between items-end">
-                  <Label>Photos</Label>
+                <div className="flex w-full">
                   <ReviewImageUpload
                     reviewImages={reviewImages}
                     setReviewImages={setReviewImages}
@@ -200,7 +199,12 @@ export default function AddReviewForm({
                   /* The div below is just a PLACEHOLDER/for styling puposes so that the form stays the same height when the "Add Photos" button is clicked.
                 Do NOT use for backend logic. The "real" photo div is inside ReviewImageUpload.*/ showPhotoPlaceholder &&
                     reviewImages.length <= 0 && (
-                      <div className="w-full h-50 bg-brand-blue-lite  p-4  rounded-lg overflow-y-scroll grid grid-cols-5 gap-1 shadow-inner"></div>
+                      <div className="w-full h-50 bg-brand-blue-lite  p-4  rounded-lg shadow-inner font-primary flex items-center justify-center text-brand-blue">
+                        <div className="flex flex-col gap-2">
+                          <FontAwesomeIcon icon={faFrown} className={`text-3xl text-brand-blue`} />
+                          No photos
+                        </div>
+                      </div>
                     )
                 }
               </div>
@@ -210,7 +214,7 @@ export default function AddReviewForm({
               }
               <div className=" flex justify-end gap-2 mt-16">
                 <Button type="submit" className="w-30" variant="default" disabled={false}>
-                  Save
+                  Post
                 </Button>
                 <Button type="button" className="w-30" variant="secondary" disabled={false} onClick={onCancel}>
                   Cancel
@@ -238,7 +242,7 @@ export default function AddReviewForm({
                 {externalReviewError && <p className="text-red-600 mt-2">{externalReviewError}</p>}
                 <div className=" flex justify-end gap-2 mt-16">
                   <Button type="submit" className="w-30" variant="default" disabled={externalReviewLoading}>
-                    {externalReviewLoading ? 'Posting...' : 'Save'}
+                    {externalReviewLoading ? 'Posting...' : 'Post'}
                   </Button>
                   <Button
                     type="button"
