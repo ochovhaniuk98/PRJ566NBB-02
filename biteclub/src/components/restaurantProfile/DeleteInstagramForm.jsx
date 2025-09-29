@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleLeft } from '@fortawesome/free-solid-svg-icons';
+import { faCircleLeft, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import InstagramEmbed from './InstagramEmbed';
 import { getExternalReviewsByTheRestaurantId, removeExternalReview } from '@/lib/db/dbOperations';
 import { useEffect, useState } from 'react';
