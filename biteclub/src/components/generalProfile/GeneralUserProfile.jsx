@@ -365,8 +365,8 @@ export default function GeneralUserProfile({ isOwner = false, generalUserId }) {
   // Masonry breakpoints for external reviews (Instagram) and blog posts
   const breakpointColumnsObjInsta = {
     default: 3,
-    1024: 3,
-    768: 2,
+    1024: 2,
+    640: 1,
     0: 1,
   };
 

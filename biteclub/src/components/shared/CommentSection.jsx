@@ -144,7 +144,7 @@ function Comment({ comment, currentUser, isOwner, restaurantId, engagementData, 
         <div className="flex gap-3 text-sm text-brand-grey font-primary mt-4]">
           <button
             onClick={onLike}
-            className={`hover:text-brand-navy ${hasLiked ? 'text-gray-500' : ''} mb-1 cursor-pointer`}
+            className={`hover:text-brand-navy ${hasLiked ? 'text-gray-500' : ''} mb-1 cursor-pointer text-xs`}
           >
             <FontAwesomeIcon icon={hasLiked ? faThumbsUp : faThumbsUpRegular} className="icon-md text-brand-navy" />{' '}
             {engagementData?.likes?.count || 0}

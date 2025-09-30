@@ -91,7 +91,7 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
             <p>{restaurantData.numReviews}</p>
 
             {/* price range tag */}
-            <div className="bg-brand-blue-lite px-2 rounded-full w-15 flex justify-center font-primary text-sm">
+            <div className="bg-brand-blue-lite px-2 rounded-full w-10 flex justify-center font-primary text-xs">
               {restaurantData.priceRange || '$'}
             </div>
           </div>

@@ -149,8 +149,8 @@ export default function GeneralUserBanner({
         {/*user name, bio, join date, follow btn*/}
         <div className="flex flex-col xl:items-start items-center gap-4 md:mr-4 mr-0 md:pt-4 pt-0">
           <span className="text-4xl font-bold font-primary mb-1">{generalUserData.username}</span>
-          <div className="min-h-24 py-4 px-4 mb-4 rounded-xl bg-brand-yellow-lite/40 w-full max-w-sm">
-            <p className="md:text-lg text-md text-center">{generalUserData.userBio}</p>
+          <div className="min-h-24 py-4 px-4 mb-4 rounded-xl bg-brand-yellow-lite/40 w-xs">
+            <p className="text-left">{generalUserData.userBio}</p>
           </div>
           {/* JOIN DATE DISPLAY IF AVAILABLE */}
           {generalUserData?.joinedSince && (

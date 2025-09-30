@@ -223,7 +223,7 @@ export default function Settings() {
           <DeleteAccountButton user={user} />
         </div>
 
-        <div className="lg:w-4xl w-full mt-8 py-8 lg:px-12 border-t border-brand-peach">
+        <div className="lg:w-4xl w-full py-8 lg:px-12 border-t border-brand-peach">
           <h2 className="mb-4">Logout</h2>
           <LogoutButton />
         </div>
