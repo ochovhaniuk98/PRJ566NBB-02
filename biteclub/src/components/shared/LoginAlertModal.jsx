@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '../shared/Button';
+import Link from 'next/link';
 
 export default function LoginAlertModal({ isOpen, handleClose }) {
   const [mounted, setMounted] = useState(false);
@@ -32,9 +33,13 @@ export default function LoginAlertModal({ isOpen, handleClose }) {
         <div className="h-full p-4 flex flex-col gap-4 text-base">
           Please log in to continue.
           <div className="flex gap-2">
-            <Button type="button" className="w-30" variant="default">
+            <Link
+              href={'/login'}
+              type="button"
+              className="inline-flex items-center justify-center w-30 bg-brand-green-lite border border-brand-navy hover:bg-brand-green rounded font-semibold text-sm"
+            >
               Login
-            </Button>
+            </Link>
             <Button type="button" className="w-30" variant="third" onClick={handleClose}>
               OK
             </Button>

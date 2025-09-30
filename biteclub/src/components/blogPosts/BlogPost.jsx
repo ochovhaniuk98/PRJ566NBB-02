@@ -20,12 +20,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import FavouriteButton from '../shared/FavouriteButton';
 import { Button } from '../shared/Button';
+import LoginAlertModal from '../shared/LoginAlertModal';
 
 export default function BlogPost({ id }) {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
   const userType = user?.user_metadata.user_type; // Check userType, Business users should not see or interact with blog post
   const { userData, refreshUserData } = useUserData(); // e.g. refresh after Favouriting the post
   const isFavourited = userData?.favouriteBlogs?.includes(id);
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
+  const isLoggedIn = !!userData?._id; // check if user is logged-in
 
   const [blogPost, setBlogPost] = useState(null);
   const [notFound, setNotFound] = useState(false);
@@ -143,6 +146,12 @@ export default function BlogPost({ id }) {
   // TODO: Make filled if already liked/disliked
   // handle like/dislike/favourite
   const handleLike = async () => {
+    // show alert if viewer not logged-in
+    if (!isLoggedIn) {
+      setShowLoginAlert(true);
+      return;
+    }
+
     const res = await fetch('/api/blog-posts/add-like-dislike', {
       method: 'POST',
       headers: {
@@ -167,6 +176,12 @@ export default function BlogPost({ id }) {
   };
 
   const handleDislike = async () => {
+    // show alert if viewer not logged-in
+    if (!isLoggedIn) {
+      setShowLoginAlert(true);
+      return;
+    }
+
     const res = await fetch('/api/blog-posts/add-like-dislike', {
       method: 'POST',
       headers: {
@@ -192,6 +207,12 @@ export default function BlogPost({ id }) {
 
   // When user save blog-post as favourite
   const handleFavouriteBlogPostClick = async () => {
+    // show alert if viewer not logged-in
+    if (!isLoggedIn) {
+      setShowLoginAlert(true);
+      return;
+    }
+
     try {
       if (!user?.id) return;
 
@@ -286,9 +307,7 @@ export default function BlogPost({ id }) {
                 <FontAwesomeIcon
                   icon={faFlag}
                   className={`icon-lg text-brand-navy`}
-                  onClick={e => {
-                    setOpenReportForm(prev => !prev);
-                  }}
+                  onClick={isLoggedIn ? () => setOpenReportForm(prev => !prev) : () => setShowLoginAlert(true)}
                 />
               </div>
             </div>
@@ -322,6 +341,7 @@ export default function BlogPost({ id }) {
           )}
         </div>
       )}
+      {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </>
   );
 }
