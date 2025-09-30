@@ -75,7 +75,6 @@ export default function ExploringBlogPosts() {
     scrollPositionRef.current = window.scrollY;
     setPage(prev => prev + 1);
   };
-
   return (
     <>
       {fetchCompleted && (

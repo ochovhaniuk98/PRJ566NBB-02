@@ -1,13 +1,15 @@
 'use client';
+
 import RestaurantCard from '@/components/restaurantProfile/RestaurantCard';
 import GridCustomCols from '@/components/shared/GridCustomCols';
-import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Button } from '@/components/shared/Button';
 import FilterMenu from '@/components/searchResults/FilterMenu';
 import { useState, useEffect, useRef } from 'react';
 import StyledPageTitle from '@/components/shared/StyledPageTitle';
+import NoContentPlaceholder from '@/components/shared/NoContentPlaceholder';
 
 const dietaryPreferencesArr = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Halal', 'Kosher', 'Dairy-Free'];
+let search_query = 'query';
 
 export default function RestaurantResults() {
   const [restaurants, setRestaurants] = useState([]);
@@ -76,8 +78,11 @@ export default function RestaurantResults() {
     // Get search value from DOM
     let searchValue = '';
     const input = document.getElementById('search-bar-input');
-    if (input) searchValue = input.value.trim();
-    input.value = ''; // Reset search input after capturing value
+    if (input) {
+      searchValue = input.value.trim();
+      search_query = searchValue;
+    }
+    //input.value = ''; // Reset search input after capturing value
 
     const params = new URLSearchParams({
       q: searchValue,
@@ -222,9 +227,13 @@ export default function RestaurantResults() {
           {fetchCompleted && (
             <>
               {/* Restaurant List */}
-              <GridCustomCols numOfCols={5} className="mt-4">
+              <GridCustomCols numOfCols={5} className="mt-4 relative">
                 {restaurants.length === 0 && (
-                  <p className="col-span-5 text-center text-brand-grey">No restaurants found matching your search.</p>
+                  <NoContentPlaceholder
+                    contentType={search_query}
+                    forSearchResults={true}
+                    className="absolute top-0 left-1/2 -translate-x-1/2"
+                  />
                 )}
                 {restaurants.map((restaurant, i) => (
                   <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />

@@ -15,6 +15,7 @@ import {
   getAnnouncementsByRestaurantId,
   getEventsByRestaurantId,
 } from '@/lib/db/dbOperations';
+import NoContentPlaceholder from '../shared/NoContentPlaceholder';
 
 // MAIN CONTAINER
 export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
@@ -101,11 +102,7 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
 
           {/* Event Cards */}
           <div className="flex flex-col gap-4">
-            {events.length === 0 && (
-              <div className="col-span-3 text-start">
-                <p>No events available</p>
-              </div>
-            )}
+            {events.length === 0 && <NoContentPlaceholder contentType="events" iconImgNum={7} />}
             {events.map(event => (
               <EventCard
                 key={event._id}
@@ -137,11 +134,7 @@ export default function EventsAndAnnounce({ isOwner = false, restaurantId }) {
           </div>
           {/* Announcement Cards */}
           <div className="flex flex-col gap-4">
-            {announcements.length === 0 && (
-              <div className="col-span-3 text-start">
-                <p>No announcements available</p>
-              </div>
-            )}
+            {announcements.length === 0 && <NoContentPlaceholder contentType="announcements" iconImgNum={6} />}
             {announcements.map(announcement => (
               <AnnouncementCard
                 key={announcement._id}

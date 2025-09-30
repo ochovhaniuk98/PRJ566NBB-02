@@ -1,5 +1,13 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenClip, faHeart, faUsers, faImage, faFaceFrown } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPenClip,
+  faHeart,
+  faUsers,
+  faImage,
+  faFaceFrown,
+  faBullhorn,
+  faCalendarCheck,
+} from '@fortawesome/free-solid-svg-icons';
 
 export default function NoContentPlaceholder({
   contentType = 'content',
@@ -24,6 +32,12 @@ export default function NoContentPlaceholder({
       break;
     case 5:
       icon = faFaceFrown;
+      break;
+    case 6:
+      icon = faBullhorn;
+      break;
+    case 7:
+      icon = faCalendarCheck;
       break;
     default:
       icon = faPenClip;
