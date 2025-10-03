@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useUserData } from '@/context/UserDataContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
+import { useUser } from '@/context/UserContext';
 
 export default function SearchBar() {
   const [searchInput, setSearchInput] = useState('');
@@ -14,9 +15,9 @@ export default function SearchBar() {
   const pathname = usePathname();
   const params = useSearchParams();
 
-  // read logged-in state (Mongo user)
-  const { userData } = useUserData();
-  const isLoggedIn = !!userData?._id;
+  // read logged-in state of viewer
+  const { user } = useUser() ?? { user: null }; // Supabase auth user
+  const isLoggedIn = !!user?.id;
 
   // clears search input field when navigating to new page,
   // but query string remains when on /search page
@@ -50,7 +51,7 @@ export default function SearchBar() {
         />
       </div>
 
-      <div className="flex gap-2 w-188 max-w-full">
+      <div className="flex gap-24 w-164 max-w-full">
         <div className="relative w-full">
           <span className="absolute inset-y-0 left-3 flex items-center text-brand-grey">
             <FontAwesomeIcon icon={faMagnifyingGlass} />

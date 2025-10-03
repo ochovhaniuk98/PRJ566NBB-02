@@ -21,8 +21,17 @@ export default function LoginAlertModal({ isOpen, handleClose }) {
   if (!isOpen || !mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 bg-brand-peach/40 w-screen h-screen z-[100]">
-      <div className="fixed top-1/4 left-1/2 -translate-x-1/2 md:w-sm w-xs min-h-20 rounded-lg shadow-2xl bg-white text-center font-primary flex flex-col items-center justify-center">
+    <div
+      className="fixed inset-0 bg-brand-peach/40 w-screen h-screen z-[100]"
+      onClick={e => {
+        e.stopPropagation();
+        handleClose();
+      }}
+    >
+      <div
+        className="fixed top-1/4 left-1/2 -translate-x-1/2 md:w-sm w-xs min-h-20 rounded-lg shadow-2xl bg-white text-center font-primary flex flex-col items-center justify-center"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="bg-brand-blue-lite w-full min-h-8 flex items-center justify-between p-2">
           <div className="text-sm text-brand-grey font-medium">
             <FontAwesomeIcon icon={faTriangleExclamation} className={`text-lg text-brand-blue mr-2`} />

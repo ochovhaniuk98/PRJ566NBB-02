@@ -1,8 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useViewer } from '@/hooks/useViewer';
 import { Button } from './Button';
-import { useUserData } from '@/context/UserDataContext';
 import ReportForm from '../shared/ReportForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -25,11 +25,9 @@ import LoginAlertModal from './LoginAlertModal';
 export default function CommentThread({ post, setShowComments }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
-  const { userData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [user, setUser] = useState(null);
-  //const [fetchedPostUser, setFetchedPostUser] = useState(false);
   const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
-  const isLoggedIn = !!userData?._id; // check if user is logged-in
+  const { isAuthenticated, userData } = useViewer(); // info on current authentication states of user/viewer (mongo + supabase)
 
   // comments
   const [comments, setComments] = useState([]);
@@ -114,7 +112,7 @@ export default function CommentThread({ post, setShowComments }) {
   // add new comment
   const addComment = async () => {
     // show alert if viewer not logged-in
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       setShowLoginAlert(true);
       return;
     }
@@ -167,7 +165,7 @@ export default function CommentThread({ post, setShowComments }) {
         if (!blogPost || !user) return;
 
         // show alert if viewer not logged-in
-        if (!isLoggedIn) {
+        if (!isAuthenticated) {
           alert('Please log in to comment.');
           return;
         }
@@ -203,11 +201,25 @@ export default function CommentThread({ post, setShowComments }) {
     }
   };
 
+  // replaces comment anywhere in the comment tree
+  function replaceInTree(list, updated) {
+    return list.map(c => {
+      if (c._id === updated._id) {
+        const replies = c.replies ?? [];
+        return { ...c, ...updated, replies };
+      }
+      if (c.replies?.length) {
+        return { ...c, replies: replaceInTree(c.replies, updated) };
+      }
+      return c;
+    });
+  }
+
   // handle likes
   // // only one like allowed
   const onLike = async (setLikes, comment) => {
     // show alert if viewer not logged-in
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       alert('Please log in to comment.');
       return;
     }
@@ -225,17 +237,18 @@ export default function CommentThread({ post, setShowComments }) {
       }),
     });
     if (!res.ok) throw new Error(`Could not add like to a comment ${res.status}`);
-
     const data = await res.json();
-
     setLikes(data.comment.likes.count);
+
+    // replace the *whole* comment with the server-updated one to update UI
+    setComments(prev => replaceInTree(prev, data.comment));
   };
 
   // handle dislikes
   // // only one dislike allowed
   const onDislike = async (setDislikes, comment, setLikes) => {
     // show alert if viewer not logged-in
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       alert('Please log in to comment.');
       return;
     }
@@ -258,6 +271,9 @@ export default function CommentThread({ post, setShowComments }) {
 
     setLikes(data.comment.likes.count);
     setDislikes(data.comment.dislikes.count);
+
+    // replace comment with update to change UI
+    setComments(prev => replaceInTree(prev, data.comment));
   };
 
   // handle delete
@@ -294,7 +310,7 @@ export default function CommentThread({ post, setShowComments }) {
               key={comment._id}
               comment={comment}
               userId={user?._id}
-              isLoggedIn={isLoggedIn}
+              isAuthenticated={isAuthenticated}
               onReply={addReply}
               onLike={onLike}
               onDislike={onDislike}
@@ -323,7 +339,7 @@ export default function CommentThread({ post, setShowComments }) {
 }
 
 // *** single comment with engagement icons + input field for replying ***
-const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isLoggedIn }) => {
+const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isAuthenticated }) => {
   const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
 
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -331,8 +347,8 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isLogg
   const [replyContent, setReplyContent] = useState('');
 
   // track if User thumbsUped or Down (like/dislike)
-  const [hasLiked, setHasLiked] = useState(false);
-  const [hasDisliked, setHasDisliked] = useState(false);
+  //const [hasLiked, setHasLiked] = useState(false);
+  //const [hasDisliked, setHasDisliked] = useState(false);
 
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
@@ -343,6 +359,12 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isLogg
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
   // const [reporter, setReporter] = useState(null);
+
+  // keep counts in sync if comment updates from server
+  useEffect(() => {
+    setLikes(comment?.likes?.count || 0);
+    setDislikes(comment?.dislikes?.count || 0);
+  }, [comment?.likes?.count, comment?.dislikes?.count]);
 
   // allow only one level nested comments
   useEffect(() => {
@@ -359,20 +381,6 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isLogg
     // set isOwner
     if (comment.user == userId) {
       setIsOwner(true);
-    }
-
-    // Check if current user has liked the comment
-    if (comment?.likes?.users?.includes(userId)) {
-      setHasLiked(true);
-    } else {
-      setHasLiked(false);
-    }
-
-    // Check if current user has disliked the comment
-    if (comment?.dislikes?.users?.includes(userId)) {
-      setHasDisliked(true);
-    } else {
-      setHasDisliked(false);
     }
 
     // console.log('Reporting user id: ', userId);
@@ -403,17 +411,23 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isLogg
     }
   };
 
+  // derive filled state — instantly clears when logged out
+  const liked = isAuthenticated && !!comment?.likes?.users?.includes?.(userId);
+  const disliked = isAuthenticated && !!comment?.dislikes?.users?.includes?.(userId);
+
   // handle LIKE or DISLIKE (change icons if liked by USER)
   const handleLike = () => {
+    if (!isAuthenticated) {
+      return;
+    }
     onLike(setLikes, comment);
-    setHasLiked(true);
-    setHasDisliked(false);
   };
 
   const handleDislike = () => {
+    if (!isAuthenticated) {
+      return;
+    }
     onDislike(setDislikes, comment, setLikes);
-    setHasLiked(false);
-    setHasDisliked(true);
   };
 
   return (
@@ -437,21 +451,21 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isLogg
           {/* like, dislike, reply */}
           <div className="flex gap-4 text-gray-500 text-xs">
             <button
-              onClick={isLoggedIn ? handleLike : () => setShowLoginAlert(true)}
+              onClick={isAuthenticated ? handleLike : () => setShowLoginAlert(true)}
               className="hover:text-brand-navy cursor-pointer"
             >
               <FontAwesomeIcon
-                icon={hasLiked ? faThumbsUpSolid : faThumbsUpRegular}
+                icon={liked ? faThumbsUpSolid : faThumbsUpRegular}
                 className={`icon-md text-brand-navy`}
               />{' '}
               {likes}
             </button>
             <button
-              onClick={isLoggedIn ? handleDislike : () => setShowLoginAlert(true)}
+              onClick={isAuthenticated ? handleDislike : () => setShowLoginAlert(true)}
               className="hover:text-brand-navy cursor-pointer"
             >
               <FontAwesomeIcon
-                icon={hasDisliked ? faThumbsDownSolid : faThumbsDownRegular}
+                icon={disliked ? faThumbsDownSolid : faThumbsDownRegular}
                 className={`icon-md text-brand-navy`}
               />
             </button>
@@ -459,14 +473,14 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isLogg
             {/* show Report form when flag icon is clicked */}
             <div
               className="text-brand-navy flex items-center gap-x-2 cursor-pointer"
-              onClick={isLoggedIn ? () => setOpenReportForm(prev => !prev) : () => setShowLoginAlert(true)}
+              onClick={isAuthenticated ? () => setOpenReportForm(prev => !prev) : () => setShowLoginAlert(true)}
             >
               <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy cursor-pointer`} />
             </div>
 
             {showReplyBtn && (
               <button
-                onClick={isLoggedIn ? () => setShowReplyInput(!showReplyInput) : () => setShowLoginAlert(true)}
+                onClick={isAuthenticated ? () => setShowReplyInput(!showReplyInput) : () => setShowLoginAlert(true)}
                 className="hover:text-brand-navy text-xs cursor-pointer flex justify-center items-center"
               >
                 <FontAwesomeIcon icon={faReply} className={`icon-md text-brand-navy mr-1`} /> Reply
@@ -477,13 +491,6 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isLogg
                 <FontAwesomeIcon icon={faTrashCan} className={`icon-md text-brand-red`} />
               </button>
             )}
-            {/*<SingleTabWithIcon icon={faTrashCan}
-                detailText="X"
-                bgColour="bg-white"
-                textColour="text-brand-red"
-                borderColour="border-brand-red"
-                onClick={() => onDelete(comment)}
-              />*/}
           </div>
 
           {/* reply input field + button */}
@@ -513,6 +520,7 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isLogg
                   onLike={onLike}
                   onDislike={onDislike}
                   onDelete={onDelete}
+                  isAuthenticated={isAuthenticated}
                 />
               ))}
           </div>

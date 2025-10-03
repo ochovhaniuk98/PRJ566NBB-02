@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // useRouter instead of next/Link, so we can manually handle the redirection on Clicking the Card (vs Saving the Restaurant as Favourite)
-
-import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
+import LoginAlertModal from '../shared/LoginAlertModal';
+import { useViewer } from '@/hooks/useViewer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as strokedHeart } from '@fortawesome/free-regular-svg-icons';
@@ -13,28 +13,48 @@ import StarRating from '../shared/StarRating';
 
 export default function RestaurantCard({ restaurantData, onFavouriteToggle = () => {} }) {
   const router = useRouter();
-  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const { userData, refreshUserData } = useUserData();
-  const restaurantId = restaurantData._id;
-  const isFavourited = userData?.favouriteRestaurants?.includes(restaurantId);
 
+  const { isAuthenticated, supabaseId, userData } = useViewer(); // info on current authentication states of user/viewer (mongo + supabase)
+  const { refreshUserData } = useUserData();
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
+
+  const restaurantId = restaurantData._id;
+  const [isFavourited, setIsFavourited] = useState(false);
   const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
-  // const image = Array.isArray(restaurantData?.images) ? restaurantData.images[0] : null;
+
+  // Syncs favourite icon with Supabase AND Mongo when it changes (prevents UI lag);
+  // Clears immediately on logout, removing the filled-heart after logout
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setIsFavourited(false);
+      return;
+    }
+    setIsFavourited(!!userData?.favouriteRestaurants?.includes(restaurantId));
+  }, [isAuthenticated, userData?.favouriteRestaurants, restaurantId]);
 
   const handleFavouriteRestaurantClick = async e => {
-    e.stopPropagation();
+    e?.stopPropagation();
+
+    if (!isAuthenticated) {
+      setShowLoginAlert(true);
+      return;
+    }
+
+    // Optimistic UI -- makes favouriting action *look* faster
+    const next = !isFavourited;
+    setIsFavourited(next);
 
     try {
       // const { data, error } = await supabase.auth.getUser();
       // if (error || !data?.user?.id) throw new Error('User not logged in');
-      if (!user?.id) return;
+      if (!supabaseId) return;
       const res = await fetch('/api/restaurants/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurantId,
           // supabaseUserId: data.user.id,
-          supabaseUserId: user.id,
+          supabaseUserId: supabaseId,
         }),
       });
 
@@ -75,7 +95,9 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
             >
               <FontAwesomeIcon
                 icon={isHovered || isFavourited ? solidHeart : strokedHeart}
-                className={`icon-xl hover:text-brand-aqua ${isFavourited ? 'text-brand-aqua' : 'text-brand-navy'}`}
+                className={`icon-xl hover:text-brand-aqua ${
+                  isHovered || isFavourited ? 'text-brand-aqua' : 'text-brand-navy'
+                }`}
               />
             </div>
           </div>
@@ -97,6 +119,7 @@ export default function RestaurantCard({ restaurantData, onFavouriteToggle = () 
           </div>
         </div>
       </div>
+      {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </div>
   );
 }

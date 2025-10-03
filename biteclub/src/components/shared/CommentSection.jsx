@@ -8,6 +8,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import Image from 'next/image';
 import LoginAlertModal from '../shared/LoginAlertModal';
+import { useViewer } from '@/hooks/useViewer';
 
 export default function CommentSection({
   currentUser,
@@ -27,8 +28,10 @@ export default function CommentSection({
 
   // ---- for preventing unauthorized user from engaging with comments  ----
   const viewerId = isOwner ? restaurantId : currentUser?._id ?? null;
+  const { isAuthenticated } = useViewer(); // current authentication state of user/viewer (supabase)
+
   const requireViewerId = () => {
-    if (!viewerId) {
+    if (!isAuthenticated) {
       setShowLoginAlert(true);
       return null;
     }
@@ -72,6 +75,7 @@ export default function CommentSection({
             currentUser={currentUser}
             isOwner={isOwner}
             restaurantId={restaurantId}
+            isAuthenticated={isAuthenticated} // pass user auth info (ensures no lag)
             onDelete={() => {
               const id = requireViewerId();
               if (!id) return;
@@ -92,7 +96,7 @@ export default function CommentSection({
       </ul>
 
       {/* Comment input form */}
-      {isOwner || isAuthor ? (
+      {isAuthenticated && (isOwner || isAuthor) ? (
         <form onSubmit={handleSubmit} className="flex flex-col gap-y-2 mb-0 border-t-1 border-brand-peach w-full">
           <textarea
             value={input}
@@ -115,12 +119,24 @@ export default function CommentSection({
   );
 }
 
-function Comment({ comment, currentUser, isOwner, restaurantId, engagementData, onLike, onDislike, onDelete }) {
+function Comment({
+  comment,
+  currentUser,
+  isOwner,
+  restaurantId,
+  engagementData,
+  onLike,
+  isAuthenticated,
+  onDislike,
+  onDelete,
+}) {
   const { content, author_name, avatarURL, date_posted, likes, dislikes, author_id, user_type } = comment;
 
   // safe checks for likes/dislikes users presence
-  const hasLiked = engagementData?.userLiked || false;
-  const hasDisliked = engagementData?.userDisliked || false;
+  //const hasLiked = engagementData?.userLiked || false;
+  //const hasDisliked = engagementData?.userDisliked || false;
+  const hasLiked = isAuthenticated && !!engagementData?.userLiked;
+  const hasDisliked = isAuthenticated && !!engagementData?.userDisliked;
 
   return (
     <li className="p-2 text-sm flex gap-x-2 font-primary w-full">
@@ -160,7 +176,7 @@ function Comment({ comment, currentUser, isOwner, restaurantId, engagementData, 
             />{' '}
           </button>
 
-          {author_id === (isOwner ? restaurantId : currentUser?._id) ? (
+          {isAuthenticated && author_id === (isOwner ? restaurantId : currentUser?._id) ? (
             <button onClick={onDelete} className="cursor-pointer ml-auto">
               <FontAwesomeIcon icon={faTrashCan} className={`icon-md text-brand-red`} />
             </button>

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
 import { faGift, faPen, faPenClip } from '@fortawesome/free-solid-svg-icons';
 import { faInstagram } from '@fortawesome/free-brands-svg-icons';
@@ -22,22 +21,24 @@ import EventsAndAnnounce from './EventsAndAnnounce';
 import Spinner from '@/components/shared/Spinner';
 import FavouriteButton from '../shared/FavouriteButton';
 import LoginAlertModal from '../shared/LoginAlertModal';
+import { useViewer } from '@/hooks/useViewer';
 
 export default function RestaurantProfile({ isOwner = false, restaurantId }) {
-  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const { userData, refreshUserData } = useUserData();
-  const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
-
   const restaurantTabs = ['Reviews', 'Mentioned', 'Photos', 'Events and Announcements', 'Business Info'];
+
+  const { isAuthenticated, supabaseId, userData } = useViewer(); // info on current authentication states of user/viewer (mongo + supabase)
+  const { refreshUserData } = useUserData();
+
+  // stores the MongoDB user ID of the logged-in user, or restaurantId if owner;
+  // If the user is the owner, we can use restaurantId directly as userId.
+  const [userId, setUserId] = useState(isOwner ? restaurantId : null);
+
   const [selectedReview, setSelectedReview] = useState(null);
   const [selectedTab, setSelectedTab] = useState(restaurantTabs[0]);
   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
-  const [reviewRating, setReviewRating] = useState({ value: 0, message: '' }); // stores the updated rating value when adding a review
   const [numOfFavourites, setNumOfFavourites] = useState(0);
-  const isFavourited = userData?.favouriteRestaurants?.includes(restaurantId);
-
-  // stores the MongoDB user ID of the logged-in user, or restaurantId if owner
-  const [userId, setUserId] = useState(isOwner ? restaurantId : null); // If the user is the owner, we can use restaurantId directly as userId.
+  const [isFavourited, setIsFavourited] = useState(false);
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
 
   // states for editing profile
   const [showInstagramPopup, setShowInstagramPopup] = useState(false);
@@ -93,8 +94,8 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   useEffect(() => {
     const fetchMongoUserId = async () => {
       try {
-        if (!user?.id) return;
-        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: user.id });
+        if (!supabaseId) return;
+        const userMongoId = await getGeneralUserMongoIDbySupabaseId({ supabaseId: supabaseId });
 
         if (!userMongoId) {
           console.error('MongoDB User ID not found for Supabase ID:', supabaseUserId);
@@ -108,24 +109,39 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
     };
     // Only fetch user ID if not the owner and userId is not already set
     if (!isOwner && !userId) fetchMongoUserId();
-  }, [user?.id]);
+  }, [supabaseId]);
+
+  // Syncs favourite icon with Supabase AND Mongo when it changes (prevents UI lag);
+  // Clears immediately on logout, removing the filled-heart after logout
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setIsFavourited(false);
+      return;
+    }
+    setIsFavourited(!!userData?.favouriteRestaurants?.includes(restaurantId));
+  }, [isAuthenticated, userData?.favouriteRestaurants, restaurantId]);
 
   if (!restaurantData || !reviewsData) return <Spinner message="Loading..." />;
 
   // When user save restaurant as favourite
   const handleFavouriteRestaurantClick = async () => {
-    try {
-      if (!user?.id) {
-        setShowLoginAlert(true);
-        return;
-      }
+    if (!isAuthenticated) {
+      setShowLoginAlert(true);
+      return;
+    }
 
+    // Optimistic UI -- makes favouriting action seem faster
+    const next = !isFavourited;
+    setIsFavourited(next);
+    setNumOfFavourites(c => c + (next ? 1 : -1));
+
+    try {
       const res = await fetch('/api/restaurants/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurantId,
-          supabaseUserId: user.id,
+          supabaseUserId: supabaseId,
         }),
       });
 
@@ -150,7 +166,7 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
   // Show alert if "Write a Review" btn clicked and do NOT open form
   // if any user is NOT logged in
   const handleWriteReviewClick = () => {
-    if (!user?.id) {
+    if (!supabaseId) {
       setShowLoginAlert(true);
       return;
     }
@@ -193,11 +209,6 @@ export default function RestaurantProfile({ isOwner = false, restaurantId }) {
           </>
         ) : (
           <div className="flex items-center ">
-            {/*<SingleTabWithIcon
-              icon={faHeart}
-              detailText={numOfFavourites ?? 0}
-              onClick={handleFavouriteRestaurantClick}
-            />*/}
             <FavouriteButton
               handleFavouriteToggle={handleFavouriteRestaurantClick}
               isFavourited={isFavourited}

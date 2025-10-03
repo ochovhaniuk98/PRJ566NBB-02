@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useViewer } from '@/hooks/useViewer';
 import Image from 'next/image';
 import EngagementIconStat from '../shared/EngagementIconStat';
 import StarRating from '../shared/StarRating';
@@ -23,16 +24,27 @@ export default function ReviewCardExpanded({
   onClose,
   isOwner = false,
 }) {
+  const { isAuthenticated } = useViewer(); // current authentication state of user/viewer (supabase)
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
   const [authorProfile, setAuthorProfile] = useState(null);
   const authorId = selectedReview.user_id?._id;
-  const isLoggedIn = !!currentUser?._id;
-  const [showLoginAlert, setShowLoginAlert] = useState(false);
 
   // Fetch review author
   useEffect(() => {
+    if (!authorId) return;
+
+    // don't call author API (since it's protected) until the user/viewer is authenticated
+    if (!isAuthenticated) {
+      // use data already on the review as fallback
+      setAuthorProfile({
+        username: selectedReview?.user_id?.username ?? 'Unknown',
+        userProfilePicture: selectedReview?.user_id?.userProfilePicture ?? null,
+      });
+      return;
+    }
+
     const fetchAuthorProfile = async () => {
       try {
-        if (!authorId) return;
         const authorRes = await fetch(`/api/generals/get-profile-by-dbId?dbId=${authorId}`);
         if (!authorRes.ok) {
           console.error('Failed to fetch author profile:', authorRes.status);
@@ -45,7 +57,7 @@ export default function ReviewCardExpanded({
       }
     };
     fetchAuthorProfile();
-  }, [authorId]);
+  }, [authorId, isAuthenticated, selectedReview?.user_id]);
 
   const [photoIndex, setPhotoIndex] = useState(0);
   // for comments in expanded review
@@ -85,7 +97,7 @@ export default function ReviewCardExpanded({
       setComments([]);
       setCommentEngagementData({});
     }
-  }, [selectedReview, currentUser?._id, isOwner, restaurantId]);
+  }, [selectedReview, currentUser?._id, isOwner, restaurantId, isAuthenticated]);
 
   const handleAddComment = async (commentData, userId) => {
     try {
@@ -173,8 +185,8 @@ export default function ReviewCardExpanded({
   };
 
   return (
-    <div className="xl:w-1/3 lg:w-2/3 w-full fixed left-0 right-0 bottom-0 top-16 md:static md:z-20 z-100 h-screen md:pb-0 pb-16">
-      <div className="sticky top-14 h-full overflow-auto scrollbar-none bg-white md:border-2 border-t-2 border-brand-peach rounded-md shadow-lg">
+    <div className="xl:w-1/3 lg:w-2/3 w-full fixed left-0 right-0 bottom-0 top-14 md:sticky md:z-20 z-100 max-h-screen md:h-[93vh] h-screen md:pb-0 pb-16">
+      <div className="bg-white sticky top-14 h-full overflow-auto scrollbar-none md:border-2 border-t-2 border-brand-peach rounded-md shadow-lg">
         <div className="p-4 bg-white w-full flex justify-between">
           <AuthorDateBlurb
             authorPic={selectedReview.user_id?.userProfilePicture?.url}
@@ -186,10 +198,11 @@ export default function ReviewCardExpanded({
               icon={faFlag}
               className={`icon-md text-brand-navy mr-3 cursor-pointer`}
               onClick={() => {
-                if (!isLoggedIn) {
+                if (!isAuthenticated) {
                   setShowLoginAlert(true);
                   return;
                 }
+                b;
                 setOpenReportForm(true);
               }}
             />
@@ -210,17 +223,17 @@ export default function ReviewCardExpanded({
             {/* Left Button */}
             <button
               onClick={handlePrev}
-              className="absolute left-4 bottom-3/7 -translate-y-1/2 bg-white/60  border border-white/60 rounded-full p-1 w-6 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
+              className="absolute left-4 bottom-3/7 -translate-y-1/2 bg-white/70 rounded-full p-1 w-7 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
             >
-              <FontAwesomeIcon icon={faChevronLeft} className={`icon-sm text-brand-grey`} />
+              <FontAwesomeIcon icon={faChevronLeft} className={`text-sm text-brand-grey`} />
             </button>
 
             {/* Right Button */}
             <button
               onClick={handleNext}
-              className="absolute right-4 bottom-3/7 -translate-y-1/2 bg-white  border border-brand-navy rounded-full p-1 w-6 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
+              className="absolute right-4 bottom-3/7 -translate-y-1/2 bg-white/70 rounded-full p-1 w-7 aspect-square shadow-lg flex items-center justify-center cursor-pointer"
             >
-              <FontAwesomeIcon icon={faChevronRight} className={`icon-sm text-brand-grey`} />
+              <FontAwesomeIcon icon={faChevronRight} className={`text-sm text-brand-grey`} />
             </button>
           </div>
         )}
@@ -257,7 +270,7 @@ export default function ReviewCardExpanded({
         </div>
       </div>
       {/* Report form */}
-      {openReportForm && isLoggedIn && (
+      {openReportForm && isAuthenticated && (
         <ReportForm
           onClose={() => setOpenReportForm(false)}
           reportType="Content"
