@@ -136,14 +136,20 @@ export default function GeneralUserBanner({
         {/*profile pic*/}
         <div className=" flex md:flex-row flex-col justify-center md:items-start items-center">
           <div className="relative lg:size-50 size-40 rounded-full border border-white bg-brand-green mx-4">
-            {generalUserData.userProfilePicture && (
-              <Image
-                src={generalUserData.userProfilePicture.url}
-                alt={generalUserData.userProfilePicture.caption}
-                fill={true}
-                className="rounded-full object-cover w-full"
-              />
-            )}
+            <Image
+              src={
+                generalUserData.userProfilePicture
+                  ? generalUserData.userProfilePicture.url
+                  : '/img/profilePicPlaceholder.png'
+              }
+              alt={
+                generalUserData.userProfilePicture
+                  ? generalUserData.userProfilePicture.caption
+                  : 'Profile placeholder image'
+              }
+              fill={true}
+              className="rounded-full object-cover w-full"
+            />
           </div>
         </div>
         {/*user name, bio, join date, follow btn*/}

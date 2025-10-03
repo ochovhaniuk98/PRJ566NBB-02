@@ -36,7 +36,7 @@ export default function GeneralSetupForm() {
     const data = {
       supabaseId: user.id,
       username: username || '',
-      userBio: '', // Not required to input on signup
+      userBio: 'Tell us about yourself here.', // Not required to input on signup
     };
 
     try {

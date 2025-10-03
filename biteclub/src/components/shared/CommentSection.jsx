@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from './Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown, faTrashCan, faCommentDots } from '@fortawesome/free-solid-svg-icons';
 import {
   faThumbsUp as faThumbsUpRegular,
   faThumbsDown as faThumbsDownRegular,
@@ -110,9 +110,10 @@ export default function CommentSection({
           </Button>
         </form>
       ) : (
-        <p className="text-sm text-brand-grey">
+        <div className="flex flex-col gap-2 text-center bg-brand-blue-lite/30 p-4 py-8 rounded-2xl text-brand-grey font-primary my-4">
+          <FontAwesomeIcon icon={faCommentDots} className={`text-3xl text-brand-blue`} />
           You must be the restaurant owner or the author of this review to comment.
-        </p>
+        </div>
       )}
       {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </div>

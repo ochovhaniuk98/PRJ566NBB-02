@@ -81,7 +81,7 @@ export default function ExploringBlogPosts() {
         <>
           <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2 mt-4" columnClassName="space-y-2">
             {blogPosts.map((post, i) => (
-              <BlogPostCard key={post._id || i} blogPostData={post} />
+              <BlogPostCard key={post._id || i} blogPostData={post} writtenByOwner={true} /> // hardcoded to "true" temporarily since author data not displaying
             ))}
           </Masonry>
           {hasMore && (

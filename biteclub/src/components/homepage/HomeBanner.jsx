@@ -16,7 +16,7 @@ export default function HomeBanner() {
 
   return (
     <div className="bg-gradient-to-br from-brand-yellow to-[#ffce5d]  w-full min-h-[350px] xl:h-[48vw] lg:h-[52vw] md:h-[64vw] h-[31rem] min-w-[20rem] relative overflow-hidden">
-      <div className="absolute xl:size-[50vw] lg:size-[46vw] md:size-[56vw] sm:size-[66vw] size-[20rem] xl:left-[40vw] lg:left-[44vw] md:left-[38vw] sm:left-[32vw] left-[8rem] xl:-bottom-28 lg:-bottom-17 md:-bottom-16 sm:-bottom-15 -bottom-11 min-h-72">
+      <div className="absolute xl:size-[50vw] lg:size-[46vw] md:size-[56vw] sm:size-[66vw] size-[20rem] xl:left-[40vw] lg:left-[44vw] md:left-[38vw] sm:left-[32vw] left-[8rem] xl:-bottom-[6vw] lg:-bottom-17 md:-bottom-16 sm:-bottom-15 -bottom-11 min-h-72">
         <Image
           src={'img/landingBannerLargeTxt2.png'}
           alt={'food plates'}

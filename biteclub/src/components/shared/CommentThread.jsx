@@ -16,6 +16,7 @@ import {
   faFlag,
   faXmark,
   faReply,
+  faCommentDots,
 } from '@fortawesome/free-solid-svg-icons';
 import LoginAlertModal from './LoginAlertModal';
 
@@ -303,22 +304,31 @@ export default function CommentThread({ post, setShowComments }) {
       </div>
 
       {/* scrollable comments area */}
-      <div className="flex-1 overflow-y-auto pr-1 xl:pb-28 pb-8 scrollbar-hide border-t-1 border-brand-peach pt-4">
-        {fetchedComments &&
-          comments.map(comment => (
-            <Comment
-              key={comment._id}
-              comment={comment}
-              userId={user?._id}
-              isAuthenticated={isAuthenticated}
-              onReply={addReply}
-              onLike={onLike}
-              onDislike={onDislike}
-              onDelete={onDelete}
-              reportedUser={user}
-            />
-          ))}
-      </div>
+      {commentsCount <= 0 ? (
+        <div className="flex flex-col gap-2 text-center bg-brand-blue-lite/30 p-4 py-8 rounded-2xl text-brand-grey">
+          <FontAwesomeIcon icon={faCommentDots} className={`text-3xl text-brand-blue`} />
+          No comments yet.
+          <br />
+          Be the first!
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto pr-1 xl:pb-28 pb-8 scrollbar-hide border-t-1 border-brand-peach pt-4">
+          {fetchedComments &&
+            comments.map(comment => (
+              <Comment
+                key={comment._id}
+                comment={comment}
+                userId={user?._id}
+                isAuthenticated={isAuthenticated}
+                onReply={addReply}
+                onLike={onLike}
+                onDislike={onDislike}
+                onDelete={onDelete}
+                reportedUser={user}
+              />
+            ))}
+        </div>
+      )}
 
       {/* main textarea input + "post" button */}
       <div className="xl:absolute xl:bottom-4 xl:left-0 xl:right-0 bg-white pt-2 px-4 border-t-1 border-brand-peach">
