@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
-import GridCustomCols from '@/components/shared/GridCustomCols';
-import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import { Label } from '@/components/shared/Label';
 import { Switch } from '@/components/shared/Switch';
 import { Button } from '@/components/shared/Button';
@@ -13,6 +11,7 @@ import { DeleteAccountButton } from '@/components/auth/Delete-account-button';
 import Spinner from '@/components/shared/Spinner';
 import Avatar from '@/app/(auth)/account-setup/general/avatar';
 import { createClient } from '@/lib/auth/client';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
 
 export default function Settings() {
   // User infomation
@@ -78,6 +77,7 @@ export default function Settings() {
           displayFavouriteBlogPosts,
           displayVisitedPlaces: false,
           feedPersonalization,
+          //displayVisitedPlaces,
         }),
       });
 
@@ -97,23 +97,25 @@ export default function Settings() {
   };
 
   return (
-    <MainBaseContainer>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center m-16 bg-white">
-        {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
-        {user && (
-          <Avatar
-            uid={user.id}
-            url={avatar_url}
-            size={150}
-            onUpload={url => {
-              setAvatarUrl(url);
-            }}
-          />
-        )}
-
-        <form className="w-4xl mt-8" onSubmit={handleSubmit}>
-          <GridCustomCols numOfCols={2}>
-            <div className="py-1 px-12 flex flex-col gap-2">
+    <div className="md:p-12">
+      <div className="relative mb-16 w-full flex flex-col items-center md:mt-4 mt-10 bg-white">
+        <div className="mt-8 flex flex-col gap-4 w-full">
+          <StyledPageTitle textString="Settings"></StyledPageTitle>
+          {/* <Avatar uid={user?.id} url={avatarUrl} size={150} onUpload={url => setAvatarUrl(url)} /> */}
+          {user && (
+            <Avatar
+              uid={user.id}
+              url={avatar_url}
+              size={150}
+              onUpload={url => {
+                setAvatarUrl(url);
+              }}
+            />
+          )}
+        </div>
+        <form className="lg:w-4xl w-full mt-8" onSubmit={handleSubmit}>
+          <div className="flex gap-x-8 md:flex-row flex-col">
+            <div className="md:w-1/2 w-full py-1 flex flex-col gap-2">
               <h2 className="mb-4">Account Details</h2>
 
               <div>
@@ -158,7 +160,7 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="py-1 px-12 flex flex-col gap-2">
+            <div className="md:w-1/2 w-full py-1 flex flex-col gap-2">
               <h2 className="mb-4">Display Preferences</h2>
               <p className="mb-4">You can modify what page to show the public.</p>
 
@@ -202,7 +204,7 @@ export default function Settings() {
                 />
               </div>
             </div>
-          </GridCustomCols>
+          </div>
 
           <div className="flex justify-end gap-x-2">
             <Button type="submit" className="w-30" variant="default">
@@ -215,17 +217,17 @@ export default function Settings() {
           </div>
         </form>
 
-        <div className="w-4xl mt-8 py-8 px-12 border-t border-brand-peach">
+        <div className="lg:w-4xl w-full mt-8 py-8 lg:px-12 border-t border-brand-peach">
           <h2 className="mb-4">Delete Account</h2>
           <p className="mb-4">Once you delete your account, there is no going back. Please be certain.</p>
           <DeleteAccountButton user={user} />
         </div>
 
-        <div className="w-4xl mt-8 py-8 px-12 border-t border-brand-peach">
+        <div className="lg:w-4xl w-full py-8 lg:px-12 border-t border-brand-peach">
           <h2 className="mb-4">Logout</h2>
           <LogoutButton />
         </div>
       </div>
-    </MainBaseContainer>
+    </div>
   );
 }

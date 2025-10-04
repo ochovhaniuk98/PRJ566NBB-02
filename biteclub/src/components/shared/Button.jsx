@@ -7,17 +7,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-brand-green-lite text-black border border-brand-navy rounded-sm hover:bg-brand-green/50 ',
+        default: 'bg-brand-green-lite text-black border border-brand-navy rounded-sm hover:bg-brand-green ',
         destructive:
           'bg-destructive text-white shadow-xs rounded-sm hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
           'border bg-background shadow-xs rounded-sm hover:bg-accent hover:bg-secondary/80 dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
-        secondary: 'bg-brand-peach rounded-sm',
+        secondary: 'bg-brand-peach rounded-sm hover:bg-[#ffcea5]',
         ghost: 'hover:bg-accent rounded-sm hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 rounded-sm hover:underline',
         googlebtn: ' bg-brand-google text-white rounded-sm',
         danger: 'bg-brand-red text-white uppercase rounded-sm',
-        third: 'bg-brand-blue-lite border border-brand-blue rounded-sm',
+        third: 'bg-brand-blue-lite border border-brand-blue rounded-sm hover:bg-[#94d5f2]',
         roundTab:
           'bg-brand-blue-lite rounded-full border border-brand-blue-lite hover:bg-brand-aqua-lite hover:border-brand-aqua',
         roundTabActive:

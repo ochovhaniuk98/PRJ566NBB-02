@@ -8,7 +8,7 @@ import { faThumbsUp as faThumbsUpSolid, faThumbsDown as faThumbsDownSolid } from
 
 const reviewCardIconArr = [
   { filled: faThumbsUpSolid, outlined: faThumbsUpRegular }, // Like
-  { filled: faCommentDots, outlined: faCommentDots }, // Comments (no filled variant, just solid)
   { filled: faThumbsDownSolid, outlined: faThumbsDownRegular }, // Dislike
+  { filled: faCommentDots, outlined: faCommentDots }, // Comments (no filled variant, just solid)
 ];
 export default reviewCardIconArr;

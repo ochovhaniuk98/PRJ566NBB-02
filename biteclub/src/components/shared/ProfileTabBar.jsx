@@ -11,18 +11,18 @@ export default function ProfileTabBar({ onTabChange, tabs }) {
   };
 
   return (
-    <div className="flex justify-center pb-6">
+    <div className="flex gap-x-4 md:justify-center justify-start pb-6 md:w-full w-full overflow-x-scroll scrollbar-hide">
       {tabs.map(tab => (
         <button
           key={tab}
           onClick={() => handleTabClick(tab)}
-          className={`px-2 py-1 mr-4 text-sm border-b-3 transition-colors duration-200 cursor-pointer ${
+          className={`px-2 py-1 text-sm border-b-3 transition-colors duration-200 cursor-pointer ${
             selectedTab === tab
               ? 'border-brand-aqua text-black font-semibold'
               : 'border-white text-brand-navy hover:border-brand-blue-lite font-medium'
           }`}
         >
-          <h4>{tab}</h4>
+          <h4 className="whitespace-nowrap">{tab}</h4>
         </button>
       ))}
     </div>

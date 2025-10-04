@@ -54,21 +54,26 @@ export default function MainMenu() {
     <>
       {userType !== 'business' && (
         <aside
-          className="fixed top-0 left-0 z-50 bg-white p-2 pt-8 h-screen w-12 shadow-lg/50 shadow-brand-grey hover:w-fit"
+          className="group fixed md:top-0 bottom-0 left-0 z-50 bg-white md:p-2 md:pt-8 p-2 px-2 md:h-screen md:w-12 w-full md:min-w-12 min-w-[380px] md:shadow-lg shadow-brand-grey/50 shadow-[0_-4px_6px_-1px] md:hover:w-24"
           onMouseLeave={() => setIsHovered(false)}
           onMouseEnter={() => {
             setIsHovered(true);
           }}
         >
-          <nav className="space-y-6 flex flex-col items-center text-brand-navy font-primary">
+          <nav className=" md:space-y-6 flex md:flex-col flex-row items-center justify-between text-brand-navy font-primary">
             {menuLinks.map((link, idx) => {
               const isSelected = pathname === link;
               return (
-                <div key={idx} className={`group flex flex-col items-center gap-y-1 cursor-pointer`}>
+                <div
+                  key={idx}
+                  className={`group flex flex-col items-center md:gap-y-2 gap-y-1 cursor-pointer  md:w-fit w-12`}
+                >
                   <div
-                    className={`${
-                      isSelected ? 'bg-brand-yellow' : 'bg-brand-green-extralite'
-                    } rounded-full aspect-square w-8 h-8 flex items-center justify-center outline outline-brand-navy transition-transform duration-200 group-hover:scale-115`}
+                    className={` outline-2 ${
+                      isSelected
+                        ? 'bg-brand-yellow outline-brand-yellow'
+                        : 'bg-brand-green-lite outline-brand-green-lite'
+                    } rounded-full aspect-square w-8 h-8 flex items-center justify-center  transition-transform duration-200 hover:scale-125`}
                     key={idx}
                   >
                     <Link
@@ -82,7 +87,15 @@ export default function MainMenu() {
                     </Link>
                   </div>
                   {/* show label text only on hover */}
-                  {isHovered ? <h6>{menuItems[idx].label}</h6> : <h6 className={`opacity-0`}>X</h6>}
+                  <h6
+                    className="
+              text-xs
+              md:opacity-0 md:group-hover:opacity-100
+              transition-opacity duration-150
+            "
+                  >
+                    {menuItems[idx].label}
+                  </h6>
                 </div>
               );
             })}

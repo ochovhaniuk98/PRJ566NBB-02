@@ -6,6 +6,9 @@ import Spinner from '@/components/shared/Spinner';
 import ReviewCard from '../shared/ReviewCard';
 import InstagramEmbed from './InstagramEmbed';
 import ReviewCardExpanded from './ReviewCardExpanded';
+import NoContentPlaceholder from '../shared/NoContentPlaceholder';
+import LoginAlertModal from '../shared/LoginAlertModal';
+import { useViewer } from '@/hooks/useViewer'; // for Supabase + Monngo user authentication state (are they logged in or not?)
 
 export default function MasonryReviewGrid({
   selectedReview,
@@ -15,16 +18,28 @@ export default function MasonryReviewGrid({
   isOwner,
   restaurantName,
 }) {
-  // const { user } = useUser(); // Current logged-in user's Supabase info
-  const { userData, loadingData, refreshUserData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
+  const { isAuthenticated, viewerId, loading: viewerLoading, userData } = useViewer(); // info on current authentication states of user/viewer (mongo + supabase)
   const [reportedReviewIds, setReportedReviewIds] = useState([]);
   const [engagementData, setEngagementData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
+
+  // check if user is logged-in and their Mongo profile is ready
+  const requireAuth = () => {
+    if (!isAuthenticated) {
+      setShowLoginAlert(true);
+      return null;
+    }
+    if (!viewerId) {
+      return null;
+    }
+    return viewerId;
+  };
 
   useEffect(() => {
-    if (loadingData || !userData) return;
+    if (viewerLoading) return;
     setLoading(false);
-  }, [loadingData, userData]);
+  }, [viewerLoading]);
 
   useEffect(() => {
     const fetchReportedReviews = async () => {
@@ -102,39 +117,37 @@ export default function MasonryReviewGrid({
   }, [combinedList, reportedReviewIds]);
 
   useEffect(() => {
-    if (!userData || !filteredCombinedList.length) return;
+    //if (!userData || !filteredCombinedList.length) return;
+    if (!filteredCombinedList.length) return; // set engagement data
+    if (isAuthenticated && !viewerId) return; // hold off until viewerId arrives
 
     const newEngagementData = filteredCombinedList.reduce((acc, review) => {
       acc[review._id] = {
         likes: review.likes?.count || 0,
         dislikes: review.dislikes?.count || 0,
         comments: review.comments?.length || 0,
-        userLiked: review.likes?.users?.includes(userData?._id) || false,
-        userDisliked: review.dislikes?.users?.includes(userData?._id) || false,
+        userLiked: viewerId ? review.likes?.users?.includes(viewerId) : false,
+        userDisliked: viewerId ? review.dislikes?.users?.includes(viewerId) : false,
       };
       return acc;
     }, {});
     setEngagementData(newEngagementData);
-  }, [userData, filteredCombinedList]);
+  }, [filteredCombinedList, isAuthenticated, viewerId]);
 
   // breakpoints for when an internal review is selected and the expanded panel appears
   const breakpointColumnsObj = useMemo(() => {
     const isInternal = selectedReview && !selectedReview?.content?.embedLink;
     return isInternal
-      ? { default: 2, 1024: 2, 640: 1 } // 2 column + expanded panel view
-      : { default: 3, 1024: 2, 640: 1 }; // 3 column default view
+      ? { default: 2, 1280: 1, 640: 1 } // 2 column + expanded panel view
+      : { default: 3, 1280: 2, 640: 1 }; // 3 column default view
   }, [selectedReview]);
 
   // Exit early if no reviews
   if (!reviewList || (!reviewList?.internalReviews?.length && !reviewList?.externalReviews?.length)) {
-    return (
-      <div className="col-span-3 text-center">
-        <p>No reviews available.</p>
-      </div>
-    );
+    return <NoContentPlaceholder contentType="reviews" iconImgNum={1} />;
   }
 
-  if (loadingData || loading) return <Spinner />;
+  if (viewerLoading || loading) return <Spinner />;
 
   // ===================
   // HANDLES & FUNCTIONS
@@ -146,8 +159,8 @@ export default function MasonryReviewGrid({
         ...prev[reviewId],
         likes: resData.likes.count,
         dislikes: resData.dislikes.count,
-        userLiked: resData.likes.users.includes(userData._id),
-        userDisliked: resData.dislikes.users.includes(userData._id),
+        userLiked: viewerId ? resData.likes.users.includes(viewerId) : false,
+        userDisliked: viewerId ? resData.dislikes.users.includes(viewerId) : false,
         comments: resData.comments.length,
       },
     }));
@@ -155,8 +168,12 @@ export default function MasonryReviewGrid({
 
   const handleLike = reviewId => {
     return async () => {
+      // prevent unauthorized user from liking
+      const id = requireAuth();
+      if (!id) return;
+
       try {
-        const resData = await updateReviewEngagement(reviewId, userData._id, true, false);
+        const resData = await updateReviewEngagement(reviewId, id, true, false);
         updateEngagementState(reviewId, resData);
       } catch (error) {
         console.error('Failed to update like engagement:', error);
@@ -166,9 +183,17 @@ export default function MasonryReviewGrid({
 
   const handleDislike = reviewId => {
     return async () => {
+      // prevent unauthorized user from disliking
+      const id = requireAuth();
+      if (!id) {
+        console.log('Unauthorized User cannot dislike.');
+        return;
+      }
+
       try {
-        const resData = await updateReviewEngagement(reviewId, userData._id, false, true);
+        const resData = await updateReviewEngagement(reviewId, id, false, true);
         updateEngagementState(reviewId, resData);
+        console.log('User successfully disliked.');
       } catch (error) {
         console.error('Failed to update dislike engagement:', error);
       }
@@ -185,34 +210,50 @@ export default function MasonryReviewGrid({
     }));
   };
 
+  // ensures engagement icons of expanded/selected review are up-to-date when user auth state changes
+  let sel, selLiked, selDisliked;
+  if (selectedReview && !selectedReview?.content?.embedLink) {
+    sel = engagementData[selectedReview._id] || {};
+    selLiked = isAuthenticated && !!sel.userLiked;
+    selDisliked = isAuthenticated && !!sel.userDisliked;
+  }
+
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 w-full">
       {/* Masonry columns */}
       <div className="flex-1">
         <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2" columnClassName="space-y-2">
-          {filteredCombinedList.map(review =>
-            !review.content?.embedLink ? (
-              /* internal reviews */
+          {filteredCombinedList.map(review => {
+            /* external reviews */
+            if (review.content?.embedLink) {
+              return (
+                <InstagramEmbed
+                  key={review._id}
+                  contentId={review?._id}
+                  author={review?.user_id}
+                  url={review.content?.embedLink}
+                />
+              );
+            }
+
+            /* internal reviews */
+            // required to ensure engagement icons are filled/unfilled when use auth state changes
+            const stats = engagementData[review._id] || {};
+            const liked = isAuthenticated && !!stats.userLiked;
+            const disliked = isAuthenticated && !!stats.userDisliked;
+            return (
               <ReviewCard
                 key={review._id}
                 review={review}
-                reviewEngagementStats={engagementData[review._id]}
+                reviewEngagementStats={{ ...stats, userLiked: liked, userDisliked: disliked }} // ensures icon UI is up-to-date (no lag) when user auth changes
                 onLike={handleLike(review._id)}
                 onDislike={handleDislike(review._id)}
                 photos={review.photos}
                 onClick={() => setSelectedReview(review)}
                 isSelected={selectedReview?._id === review._id}
               />
-            ) : (
-              /* external reviews */
-              <InstagramEmbed
-                key={review._id}
-                contentId={review?._id}
-                author={review?.user_id} // This gives the whole user object not just user_id
-                url={review.content?.embedLink}
-              />
-            )
-          )}
+            );
+          })}
         </Masonry>
       </div>
 
@@ -224,13 +265,14 @@ export default function MasonryReviewGrid({
           restaurantName={restaurantName}
           isOwner={isOwner}
           selectedReview={selectedReview}
-          reviewEngagementStats={engagementData[selectedReview._id]}
+          reviewEngagementStats={{ ...sel, userLiked: selLiked, userDisliked: selDisliked }}
           onLike={handleLike(selectedReview._id)}
           onDislike={handleDislike(selectedReview._id)}
           onClose={() => setSelectedReview(null)}
           updateCommentCount={updateCommentCount}
         />
       )}
+      {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </div>
   );
 }

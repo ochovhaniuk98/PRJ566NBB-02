@@ -1,5 +1,5 @@
 'use client';
-
+import { useMediaQuery } from 'react-responsive';
 import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
@@ -7,6 +7,7 @@ import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import Spinner from '@/components/shared/Spinner';
 import { Milestone } from '@/components/challenges/ChallengesPage';
 import Image from 'next/image';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
 
 const BAR_COMPLETE_COLOR = '#8CBF38';
 const MAX_POINTS = 2750;
@@ -105,25 +106,23 @@ export default function Redeem() {
   })();
 
   return (
-    <MainBaseContainer>
-      <div className="main-side-padding py-8 w-full flex flex-col items-center justify-center min-h-screen relative">
-        <div className="absolute top-18 left-20">
-          <h2 className="">REDEEM POINTS</h2>
-        </div>
-        <div className="flex flex-row w-full items-center justify-center">
+    <div className="md:pl-12">
+      <div className="md:mt-16 mt-20 w-full flex flex-col items-center min-h-screen relative">
+        <StyledPageTitle textString="Redeem Points" />
+        <div className="flex flex-row w-full items-center justify-center mt-8">
           {/* Num of Points */}
-          <div className="size-28 mb-4 mr-0 relative">
+          <div className="md:size-28 size-24 mb-4 mr-0 relative">
             <Image src={'/img/coinWithFork.png'} alt={'coin'} className="object-contain" fill={true} />
           </div>
           <div className="inline-flex items-baseline justify-center font-primary mb-8">
-            <span className={'text-9xl font-secondary font-normal text-brand-green'}>{points || 0}</span>
+            <span className={'text-9xl font-secondary font-normal text-brand-green'}>{points || '000'}</span>
             <span className={'text-2xl font-medium'}>pts</span>
           </div>
         </div>
 
         {/* main progress bar */}
-        <div className="w-[80%] flex flex-row items-center relative mb-32">
-          <div className="absolute bg-brand-peach w-[100%] h-[24px] rounded-full"></div>
+        <div className="md:w-[70%] w-[99%] flex flex-row items-center relative mb-2">
+          <div className="absolute bg-brand-peach w-[100%] md:h-[16px] h-[12px] rounded-full"></div>
           <div
             className={`absolute w-[100%] h-[24px] z-[1] rounded-full`}
             style={{ width: `${percentComplete}%`, backgroundColor: BAR_COMPLETE_COLOR }}
@@ -145,24 +144,66 @@ export default function Redeem() {
             })}
           </div>
         </div>
-
-        <div className="w-full">
-          <h2>Available Coupon Code</h2>
-          {couponCode ? (
-            <div className="bg-brand-aqua-lite border-4 border-brand-aqua h-30 w-xs rounded-md shadow-md p-4 mt-2 flex flex-col items-center justify-center">
-              <div className="font-secondary text-6xl flex items-center gap-x-1 text-brand-aqua">
-                <span className={'font-primary text-4xl font-semibold'}>$</span>
-                {couponValue}
+        <RedeemButtonsOnMobile redemptionOptions={redemption_options} level={level} />
+        <div className="w-full flex justify-center">
+          <div className="mt-8">
+            <h2 className="text-center">Available Coupon Code</h2>
+            {couponCode ? (
+              <div className="bg-brand-aqua-lite border-4 border-brand-aqua h-30 w-xs rounded-md shadow-md p-4 mt-2 flex flex-col items-center justify-center">
+                <div className="font-secondary text-6xl flex items-center gap-x-1 text-brand-aqua">
+                  <span className={'font-primary text-4xl font-semibold'}>$</span>
+                  {couponValue}
+                </div>
+                <h3 className="uppercase">{couponCode}</h3>
               </div>
-              <h3 className="uppercase">{couponCode}</h3>
-            </div>
-          ) : (
-            <div className="bg-white border-2 border-brand-aqua border-dashed h-30 w-xs rounded-md p-4 mt-2 flex flex-col items-center justify-center text-6xl font-primary font-medium text-brand-aqua">
-              $0
-            </div>
-          )}
+            ) : (
+              <div className="bg-white border-2 border-dashed border-brand-grey-lite h-30 w-xs rounded-md p-4 mt-2 flex flex-col items-center justify-center">
+                <div className="font-secondary text-6xl flex items-center gap-x-1 text-brand-grey-lite">
+                  <span className={'font-primary text-4xl font-semibold'}>$</span>0
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </MainBaseContainer>
+    </div>
+  );
+}
+
+function RedeemButtonsOnMobile({ redemptionOptions, level }) {
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+
+  return (
+    <>
+      {isMobile && (
+        <div className="flex flex-col w-full  gap-y-4 items-center mb-8">
+          <h2>Redeemable Discounts</h2>
+          {level > 0 ? (
+            redemptionOptions.map((redemption_option, i) => {
+              const enabled = level >= i + 1;
+              return (
+                enabled && (
+                  <div className="flex items-center">
+                    <h2 className="inline-block w-12">
+                      <span className="text-lg font-normal">$</span>
+                      {redemption_option.value}
+                    </h2>
+                    <button className=" bg-brand-blue text-brand-navy font-medium py-2 px-6 rounded-full shadow cursor-pointer">
+                      Redeem
+                    </button>
+                  </div>
+                )
+              );
+            })
+          ) : (
+            <i className="font-light text-center text-brand-grey">
+              No discounts to redeem.
+              <br />
+              Complete challenges to earn points!
+            </i>
+          )}
+        </div>
+      )}
+    </>
   );
 }

@@ -5,6 +5,7 @@ import BlogPostCard from '../shared/BlogPostCard';
 import { Button } from '../shared/Button';
 import { useUser } from '@/context/UserContext';
 import { getGeneralUserMongoIDbySupabaseId } from '@/lib/db/dbOperations';
+import NoContentPlaceholder from '../shared/NoContentPlaceholder';
 
 export default function FollowingBlogPosts() {
   const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
@@ -111,10 +112,20 @@ export default function FollowingBlogPosts() {
           </Masonry>
           {hasMore && (
             <div className="mt-6 flex justify-center">
-              <Button onClick={loadMore}>Load More</Button>
+              <Button onClick={loadMore} variant="secondary">
+                View More
+              </Button>
             </div>
           )}
         </>
+      )}
+
+      {blogPosts.length <= 0 && (
+        <NoContentPlaceholder
+          iconImgNum={5}
+          contentType="blog posts from following"
+          className="absolute top-1/4 left-1/2 -translate-x-1/2"
+        />
       )}
     </>
   );

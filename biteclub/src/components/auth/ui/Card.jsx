@@ -7,7 +7,10 @@ function Card({ className, forBusinessUser = false, ...props }) {
   return (
     <div
       data-slot="card"
-      className={cn(`${styling} text-black flex flex-col gap-1 rounded-xl px-8 py-8 w-md`, className)}
+      className={cn(
+        `${styling} text-black flex flex-col gap-1 lg:rounded-xl md:px-8 md:py-8 px-0 py-8 lg:w-md w-screen flex-grow`,
+        className
+      )}
       {...props}
     />
   );

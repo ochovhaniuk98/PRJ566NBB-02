@@ -1,34 +1,34 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useViewer } from '@/hooks/useViewer';
 import { Button } from './Button';
-// import { createClient } from '@/lib/auth/client';
-import { useUserData } from '@/context/UserDataContext';
-import SingleTabWithIcon from '@/components/shared/SingleTabWithIcon';
 import ReportForm from '../shared/ReportForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faThumbsUp as faThumbsUpRegular,
   faThumbsDown as faThumbsDownRegular,
-  faComment,
 } from '@fortawesome/free-regular-svg-icons';
-
 import {
   faThumbsUp as faThumbsUpSolid,
   faThumbsDown as faThumbsDownSolid,
   faTrashCan,
   faFlag,
+  faXmark,
+  faReply,
+  faCommentDots,
 } from '@fortawesome/free-solid-svg-icons';
+import LoginAlertModal from './LoginAlertModal';
 
 //////////////// COMMENT THREAD FOR *** BLOG POST *** ONLY! ///////////////
 
 // *** Entire comment thread / container ***
-export default function CommentThread({ post }) {
+export default function CommentThread({ post, setShowComments }) {
   // post and user
   const [blogPost, setBlogPost] = useState(null);
-  const { userData } = useUserData(); // Current logged-in user's MongoDB data (User / BusinessUser Object)
   const [user, setUser] = useState(null);
-  const [fetchedPostUser, setFetchedPostUser] = useState(false);
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
+  const { isAuthenticated, userData } = useViewer(); // info on current authentication states of user/viewer (mongo + supabase)
 
   // comments
   const [comments, setComments] = useState([]);
@@ -50,7 +50,7 @@ export default function CommentThread({ post }) {
       try {
         setUser(userData);
         console.log('userData: ', userData);
-        setFetchedPostUser(true);
+        //setFetchedPostUser(true);
       } catch (error) {
         console.error('Failed to fetch user MongoDB id:', error);
       }
@@ -112,6 +112,12 @@ export default function CommentThread({ post }) {
 
   // add new comment
   const addComment = async () => {
+    // show alert if viewer not logged-in
+    if (!isAuthenticated) {
+      setShowLoginAlert(true);
+      return;
+    }
+
     if (newComment.trim()) {
       // add new comment
       try {
@@ -159,6 +165,12 @@ export default function CommentThread({ post }) {
       try {
         if (!blogPost || !user) return;
 
+        // show alert if viewer not logged-in
+        if (!isAuthenticated) {
+          alert('Please log in to comment.');
+          return;
+        }
+
         // post request to create a new comment
         const res = await fetch('/api/blog-posts/comments/add-comment', {
           method: 'POST',
@@ -190,9 +202,29 @@ export default function CommentThread({ post }) {
     }
   };
 
+  // replaces comment anywhere in the comment tree
+  function replaceInTree(list, updated) {
+    return list.map(c => {
+      if (c._id === updated._id) {
+        const replies = c.replies ?? [];
+        return { ...c, ...updated, replies };
+      }
+      if (c.replies?.length) {
+        return { ...c, replies: replaceInTree(c.replies, updated) };
+      }
+      return c;
+    });
+  }
+
   // handle likes
   // // only one like allowed
   const onLike = async (setLikes, comment) => {
+    // show alert if viewer not logged-in
+    if (!isAuthenticated) {
+      alert('Please log in to comment.');
+      return;
+    }
+
     const res = await fetch('/api/blog-posts/comments/add-like-dislike', {
       method: 'POST',
       headers: {
@@ -206,15 +238,22 @@ export default function CommentThread({ post }) {
       }),
     });
     if (!res.ok) throw new Error(`Could not add like to a comment ${res.status}`);
-
     const data = await res.json();
-
     setLikes(data.comment.likes.count);
+
+    // replace the *whole* comment with the server-updated one to update UI
+    setComments(prev => replaceInTree(prev, data.comment));
   };
 
   // handle dislikes
   // // only one dislike allowed
   const onDislike = async (setDislikes, comment, setLikes) => {
+    // show alert if viewer not logged-in
+    if (!isAuthenticated) {
+      alert('Please log in to comment.');
+      return;
+    }
+
     const res = await fetch('/api/blog-posts/comments/add-like-dislike', {
       method: 'POST',
       headers: {
@@ -233,6 +272,9 @@ export default function CommentThread({ post }) {
 
     setLikes(data.comment.likes.count);
     setDislikes(data.comment.dislikes.count);
+
+    // replace comment with update to change UI
+    setComments(prev => replaceInTree(prev, data.comment));
   };
 
   // handle delete
@@ -249,53 +291,74 @@ export default function CommentThread({ post }) {
   };
 
   return (
-    <div className="fixed top-20 right-0 w-4/12 h-10/12 p-4 border border-brand-peach bg-white flex flex-col shadow-lg rounded-tl-lg rounded-bl-lg font-primary z-[999]">
-      <h3 className="text-lg font-bold mb-4">Comments ({commentsCount})</h3>
-
-      {/* scrollable comments area */}
-      <div className="flex-1 overflow-y-auto pr-1 pb-28 scrollbar-hide">
-        {fetchedComments &&
-          fetchedPostUser &&
-          comments.map(comment => (
-            <Comment
-              key={comment._id}
-              comment={comment}
-              userId={user._id}
-              onReply={addReply}
-              onLike={onLike}
-              onDislike={onDislike}
-              onDelete={onDelete}
-              reportedUser={user}
-            />
-          ))}
+    <div className="fixed xl:top-20 right-0  bottom-0 md:w-md w-full h-2/3 xl:h-10/12 p-4 xl:mb-8 border bg-white border-brand-peach flex flex-col shadow-lg rounded-tl-lg rounded-bl-lg font-primary z-[999] overflow-y-scroll scrollbar-hide">
+      <div className="flex justify-between items-center pb-4">
+        <h3 className="text-lg font-bold">Comments ({commentsCount})</h3>
+        <div className="xl:hidden">
+          <FontAwesomeIcon
+            icon={faXmark}
+            className={`icon-lg text-brand-navy cursor-pointer`}
+            onClick={() => setShowComments(false)}
+          />
+        </div>
       </div>
 
+      {/* scrollable comments area */}
+      {commentsCount <= 0 ? (
+        <div className="flex flex-col gap-2 text-center bg-brand-blue-lite/30 p-4 py-8 rounded-2xl text-brand-grey">
+          <FontAwesomeIcon icon={faCommentDots} className={`text-3xl text-brand-blue`} />
+          No comments yet.
+          <br />
+          Be the first!
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto pr-1 xl:pb-28 pb-8 scrollbar-hide border-t-1 border-brand-peach pt-4">
+          {fetchedComments &&
+            comments.map(comment => (
+              <Comment
+                key={comment._id}
+                comment={comment}
+                userId={user?._id}
+                isAuthenticated={isAuthenticated}
+                onReply={addReply}
+                onLike={onLike}
+                onDislike={onDislike}
+                onDelete={onDelete}
+                reportedUser={user}
+              />
+            ))}
+        </div>
+      )}
+
       {/* main textarea input + "post" button */}
-      <div className="absolute bottom-4 left-0 right-0 bg-white pt-2 px-4 border-t-1 border-brand-peach">
+      <div className="xl:absolute xl:bottom-4 xl:left-0 xl:right-0 bg-white pt-2 px-4 border-t-1 border-brand-peach">
         <textarea
           rows={3}
           placeholder="Write a comment..."
           value={newComment}
           onChange={e => setNewComment(e.target.value)}
-          className="w-full border rounded-md p-2 mb-2"
+          className="w-full border-2 rounded-md p-2 mb-2"
         />
         <Button type="submit" variant="default" className="block min-w-30" onClick={addComment}>
           Post
         </Button>
       </div>
+      {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </div>
   );
 }
 
 // *** single comment with engagement icons + input field for replying ***
-const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
+const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete, isAuthenticated }) => {
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
+
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [showReplyBtn, setShowReplyBtn] = useState(false);
   const [replyContent, setReplyContent] = useState('');
 
   // track if User thumbsUped or Down (like/dislike)
-  const [hasLiked, setHasLiked] = useState(false);
-  const [hasDisliked, setHasDisliked] = useState(false);
+  //const [hasLiked, setHasLiked] = useState(false);
+  //const [hasDisliked, setHasDisliked] = useState(false);
 
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
@@ -306,6 +369,12 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
   const [openReportForm, setOpenReportForm] = useState(false);
   const [reportedUser, setReportedUser] = useState(null);
   // const [reporter, setReporter] = useState(null);
+
+  // keep counts in sync if comment updates from server
+  useEffect(() => {
+    setLikes(comment?.likes?.count || 0);
+    setDislikes(comment?.dislikes?.count || 0);
+  }, [comment?.likes?.count, comment?.dislikes?.count]);
 
   // allow only one level nested comments
   useEffect(() => {
@@ -322,20 +391,6 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
     // set isOwner
     if (comment.user == userId) {
       setIsOwner(true);
-    }
-
-    // Check if current user has liked the comment
-    if (comment?.likes?.users?.includes(userId)) {
-      setHasLiked(true);
-    } else {
-      setHasLiked(false);
-    }
-
-    // Check if current user has disliked the comment
-    if (comment?.dislikes?.users?.includes(userId)) {
-      setHasDisliked(true);
-    } else {
-      setHasDisliked(false);
     }
 
     // console.log('Reporting user id: ', userId);
@@ -366,22 +421,28 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
     }
   };
 
+  // derive filled state — instantly clears when logged out
+  const liked = isAuthenticated && !!comment?.likes?.users?.includes?.(userId);
+  const disliked = isAuthenticated && !!comment?.dislikes?.users?.includes?.(userId);
+
   // handle LIKE or DISLIKE (change icons if liked by USER)
   const handleLike = () => {
+    if (!isAuthenticated) {
+      return;
+    }
     onLike(setLikes, comment);
-    setHasLiked(true);
-    setHasDisliked(false);
   };
 
   const handleDislike = () => {
+    if (!isAuthenticated) {
+      return;
+    }
     onDislike(setDislikes, comment, setLikes);
-    setHasLiked(false);
-    setHasDisliked(true);
   };
 
   return (
     <>
-      <div className="flex mb-6">
+      <div className="flex mb-4">
         <div className="relative w-10 h-10 rounded-full mr-3">
           <Image
             src={comment.avatarURL}
@@ -391,23 +452,30 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
           />
         </div>
         <div className="flex-1">
-          <div className="text-sm font-semibold">
-            {comment.author} <span className="text-gray-500 text-xs">{formatTimeAgo(comment.date_posted)}</span>
+          <div className="flex justify-between text-sm font-semibold">
+            {comment.author}{' '}
+            <span className="text-gray-500 text-xs font-normal">{formatTimeAgo(comment.date_posted)}</span>
           </div>
           <div className="mt-1 mb-2">{comment.content}</div>
 
           {/* like, dislike, reply */}
-          <div className="flex gap-4 text-gray-500 text-sm">
-            <button onClick={handleLike} className="hover:text-brand-navy cursor-pointer">
+          <div className="flex gap-4 text-gray-500 text-xs">
+            <button
+              onClick={isAuthenticated ? handleLike : () => setShowLoginAlert(true)}
+              className="hover:text-brand-navy cursor-pointer"
+            >
               <FontAwesomeIcon
-                icon={hasLiked ? faThumbsUpSolid : faThumbsUpRegular}
+                icon={liked ? faThumbsUpSolid : faThumbsUpRegular}
                 className={`icon-md text-brand-navy`}
               />{' '}
               {likes}
             </button>
-            <button onClick={handleDislike} className="hover:text-brand-navy cursor-pointer">
+            <button
+              onClick={isAuthenticated ? handleDislike : () => setShowLoginAlert(true)}
+              className="hover:text-brand-navy cursor-pointer"
+            >
               <FontAwesomeIcon
-                icon={hasDisliked ? faThumbsDownSolid : faThumbsDownRegular}
+                icon={disliked ? faThumbsDownSolid : faThumbsDownRegular}
                 className={`icon-md text-brand-navy`}
               />
             </button>
@@ -415,27 +483,23 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
             {/* show Report form when flag icon is clicked */}
             <div
               className="text-brand-navy flex items-center gap-x-2 cursor-pointer"
-              onClick={e => {
-                setOpenReportForm(prev => !prev);
-              }}
+              onClick={isAuthenticated ? () => setOpenReportForm(prev => !prev) : () => setShowLoginAlert(true)}
             >
-              <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy mr-3 cursor-pointer`} />
+              <FontAwesomeIcon icon={faFlag} className={`icon-md text-brand-navy cursor-pointer`} />
             </div>
 
             {showReplyBtn && (
-              <button onClick={() => setShowReplyInput(!showReplyInput)} className="hover:text-black cursor-pointer">
-                <FontAwesomeIcon icon={faComment} className={`icon-md text-brand-navy`} /> Reply
+              <button
+                onClick={isAuthenticated ? () => setShowReplyInput(!showReplyInput) : () => setShowLoginAlert(true)}
+                className="hover:text-brand-navy text-xs cursor-pointer flex justify-center items-center"
+              >
+                <FontAwesomeIcon icon={faReply} className={`icon-md text-brand-navy mr-1`} /> Reply
               </button>
             )}
             {isOwner && (
-              <SingleTabWithIcon
-                icon={faTrashCan}
-                detailText="X"
-                bgColour="bg-white"
-                textColour="text-brand-red"
-                borderColour="border-brand-red"
-                onClick={() => onDelete(comment)}
-              />
+              <button onClick={() => onDelete(comment)} className="cursor-pointer ml-auto">
+                <FontAwesomeIcon icon={faTrashCan} className={`icon-md text-brand-red`} />
+              </button>
             )}
           </div>
 
@@ -466,6 +530,7 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
                   onLike={onLike}
                   onDislike={onDislike}
                   onDelete={onDelete}
+                  isAuthenticated={isAuthenticated}
                 />
               ))}
           </div>
@@ -481,6 +546,8 @@ const Comment = ({ comment, userId, onReply, onLike, onDislike, onDelete }) => {
           // reporter={reporter}
         />
       )}
+
+      {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </>
   );
 };

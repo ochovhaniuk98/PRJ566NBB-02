@@ -1,20 +1,20 @@
 'use client';
 import { useState } from 'react';
-import MainBaseContainer from '@/components/shared/MainBaseContainer';
 import BlogPostListTabs from './BlogPostListTabs';
 import ExploringBlogPosts from './ExploringBlogPosts';
 import FollowingBlogPosts from './FollowingBlogPosts';
+import StyledPageTitle from '../shared/StyledPageTitle';
 
 // check if blog posts are in exploring or following section
 export default function BlogPostsList() {
   const [selectedTab, setSelectedTab] = useState('EXPLORE');
 
   return (
-    <MainBaseContainer className={'bg-brand-yellow'}>
-      <div className="main-side-padding mb-16 w-full flex flex-col items-center pt-18">
+    <div className="md:pl-12">
+      <div className="mb-16 w-full flex flex-col items-center py-18">
         <div className={'w-full h-full'}>
-          <div className="flex justify-between">
-            <h2>Trending + Recently Posted</h2>
+          <div className="flex lg:flex-row flex-col lg:justify-between lg:items-baseline relative">
+            <StyledPageTitle textString="Trending And Recently Posted"></StyledPageTitle>
             {/* tabs for selecting blog posts: Explore vs Following */}
             <BlogPostListTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
           </div>
@@ -24,6 +24,6 @@ export default function BlogPostsList() {
           {selectedTab === 'FOLLOWING' && <FollowingBlogPosts />}
         </div>
       </div>
-    </MainBaseContainer>
+    </div>
   );
 }

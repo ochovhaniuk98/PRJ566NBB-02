@@ -6,7 +6,7 @@ import Leaderboard from './Leaderboard';
 import AllActiveChallenges from './AllActiveChallenges';
 import { fakeChallenges } from '@/app/data/fakeData';
 import { useUserData } from '@/context/UserDataContext';
-import { faArrowRight, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faClock, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 import ChallengeCompletedModal from './ChallengeCompletedModal';
@@ -116,10 +116,10 @@ export default function ChallengesPage() {
   const [showChallengeCompletedModal, setShowChallengeCompletedModal] = useState(false);
 
   return (
-    <>
+    <div className="md:pl-12">
       {userData && (
-        <MainBaseContainer>
-          <div className="main-side-padding w-full flex flex-col items-center m-16">
+        <>
+          <div className="w-full flex flex-col items-center mt-16 mb-16">
             <div className="flex flex-row w-full items-center justify-center">
               {/* Profile Pic */}
               <div className="size-24 bg-brand-green rounded-full mr-2 relative border border-brand-grey-lite">
@@ -133,7 +133,9 @@ export default function ChallengesPage() {
               <div className="flex flex-col">
                 {/* Num of Points */}
                 <div className="inline-flex items-baseline justify-center font-primary">
-                  <span className="text-8xl font-secondary font-normal text-brand-green">{numTotalPoints || 0}</span>
+                  <span className="text-9xl font-secondary font-normal text-brand-green">
+                    {numTotalPoints || '000'}
+                  </span>
                   <span className="text-lg font-medium">pts</span>
                 </div>
                 {/* Num of Challenges Completed */}
@@ -150,20 +152,20 @@ export default function ChallengesPage() {
                 setShowChallengeCompletedModal={setShowChallengeCompletedModal}
               />
             )}
-            <div className="flex items-center gap-2 ml-auto font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
+            <div className="flex items-center gap-2 ml-auto mr-0 md:mt-0 mt-4 md:mb-0 mb-4 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110">
               <a href="/challenges/redeem" className="text-lg">
                 Redeem Points
               </a>
               <FontAwesomeIcon icon={faArrowRight} className="text-2xl text-brand-navy"></FontAwesomeIcon>
             </div>
             {/* main progress bar */}
-            <div className="w-[70%] flex flex-row items-center relative mb-2">
-              <div className="absolute bg-brand-peach w-[100%] h-[16px] rounded-full"></div>
+            <div className="md:w-[70%] w-[99%] flex flex-row items-center relative mb-2">
+              <div className="absolute bg-brand-peach w-[100%] md:h-[16px] h-[12px] rounded-full"></div>
               <div
                 className={`absolute w-[6983%] h-[16px] z-[1] rounded-full`}
                 style={{ width: `${percentComplete}%`, backgroundColor: BAR_COMPLETE_COLOR }}
               ></div>
-              <div className="flex flex-row justify-between w-full">
+              <div className="flex flex-row justify-between w-full md:h-40 h-30">
                 <Milestone level={level} levelRequired={1} className="z-[2]" pointsNeeded={1000} reward={5} />
                 <Milestone level={level} levelRequired={2} className="z-[2]" pointsNeeded={1500} reward={10} />
                 <Milestone level={level} levelRequired={3} className="z-[2]" pointsNeeded={2000} reward={15} />
@@ -171,7 +173,7 @@ export default function ChallengesPage() {
                 <Milestone level={level} levelRequired={5} className="z-[2]" pointsNeeded={2750} reward={25} />
               </div>
             </div>
-            <div className="flex flex-col md:flex-row w-full min-h-96 my-4 gap-x-4 md:gap-y-0 gap-y-8">
+            <div className="flex flex-col lg:flex-row w-full lg:h-124 my-4 gap-x-4 lg:gap-y-0 gap-y-8">
               {/* Active Challenges */}
               {fetchedActivatedChallenges && (
                 <AllActiveChallenges
@@ -184,11 +186,18 @@ export default function ChallengesPage() {
               {/* Leaderboard */}
               <Leaderboard refreshTrigger={leaderboardRefreshTrigger} />
             </div>
-            {/* PLACEHOLDER for AI-generated challenges */}
-            <div className="w-full p-3 text-center">
+            {/* AI-generated challenges*/}
+            <div className="w-full p-3 text-left">
               <h2 className="uppercase">Add challenges</h2>
+              <div className="bg-brand-grey-lite/50 md:p-6 p-4 rounded-xl my-2 flex items-center justify-center gap-4">
+                <FontAwesomeIcon icon={faTriangleExclamation} className="text-3xl text-brand-grey" />
+                <i className="text-base text-brand-grey font-primary">
+                  This feature depends on a paid third-party AI service, so it’s disabled in the public demo to avoid
+                  charges.
+                </i>
+              </div>
               {/* DEMO for adding/activating challenges */}
-              <ChallengeList onActivate={handleActivateChallenge} />
+              {/* <ChallengeList onActivate={handleActivateChallenge} -- !!!! HIDDEN due to AI fees !!!! /> */}
             </div>
 
             {/* When active challenge card is clicked, show MODAL */}
@@ -203,9 +212,9 @@ export default function ChallengesPage() {
               />
             )}
           </div>
-        </MainBaseContainer>
+        </>
       )}
-    </>
+    </div>
   );
 }
 
@@ -225,11 +234,36 @@ export const Milestone = ({
   onRedeem = () => {},
 }) => {
   const levelImagesArr = [
-    { img: '/img/lemon.png', caption: 'lemon', scaleSize: 'scale-120', disabledImg: '/img/lemon-disabled.png' },
-    { img: '/img/hotdog.png', caption: 'hotdog', scaleSize: 'scale-120', disabledImg: '/img/hotdog-disabled.png' },
-    { img: '/img/pita.png', caption: 'pita', scaleSize: 'scale-100', disabledImg: '/img/pita-disabled.png' },
-    { img: '/img/noodle.png', caption: 'noodle', scaleSize: 'scale-120', disabledImg: '/img/noodle-disabled.png' },
-    { img: '/img/cake.png', caption: 'cake', scaleSize: 'scale-110', disabledImg: '/img/cake-disabled.png' },
+    {
+      img: '/img/lemon.png',
+      caption: 'lemon',
+      scaleSize: 'md:scale-120 scale-85',
+      disabledImg: '/img/lemon-disabled.png',
+    },
+    {
+      img: '/img/hotdog.png',
+      caption: 'hotdog',
+      scaleSize: 'md:scale-120 scale-85',
+      disabledImg: '/img/hotdog-disabled.png',
+    },
+    {
+      img: '/img/pita.png',
+      caption: 'pita',
+      scaleSize: 'md:scale-100 scale-75',
+      disabledImg: '/img/pita-disabled.png',
+    },
+    {
+      img: '/img/noodle.png',
+      caption: 'noodle',
+      scaleSize: 'md:scale-120 scale-85',
+      disabledImg: '/img/noodle-disabled.png',
+    },
+    {
+      img: '/img/cake.png',
+      caption: 'cake',
+      scaleSize: 'md:scale-110 scale-85',
+      disabledImg: '/img/cake-disabled.png',
+    },
   ];
 
   const levelImage =
@@ -253,39 +287,48 @@ export const Milestone = ({
   //const color = enabled ? BAR_COMPLETE_COLOR : BAR_INCOMPLETE_COLOR;
 
   return (
-    <div className="flex flex-col justify-center items-center w-fit relative h-[100px] font-primary my-8">
-      <span
-        className={`absolute font-semibold ${largeSize ? 'text-2xl mb-30' : 'mb-20'} ${!enabled && 'text-brand-grey'}`}
-      >
-        ${reward}
-      </span>
-      <div
-        className={`${largeSize ? 'h-[60px] w-[60px]' : 'h-[40px] w-[40px]'} ${className}`}
-        style={{ backgroundColor: 'transparent' }}
-      />
-      {enabled ? (
-        <Image src={levelImage} alt={'level image'} className={`object-contain z-20 ${scaleSize}`} fill={true} />
-      ) : (
-        <Image
-          src={disabledLevelImage}
-          alt={'disabled level image'}
-          className={`object-contain z-20 ${scaleSize}`}
-          fill={true}
-        />
-      )}
-
-      <span className={`absolute text-center ${largeSize ? 'w-[80px] text-lg mt-26' : 'w-[60px] text-xs mt-20'}`}>
-        {pointsNeeded} pts
-      </span>
-      {largeSize && enabled && (
-        <button
-          className="absolute mt-48 bg-brand-blue text-brand-navy font-medium py-2 px-6 rounded-full shadow cursor-pointer"
-          onClick={onRedeem}
+    <>
+      <div className="flex flex-col justify-center items-center w-fit relative md:h-[100px] h-[60px]  font-primary my-8">
+        <span
+          className={`absolute font-semibold ${largeSize ? 'md:text-2xl md:mb-30 mb-20' : 'mb-20'} ${
+            !enabled && 'text-brand-grey'
+          }`}
         >
-          Redeem
-        </button>
-      )}
-    </div>
+          ${reward}
+        </span>
+        <div
+          className={`${largeSize ? 'md:h-[60px] md:w-[60px] h-[40px] w-[40px]' : 'h-[40px] w-[40px]'} ${className}`}
+          style={{ backgroundColor: 'transparent' }}
+        />
+        {enabled ? (
+          <Image src={levelImage} alt={'level image'} className={`object-contain z-20 ${scaleSize}`} fill={true} />
+        ) : (
+          <Image
+            src={disabledLevelImage}
+            alt={'disabled level image'}
+            className={`object-contain z-20 ${scaleSize}`}
+            fill={true}
+          />
+        )}
+
+        <span
+          className={`absolute text-center ${
+            largeSize ? 'md:w-[80px] md:text-lg md:mt-26 w-[60px] text-xs mt-20' : 'w-[60px] text-xs mt-20'
+          }`}
+        >
+          {pointsNeeded}
+          pts
+        </span>
+        {largeSize && enabled && (
+          <button
+            className="md:hidden absolute mt-48 bg-brand-blue text-brand-navy font-medium py-2 px-6 rounded-full shadow cursor-pointer"
+            onClick={onRedeem}
+          >
+            Redeem
+          </button>
+        )}
+      </div>
+    </>
   );
 };
 

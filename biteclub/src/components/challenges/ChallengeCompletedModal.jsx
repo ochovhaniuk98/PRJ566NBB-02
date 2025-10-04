@@ -6,33 +6,33 @@ import { useEffect } from 'react';
 // modal that pops up automatically when user completes WHOLE challenge
 export default function ChallengeCompletedModal({ numPointsWon = 123, setShowChallengeCompletedModal }) {
   useEffect(() => {
-    // Automatically close the modal after 7 seconds
+    // Automatically close the modal after 8 seconds
     const timer = setTimeout(() => {
       setShowChallengeCompletedModal(false);
-    }, 7000);
+    }, 8000);
 
     return () => clearTimeout(timer);
   }, [setShowChallengeCompletedModal]);
 
   return (
-    <div className="fixed inset-0 z-100 w-screen h-screen bg-brand-green flex items-center justify-between">
+    <div className="fixed inset-0 z-100 w-screen h-screen bg-brand-green flex lg:flex-row flex-col gap-y-2 items-center justify-between">
       <div
-        className="h-full w-1/4 bg-cover"
+        className="h-full lg:w-1/4 w-full bg-cover"
         style={{
           backgroundImage: "url('/img/confetti-large.png')",
-          backgroundSize: '290%',
+          backgroundSize: '220%',
           backgroundPosition: '0rem',
           transform: 'scaleX(-1)',
         }}
       ></div>
 
-      <div className="w-2/4 h-full flex flex-col items-center justify-evenly text-brand-navy">
+      <div className="lg:w-2/4 w-full h-full flex flex-col items-center justify-evenly text-brand-navy">
         {/* Num of Points Header */}
         <div className="text-brand-navy font-primary text-3xl flex items-baseline-last gap-x-0">
           <div className="flex items-center gap-x-1">
-            <FontAwesomeIcon icon={faPlus} className="text-6xl text-brand-navy cursor-pointer" />
+            <FontAwesomeIcon icon={faPlus} className="md:text-6xl text-5xl text-brand-navy cursor-pointer" />
             <div
-              className="font-secondary text-[12rem] text-brand-navy"
+              className="font-secondary md:text-[12rem] text-[8rem] text-brand-navy"
               style={{
                 WebkitTextStroke: '2px white',
               }}
@@ -40,19 +40,21 @@ export default function ChallengeCompletedModal({ numPointsWon = 123, setShowCha
               {numPointsWon}
             </div>
           </div>
-          <span className="text-3xl font-semibold">points</span>
+          <span className="md:text-3xl text-2xl font-semibold">points</span>
         </div>
         {/* Coin Image */}
         <div className="relative h-86 w-full">
           <Image src={'/img/coinWithFork.png'} alt={'coin and confetti'} className="object-contain" fill={true} />
         </div>
-        <span className="text-brand-navy text-3xl font-semibold font-primary uppercase">Challenge Completed!</span>
+        <span className="text-brand-navy text-3xl font-semibold font-primary uppercase text-center mb-4">
+          Challenge Completed!
+        </span>
       </div>
       <div
-        className="h-full w-1/4 bg-cover"
+        className="h-full lg:w-1/4 w-full bg-cover"
         style={{
           backgroundImage: "url('/img/confetti-large.png')",
-          backgroundSize: '290%',
+          backgroundSize: '220%',
           backgroundPosition: '0rem',
         }}
       >

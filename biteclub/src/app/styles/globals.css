@@ -56,7 +56,7 @@
   /* text input field */
   input,
   textarea {
-    @apply appearance-none border-2 bg-white border-brand-aqua rounded-md px-4 pt-2 mt-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-aqua;
+    @apply appearance-none border-2 bg-white border-brand-aqua rounded-md px-4 pt-2 mt-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-aqua font-primary min-w-64;
   }
 
   input {
@@ -77,7 +77,7 @@
   }
 
   h1 {
-    @apply font-secondary text-5xl;
+    @apply font-secondary md:text-5xl text-4xl;
   }
 
   h2 {
@@ -134,7 +134,7 @@
 
   /*** left/right margins for main content on most pages ***/
   .main-side-padding {
-    @apply 3xl:px-60 2xl:px-20 xl:px-20 lg:px-10 md:px-5;
+    @apply 3xl:px-60 2xl:px-40 xl:px-20 lg:px-10 md:px-4 px-2;
   }
 
   .class-font-roboto {
@@ -142,7 +142,7 @@
   }
 
   .open-hours-style {
-    @apply flex flex-row justify-between py-1 px-6;
+    @apply flex flex-row justify-between py-1 md:px-6;
   }
 
   .open-hours-selected {
@@ -171,18 +171,49 @@
   }
 
   .custom-checkbox {
-    width: 1.25rem;
-    height: 1.25rem;
+    min-width: 1.25rem;
+    min-height: 1.25rem;
     border-radius: 3px;
     @apply border border-brand-navy shadow-inner bg-white flex justify-center items-center;
   }
 
   .custom-checkmark {
-    @apply w-4 h-4 bg-brand-yellow rounded-full;
+    @apply w-4 h-4 bg-brand-aqua rounded-full;
   }
 
   .priceTab {
-    @apply font-primary py-1 px-3 rounded-full min-w-18 hover:bg-brand-yellow cursor-pointer;
+    @apply font-primary py-1 px-3 rounded-full min-w-18 hover:bg-brand-aqua cursor-pointer;
+  }
+
+  .landingContainer {
+    @apply absolute xl:top-[22%] lg:top-[18%] md:top-[16%] top-[18%] lg:left-[0rem] md:left-[0rem] -left-7 lg:w-md  w-sm xl:h-[36rem] lg:h-[30rem] md:h-[25rem] h-full;
+  }
+
+  .landingTitle {
+    @apply w-full xl:text-[7rem] lg:text-[6rem] md:text-[4.5rem] text-[3rem] md:text-center;
+  }
+
+  .landingTitleSpan {
+    @apply xl:text-[10rem] lg:text-[8rem] md:text-[7rem] text-[4rem] xl:leading-30 lg:leading-26 md:leading-22 leading-9;
+  }
+
+  .landingText {
+    @apply absolute xl:top-[21rem] lg:top-[17.5rem] md:top-[15rem] top-[7rem] md:left-4 left-0 lg:w-90 w-80  font-primary normal-case leading-normal md:text-lg text-base;
+  }
+
+  .landingButtons {
+    @apply absolute flex md:flex-row flex-col gap-4 w-auto xl:bottom-[6rem] xl:top-auto lg:bottom-[3.25rem] md:-bottom-[0.5rem] bottom-48 md:left-4 left-0; /* lg:left-1/6 md:left-15 left-0 */
+  }
+  .landingButtonSingle {
+    @apply flex items-center gap-2 font-primary font-semibold text-brand-navy cursor-pointer border-1 border-brand-navy py-2 px-4 rounded-sm lg:text-lg text-base shadow-lg capitalize transform transition-transform duration-200 hover:scale-110;
+  }
+
+  .onboardingScaleText {
+    @apply md:w-[70%] w-full text-center mb-4;
+  }
+
+  .customTopShadow {
+    @apply drop-shadow-[0_-4px_6px_rgba(0,0,0,0.1)];
   }
 }
 

@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
+import StyledPageTitle from '../shared/StyledPageTitle';
 
 export function LoginForm({ className, ...props }) {
   const [email, setEmail] = useState('');
@@ -76,15 +77,15 @@ export function LoginForm({ className, ...props }) {
   };
 
   return (
-    <div className={cn('flex flex-col', className)} {...props}>
+    <div className={cn('flex flex-col flex-grow', className)} {...props}>
       <Card>
         <div className="relative size-12 mb-1 self-center">
           <Image src={'/img/noodle.png'} alt={'noodle'} className="object-contain" fill={true} />
         </div>
         <CardHeader>
-          <CardTitle className="text-center">
-            <h1 className="text-black font-normal">Login</h1>
-          </CardTitle>
+          <div className="text-center">
+            <StyledPageTitle textString="Login" txtColour="text-brand-green" textAlign="text-center" />
+          </div>
           <CardDescription>
             <h3 className="text-center">Welcome Back</h3>
           </CardDescription>
@@ -122,7 +123,7 @@ export function LoginForm({ className, ...props }) {
           </div>
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-4">
-              <div className="relative text-center text-sm text-brand-grey-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+              <div className="relative text-center text-sm text-brand-yellow-lite after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t-2 after:border-border">
                 <span className="relative z-10 bg-brand-yellow-extralite px-2 text-brand-grey text-xs uppercase font-primary font-semibold">
                   Or
                 </span>

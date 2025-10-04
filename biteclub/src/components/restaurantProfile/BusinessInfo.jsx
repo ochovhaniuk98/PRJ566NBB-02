@@ -6,24 +6,24 @@ export default function BusinessInfo({ restaurant }) {
   const mapSrc = `https://maps.google.com/maps?q=${encodedAddress}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
 
   return (
-    <GridCustomCols numOfCols={6}>
-      <div className="col-span-4 row-span-2 bg-brand-grey">
+    <div className="flex md:flex-row flex-col justify-between">
+      <div className=" bg-brand-grey md:w-3/4 w-full md:h-112 h-60">
         <iframe
           src={mapSrc}
-          className="boreder-none w-full h-full"
-          allowFullScreen=""
+          className="border-none w-full h-full"
+          allowFullScreen={true}
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
-      <div className="col-span-2 flex flex-col gap-4 p-4">
-        <div className="px-6">
-          <h2>{restaurant.name}</h2>
+      <div className="flex flex-col gap-2 p-0 md:pt-0 pt-4">
+        <div className="md:px-6 flex flex-col gap-1">
+          <h3>{restaurant.name}</h3>
           <p>{restaurant.location}</p>
           <p>(416) 921-7557</p>
         </div>
         <RestaurantHours openHours={restaurant.BusinessHours} />
       </div>
-    </GridCustomCols>
+    </div>
   );
 }

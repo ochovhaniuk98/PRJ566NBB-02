@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
+import StyledPageTitle from '../shared/StyledPageTitle';
 
 export function SignUpForm({ className, ...props }) {
   const [email, setEmail] = useState('');
@@ -93,15 +94,16 @@ export function SignUpForm({ className, ...props }) {
 
   const iconImageLink = userType ? '/img/chefHatFlat.png' : '/img/pita.png';
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn('flex flex-col items-center w-full', className)} {...props}>
       <Card forBusinessUser={userType}>
         <div className="relative size-12 self-center mb-1">
           <Image src={iconImageLink} alt={'header image'} className="object-contain" fill={true} />
         </div>
         <CardHeader>
-          <CardTitle className="text-center">
-            <h1 className="font-normal">Sign Up</h1>
-          </CardTitle>
+          <div className="text-center">
+            <StyledPageTitle textString="Sign Up" txtColour="text-brand-green" textAlign="text-center" />
+          </div>
+
           {/* User Type Switch -- Ignore label text for now, Not sure what it should say yet. */}
           <div
             className={`flex items-center justify-center gap-6 mt-2 mb-4 py-2 rounded-full ${

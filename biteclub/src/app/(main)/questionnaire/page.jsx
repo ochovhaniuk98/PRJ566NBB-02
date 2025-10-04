@@ -7,9 +7,10 @@ import { faCarrot } from '@fortawesome/free-solid-svg-icons';
 import { faCircleRight, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import Image from 'next/image';
 import { Button } from '@/components/shared/Button';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
 
 const DIETARY_CONFIG = {
-  title: 'DIETARY PREFERENCES',
+  title: 'Diet Preferences',
   instructions: 'Select any dietary preferences and allergies you may have.',
   customSection: {
     missingPrompt: 'Missing something?',
@@ -20,7 +21,7 @@ const DIETARY_CONFIG = {
 };
 
 const CUISINE_CONFIG = {
-  title: 'FAVOURITE CUISINES',
+  title: 'Favourite Food',
   instructions: 'Select your favourite cuisines.',
   customSection: {
     missingPrompt: 'Missing your favourites?',
@@ -97,7 +98,7 @@ export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png'
     console.log(restaurantFrequency);
     console.log(decisionDifficulty);
     console.log(openToDiversity);
-    console.log("Id", user.id);
+    console.log('Id', user.id);
     const res = await fetch('/api/generals/update-profile/questionnaire', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -126,17 +127,18 @@ export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png'
       : "url('/img/yellowOnBlueBG.png')"; //yellowOnBlueBG.png
 
   return (
-    <div className="grid grid-cols-[55%_45%] w-screen h-screen relative overflow-y-hidden">
+    <div className="grid grid-cols-1 grid-rows-[15%_85%] md:grid-cols-[35%_65%] md:grid-rows-1 lg:grid-cols-2 lg:grid-rows-1 h-full min-h-screen m-0 w-full">
       {/* background image*/}
       <div
         className="bg-cover"
         style={{
           backgroundImage: bgImage,
-          backgroundSize: '175%',
+          backgroundSize: '120rem',
           backgroundPosition: '-2rem',
+          backgroundRepeat: 'no-repeat',
         }}
       ></div>
-      <div className="relative bg-[#fffbe6] p-12 py-8 h-full">
+      <div className="relative lg:px-12 p-4 md:px-4 py-8 sm:pb-20 pb-64 h-full w-full overflow-y-scroll scrollbar-hide bg-brand-yellow-extralite">
         <div className="flex flex-col items-center">
           <div className="relative h-11 w-16">
             <Image src="/img/trayIcon.png" alt="tray icon" className="object-contain relative" fill={true} />
@@ -171,26 +173,32 @@ export default function Questionnaire({ bgImagePath = '/img/greenOnYellowBG.png'
             openToDiversity={openToDiversity}
             setOpenToDiversity={setOpenToDiversity}
           />
-        )}
-        {step == 1 ? (
-          <a href="/" className="absolute bottom-8.5 left-10.5">
-            I'll do this later
-          </a>
-        ) : null}
-        <button
-          onClick={step != FINAL_STEP ? nextStep : submit}
-          className="absolute bottom-8.5 right-10.5 flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer"
+        )}{' '}
+        <div
+          className={`w-full flex ${
+            step == 1 ? 'justify-between' : 'justify-end'
+          } items-center p-4 fixed bottom-0 left-0 bg-brand-green-lite h-auto customTopShadow z-20`}
         >
-          {step != FINAL_STEP ? (
-            <>
-              Next Step <FontAwesomeIcon icon={faCircleRight} className={`text-3xl text-brand-navy`} />
-            </>
-          ) : (
-            <>
-              Complete <FontAwesomeIcon icon={faCircleCheck} className={`text-3xl text-brand-navy`} />
-            </>
-          )}
-        </button>
+          {step == 1 ? (
+            <a href="/" className="">
+              I'll do this later
+            </a>
+          ) : null}
+          <button
+            onClick={step != FINAL_STEP ? nextStep : submit}
+            className=" flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer"
+          >
+            {step != FINAL_STEP ? (
+              <>
+                Next Step <FontAwesomeIcon icon={faCircleRight} className={`text-3xl text-brand-navy`} />
+              </>
+            ) : (
+              <>
+                Complete <FontAwesomeIcon icon={faCircleCheck} className={`text-3xl text-brand-navy`} />
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -213,10 +221,12 @@ function PreferencesSelector({ config, picked, setPicked, options, setOptions })
   };
 
   return (
-    <div className="flex flex-col h-full mt-4">
-      <h2 className="self-center mb-2">{config.title}</h2>
+    <div className="flex flex-col mt-4">
+      <div className="relative w-fit flex items-center self-center mb-4">
+        <StyledPageTitle textString={config.title} textAlign="text-center" />
+      </div>
       <div className="mb-[70px]">
-        <p className="mb-2">{config.instructions}</p>
+        <p className="mb-2 text-center">{config.instructions}</p>
         <div className="flex flex-wrap gap-2 p-2 px-0 mt-6 rounded-2xl">
           {options.map(t => (
             <button
@@ -236,7 +246,7 @@ function PreferencesSelector({ config, picked, setPicked, options, setOptions })
       <div>
         <h3 className="normal-case">{config.customSection.missingPrompt}</h3>
         <p className="">{config.customSection.inputInstructions}</p>
-        <div className="flex flex-col w-[55%]">
+        <div className="flex flex-col md:w-[55%] w-full">
           <input ref={customInput} className="rounded-3xl" placeholder={config.customSection.inputPlaceholder} />
           <Button
             type="submit"
@@ -260,7 +270,7 @@ function PreferencesSelector({ config, picked, setPicked, options, setOptions })
 }
 
 function Scale({ value, setValue }) {
-  const SELECTED_OPTION_STYLING = 'bg-[#56e4be] h-[28px] w-[28px] rounded-full z-10 shadow-md cursor-pointer relative';
+  const SELECTED_OPTION_STYLING = 'bg-[#56e4be] h-[28px] w-[12px] rounded-full z-10 shadow-md cursor-pointer relative';
   const UNSELECTED_OPTION_STYLING =
     'bg-[#ffdcbe] h-[28px] w-[12px] rounded-xl z-10 cursor-pointer hover:scale-120 relative';
   const buttons = [];
@@ -275,13 +285,19 @@ function Scale({ value, setValue }) {
           setValue(Number(e.target.value));
         }}
       >
-        <span className="absolute -bottom-6 right-[2px] font-primary font-semibold text-sm text-brand-navy">{i}</span>
+        <span
+          className={`absolute -bottom-10 right-[-10px] ${
+            i == value ? 'bg-brand-aqua-lite' : 'bg-brand-yellow-lite'
+          } font-primary font-semibold text-sm text-brand-navy  size-8 rounded-full flex items-center justify-center`}
+        >
+          {i}
+        </span>
       </button>
     );
   }
   return (
     <>
-      <div className="relative flex flex-row justify-between w-[75%] h-[28px]">
+      <div className="relative flex flex-row justify-between md:w-[70%] w-full h-[28px]">
         <div className="self-center absolute bg-[#ffdcbe] h-[10px] w-full" />
         {buttons}
       </div>
@@ -299,24 +315,30 @@ function LikertScale({
   setOpenToDiversity,
 }) {
   return (
-    <div className="flex flex-col items-left h-full mt-4">
-      <h2 className="self-center mb-2">Know Your Zone</h2>
+    <div className="flex flex-col items-left h-fit mt-4 text-center">
+      <div className="relative h-12 w-fit flex items-center self-center mb-4">
+        <StyledPageTitle textString="Know Your Zone" />
+      </div>
       <p>Complete the following to help us understand how comfortable you are trying new foods and cuisines.</p>
-      <div className="flex flex-col items-center w-full justify-between h-[60%] mt-4">
+      <div className="flex flex-col items-center w-full justify-between lg:gap-20 gap-16 py-8">
         <div className="flex flex-col items-center w-full">
-          <p>I find it easy to try new foods.</p>
+          <p className="onboardingScaleText">I find it easy to try new foods.</p>
           <Scale value={likelinessToTryFood} setValue={setLikelinessToTryFood} />
         </div>
         <div className="flex flex-col items-center w-full">
-          <p>How often do you try new restaurants?</p>
+          <p className="onboardingScaleText">How often do you try new restaurants?</p>
           <Scale value={restaurantFrequency} setValue={setRestaurantFrequency} />
         </div>
         <div className="flex flex-col items-center w-full">
-          <p>When ordering food, I find it difficult to decide where and what to eat.</p>
+          <p className="onboardingScaleText">
+            When ordering food, I find it difficult to decide where and what to eat.
+          </p>
           <Scale value={decisionDifficulty} setValue={setDecisionDifficulty} />
         </div>
         <div className="flex flex-col items-center w-full">
-          <p>I want to broaden and diversify my palate, and step out of my comfort zone.</p>
+          <p className="onboardingScaleText">
+            I want to broaden and diversify my palate, and step out of my comfort zone.
+          </p>
           <Scale value={openToDiversity} setValue={setOpenToDiversity} />
         </div>
       </div>

@@ -5,8 +5,10 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
 import ExploringBlogPostsAI from '@/components/blogPosts/ExploringBlogPostsAI';
 import { useRouter } from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
+import HomeBanner from '@/components/homepage/HomeBanner';
+import SurpriseBanner from '@/components/homepage/SurpriseBanner';
+import PomegranateRestaurantHighlight from '@/components/homepage/PomegranateRestaurantHighlight';
 
 export default function Home() {
   const [personalizedRecommendations, setPersonalizedRecommendations] = useState([]);
@@ -123,44 +125,10 @@ export default function Home() {
   };
 
   return (
-    <>
-      {fetchedCuisineRestaurants && (
-        <div className="mb-16 w-full flex flex-col items-center pt-18 ">
-          <div>
-            <div className="flex items-center justify-between">
-              <h2>CUISINE SPOTLIGHT: {cuisine}</h2>
-              {/* 
-              <Button variant="link" size="lg" onClick={handleSurpriseMeSubmit}>
-                <h3>Surprise Me →</h3>
-              </Button>*/}
-              <button
-                onClick={handleSurpriseMeSubmit}
-                className="flex items-center gap-2 font-primary text-lg font-semibold text-brand-navy cursor-pointer border-b-2 border-brand-navy transform transition-transform duration-200 hover:scale-110"
-              >
-                Surprise Me <FontAwesomeIcon icon={faArrowRight} className={`text-2xl text-brand-navy`} />
-              </button>
-
-              <button
-                className="font-primary font-semibold text-brand-navy cursor-pointer"
-                onClick={handleViewAllSubmit}
-              >
-                View All
-              </button>
-            </div>
-            <div className="overflow-x-scroll scrollbar-hide">
-              <div className="w-fit h-full flex flex-row">
-                <GridCustomCols numOfCols={5} className="mt-4">
-                  {restaurants.map((restaurant, i) => (
-                    <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
-                  ))}
-                </GridCustomCols>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+    /* personalized recommendations */
+    <div className="md:pl-12 pb-12">
       {fetchCompleted ? (
-        <div className="mb-16 w-full flex flex-col items-center">
+        <div className="main-side-padding mb-16 w-full flex flex-col items-center">
           <div>
             <div className="flex items-center justify-between">
               {personalizedRecommendations.length > 0 && (
@@ -183,7 +151,7 @@ export default function Home() {
               )}
             </div>
           </div>
-          <div className="mb-16 w-full flex flex-col items-center  pt-18 ">
+          <div className="mb-16 w-full flex flex-col items-center pt-18 ">
             <div>
               <div className="flex items-center justify-between">
                 <div>
@@ -195,12 +163,35 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <h1 className="text-5xl text-center font-primary font-bold text-brand-navy mt-44">
-          No recommendations available at the moment.
-          <br />
-          Please check back later.
-        </h1>
+        /* placeholder if perosnalized recommendations are unavailable: Banners */
+        <>
+          <HomeBanner />
+          <SurpriseBanner onSurprise={handleSurpriseMeSubmit} />
+        </>
       )}
-    </>
+      <div className="main-side-padding mb-16 flex flex-col items-center w-full">
+        {/* Cuisine Spotlight */}
+        {fetchedCuisineRestaurants && (
+          <>
+            <div className="flex items-baseline-last justify-between w-full relative h-auto mt-8 md:mb-0 mb-4">
+              <StyledPageTitle textString={cuisine} />
+              <button
+                className="font-primary font-semibold text-brand-navy cursor-pointer"
+                onClick={handleViewAllSubmit}
+              >
+                View All
+              </button>
+            </div>
+            <GridCustomCols numOfCols={5} className="md:mt-4 mt-0">
+              {restaurants.map((restaurant, i) => (
+                <RestaurantCard key={restaurant._id || i} restaurantData={restaurant} />
+              ))}
+            </GridCustomCols>
+          </>
+        )}
+        {/* The Pomegranate Reaturant Highlight section (so employers and HR can easily view a *full* restaurant profile demo) */}
+        <PomegranateRestaurantHighlight />
+      </div>
+    </div>
   );
 }

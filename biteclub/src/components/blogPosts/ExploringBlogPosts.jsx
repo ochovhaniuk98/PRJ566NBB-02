@@ -75,19 +75,20 @@ export default function ExploringBlogPosts() {
     scrollPositionRef.current = window.scrollY;
     setPage(prev => prev + 1);
   };
-
   return (
     <>
       {fetchCompleted && (
         <>
           <Masonry breakpointCols={breakpointColumnsObj} className="flex gap-2 mt-4" columnClassName="space-y-2">
             {blogPosts.map((post, i) => (
-              <BlogPostCard key={post._id || i} blogPostData={post} />
+              <BlogPostCard key={post._id || i} blogPostData={post} writtenByOwner={true} /> // hardcoded to "true" temporarily since author data not displaying
             ))}
           </Masonry>
           {hasMore && (
             <div className="mt-6 flex justify-center">
-              <Button onClick={loadMore}>Load More</Button>
+              <Button onClick={loadMore} variant="secondary">
+                View More
+              </Button>
             </div>
           )}
         </>

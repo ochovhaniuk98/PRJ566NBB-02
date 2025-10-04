@@ -8,8 +8,9 @@ import { Button } from '@/components/shared/Button';
 import { Label } from '@/components/shared/Label';
 import { CldUploadWidget } from 'next-cloudinary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faCloudArrowUp, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
+import StyledPageTitle from '@/components/shared/StyledPageTitle';
 
 export default function BusinessSetupForm() {
   const router = useRouter();
@@ -120,20 +121,24 @@ export default function BusinessSetupForm() {
   };
 
   return (
-    <div
-      className="flex h-screen overflow-hidden bg-cover"
-      style={{
-        backgroundImage: "url('/img/greenOnYellowBG.png')",
-        backgroundPosition: '-2rem',
-      }}
-    >
-      <div className="w-1/2 px-12 py-16 h-full min-h-screen ml-auto bg-white flex flex-col overflow-y-auto">
-        <div className="form-widget flex flex-col space-y-4 bg-brand-blue-lite w-lg h-content m-auto px-14 py-16">
+    <div className="flex md:flex-row flex-col h-screen overflow-hidden">
+      <div
+        className="lg:w-1/2 md:w-1/3 w-full md:h-full h-1/6 bg-cover"
+        style={{
+          backgroundImage: "url('/img/greenOnYellowBG.png')",
+          backgroundPosition: '-2rem',
+          backgroundSize: '120rem',
+        }}
+      ></div>
+      <div className="lg:w-1/2 md:w-2/3 w-full md:h-full h-5/6 md:px-12 px-0 md:py-16 py-0 ml-auto md:bg-white bg-brand-blue flex items-center flex-col overflow-y-auto">
+        <div className="form-widget flex flex-col space-y-4 bg-brand-blue-lite md:w-lg w-full h-content m-auto md:px-14 px-6 py-16">
           {/* */}
           <div className="relative size-15 self-center">
             <Image src={'/img/chefHatFlat.png'} alt={'header image'} className="object-contain" fill={true} />
           </div>
-          <h2 className="text-center">Ready to reach new customers?</h2>
+          <div className="w-full flex items-center justify-center">
+            <StyledPageTitle textString="Ready to reach new customers?" textAlign="text-center" />
+          </div>
 
           {/* --- Hidden Email Field (bound to Supabase user) --- */}
           <Input id="email" type="text" value={user?.email || ''} disabled className="w-full hidden" />
@@ -243,7 +248,8 @@ export default function BusinessSetupForm() {
 
           {/* --- Submit Button --- */}
           <Button className="w-60 m-auto mt-6" onClick={handleSubmit} variant="default" disabled={loading}>
-            {loading ? 'Saving...' : 'Confirm'}
+            <FontAwesomeIcon icon={faFloppyDisk} className={`icon-lg text-brand-navy`} />
+            {loading ? 'Saving...' : 'Save'}
           </Button>
 
           {formError && (
@@ -253,7 +259,7 @@ export default function BusinessSetupForm() {
           {/* --- Sign Out Link --- */}
           <form action="/signout" method="post" className="relative">
             <button
-              className="text-sm text-brand-navy font-primary font-medium p-2 rounded-md absolute -left-8 -bottom-15 underline cursor-pointer"
+              className="text-sm text-brand-navy font-primary font-medium p-2 rounded-md absolute md:-left-8 -bottom-15 underline cursor-pointer"
               type="submit"
             >
               Sign out

@@ -29,11 +29,12 @@ export default function ReviewCard({
   const [cardHovered, setCardHovered] = useState(false);
   const [popupHovered, setPopupHovered] = useState(false);
   const shouldHighlight = cardHovered && !popupHovered;
+  console.log('IS SELECTED? ', isSelected);
 
   return (
     <div
       className={`relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer transition 
-    ${shouldHighlight ? 'bg-brand-peach-lite outline-brand-peach outline-2' : 'bg-white'}`}
+    ${isSelected && 'bg-brand-peach-lite'} hover:bg-brand-peach-lite`}
       onClick={onClick}
       onMouseEnter={() => setCardHovered(true)}
       onMouseLeave={() => setCardHovered(false)}
@@ -54,9 +55,9 @@ export default function ReviewCard({
           <div>
             <EngagementIconStat
               iconArr={reviewCardIconArr}
-              statNumArr={[reviewEngagementStats?.likes || 0, reviewEngagementStats?.comments || 0]}
-              handlers={[onLike, () => {}, onDislike]}
-              states={[reviewEngagementStats?.userLiked, false, reviewEngagementStats?.userDisliked]}
+              statNumArr={[reviewEngagementStats?.likes || 0, null, reviewEngagementStats?.comments || 0]}
+              handlers={[onLike, onDislike, () => {}]}
+              states={[reviewEngagementStats?.userLiked, reviewEngagementStats?.userDisliked, false]}
             />
           </div>
         </div>

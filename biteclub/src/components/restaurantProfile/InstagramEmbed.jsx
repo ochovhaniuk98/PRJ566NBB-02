@@ -56,7 +56,7 @@ export default function InstagramEmbed({
   return (
     <div ref={ref} className="w-full border rounded-md border-brand-yellow-lite min-h-[420px] relative">
       {/* Report Content flag */}
-      <div className="min-w-30 min-h-12 absolute top-0 right-2 flex items-start font-primary font-semibold text-brand-navycursor-pointer text-sm bg-white">
+      <div className="min-w-30 min-h-12 absolute top-0 right-2 flex items-start font-primary font-semibold text-brand-navy cursor-pointer text-sm bg-white">
         {/* wrapped ... icon in invisible div so it's easier to click */}
         <div
           className="py-1 px-3 pr-0 absolute right-0 cursor-pointer"

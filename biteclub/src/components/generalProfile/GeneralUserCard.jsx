@@ -123,7 +123,7 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
   return (
     <div className="w-full" onClick={() => router.push(generalUserUrl)}>
       <div
-        className={`w-full aspect-square border border-brand-yellow-lite flex flex-col items-center justify-between gap-4 p-4 rounded-md cursor-pointer transition ${
+        className={`w-full max-h-64 aspect-square border border-brand-yellow-lite flex flex-col items-center justify-between gap-4 p-4 rounded-md cursor-pointer transition ${
           shouldHighlight ? 'bg-brand-peach-lite' : 'bg-white'
         }`}
         onMouseEnter={() => setCardHovered(true)}
@@ -151,9 +151,10 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
               />
             )}
           </div>
+
           <div
-            className={`relative aspect-square w-30 rounded-full bg-brand-grey mt-4 border-3 ${
-              isFollowing ? 'border-white' : 'border-brand-green'
+            className={`relative aspect-square w-30 rounded-full bg-brand-grey my-2 border-3 ${
+              isFollowing ? 'border-white' : 'border-brand-aqua'
             }`}
           >
             <Image
@@ -164,7 +165,7 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
             />
             {!isOwner && !isFollowing && (
               <div
-                className="aspect-square w-10 rounded-full bg-brand-green absolute top-0 -right-3 flex justify-center items-center shadow-sm cursor-pointer hover:w-12"
+                className="aspect-square w-10 rounded-full bg-brand-aqua absolute top-0 -right-3 flex justify-center items-center shadow-sm cursor-pointer hover:w-12"
                 onClick={e => {
                   e.stopPropagation(); // Prevent redirect
                   handleFollowClick(e);
@@ -174,12 +175,12 @@ export default function GeneralUserCard({ generalUserData, onFollowingToggle = (
               </div>
             )}
           </div>
-        </div>
-        {/* !!! General user stats not included in schema !!! */}
-        <div className="flex justify-between space-x-7">
-          {iconStats.map((stat, idx) => (
-            <IconStat key={idx} iconStyles={stat} idx={idx} statNum={stat.statNum} />
-          ))}
+          {/* !!! General user stats not included in schema !!! */}
+          <div className="flex justify-between space-x-7">
+            {iconStats.map((stat, idx) => (
+              <IconStat key={idx} iconStyles={stat} idx={idx} statNum={stat.statNum} />
+            ))}
+          </div>
         </div>
       </div>
       {/* </Link> */}

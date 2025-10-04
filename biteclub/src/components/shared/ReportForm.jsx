@@ -103,12 +103,12 @@ export default function ReportForm({
       className="fixed inset-0 bg-brand-peach/40 flex justify-center z-[100] overflow-scroll scrollbar-hide w-full h-full"
       onClick={e => e.stopPropagation()}
     >
-      <div className="relative bg-transparent p-8 w-2xl min-h-fit ">
-        <div className="bg-brand-green-lite w-full font-primary rounded-t-lg flex gap-x-2 cursor-pointer p-3 font-semibold">
-          <FontAwesomeIcon icon={faFlag} className={`icon-xl text-white`} />
+      <div className="relative bg-transparent md:p-8 mt-8 w-2xl md:min-h-fit">
+        <div className="bg-brand-green-lite w-full font-primary rounded-t-lg flex items-center gap-x-2 cursor-pointer p-3 font-semibold md:text-md text-sm">
+          <FontAwesomeIcon icon={faFlag} className={`text-2xl text-white`} />
           Report {reportType === 'user' ? 'User' : 'Content'}
         </div>
-        <form className=" w-full min-h-content bg-white rounded-b-lg shadow-md flex flex-col items-center pb-8">
+        <form className=" w-full md:min-h-content h-full bg-white rounded-b-lg shadow-md flex flex-col items-center pb-8">
           <div className="w-full p-6 flex flex-col gap-3">
             <div>
               <div className="flex font-primary gap-x-2">
@@ -135,7 +135,7 @@ export default function ReportForm({
               <Label>Reason for reporting</Label>
               <textarea
                 type="text"
-                className={'w-full rounded-md p-2 h-50 resize-none font-primary'}
+                className={'w-full rounded-md p-2 md:h-50 h-70 resize-none font-primary'}
                 placeholder="Write your reason for reporting here..."
                 required
                 value={reason}

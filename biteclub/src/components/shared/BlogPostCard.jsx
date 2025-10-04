@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/context/UserContext';
 import { useUserData } from '@/context/UserDataContext';
@@ -12,6 +12,8 @@ import FormattedDate from './formattedDate';
 import AuthorDateBlurb from './AuthorDateBlurb';
 import EditModePanel from './EditModePanel';
 import { ReportContentLink } from './ReportContentLink';
+import { useViewer } from '@/hooks/useViewer';
+import LoginAlertModal from './LoginAlertModal';
 
 // Description: BlogPostCard has multiple states: A post can be available to be edited (EditModePanel will appear),
 // and it can be selected for editing (text editor will appear with prepopulated data of post)
@@ -29,29 +31,51 @@ export default function BlogPostCard({
   onDeleteClick, // optional — do NOT provide a default
   onFavouriteToggle = () => {},
 }) {
-  const { user } = useUser() ?? { user: null }; // Current logged-in user's Supabase info
-  const { userData, refreshUserData } = useUserData();
   const blogId = blogPostData._id;
-  const isFavourited = userData?.favouriteBlogs?.includes(blogId);
 
+  const { isAuthenticated, supabaseId, userData } = useViewer(); // info on current authentication states of user/viewer (mongo + supabase)
+  const { refreshUserData } = useUserData();
+  //const isFavourited = userData?.favouriteBlogs?.includes(blogId);
+
+  const [isFavourited, setIsFavourited] = useState(false);
   const [showReportFormLink, setShowReportFormLink] = useState(false);
   const [cardHovered, setCardHovered] = useState(false);
   const [popupHovered, setPopupHovered] = useState(false);
   const shouldHighlight = cardHovered && !popupHovered;
-  const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart icon
+  const [isHovered, setIsHovered] = useState(false); // tracks when user hovers over heart
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // shows custom alert for non-logged-in users
+
+  // Syncs favourite icon with Supabase AND Mongo when it changes (prevents UI lag);
+  // Clears immediately on logout, removing the filled-heart after logout
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setIsFavourited(false);
+      return;
+    }
+    setIsFavourited(!!userData?.favouriteBlogs?.includes(blogId));
+  }, [isAuthenticated, userData?.favouriteBlogs, blogId]);
 
   const handleFavouriteBlogPostClick = async e => {
-    e.stopPropagation();
+    e?.stopPropagation();
+
+    if (!isAuthenticated) {
+      setShowLoginAlert(true);
+      return;
+    }
+
+    // Optimistic UI -- makes favouriting action *look* faster
+    const next = !isFavourited;
+    setIsFavourited(next);
 
     try {
-      if (!user?.id) return;
+      if (!supabaseId) return;
 
       const res = await fetch('/api/blog-posts/save-as-favourite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           blogId,
-          supabaseUserId: user.id,
+          supabaseUserId: supabaseId,
         }),
       });
 
@@ -64,7 +88,6 @@ export default function BlogPostCard({
       console.error('Error toggling favourite:', err.message);
     }
   };
-
   return (
     <div
       className={`relative border rounded-md border-brand-yellow-lite flex flex-col cursor-pointer transition
@@ -93,8 +116,8 @@ export default function BlogPostCard({
         >
           <FontAwesomeIcon
             icon={isHovered || isFavourited ? solidHeart : strokedHeart}
-            className={`icon-xl absolute right-3 hover:text-brand-red ${
-              isFavourited ? 'text-brand-red' : 'text-brand-navy'
+            className={`icon-xl absolute right-3 hover:text-brand-aqua ${
+              isFavourited ? 'text-brand-aqua' : 'text-brand-navy'
             }`}
           />
         </div>
@@ -102,7 +125,7 @@ export default function BlogPostCard({
           <h3>{blogPostData.previewTitle}</h3>
           <p>{blogPostData.previewText}</p>
         </Link>
-        <div className={`flex justify-between items-center mb-0 mt-4`}>
+        <div className={`flex justify-between items-baseline mb-0 mt-4`}>
           {writtenByOwner ? (
             <FormattedDate yyyymmdd={blogPostData.date_posted} />
           ) : (
@@ -116,7 +139,7 @@ export default function BlogPostCard({
           )}
           <EngagementIconStat
             iconArr={reviewCardIconArr}
-            statNumArr={[blogPostData.likes.count, blogPostData?.comments?.length]}
+            statNumArr={[blogPostData.likes.count, null, blogPostData?.comments?.length]}
             forBlogPostCard={true}
           />
         </div>
@@ -153,6 +176,7 @@ export default function BlogPostCard({
       {showReportFormLink && (
         <ReportContentLink setPopupHovered={setPopupHovered} contentTitle={blogPostData.previewTitle} />
       )}
+      {showLoginAlert && <LoginAlertModal isOpen={showLoginAlert} handleClose={() => setShowLoginAlert(false)} />}
     </div>
   );
 }

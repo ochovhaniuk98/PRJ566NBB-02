@@ -320,7 +320,7 @@ export default function ActiveChallengeDetailModal({
     const MAX_NUM_STEPS = 5; // max 5 per challenge
 
     return (
-      <div className="w-3/5 flex flex-wrap gap-4 gap-x-10 items-center justify-center font-primary pt-4">
+      <div className="md:w-3/5 flex flex-wrap gap-4 lg:gap-x-10 items-center justify-center font-primary pt-4 md:pb-4 pb-8">
         {challengeSteps.slice(0, MAX_NUM_STEPS).map((step, i) => {
           /* get restaurant data for each challenge step (FAKE restaurant data) */
           const restaurant = restaurants.find(r => r._id === step.restaurantId);
@@ -350,11 +350,11 @@ export default function ActiveChallengeDetailModal({
       >
         {/* white plate */}
         <div
-          className={`rounded-full w-full aspect-square bg-white border border-brand-grey-lite flex flex-col items-center justify-center p-2 text-center relative ${
+          className={`rounded-full w-full aspect-square bg-white border-2 border-brand-blue-lite flex flex-col items-center justify-center p-2 text-center relative ${
             !isVerified && 'shadow-md'
           }`}
         >
-          <div className="absolute h-24 w-24 rounded-full bg-brand-grey-lite/10 shadow-inner flex flex-col items-center justify-center">
+          <div className="absolute size-26 rounded-full bg-brand-grey-lite/10 shadow-inner flex flex-col items-center justify-center border-2 border-brand-blue-lite">
             {/* empty plate if verified*/}
             {!isVerified && !isHovered && (
               <FontAwesomeIcon icon={icon} className={`text-7xl`} style={{ color: `${colour}` }} />
@@ -389,9 +389,9 @@ export default function ActiveChallengeDetailModal({
   return (
     <>
       {fetchedChallenge && fetchedRestaurants && fetchedActiveChallengeDetail && (
-        <div className="fixed inset-0  bg-brand-peach/40 flex justify-center items-center  z-[100]  overflow-scroll scrollbar-hide">
-          <div className="bg-transparent p-8">
-            <div className="w-5xl min-h-120 bg-white shadow-lg rounded-lg pb-3 relative">
+        <div className="fixed inset-0  bg-brand-peach/40 flex justify-center md:items-center z-[100]  overflow-scroll scrollbar-hide">
+          <div className="bg-transparent md:p-8 pt-8">
+            <div className="lg:w-5xl min-h-120  shadow-lg rounded-lg pb-3 relative bg-white">
               <div className="bg-brand-green-lite flex items-center font-primary font-semibold text-md capitalize py-3 px-3 rounded-t-lg w-full justify-between">
                 <div>
                   <FontAwesomeIcon icon={faGamepad} className={`text-2xl text-white mr-2`} />
@@ -409,8 +409,8 @@ export default function ActiveChallengeDetailModal({
                   }}
                 />
               </div>
-              <div className="p-6 flex gap-x-8 w-full">
-                <div className="w-2/5 flex flex-col gap-y-4">
+              <div className="bg-white p-6 flex flex-col md:flex-row items-center gap-x-8 w-full">
+                <div className="md:w-2/5 w-full flex flex-col gap-y-4">
                   {/* TITLE */}
                   <h1>{challenge.title}</h1>
                   {/* DESC */}

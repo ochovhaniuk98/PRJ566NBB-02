@@ -8,12 +8,12 @@ export default function BlogPostListTabs({ selectedTab, setSelectedTab }) {
   };
 
   return (
-    <div className="flex gap-x-2 justify-end">
+    <div className="flex gap-x-2 md:justify-end justify-center md:mt-0 mt-4">
       {tabs.map(tab => (
         <button
           key={tab}
           onClick={() => handleTabClick(tab)}
-          className={`px-2 py-1 mr-4 text-sm border-b-3 transition-colors duration-200 cursor-pointer ${
+          className={`h-8 px-2 py-1 mr-4 text-sm border-b-3 transition-colors duration-200 cursor-pointer ${
             selectedTab === tab
               ? 'border-brand-green-lite text-black font-semibold'
               : 'border-white text-brand-navy hover:border-brand-blue-lite font-medium'

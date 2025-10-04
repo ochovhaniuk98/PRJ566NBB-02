@@ -1,13 +1,10 @@
 import Image from 'next/image';
 import GridCustomCols from '@/components/shared/GridCustomCols';
+import NoContentPlaceholder from '../shared/NoContentPlaceholder';
 
 export default function PhotoGallery({ photos, isOwner = false }) {
   if (!photos || photos.length === 0) {
-    return (
-      <div className="col-span-3 text-center">
-        <p>{isOwner ? 'No photos uploaded yet.' : 'No photos available.'}</p>
-      </div>
-    );
+    return <NoContentPlaceholder contentType={isOwner ? 'photos uploaded' : 'photos'} iconImgNum={4} />;
   }
 
   const getRandomSpan = () => {

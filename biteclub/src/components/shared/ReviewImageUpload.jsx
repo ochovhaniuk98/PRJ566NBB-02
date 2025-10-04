@@ -24,7 +24,7 @@ export default function ReviewImageUpload({ reviewImages, setReviewImages, onUpl
   };
 
   return (
-    <>
+    <div className="flex flex-col w-full gap-3">
       <CldUploadWidget
         uploadPreset="my-uploads"
         options={{
@@ -74,6 +74,6 @@ export default function ReviewImageUpload({ reviewImages, setReviewImages, onUpl
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }
